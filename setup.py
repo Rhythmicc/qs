@@ -8,7 +8,7 @@ VERSION = '0.0.1'
 setup(
     name='QuickStart',
     version=VERSION,
-    description='Easier to perform general operations!',
+    description='Simplify the operation in terminal!',
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
@@ -16,7 +16,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords='',
+    keywords='Simplify the operation in terminal!',
     author='RhythmLian',
     author_mail='RhythmLian@outlook.com',
     url="https://github.com/Rhythmicc/QuickStart",

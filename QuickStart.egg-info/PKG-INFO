@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: QuickStart
 Version: 0.0.1
-Summary: Easier to perform general operations!
-Home-page: https://github.com/Rhythmicc/QuickProject
+Summary: Simplify the operation in terminal!
+Home-page: https://github.com/Rhythmicc/QuickStart
 Author: RhythmLian
 License: MIT
 Description: # QuickStart
@@ -22,6 +22,7 @@ Description: # QuickStart
         | `qs -pyuninstaller [name]` | remove files that pyinstaller create |
         
         
+Keywords: Simplify the operation in terminal!
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
