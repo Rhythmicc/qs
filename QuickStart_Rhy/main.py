@@ -116,70 +116,72 @@ def t():
         print("No content in your clipboard!")
 
 
-if len(sys.argv) >= 2:
-    if sys.argv[1] == '-u':
-        for url in sys.argv[2:]:
-            url = formatUrl(url)
-            if url:
-                wb.open_new_tab(url)
-    elif sys.argv[1] == '-a':
-        a()
-    elif sys.argv[1] == '-f':
-        f()
-    elif sys.argv[1] == '-i':
-        wb.open_new_tab('http://login.cup.edu.cn')
-    elif sys.argv[1] == '-t':
-        t()
-    elif sys.argv[1] == '-mktar':
-        if len(sys.argv) == 2:
-            exit("No enough parameters")
-        file_names = sys.argv[2:]
-        for file_name in file_names:
-            if os.path.exists(file_name):
-                os.system('touch %s.tar.gz' % file_name)
-                os.system('tar -czf %s.tar.gz %s' % (file_name, file_name))
-            else:
-                print("No such file or dictionary:%s" % file_name)
-    elif sys.argv[1] == '-untar':
-        if len(sys.argv) == 2:
-            exit("No enough parameters")
-        file_names = sys.argv[2:]
-        for file_name in file_names:
-            if os.path.exists(file_name):
-                if file_name.endswith('.tar'):
-                    os.system('tar -xf %s' % file_name)
-                elif file_name.endswith('.gz'):
-                    os.system('tar -xzf %s' % file_name)
-                elif file_name.endswith('.bz2'):
-                    os.system('tar -xjf %s' % file_name)
-            else:
-                print("No such file or dictionary:%s" % file_name)
-    elif sys.argv[1] == '-mkzip':
-        if len(sys.argv) == 2:
-            exit("No enough parameters")
-        file_names = sys.argv[2:]
-        for file_name in file_names:
-            zip_name = file_name.split('.')[0]
-            if os.path.exists(file_name):
-                os.system('zip -r -9 %s.zip %s' % (zip_name, file_name))
-            else:
-                print("No such file or dictionary:%s" % file_name)
-    elif sys.argv[1] == '-unzip':
-        if len(sys.argv) == 2:
-            exit("No enough parameters")
-        file_names = sys.argv[2:]
-        for file_name in file_names:
-            if os.path.exists(file_name):
-                os.system('unzip %s' % file_name)
-            else:
-                print("No such file or dictionary:%s" % file_name)
-    elif sys.argv[1] == '-pyuninstaller':
-        file_name = sys.argv[2]
-        remove('build')
-        remove('__pycache__')
-        remove('%s.spec' % file_name)
-        remove('dist')
+def main():
+    arlen = len(sys.argv)
+    if arlen >= 2:
+        if sys.argv[1] == '-u':
+            for url in sys.argv[2:]:
+                url = formatUrl(url)
+                if url:
+                    wb.open_new_tab(url)
+        elif sys.argv[1] == '-a':
+            a()
+        elif sys.argv[1] == '-f':
+            f()
+        elif sys.argv[1] == '-i':
+            wb.open_new_tab('http://login.cup.edu.cn')
+        elif sys.argv[1] == '-t':
+            t()
+        elif sys.argv[1] == '-mktar':
+            if arlen == 2:
+                exit("No enough parameters")
+            file_names = sys.argv[2:]
+            for file_name in file_names:
+                if os.path.exists(file_name):
+                    os.system('touch %s.tar.gz' % file_name)
+                    os.system('tar -czf %s.tar.gz %s' % (file_name, file_name))
+                else:
+                    print("No such file or dictionary:%s" % file_name)
+        elif sys.argv[1] == '-untar':
+            if arlen == 2:
+                exit("No enough parameters")
+            file_names = sys.argv[2:]
+            for file_name in file_names:
+                if os.path.exists(file_name):
+                    if file_name.endswith('.tar'):
+                        os.system('tar -xf %s' % file_name)
+                    elif file_name.endswith('.gz'):
+                        os.system('tar -xzf %s' % file_name)
+                    elif file_name.endswith('.bz2'):
+                        os.system('tar -xjf %s' % file_name)
+                else:
+                    print("No such file or dictionary:%s" % file_name)
+        elif sys.argv[1] == '-mkzip':
+            if arlen == 2:
+                exit("No enough parameters")
+            file_names = sys.argv[2:]
+            for file_name in file_names:
+                zip_name = file_name.split('.')[0]
+                if os.path.exists(file_name):
+                    os.system('zip -r -9 %s.zip %s' % (zip_name, file_name))
+                else:
+                    print("No such file or dictionary:%s" % file_name)
+        elif sys.argv[1] == '-unzip':
+            if arlen == 2:
+                exit("No enough parameters")
+            file_names = sys.argv[2:]
+            for file_name in file_names:
+                if os.path.exists(file_name):
+                    os.system('unzip %s' % file_name)
+                else:
+                    print("No such file or dictionary:%s" % file_name)
+        elif sys.argv[1] == '-pyuninstaller':
+            file_name = sys.argv[2]
+            remove('build')
+            remove('__pycache__')
+            remove('%s.spec' % file_name)
+            remove('dist')
+        else:
+            h()
     else:
         h()
-else:
-    h()

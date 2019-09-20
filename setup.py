@@ -1,12 +1,11 @@
 from setuptools import setup, find_packages
 
-
 with open("README.md", "r") as fh:
     long_description = fh.read()
-VERSION = '0.0.1'
+VERSION = '0.0.4'
 
 setup(
-    name='QuickStart',
+    name='QuickStart_Rhy',
     version=VERSION,
     description='Simplify the operation in terminal!',
     long_description=long_description,
@@ -27,7 +26,7 @@ setup(
     install_requires=['pyperclip', 'requests'],
     entry_points={
         'console_scripts': [
-            'qs = QuickStart.main:main'
+            'qs = QuickStart_Rhy.main:main'
         ]
     },
 )
