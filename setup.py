@@ -19,7 +19,7 @@ setup(
     keywords='',
     author='RhythmLian',
     author_mail='RhythmLian@outlook.com',
-    url="https://github.com/Rhythmicc/QuickProject",
+    url="https://github.com/Rhythmicc/QuickStart",
     license='MIT',
     packages=find_packages(),
     include_package_data=True,
