@@ -4,13 +4,14 @@
 
 | 命令 | 含义 |
 | :--- | :--- |
-| `qs -u [url] ` | open url using safari |
-| `qs -a [app/(file...)]` | open app or open file by app |
+| `qs -u [url] ` | open url using default browser |
+| `qs -a [app/(file...)]` | open app or open file by app(for MacOS X) |
 | `qs -f [file...]` | open file by default app |
-| `qs -t` | translate the content in clipboard |
+| `qs -t` | translate the content in clipboard( use "yddict" ) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |
 | `qs -untar [path]` | extract path.tar.* |
 | `qs -mkzip [path]` | make a zip for path(dir/file) |
 | `qs -unzip [path]` | unzip path.zip |
 | `qs -pyuninstaller [name]` | remove files that pyinstaller create |
 
+(By the way, if you are the one of China University Of Petroleum(Beijing), run `qs -i` to login school network)

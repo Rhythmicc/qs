@@ -20,10 +20,10 @@ base_dir += dir_char
 
 def h():
     print('help:')
-    print('    qs -u [url]              :-> open url using safari')
-    print('    qs -a [app/(file...)]    :-> open app or open file by app')
+    print('    qs -u [url]              :-> open url using default browser')
+    print('    qs -a [app/(file...)]    :-> open app or open file by app(for Mac OS X)')
     print('    qs -f [file...]          :-> open file by default app')
-    print('    qs -t                    :-> translate the content in clipboard')
+    print('    qs -t                    :-> translate the content in clipboard( use "yddict" ')
     print('    qs -mktar [path]         :-> create gzipped archive for path')
     print('    qs -untar [path]         :-> extract path.tar.*')
     print('    qs -mkzip [path]         :-> make a zip for path')
@@ -69,19 +69,10 @@ def setup_xdg_open():
 
 
 def a():
-    if dir_char == '/':
-        if system == 'darwin':
-            os.system('open -a ' + ' '.join(sys.argv[2:]))
-        else:
-            status = os.system('xdg-open %s' % sys.argv[2])
-            if status:
-                print('No xdg-open! Auto setuping...')
-                status = setup_xdg_open()
-                if status:
-                    exit('setup xdg-open failed')
-                os.system('xdg-open %s' % sys.argv[2])
+    if system == 'darwin':
+        os.system('open -a ' + ' '.join(sys.argv[2:]))
     else:
-        print('-a is only support Mac OS X / Linux')
+        print('"-a" is only support Mac OS X')
 
 
 def f():
@@ -104,7 +95,6 @@ def t():
     content = pyperclip.paste()
     if content:
         content.replace('\n', ' ')
-        os.system('clear')
         status = os.system('yd %s' % content)
         if status:
             print('Auto install "yddict"')
