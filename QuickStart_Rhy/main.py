@@ -106,6 +106,20 @@ def t():
         print("No content in your clipboard!")
 
 
+def download():
+    url = pyperclip.paste()
+    if url:
+        package = requests.get(url, headers).content
+        if package:
+            file_name = url.split('/')[-1]
+            with open(file_name, 'wb') as f:
+                f.write(package)
+        else:
+            exit('Download failed!')
+    else:
+        print("No url in your clipboard!")
+
+
 def main():
     arlen = len(sys.argv)
     if arlen >= 2:
@@ -165,6 +179,8 @@ def main():
                     os.system('unzip %s' % file_name)
                 else:
                     print("No such file or dictionary:%s" % file_name)
+        elif sys.argv[1] == '-download':
+            download()
         elif sys.argv[1] == '-pyuninstaller':
             file_name = sys.argv[2]
             remove('build')

@@ -12,6 +12,7 @@
 | `qs -untar [path]` | extract path.tar.* |
 | `qs -mkzip [path]` | make a zip for path(dir/file) |
 | `qs -unzip [path]` | unzip path.zip |
+| `qs -download` | download file which url in clipboard |
 | `qs -pyuninstaller [name]` | remove files that pyinstaller create |
 
 (By the way, if you are the one of China University Of Petroleum(Beijing), run `qs -i` to login school network)
