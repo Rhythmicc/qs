@@ -67,14 +67,34 @@ def setup_dep():
     return status
 
 
-def a():
+def get_tar_name():
+    if arlen == 2:
+        exit("No enough parameters")
+    file_names = sys.argv[2:]
+    if len(file_names) > 1:
+        tar_name = 'pigeonhole'
+    else:
+        ls = file_names[0].split(dir_char)
+        while not ls[-1]:
+            ls.pop()
+        tar_name = ls[-1].split('.')[0]
+    ls = []
+    for file_name in file_names:
+        if os.path.exists(file_name):
+            ls.append(file_name)
+        else:
+            print("No such file or dictionary:%s" % file_name)
+    return tar_name, ls
+
+
+def open_app():
     if system == 'darwin':
         os.system('open -a ' + ' '.join(sys.argv[2:]))
     else:
         print('"-a" is only support Mac OS X')
 
 
-def f():
+def open_file():
     if dir_char == '/':
         if system == 'darwin':
             os.system('open ' + ' '.join(sys.argv[2:]))
@@ -89,7 +109,7 @@ def f():
                 os.system(file)
 
 
-def t():
+def translate():
     content = pyperclip.paste()
     if content:
         content.replace('\n', ' ')
@@ -114,6 +134,58 @@ def download():
         print("No url found!")
 
 
+def mktar():
+    tar_name, ls = get_tar_name()
+    os.system('tar -czf %s.tar.gz %s' % (tar_name, ' '.join(ls)))
+
+
+def untar():
+    if arlen == 2:
+        exit("No enough parameters")
+    file_names = sys.argv[2:]
+    for file_name in file_names:
+        if os.path.exists(file_name):
+            if file_name.endswith('.tar'):
+                os.system('tar -xf %s' % file_name)
+            elif file_name.endswith('.gz'):
+                os.system('tar -xzf %s' % file_name)
+            elif file_name.endswith('.bz2'):
+                os.system('tar -xjf %s' % file_name)
+        else:
+            print("No such file or dictionary:%s" % file_name)
+
+
+def mkzip():
+    zip_name, ls = get_tar_name()
+    os.system('zip -r -9 %s.zip %s' % (zip_name, ' '.join(ls)))
+
+
+def unzip():
+    if arlen == 2:
+        exit("No enough parameters")
+    file_names = sys.argv[2:]
+    for file_name in file_names:
+        if os.path.exists(file_name):
+            os.system('unzip %s' % file_name)
+        else:
+            print("No such file or dictionary:%s" % file_name)
+
+
+def upload_pypi():
+    remove('dist')
+    if os.system('python3 setup.py sdist bdist_wheel'):
+        os.system('python setup.py sdist bdist_wheel')
+    os.system('twine upload dist%s*' % dir_char)
+
+
+def rm_pyinstaller():
+    file_name = sys.argv[2]
+    remove('build')
+    remove('__pycache__')
+    remove('%s.spec' % file_name)
+    remove('dist')
+
+
 def main():
     if arlen >= 2:
         if sys.argv[1] == '-u':
@@ -121,85 +193,27 @@ def main():
                 url = formatUrl(url)
                 wb.open_new_tab(url)
         elif sys.argv[1] == '-a':
-            a()
+            open_app()
         elif sys.argv[1] == '-f':
-            f()
+            open_file()
         elif sys.argv[1] == '-i':
             wb.open_new_tab('http://login.cup.edu.cn')
         elif sys.argv[1] == '-t':
-            t()
+            translate()
         elif sys.argv[1] == '-dl':
             download()
         elif sys.argv[1] == '-mktar':
-            if arlen == 2:
-                exit("No enough parameters")
-            file_names = sys.argv[2:]
-            if len(file_names)>1:
-                zip_name = 'pigeonhole'
-            else:
-                ls = file_names[0].split(dir_char)
-                while not ls[-1]:
-                    ls.pop()
-                zip_name = ls[-1].split('.')[0]
-            ls = []
-            for file_name in file_names:
-                if os.path.exists(file_name):
-                    ls.append(file_name)
-                else:
-                    print("No such file or dictionary:%s" % file_name)
-            os.system('tar -czf %s.tar.gz %s' % (zip_name, ' '.join(ls)))
+            mktar()
         elif sys.argv[1] == '-untar':
-            if arlen == 2:
-                exit("No enough parameters")
-            file_names = sys.argv[2:]
-            for file_name in file_names:
-                if os.path.exists(file_name):
-                    if file_name.endswith('.tar'):
-                        os.system('tar -xf %s' % file_name)
-                    elif file_name.endswith('.gz'):
-                        os.system('tar -xzf %s' % file_name)
-                    elif file_name.endswith('.bz2'):
-                        os.system('tar -xjf %s' % file_name)
-                else:
-                    print("No such file or dictionary:%s" % file_name)
+            untar()
         elif sys.argv[1] == '-mkzip':
-            if arlen == 2:
-                exit("No enough parameters")
-            file_names = sys.argv[2:]
-            if len(file_names) > 1:
-                zip_name = 'pigeonhole'
-            else:
-                ls = file_names[0].split(dir_char)
-                while not ls[-1]:
-                    ls.pop()
-                zip_name = ls[-1].split('.')[0]
-            ls = []
-            for file_name in file_names:
-                if os.path.exists(file_name):
-                    ls.append(file_name)
-                else:
-                    print("No such file or dictionary:%s" % file_name)
-            os.system('zip -r -9 %s.zip %s' % (zip_name, ' '.join(ls)))
+            mkzip()
         elif sys.argv[1] == '-unzip':
-            if arlen == 2:
-                exit("No enough parameters")
-            file_names = sys.argv[2:]
-            for file_name in file_names:
-                if os.path.exists(file_name):
-                    os.system('unzip %s' % file_name)
-                else:
-                    print("No such file or dictionary:%s" % file_name)
+            unzip()
         elif sys.argv[1] == '-upload':
-            remove('dist')
-            if os.system('python3 setup.py sdist bdist_wheel'):
-                os.system('python setup.py sdist bdist_wheel')
-            os.system('twine upload dist%s*' % dir_char)
+            upload_pypi()
         elif sys.argv[1] == '-pyuninstaller':
-            file_name = sys.argv[2]
-            remove('build')
-            remove('__pycache__')
-            remove('%s.spec' % file_name)
-            remove('dist')
+            rm_pyinstaller()
         else:
             h()
     else:
