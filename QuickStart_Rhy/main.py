@@ -7,7 +7,8 @@ import os
 import pyperclip
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7'}
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
+                  'Version/11.0.2 Safari/604.4.7'}
 
 system = sys.platform
 base_dir = sys.path[0]
@@ -16,18 +17,21 @@ if system.startswith('win'):
 else:
     dir_char = '/'
 base_dir += dir_char
+arlen = len(sys.argv)
 
 
 def h():
     print('help:')
-    print('    qs -u [url]              :-> open url using default browser')
-    print('    qs -a [app/(file...)]    :-> open app or open file by app(for Mac OS X)')
-    print('    qs -f [file...]          :-> open file by default app')
-    print('    qs -t                    :-> translate the content in clipboard( use "yddict" ')
+    print('    qs -u  [url]             :-> open url using default browser')
+    print('    qs -a  [app/(file...)]   :-> open app or open file by app(for Mac OS X)')
+    print('    qs -f  [file...]         :-> open file by default app')
+    print('    qs -dl [urls/""]         :-> download file from url(in clipboard)')
+    print('    qs -t                    :-> translate the content in clipboard(use "yddict")')
     print('    qs -mktar [path]         :-> create gzipped archive for path')
     print('    qs -untar [path]         :-> extract path.tar.*')
     print('    qs -mkzip [path]         :-> make a zip for path')
     print('    qs -unzip [path]         :-> unzip path.zip')
+    print('    qs -upload               :-> upload your pypi library')
     print('    qs -pyuninstaller [path] :-> remove files that pyinstaller create')
 
 
@@ -39,20 +43,15 @@ def check_one_page(url):
         return False
 
 
-def formatUrl(Url):
-    tUrl = Url
-    res = check_one_page(tUrl)
-    if not res:
-        tUrl = 'https://' + Url
-        res = check_one_page(tUrl)
-        if not res:
-            tUrl = 'http://' + Url
-            res = check_one_page(tUrl)
-            if not res:
-                tUrl = None
-    else:
-        tUrl = None
-    return tUrl
+def formatUrl(try_url):
+    if try_url.startswith('http://') or try_url.startswith('https://'):
+        return try_url
+    res_url = try_url
+    if not check_one_page(res_url):
+        res_url = 'https://' + try_url
+        if not check_one_page(res_url):
+            res_url = 'http://' + try_url
+    return res_url
 
 
 def remove(path):
@@ -63,8 +62,8 @@ def remove(path):
             os.remove(path)
 
 
-def setup_xdg_open():
-    status = os.system('yum install xdg-open')
+def setup_dep():
+    status = os.system('npm install yddict -g')
     return status
 
 
@@ -80,54 +79,47 @@ def f():
         if system == 'darwin':
             os.system('open ' + ' '.join(sys.argv[2:]))
         else:
-            status = os.system('xdg-open ' + ' '.join(sys.argv[2:]))
-            if status:
-                print('No xdg-open! Auto setuping...')
-                status = setup_xdg_open()
-                if status:
-                    exit('setup xdg-open failed')
-                os.system('xdg-open ' + ' '.join(sys.argv[2:]))
+            for file in sys.argv[2:]:
+                if os.path.exists(file):
+                    path = os.path.abspath(file)
+                    wb.open('file://%s' % path)
     else:
-        os.system(sys.argv[2])
+        for file in sys.argv[2:]:
+            if os.path.exists(file):
+                os.system(file)
 
 
 def t():
     content = pyperclip.paste()
     if content:
         content.replace('\n', ' ')
-        status = os.system('yd %s' % content)
-        if status:
-            print('Auto install "yddict"')
-            status = os.system('npm install yddict -g')
-            if status:
-                exit('install command "yd" failed!')
-            os.system('yd %s' % content)
+        os.system('yd %s' % content)
     else:
         print("No content in your clipboard!")
 
 
 def download():
-    url = pyperclip.paste()
-    if url:
+    urls = sys.argv[2:]
+    if not urls:
+        urls = pyperclip.paste().split()
+    for url in urls:
         package = requests.get(url, headers).content
         if package:
             file_name = url.split('/')[-1]
             with open(file_name, 'wb') as f:
                 f.write(package)
         else:
-            exit('Download failed!')
+            print('Download "%s" failed!' % url)
     else:
-        print("No url in your clipboard!")
+        print("No url found!")
 
 
 def main():
-    arlen = len(sys.argv)
     if arlen >= 2:
         if sys.argv[1] == '-u':
             for url in sys.argv[2:]:
                 url = formatUrl(url)
-                if url:
-                    wb.open_new_tab(url)
+                wb.open_new_tab(url)
         elif sys.argv[1] == '-a':
             a()
         elif sys.argv[1] == '-f':
@@ -136,6 +128,8 @@ def main():
             wb.open_new_tab('http://login.cup.edu.cn')
         elif sys.argv[1] == '-t':
             t()
+        elif sys.argv[1] == '-dl':
+            download()
         elif sys.argv[1] == '-mktar':
             if arlen == 2:
                 exit("No enough parameters")
@@ -179,8 +173,11 @@ def main():
                     os.system('unzip %s' % file_name)
                 else:
                     print("No such file or dictionary:%s" % file_name)
-        elif sys.argv[1] == '-download':
-            download()
+        elif sys.argv[1] == '-upload':
+            remove('dist')
+            if os.system('python3 setup.py sdist bdist_wheel'):
+                os.system('python setup.py sdist bdist_wheel')
+            os.system('twine upload dist%s*' % dir_char)
         elif sys.argv[1] == '-pyuninstaller':
             file_name = sys.argv[2]
             remove('build')
