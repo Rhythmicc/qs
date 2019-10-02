@@ -134,12 +134,20 @@ def main():
             if arlen == 2:
                 exit("No enough parameters")
             file_names = sys.argv[2:]
+            if len(file_names)>1:
+                zip_name = 'pigeonhole'
+            else:
+                ls = file_names[0].split(dir_char)
+                while not ls[-1]:
+                    ls.pop()
+                zip_name = ls[-1].split('.')[0]
+            ls = []
             for file_name in file_names:
                 if os.path.exists(file_name):
-                    os.system('touch %s.tar.gz' % file_name)
-                    os.system('tar -czf %s.tar.gz %s' % (file_name, file_name))
+                    ls.append(file_name)
                 else:
                     print("No such file or dictionary:%s" % file_name)
+            os.system('tar -czf %s.tar.gz %s' % (zip_name, ' '.join(ls)))
         elif sys.argv[1] == '-untar':
             if arlen == 2:
                 exit("No enough parameters")
@@ -158,12 +166,20 @@ def main():
             if arlen == 2:
                 exit("No enough parameters")
             file_names = sys.argv[2:]
+            if len(file_names) > 1:
+                zip_name = 'pigeonhole'
+            else:
+                ls = file_names[0].split(dir_char)
+                while not ls[-1]:
+                    ls.pop()
+                zip_name = ls[-1].split('.')[0]
+            ls = []
             for file_name in file_names:
-                zip_name = file_name.split('.')[0]
                 if os.path.exists(file_name):
-                    os.system('zip -r -9 %s.zip %s' % (zip_name, file_name))
+                    ls.append(file_name)
                 else:
                     print("No such file or dictionary:%s" % file_name)
+            os.system('zip -r -9 %s.zip %s' % (zip_name, ' '.join(ls)))
         elif sys.argv[1] == '-unzip':
             if arlen == 2:
                 exit("No enough parameters")
