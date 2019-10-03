@@ -23,18 +23,20 @@ arlen = len(sys.argv)
 
 def h():
     print('help:')
-    print('    qs -u  [url]             :-> open url using default browser')
-    print('    qs -a  [app/(file...)]   :-> open app or open file by app(for Mac OS X)')
-    print('    qs -f  [file...]         :-> open file by default app')
-    print('    qs -dl [urls/""]         :-> download file from url(in clipboard)')
-    print('    qs -t                    :-> translate the content in clipboard')
-    print('    qs -time                 :-> view current time')
-    print('    qs -mktar [path]         :-> create gzipped archive for path')
-    print('    qs -untar [path]         :-> extract path.tar.*')
-    print('    qs -mkzip [path]         :-> make a zip for path')
-    print('    qs -unzip [path]         :-> unzip path.zip')
-    print('    qs -upload               :-> upload your pypi library')
-    print('    qs -pyuninstaller [path] :-> remove files that pyinstaller create')
+    print('    qs -u  [url]               :-> open url using default browser')
+    print('    qs -a  [app/(file...)]     :-> open app or open file by app(for Mac OS X)')
+    print('    qs -f  [file...]           :-> open file by default app')
+    print('    qs -dl [urls/""]           :-> download file from url(in clipboard)')
+    print('    qs -t                      :-> translate the content in clipboard')
+    print('    qs -time                   :-> view current time')
+    print('    qs -weather [-(all)detail] :-> check weather (view detail)')
+    print('    qs -mktar [path]           :-> create gzipped archive for path')
+    print('    qs -untar [path]           :-> extract path.tar.*')
+    print('    qs -mkzip [path]           :-> make a zip for path')
+    print('    qs -unzip [path]           :-> unzip path.zip')
+    print('    qs -upload                 :-> upload your pypi library')
+    print('    qs -upgrade                :-> update qs')
+    print('    qs -pyuninstaller [path]   :-> remove files that pyinstaller create')
 
 
 def check_one_page(url):
@@ -136,6 +138,22 @@ def download():
         print("No url found!")
 
 
+def weather():
+    with os.popen('curl -s wttr.in/?lang=zh', 'r') as f:
+        res = f.readlines()
+    location = res[0].split('：')[-1]
+    res = res[2:]
+    print(time.strftime('%Z %Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+    print('地区:%s' % location)
+    if arlen > 2 and sys.argv[2].endswith('detail'):
+        if sys.argv[2].startswith('-all'):
+            print(''.join(res[:-1]))
+        else:
+            print(''.join(res[5:15]))
+    else:
+        print(''.join(res[:5]))
+
+
 def mktar():
     tar_name, ls = get_tar_name()
     os.system('tar -czf %s.tar.gz %s' % (tar_name, ' '.join(ls)))
@@ -204,6 +222,8 @@ def main():
             translate()
         elif sys.argv[1] == '-time':
             print(time.strftime('%Z %Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+        elif sys.argv[1] == '-weather':
+            weather()
         elif sys.argv[1] == '-dl':
             download()
         elif sys.argv[1] == '-mktar':
@@ -216,6 +236,9 @@ def main():
             unzip()
         elif sys.argv[1] == '-upload':
             upload_pypi()
+        elif sys.argv[1] == '-upgrade':
+            if os.system('pip3 install QuickStart-Rhy --upgrade'):
+                os.system('pip install QuickStart-Rhy --upgrade')
         elif sys.argv[1] == '-pyuninstaller':
             rm_pyinstaller()
         else:
