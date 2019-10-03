@@ -7,7 +7,8 @@
 | `qs -u [url] ` | open url using default browser |
 | `qs -a [app/(file...)]` | open app or open file by app(for MacOS X) |
 | `qs -f [file...]` | open file by default app |
-| `qs -t` | translate the content in clipboard( use "yddict" ) |
+| `qs -t` | translate the content in clipboard( use "yddict") |
+| `qs -time` | view current time |
 | `qs -dl [urls/""]` | download file from url(in clipboard) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |
 | `qs -untar [path]` | extract path.tar.* |

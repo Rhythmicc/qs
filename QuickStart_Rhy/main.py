@@ -4,6 +4,7 @@ import shutil
 from requests.exceptions import RequestException
 import sys
 import os
+import time
 import pyperclip
 
 headers = {
@@ -26,7 +27,8 @@ def h():
     print('    qs -a  [app/(file...)]   :-> open app or open file by app(for Mac OS X)')
     print('    qs -f  [file...]         :-> open file by default app')
     print('    qs -dl [urls/""]         :-> download file from url(in clipboard)')
-    print('    qs -t                    :-> translate the content in clipboard(use "yddict")')
+    print('    qs -t                    :-> translate the content in clipboard')
+    print('    qs -time                 :-> view current time')
     print('    qs -mktar [path]         :-> create gzipped archive for path')
     print('    qs -untar [path]         :-> extract path.tar.*')
     print('    qs -mkzip [path]         :-> make a zip for path')
@@ -200,6 +202,8 @@ def main():
             wb.open_new_tab('http://login.cup.edu.cn')
         elif sys.argv[1] == '-t':
             translate()
+        elif sys.argv[1] == '-time':
+            print(time.strftime('%Z %Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
         elif sys.argv[1] == '-dl':
             download()
         elif sys.argv[1] == '-mktar':
@@ -218,3 +222,7 @@ def main():
             h()
     else:
         h()
+
+
+if __name__ == '__main__':
+    main()
