@@ -9,7 +9,7 @@
 | `qs -f [file...]` | open file by default app |
 | `qs -trans` | translate the content in clipboard(use "yddict") |
 | `qs -time` | view current time |
-| `qs -ftp` | start an simple ftp server |
+| `qs -ftp` | start a simple ftp server |
 | `qs -weather [-(all)detail]` | check weather (view (all)detail) |
 | `qs -dl [urls/""]` | download file from url(in clipboard) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |

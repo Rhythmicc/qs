@@ -29,6 +29,7 @@ def h():
     print('    qs -dl [urls/""]           :-> download file from url(in clipboard)')
     print('    qs -t                      :-> translate the content in clipboard')
     print('    qs -time                   :-> view current time')
+    print('    qs -ftp                    :-> start a simple ftp server')
     print('    qs -weather [-(all)detail] :-> check weather (view detail)')
     print('    qs -mktar [path]           :-> create gzipped archive for path')
     print('    qs -untar [path]           :-> extract path.tar.*')
