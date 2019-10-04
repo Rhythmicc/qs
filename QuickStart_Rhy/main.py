@@ -37,6 +37,7 @@ def h():
     print('    qs -upload                 :-> upload your pypi library')
     print('    qs -upgrade                :-> update qs')
     print('    qs -pyuninstaller [path]   :-> remove files that pyinstaller create')
+    print('NOTE: The program based on: npm, tar, zip, unzip, yddict, curl')
 
 
 def check_one_page(url):
@@ -64,11 +65,6 @@ def remove(path):
             shutil.rmtree(path)
         else:
             os.remove(path)
-
-
-def setup_dep():
-    status = os.system('npm install yddict -g')
-    return status
 
 
 def get_tar_name():
@@ -139,11 +135,15 @@ def download():
 
 
 def weather():
-    with os.popen('curl -s wttr.in/?lang=zh', 'r') as f:
+    os.system('curl -s wttr.in/?lang=zh > tmp')
+    with open('tmp', 'r', encoding='utf-8') as f:
         res = f.readlines()
+    remove('tmp')
+    if not res:
+        exit('Network error!')
     location = res[0].split('：')[-1]
     res = res[2:]
-    print(time.strftime('%Z %Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+    print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
     print('地区:%s' % location)
     if arlen > 2 and sys.argv[2].endswith('detail'):
         if sys.argv[2].startswith('-all'):
@@ -218,10 +218,10 @@ def main():
             open_file()
         elif sys.argv[1] == '-i':
             wb.open_new_tab('http://login.cup.edu.cn')
-        elif sys.argv[1] == '-t':
+        elif sys.argv[1] == '-trans':
             translate()
         elif sys.argv[1] == '-time':
-            print(time.strftime('%Z %Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+            print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
         elif sys.argv[1] == '-weather':
             weather()
         elif sys.argv[1] == '-dl':
