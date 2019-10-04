@@ -154,6 +154,14 @@ def weather():
         print(''.join(res[:5]))
 
 
+def ftp():
+    import socket
+    ip = socket.gethostbyname(socket.gethostname())
+    print('starting ftp simple server: address http://%s:8000/' % ip)
+    if os.system('python3 -m http.server'):
+        os.system('python -m http.server')
+
+
 def mktar():
     tar_name, ls = get_tar_name()
     os.system('tar -czf %s.tar.gz %s' % (tar_name, ' '.join(ls)))
@@ -221,8 +229,7 @@ def main():
         elif sys.argv[1] == '-trans':
             translate()
         elif sys.argv[1] == '-ftp':
-            if os.system('python3 -m http.server'):
-                os.system('python -m http.server')
+            ftp()
         elif sys.argv[1] == '-time':
             print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
         elif sys.argv[1] == '-weather':
