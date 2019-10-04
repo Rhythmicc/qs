@@ -220,6 +220,9 @@ def main():
             wb.open_new_tab('http://login.cup.edu.cn')
         elif sys.argv[1] == '-trans':
             translate()
+        elif sys.argv[1] == '-ftp':
+            if os.system('python3 -m http.server'):
+                os.system('python -m http.server')
         elif sys.argv[1] == '-time':
             print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
         elif sys.argv[1] == '-weather':

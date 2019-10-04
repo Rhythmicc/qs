@@ -9,6 +9,7 @@
 | `qs -f [file...]` | open file by default app |
 | `qs -trans` | translate the content in clipboard(use "yddict") |
 | `qs -time` | view current time |
+| `qs -ftp` | start an simple ftp server |
 | `qs -weather [-(all)detail]` | check weather (view (all)detail) |
 | `qs -dl [urls/""]` | download file from url(in clipboard) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |
@@ -22,7 +23,8 @@
 (By the way, if you are the one of China University Of Petroleum(Beijing), run `qs -i` to login school network)
 
 ## Some tools for Windows user to normally use qs
-- almost have installed automatically by system on Linux/MacOS X 
+- almost have installed automatically by system on Linux/MacOS X
+ 
   [curl](https://curl.haxx.se/download.html)
   
   [npm](https://nodejs.org/en/download/)
