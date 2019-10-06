@@ -1,11 +1,9 @@
 import webbrowser as wb
 import requests
-import shutil
 from requests.exceptions import RequestException
 import sys
 import os
 import time
-import pyperclip
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
@@ -27,7 +25,7 @@ def h():
     print('    qs -a  [app/(file...)]     :-> open app or open file by app(for Mac OS X)')
     print('    qs -f  [file...]           :-> open file by default app')
     print('    qs -dl [urls/""]           :-> download file from url(in clipboard)')
-    print('    qs -t                      :-> translate the content in clipboard')
+    print('    qs -trans                  :-> translate the content in clipboard')
     print('    qs -time                   :-> view current time')
     print('    qs -ftp                    :-> start a simple ftp server')
     print('    qs -weather [-(all)detail] :-> check weather (view detail)')
@@ -63,6 +61,7 @@ def formatUrl(try_url):
 def remove(path):
     if os.path.exists(path):
         if os.path.isdir(path):
+            import shutil
             shutil.rmtree(path)
         else:
             os.remove(path)
@@ -88,6 +87,12 @@ def get_tar_name():
     return tar_name, ls
 
 
+def u():
+    for url in sys.argv[2:]:
+        url = formatUrl(url)
+        wb.open_new_tab(url)
+
+
 def open_app():
     if system == 'darwin':
         os.system('open -a ' + ' '.join(sys.argv[2:]))
@@ -110,7 +115,12 @@ def open_file():
                 os.system(file)
 
 
+def init():
+    wb.open_new_tab('http://login.cup.edu.cn')
+
+
 def translate():
+    import pyperclip
     content = pyperclip.paste()
     if content:
         content.replace('\n', ' ')
@@ -119,9 +129,14 @@ def translate():
         print("No content in your clipboard!")
 
 
+def cur_time():
+    print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+
+
 def download():
     urls = sys.argv[2:]
     if not urls:
+        import pyperclip
         urls = pyperclip.paste().split()
     for url in urls:
         package = requests.get(url, headers).content
@@ -144,7 +159,7 @@ def weather():
         exit('Network error!')
     location = res[0].split('：')[-1]
     res = res[2:]
-    print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+    cur_time()
     print('地区:%s' % location)
     if arlen > 2 and sys.argv[2].endswith('detail'):
         if sys.argv[2].startswith('-all'):
@@ -200,6 +215,11 @@ def unzip():
             print("No such file or dictionary:%s" % file_name)
 
 
+def upgrade():
+    if os.system('pip3 install QuickStart-Rhy --upgrade'):
+        os.system('pip install QuickStart-Rhy --upgrade')
+
+
 def upload_pypi():
     remove('dist')
     if os.system('python3 setup.py sdist bdist_wheel'):
@@ -215,44 +235,31 @@ def rm_pyinstaller():
     remove('dist')
 
 
+cmd_config = {
+    '-u': u,
+    '-a': open_app,
+    '-f': open_file,
+    '-i': init,
+    '-trans': translate,
+    '-ftp': ftp,
+    '-time': cur_time,
+    '-weather': weather,
+    '-dl': download,
+    '-mktar': mktar,
+    '-untar': untar,
+    '-mkzip': mkzip,
+    '-unzip': unzip,
+    '-upgrade': upgrade,
+    '-upload': upload_pypi,
+    '-pyuninstaller': rm_pyinstaller
+}
+
+
 def main():
     if arlen >= 2:
-        if sys.argv[1] == '-u':
-            for url in sys.argv[2:]:
-                url = formatUrl(url)
-                wb.open_new_tab(url)
-        elif sys.argv[1] == '-a':
-            open_app()
-        elif sys.argv[1] == '-f':
-            open_file()
-        elif sys.argv[1] == '-i':
-            wb.open_new_tab('http://login.cup.edu.cn')
-        elif sys.argv[1] == '-trans':
-            translate()
-        elif sys.argv[1] == '-ftp':
-            ftp()
-        elif sys.argv[1] == '-time':
-            print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
-        elif sys.argv[1] == '-weather':
-            weather()
-        elif sys.argv[1] == '-dl':
-            download()
-        elif sys.argv[1] == '-mktar':
-            mktar()
-        elif sys.argv[1] == '-untar':
-            untar()
-        elif sys.argv[1] == '-mkzip':
-            mkzip()
-        elif sys.argv[1] == '-unzip':
-            unzip()
-        elif sys.argv[1] == '-upload':
-            upload_pypi()
-        elif sys.argv[1] == '-upgrade':
-            if os.system('pip3 install QuickStart-Rhy --upgrade'):
-                os.system('pip install QuickStart-Rhy --upgrade')
-        elif sys.argv[1] == '-pyuninstaller':
-            rm_pyinstaller()
-        else:
+        try:
+            cmd_config[sys.argv[1]]()
+        except KeyError:
             h()
     else:
         h()
