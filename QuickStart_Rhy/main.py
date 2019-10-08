@@ -101,18 +101,13 @@ def open_app():
 
 
 def open_file():
-    if dir_char == '/':
-        if system == 'darwin':
-            os.system('open ' + ' '.join(sys.argv[2:]))
-        else:
-            for file in sys.argv[2:]:
-                if os.path.exists(file):
-                    path = os.path.abspath(file)
-                    wb.open('file://%s' % path)
+    if system == 'darwin':
+        os.system('open ' + ' '.join(sys.argv[2:]))
     else:
         for file in sys.argv[2:]:
             if os.path.exists(file):
-                os.system(file)
+                path = os.path.abspath(file)
+                wb.open('file://%s' % path)
 
 
 def init():
