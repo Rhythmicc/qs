@@ -125,7 +125,18 @@ def translate():
 
 
 def cur_time():
-    print(time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())))
+    week = {
+        'Monday': '周一',
+        'Tuesday': '周二',
+        'Wednesday': '周三',
+        'Thursday': '周四',
+        'Friday': '`周五',
+        'Saturday': '周六',
+        'Sunday': '周日'
+    }
+    tm = time.strftime('%Y年%m月%d日 %A %H:%M:%S', time.localtime(time.time())).split()
+    tm[1] = week[tm[1]]
+    print(' '.join(tm))
 
 
 def download():
