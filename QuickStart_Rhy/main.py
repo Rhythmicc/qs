@@ -134,7 +134,9 @@ def cur_time():
         'Saturday': '周六',
         'Sunday': '周日'
     }
-    tm = time.strftime('%Y年%m月%d日 %A %H:%M:%S', time.localtime(time.time())).split()
+    tm = time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())).split()
+    ls = tm[0].split('-')
+    tm[0] = ls[0]+'年'+ls[1]+'月'+ls[2]+'日'
     tm[1] = week[tm[1]]
     print(' '.join(tm))
 
