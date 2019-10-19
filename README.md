@@ -24,8 +24,6 @@
 
 ## Some tools for Windows user to normally use qs
 - almost have installed automatically by system on Linux/MacOS X
- 
-  [curl](https://curl.haxx.se/download.html)
   
   [npm](https://nodejs.org/en/download/)
   

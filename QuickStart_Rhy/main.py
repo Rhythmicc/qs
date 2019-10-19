@@ -111,7 +111,18 @@ def open_file():
 
 
 def init():
-    wb.open_new_tab('http://login.cup.edu.cn')
+    try:
+        data = {
+            'action': 'login',
+            'ac_id': '1',
+            'username': sys.argv[2],
+            'password': sys.argv[3],
+            'save_me': '1'
+        }
+    except IndexError:
+        exit('usage: qs -i username password')
+    else:
+        requests.post('http://login.cup.edu.cn/srun_portal_pc.php', data=data, headers=headers)
 
 
 def translate():
@@ -136,7 +147,7 @@ def cur_time():
     }
     tm = time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())).split()
     ls = tm[0].split('-')
-    tm[0] = ls[0]+'年'+ls[1]+'月'+ls[2]+'日'
+    tm[0] = ls[0] + '年' + ls[1] + '月' + ls[2] + '日'
     tm[1] = week[tm[1]]
     print(' '.join(tm))
 
@@ -159,10 +170,7 @@ def download():
 
 
 def weather():
-    os.system('curl -s wttr.in/?lang=zh > tmp')
-    with open('tmp', 'r', encoding='utf-8') as f:
-        res = f.readlines()
-    remove('tmp')
+    res = requests.get('https://wttr.in/?lang=zh', headers).text.split('\n')
     if not res:
         exit('Network error!')
     location = res[0].split('：')[-1]
@@ -171,11 +179,11 @@ def weather():
     print('地区:%s' % location)
     if arlen > 2 and sys.argv[2].endswith('detail'):
         if sys.argv[2].startswith('-all'):
-            print(''.join(res[:-1]))
+            print('\n'.join(res[:-1]))
         else:
-            print(''.join(res[5:15]))
+            print('\n'.join(res[5:15]))
     else:
-        print(''.join(res[:5]))
+        print('\n'.join(res[:5]))
 
 
 def ftp():
