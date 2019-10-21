@@ -112,6 +112,7 @@ def open_file():
 
 def init():
     root = os.path.expanduser('~') + dir_char
+    flag = False
     try:
         with open(root+'.wifirc', 'r') as f:
             user, pwd = f.read().split()
@@ -121,6 +122,7 @@ def init():
         pwd = getpass.getpass('密码:')
         with open(root+'.wifirc', 'w') as f:
             f.write("%s %s" % (user, pwd))
+        flag = True
     data = {
         'action': 'login',
         'ac_id': '1',
@@ -134,9 +136,12 @@ def init():
     else:
         exit('未接入CUP校园网')
     if '登录成功' not in html:
-        print('登录失败')
+        print('登录失败, 可以进行以下操作:\n\t* 尝试网络缴费后登录\n\t* 重新尝试登录')
+        remove(root+'.wifirc')
     else:
         print('登录成功')
+        if flag:
+            print('(脚本将默认使用当前账户密码登录, 如需更改请编辑或删除"%s"文件)' % (root + '.wifirc'))
 
 
 def translate():
