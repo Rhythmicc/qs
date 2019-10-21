@@ -112,17 +112,30 @@ def open_file():
 
 def init():
     try:
-        data = {
-            'action': 'login',
-            'ac_id': '1',
-            'username': sys.argv[2],
-            'password': sys.argv[3],
-            'save_me': '1'
-        }
-    except IndexError:
-        exit('usage: qs -i username password')
+        with open(dir_char+'.wifirc', 'r') as f:
+            user, pwd = f.read().split()
+    except:
+        import getpass
+        user = input('用户:')
+        pwd = getpass.getpass('密码:')
+        with open(dir_char+'.wifirc', 'w') as f:
+            f.write("%s %s" % (user, pwd))
+    data = {
+        'action': 'login',
+        'ac_id': '1',
+        'username': user,
+        'password': pwd,
+        'save_me': '1'
+    }
+    html = requests.post('http://login.cup.edu.cn/srun_portal_pc.php', data=data, headers=headers)
+    if html:
+        html = html.text
     else:
-        requests.post('http://login.cup.edu.cn/srun_portal_pc.php', data=data, headers=headers)
+        exit('未接入CUP校园网')
+    if '登录成功' not in html:
+        print('登录失败')
+    else:
+        print('登录成功')
 
 
 def translate():
@@ -170,9 +183,15 @@ def download():
 
 
 def weather():
-    res = requests.get('https://wttr.in/?lang=zh', headers).text.split('\n')
-    if not res:
-        exit('Network error!')
+    if dir_char == '/':
+        res = requests.get('https://wttr.in/?lang=zh', headers).text.split('\n')
+        if not res:
+            exit('Network error!')
+    else:
+        os.system('curl -s wttr.in/?lang=zh > tmp')
+        with open('tmp', 'r', encoding='utf-8') as f:
+            res = f.readlines()
+        remove('tmp')
     location = res[0].split('：')[-1]
     res = res[2:]
     cur_time()
