@@ -111,14 +111,15 @@ def open_file():
 
 
 def init():
+    root = os.path.expanduser('~') + dir_char
     try:
-        with open(dir_char+'.wifirc', 'r') as f:
+        with open(root+'.wifirc', 'r') as f:
             user, pwd = f.read().split()
     except:
         import getpass
         user = input('用户:')
         pwd = getpass.getpass('密码:')
-        with open(dir_char+'.wifirc', 'w') as f:
+        with open(root+'.wifirc', 'w') as f:
             f.write("%s %s" % (user, pwd))
     data = {
         'action': 'login',
