@@ -176,28 +176,29 @@ def download():
     if not urls:
         import pyperclip
         urls = pyperclip.paste().split()
-    for url in urls:
-        package = requests.get(url, headers).content
-        if package:
-            file_name = url.split('/')[-1]
-            with open(file_name, 'wb') as f:
-                f.write(package)
-        else:
-            print('Download "%s" failed!' % url)
+    if urls:
+        for url in urls:
+            package = requests.get(url, headers).content
+            if package:
+                file_name = url.split('/')[-1]
+                with open(file_name, 'wb') as f:
+                    f.write(package)
+            else:
+                print('Download "%s" failed!' % url)
     else:
         print("No url found!")
 
 
 def weather():
-    if dir_char == '/':
-        res = requests.get('https://wttr.in/?lang=zh', headers).text.split('\n')
-        if not res:
-            exit('Network error!')
-    else:
-        os.system('curl -s wttr.in/?lang=zh > tmp')
-        with open('tmp', 'r', encoding='utf-8') as f:
-            res = f.readlines()
-        remove('tmp')
+    import pycurl
+    from io import BytesIO
+    buf = BytesIO()
+    c = pycurl.Curl()
+    c.setopt(c.URL, 'https://wttr.in/?lang=zh')
+    c.setopt(c.WRITEDATA, buf)
+    c.perform()
+    c.close()
+    res = buf.getvalue().decode('utf-8').split('\n')
     location = res[0].split('：')[-1]
     res = res[2:]
     cur_time()
@@ -213,10 +214,14 @@ def weather():
 
 def ftp():
     import socket
-    ip = socket.gethostbyname(socket.gethostname())
+    ip = socket.gethostbyname_ex(socket.gethostname())[-1][0]
     print('starting ftp simple server: address http://%s:8000/' % ip)
-    if os.system('python3 -m http.server'):
-        os.system('python -m http.server')
+    import http.server
+    Handler = http.server.SimpleHTTPRequestHandler
+    import socketserver
+    host = (ip, 8000)
+    with socketserver.TCPServer(host, Handler) as httpd:
+        httpd.serve_forever()
 
 
 def mktar():
