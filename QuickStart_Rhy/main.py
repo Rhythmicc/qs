@@ -3,7 +3,6 @@ import requests
 from requests.exceptions import RequestException
 import sys
 import os
-import time
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
@@ -164,6 +163,7 @@ def cur_time():
         'Saturday': '周六',
         'Sunday': '周日'
     }
+    import time
     tm = time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())).split()
     ls = tm[0].split('-')
     tm[0] = ls[0] + '年' + ls[1] + '月' + ls[2] + '日'
@@ -190,15 +190,19 @@ def download():
 
 
 def weather():
-    import pycurl
-    from io import BytesIO
-    buf = BytesIO()
-    c = pycurl.Curl()
-    c.setopt(c.URL, 'https://wttr.in/?lang=zh')
-    c.setopt(c.WRITEDATA, buf)
-    c.perform()
-    c.close()
-    res = buf.getvalue().decode('utf-8').split('\n')
+    if dir_char == '\\':
+        import pycurl
+        from io import BytesIO
+        buf = BytesIO()
+        c = pycurl.Curl()
+        c.setopt(c.URL, 'https://wttr.in/?lang=zh')
+        c.setopt(c.WRITEDATA, buf)
+        c.perform()
+        c.close()
+        res = buf.getvalue().decode('utf-8').split('\n')
+    else:
+        res = requests.get('https://wttr.in/?lang=zh', headers).text
+        res = res.split('\n')
     location = res[0].split('：')[-1]
     res = res[2:]
     cur_time()
