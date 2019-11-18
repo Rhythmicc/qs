@@ -24,7 +24,6 @@
 
 ## Some tools for Windows user to normally use qs
 - almost have installed automatically by system on Linux/MacOS X
-- You need run `pip install pycurl` first.
   
   [npm](https://nodejs.org/en/download/)
   

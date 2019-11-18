@@ -191,35 +191,33 @@ def download():
 
 def weather():
     def request_data(url):
-        if dir_char == '\\':
-            try:
-                r = os.popen('curl -s ' + url)
-                txt = r.read()
-                r.close()
-            except:
-                exit("Maybe you need setup curl first!")
-            else:
-                return txt.split('\n')
+        ct = requests.get(url, headers).text.split('\n')
+        if dir_char == '/':
+            return ct
         else:
-            return requests.get(url, headers).text.split('\n')
+            import re
+            for line in range(len(ct)):
+                ct[line] = re.sub('\x1b.*?m', '', ct[line])
+                ct[line] = ct[line].replace('⢀')
+            return ct
     try:
         loc = sys.argv[2]
     except IndexError:
         loc = ''
     if loc:
-        simple = request_data('https://wttr.in/'+loc)
-        table = request_data('https://v2.wttr.in/'+loc)
+        simple = request_data('https://wttr.in/' + loc)
+        table = request_data('https://v2.wttr.in/' + loc)
     else:
         simple = request_data('https://wttr.in/?lang=zh')
         table = request_data('https://v2.wttr.in/')
-        print('地区：'+simple[0].split('：')[-1])
+        print('地区：' + simple[0].split('：')[-1])
     simple = simple[2:7]
     print('\n'.join(simple))
     print(table[3][:-1])
     bottom_line = 7
     while '╂' not in table[bottom_line]:
         bottom_line += 1
-    for i in table[7:bottom_line+2]:
+    for i in table[7:bottom_line + 2]:
         print(i[:-1])
     print('└────────────────────────────────────────────────────────────────────────')
     print('\n'.join(table[-3 if not loc else -4:]))
