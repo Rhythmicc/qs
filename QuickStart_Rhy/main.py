@@ -27,7 +27,7 @@ def h():
     print('    qs -trans                  :-> translate the content in clipboard')
     print('    qs -time                   :-> view current time')
     print('    qs -ftp                    :-> start a simple ftp server')
-    print('    qs -weather                :-> check weather')
+    print('    qs -weather [address]      :-> check weather (of address)')
     print('    qs -mktar [path]           :-> create gzipped archive for path')
     print('    qs -untar [path]           :-> extract path.tar.*')
     print('    qs -mkzip [path]           :-> make a zip for path')
@@ -204,9 +204,17 @@ def weather():
         else:
             return requests.get(url, headers).text.split('\n')
 
-    simple = request_data('https://wttr.in/?lang=zh')
-    table = request_data('https://v2.wttr.in/')
-    print('地区：'+simple[0].split('：')[-1])
+    try:
+        loc = sys.argv[2]
+    except IndexError:
+        loc = ''
+    if loc:
+        simple = request_data('https://wttr.in/'+loc)
+        table = request_data('https://v2.wttr.in/'+loc)
+    else:
+        simple = request_data('https://wttr.in/?lang=zh')
+        table = request_data('https://v2.wttr.in/')
+        print('地区：'+simple[0].split('：')[-1])
     simple = simple[2:7]
     print('\n'.join(simple))
     print(table[3][:-1])
@@ -215,8 +223,8 @@ def weather():
         bottom_line += 1
     for i in table[7:bottom_line+2]:
         print(i[:-1])
-    print(table[-6][:-1])
-    print('\n'.join(table[-3:]))
+    print('└────────────────────────────────────────────────────────────────────────')
+    print('\n'.join(table[-3 if not loc else -4:]))
 
 
 def ftp():
