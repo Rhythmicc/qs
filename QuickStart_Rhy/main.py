@@ -191,14 +191,15 @@ def download():
 
 def weather():
     def request_data(url):
-        ct = requests.get(url, headers).text.split('\n')
+        ct = requests.get(url, headers)
+        ct.encoding = 'utf-8'
+        ct = ct.text.split('\n')
         if dir_char == '/':
             return ct
         else:
             import re
             for line in range(len(ct)):
                 ct[line] = re.sub('\x1b.*?m', '', ct[line])
-                ct[line] = ct[line].replace('⢀')
             return ct
     try:
         loc = sys.argv[2]
