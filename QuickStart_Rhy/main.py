@@ -192,18 +192,16 @@ def download():
 def weather():
     def request_data(url):
         if dir_char == '\\':
-            import pycurl
-            from io import BytesIO
-            buf = BytesIO()
-            c = pycurl.Curl()
-            c.setopt(c.URL, url)
-            c.setopt(c.WRITEDATA, buf)
-            c.perform()
-            c.close()
-            return buf.getvalue().decode('utf-8').split('\n')
+            try:
+                r = os.popen('curl -s ' + url)
+                txt = r.read()
+                r.close()
+            except:
+                exit("Maybe you need setup curl first!")
+            else:
+                return txt.split('\n')
         else:
             return requests.get(url, headers).text.split('\n')
-
     try:
         loc = sys.argv[2]
     except IndexError:
