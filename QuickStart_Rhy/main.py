@@ -27,7 +27,7 @@ def h():
     print('    qs -trans                  :-> translate the content in clipboard')
     print('    qs -time                   :-> view current time')
     print('    qs -ftp                    :-> start a simple ftp server')
-    print('    qs -weather [-(all)detail] :-> check weather (view detail)')
+    print('    qs -weather                :-> check weather')
     print('    qs -mktar [path]           :-> create gzipped archive for path')
     print('    qs -untar [path]           :-> extract path.tar.*')
     print('    qs -mkzip [path]           :-> make a zip for path')
@@ -113,13 +113,13 @@ def init():
     root = os.path.expanduser('~') + dir_char
     flag = False
     try:
-        with open(root+'.wifirc', 'r') as f:
+        with open(root + '.wifirc', 'r') as f:
             user, pwd = f.read().split()
     except:
         import getpass
         user = input('用户:')
         pwd = getpass.getpass('密码:')
-        with open(root+'.wifirc', 'w') as f:
+        with open(root + '.wifirc', 'w') as f:
             f.write("%s %s" % (user, pwd))
         flag = True
     data = {
@@ -136,7 +136,7 @@ def init():
         exit('未接入CUP校园网')
     if '登录成功' not in html:
         print('登录失败, 可以进行以下操作:\n\t* 尝试网络缴费后登录\n\t* 重新尝试登录')
-        remove(root+'.wifirc')
+        remove(root + '.wifirc')
     else:
         print('登录成功')
         if flag:
@@ -190,30 +190,33 @@ def download():
 
 
 def weather():
-    if dir_char == '\\':
-        import pycurl
-        from io import BytesIO
-        buf = BytesIO()
-        c = pycurl.Curl()
-        c.setopt(c.URL, 'https://wttr.in/?lang=zh')
-        c.setopt(c.WRITEDATA, buf)
-        c.perform()
-        c.close()
-        res = buf.getvalue().decode('utf-8').split('\n')
-    else:
-        res = requests.get('https://wttr.in/?lang=zh', headers).text
-        res = res.split('\n')
-    location = res[0].split('：')[-1]
-    res = res[2:]
-    cur_time()
-    print('地区:%s' % location)
-    if arlen > 2 and sys.argv[2].endswith('detail'):
-        if sys.argv[2].startswith('-all'):
-            print('\n'.join(res[:-1]))
+    def request_data(url):
+        if dir_char == '\\':
+            import pycurl
+            from io import BytesIO
+            buf = BytesIO()
+            c = pycurl.Curl()
+            c.setopt(c.URL, url)
+            c.setopt(c.WRITEDATA, buf)
+            c.perform()
+            c.close()
+            return buf.getvalue().decode('utf-8').split('\n')
         else:
-            print('\n'.join(res[5:15]))
-    else:
-        print('\n'.join(res[:5]))
+            return requests.get(url, headers).text.split('\n')
+
+    simple = request_data('https://wttr.in/?lang=zh')
+    table = request_data('https://v2.wttr.in/')
+    print('地区：'+simple[0].split('：')[-1])
+    simple = simple[2:7]
+    print('\n'.join(simple))
+    print(table[3][:-1])
+    bottom_line = 7
+    while '╂' not in table[bottom_line]:
+        bottom_line += 1
+    for i in table[7:bottom_line+2]:
+        print(i[:-1])
+    print(table[-6][:-1])
+    print('\n'.join(table[-3:]))
 
 
 def ftp():
