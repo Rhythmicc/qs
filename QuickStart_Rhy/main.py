@@ -27,6 +27,7 @@ def h():
     print('    qs -trans                  :-> translate the content in clipboard')
     print('    qs -time                   :-> view current time')
     print('    qs -ftp                    :-> start a simple ftp server')
+    print('    qs -top                    :-> cpu and memory monitor')
     print('    qs -weather [address]      :-> check weather (of address)')
     print('    qs -mktar [path]           :-> create gzipped archive for path')
     print('    qs -untar [path]           :-> extract path.tar.*')
@@ -35,7 +36,7 @@ def h():
     print('    qs -upload                 :-> upload your pypi library')
     print('    qs -upgrade                :-> update qs')
     print('    qs -pyuninstaller [path]   :-> remove files that pyinstaller create')
-    print('NOTE: The program based on: npm, tar, zip, unzip, yddict, curl')
+    print('NOTE: The program based on: npm, tar, zip, unzip, yddict')
 
 
 def check_one_page(url):
@@ -236,6 +237,50 @@ def ftp():
         httpd.serve_forever()
 
 
+def top():
+    import psutil
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import signal
+
+    def deal_ctrl_c(signum, frame):
+        exit(0)
+
+    def close(event):
+        if event.key in 'qQ':
+            exit(0)
+
+    signal.signal(signal.SIGINT, deal_ctrl_c)
+    cpu_x = np.arange(1, psutil.cpu_count() + 1)
+    mem_x = np.arange(1, 11)
+    mem_y = np.array([0] * 10)
+    mem_p = 9
+    mem_lim = psutil.virtual_memory().total / 1024 ** 3
+    fig = plt.figure(figsize=(6, 4))
+    fig.canvas.mpl_connect('key_press_event', close)
+    while True:
+        plt.clf()
+        cpu_graph = plt.subplot(2, 1, 1)
+        cpu_graph.set_title('cpu stats')
+        cpu_graph.set_ylabel('percent')
+        cpu_graph.set_ylim((0, 100))
+        cpu_per = psutil.cpu_percent(percpu=True)
+        cpu_graph.set_xticks([])
+        plt.bar(cpu_x, cpu_per)
+        plt.grid(axis="y", linestyle='-.')
+        plt.tight_layout()
+        mem_graph = plt.subplot(2, 1, 2)
+        mem_graph.set_title('memory stats')
+        mem_graph.set_ylabel('G')
+        mem_graph.set_ylim((0, mem_lim))
+        mem_graph.set_xticks([])
+        mem_cur = psutil.virtual_memory().used / 1024 ** 3
+        mem_y[mem_p] = mem_cur
+        mem_p = mem_p - 1 if mem_p else 9
+        plt.plot(mem_x, mem_y)
+        plt.pause(1)
+
+
 def mktar():
     tar_name, ls = get_tar_name()
     os.system('tar -czf %s.tar.gz %s' % (tar_name, ' '.join(ls)))
@@ -300,6 +345,7 @@ cmd_config = {
     '-i': init,
     '-trans': translate,
     '-ftp': ftp,
+    '-top': top,
     '-time': cur_time,
     '-weather': weather,
     '-dl': download,
