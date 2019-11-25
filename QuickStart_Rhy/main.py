@@ -24,7 +24,7 @@ def h():
     print('    qs -a  [app/(file...)]     :-> open app or open file by app(for Mac OS X)')
     print('    qs -f  [file...]           :-> open file by default app')
     print('    qs -dl [urls/""]           :-> download file from url(in clipboard)')
-    print('    qs -trans                  :-> translate the content in clipboard')
+    print('    qs -trans [words]          :-> translate the content of words or in clipboard')
     print('    qs -time                   :-> view current time')
     print('    qs -ftp                    :-> start a simple ftp server')
     print('    qs -top                    :-> cpu and memory monitor')

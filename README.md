@@ -7,7 +7,7 @@
 | `qs -u [url] ` | open url using default browser |
 | `qs -a [app/(file...)]` | open app or open file by app(for MacOS X) |
 | `qs -f [file...]` | open file by default app |
-| `qs -trans` | translate the content in clipboard(use "yddict") |
+| `qs -trans [words]` | translate the content of `[words]` or the content in clipboard |
 | `qs -time` | view current time |
 | `qs -ftp` | start a simple ftp server |
 | `qs -top` | cpu and memory monitor |
