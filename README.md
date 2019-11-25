@@ -26,12 +26,8 @@
 ## Some tools for Windows user to normally use qs
 - almost have installed automatically by system on Linux/MacOS X
   
-  [npm](https://nodejs.org/en/download/)
-  
   [tar](http://gnuwin32.sourceforge.net/packages/gtar.htm)
   
   [zip](http://gnuwin32.sourceforge.net/packages/zip.htm)
   
   [unzip](http://gnuwin32.sourceforge.net/packages/unzip.htm)
-
-  yddict: `npm install yddict -g`
