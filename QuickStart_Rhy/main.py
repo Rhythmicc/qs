@@ -18,6 +18,18 @@ base_dir += dir_char
 arlen = len(sys.argv)
 
 
+def get_ip():
+    import socket
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        return ip
+    except Exception:
+        s.close()
+        return socket.gethostbyname(socket.gethostname())
+
+
 def h():
     print('help:')
     print('    qs -u  [url]               :-> open url using default browser')
@@ -36,7 +48,7 @@ def h():
     print('    qs -upload                 :-> upload your pypi library')
     print('    qs -upgrade                :-> update qs')
     print('    qs -pyuninstaller [path]   :-> remove files that pyinstaller create')
-    print('NOTE: The program based on: npm, tar, zip, unzip, yddict')
+    print('NOTE: The program based on: tar, zip, unzip')
 
 
 def check_one_page(url):
@@ -126,16 +138,21 @@ def init():
     data = {
         'action': 'login',
         'ac_id': '1',
+        #'user_ip': get_ip(),
+        'nas_ip': '',
+        'user_mac': '',
+        'url': '',
         'username': user,
         'password': pwd,
-        'save_me': '1'
+        'remember': '1'
     }
-    html = requests.post('http://login.cup.edu.cn/srun_portal_pc.php', data=data, headers=headers)
+
+    html = requests.post('http://login.cup.edu.cn/cgi-bin/rad_user_info', data=data, headers=headers)
     if html:
         html = html.text
     else:
         exit('未接入CUP校园网')
-    if '登录成功' not in html:
+    if 'error' in html:
         print('登录失败, 可以进行以下操作:\n\t* 尝试网络缴费后登录\n\t* 重新尝试登录')
         remove(root + '.wifirc')
     else:
@@ -326,8 +343,9 @@ def weather():
 
 
 def ftp():
-    import socket
-    ip = socket.gethostbyname_ex(socket.gethostname())[-1][0]
+    ip = get_ip()
+    if not ip:
+        exit('get ip failed!')
     print('starting ftp simple server: address http://%s:8000/' % ip)
     import http.server
     Handler = http.server.SimpleHTTPRequestHandler
