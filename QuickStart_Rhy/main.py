@@ -389,7 +389,7 @@ def m3u8_dl(url):
             print("Download completed!")
             merge_file(download_path, self.name)
             shutil.rmtree(download_path)
-    M3U8DL(url, url.split('.')[-2], 16).download()
+    M3U8DL(url, url.split('.')[-2].split('/')[-1], 16).download()
 
 
 def download():
