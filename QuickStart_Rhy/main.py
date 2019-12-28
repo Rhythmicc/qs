@@ -325,14 +325,14 @@ def m3u8_dl(url):
                 rd = "|/-\\"
                 pos = 0
                 while True:
-                    try:
-                        cur = len(os.listdir(self.dl_path)) / self.num * 100
-                        bar = '#' * int(cur / 2) + ' ' * (50 - int(cur / 2))
-                        print("[%s][%s][%.2f%%" % (rd[pos % 4], bar, cur), end='\r')
-                        time.sleep(0.5)
-                        pos += 1
-                    except:
+                    ll = len(os.listdir(self.dl_path))
+                    cur = ll / self.num * 100
+                    bar = '#' * int(cur / 2) + ' ' * (50 - int(cur / 2))
+                    print("[%s][%s][%.2f%%" % (rd[pos % 4], bar, cur), end='\r')
+                    if ll == self.num:
                         break
+                    time.sleep(0.5)
+                    pos += 1
 
         class _dl(threading.Thread):
             from Crypto.Cipher import AES
