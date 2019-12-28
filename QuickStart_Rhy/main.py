@@ -314,6 +314,26 @@ def m3u8_dl(url):
                     f.write(ff.read())
 
     class M3U8DL:
+        class _monitor(threading.Thread):
+            def __init__(self, num, dl_path):
+                threading.Thread.__init__(self)
+                self.num = num
+                self.dl_path = dl_path
+
+            def run(self):
+                import time
+                rd = "|/-\\"
+                pos = 0
+                while True:
+                    try:
+                        cur = len(os.listdir(self.dl_path)) / self.num * 100
+                        bar = '#' * int(cur / 2) + ' ' * (50 - int(cur / 2))
+                        print("[%s][%s][%.2f%%" % (rd[pos % 4], bar, cur), end='\r')
+                        time.sleep(0.5)
+                        pos += 1
+                    except:
+                        break
+
         class _dl(threading.Thread):
             from Crypto.Cipher import AES
 
@@ -380,7 +400,8 @@ def m3u8_dl(url):
                     tmp.append((rt + file_line[index + 1], file_line[index + 1].rsplit("/", 1)[-1], 1))
             file_line = tmp
             mutex = threading.Lock()
-            tls = []
+            tls = [self._monitor(len(file_line), download_path)]
+            tls[0].start()
             for i in range(self.th_num):
                 tls.append(self._dl(file_line, mutex, download_path))
                 tls[-1].start()
