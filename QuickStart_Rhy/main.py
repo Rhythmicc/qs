@@ -498,6 +498,7 @@ def top():
 
     signal.signal(signal.SIGINT, deal_ctrl_c)
     cpu_x = np.arange(1, psutil.cpu_count() + 1)
+    len_x = len(cpu_x)
     mem_x = np.arange(1, 11)
     mem_y = np.array([0] * 10)
     mem_p = 9
@@ -506,21 +507,21 @@ def top():
     fig.canvas.mpl_connect('key_press_event', close)
     while True:
         plt.clf()
+        cpu_per = psutil.cpu_percent(percpu=True)
+        mem_cur = psutil.virtual_memory().used / 1024 ** 3
         cpu_graph = plt.subplot(2, 1, 1)
-        cpu_graph.set_title('cpu stats')
+        cpu_graph.set_title('cpu: %.2f%%' % (sum(cpu_per) / len_x))
         cpu_graph.set_ylabel('percent')
         cpu_graph.set_ylim((0, 100))
-        cpu_per = psutil.cpu_percent(percpu=True)
         cpu_graph.set_xticks([])
         plt.bar(cpu_x, cpu_per)
         plt.grid(axis="y", linestyle='-.')
         plt.tight_layout()
         mem_graph = plt.subplot(2, 1, 2)
-        mem_graph.set_title('memory stats')
+        mem_graph.set_title('memory: %.2fG' % mem_cur)
         mem_graph.set_ylabel('G')
         mem_graph.set_ylim((0, mem_lim))
         mem_graph.set_xticks([])
-        mem_cur = psutil.virtual_memory().used / 1024 ** 3
         mem_y[mem_p] = mem_cur
         mem_p = mem_p - 1 if mem_p else 9
         plt.plot(mem_x, mem_y)
