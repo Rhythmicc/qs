@@ -114,7 +114,7 @@ def open_app():
 
 def open_file():
     if system == 'darwin':
-        os.system('open ' + ' '.join(sys.argv[2:]))
+        os.system('open "' + '" "'.join(sys.argv[2:])+'"')
     else:
         for file in sys.argv[2:]:
             if os.path.exists(file):
@@ -297,20 +297,12 @@ def m3u8_dl(url):
     import shutil
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    def merge_file(path, name):
-        if not os.path.exists(path):
-            return
-        ls = os.listdir(path)
+    def merge_file(path, ts_ls, name):
         if not path.endswith(dir_char):
             path += dir_char
-        tsls = []
-        for i in ls:
-            if i.endswith('.ts'):
-                tsls.append(path + i)
-        tsls.sort()
         with open(name + '.ts', 'wb') as f:
-            for i in tsls:
-                with open(i, 'rb') as ff:
+            for ts in ts_ls:
+                with open(path + ts, 'rb') as ff:
                     f.write(ff.read())
 
     class M3U8DL:
@@ -398,7 +390,7 @@ def m3u8_dl(url):
                     tmp.append((rt, line, 0))
                 if "EXTINF" in line:
                     tmp.append((rt + file_line[index + 1], file_line[index + 1].rsplit("/", 1)[-1], 1))
-            file_line = tmp
+            file_line = tmp[::-1]
             mutex = threading.Lock()
             tls = [self._monitor(len(file_line), download_path)]
             tls[0].start()
@@ -408,7 +400,7 @@ def m3u8_dl(url):
             for i in tls:
                 i.join()
             print("Download completed!")
-            merge_file(download_path, self.name)
+            merge_file(download_path, tmp, self.name)
             shutil.rmtree(download_path)
     M3U8DL(url, url.split('.')[-2].split('/')[-1], 16).download()
 
@@ -420,7 +412,7 @@ def download():
         urls = pyperclip.paste().split()
     if urls:
         for url in urls:
-            if url.endswith('m3u8'):
+            if url.endswith('.m3u8'):
                 m3u8_dl(url)
             else:
                 package = requests.get(url, headers).content
