@@ -3,6 +3,13 @@ import requests
 from requests.exceptions import RequestException
 import sys
 import os
+import signal
+
+
+def deal_ctrl_c(signum, frame):
+    if signum or frame or True:
+        exit(0)
+
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
@@ -142,38 +149,17 @@ def translate():
     import pyperclip
     import execjs
     import re
-    JS_CODE = """
-function a(r, o) {
-    for (var t = 0; t < o.length - 2; t += 3) {
-        var a = o.charAt(t + 2);
-        a = a >= "a" ? a.charCodeAt(0) - 87 : Number(a),
-        a = "+" === o.charAt(t + 1) ? r >>> a: r << a,
-        r = "+" === o.charAt(t) ? r + a & 4294967295 : r ^ a
-    }
-    return r
-}
-var C = null;
-var token = function(r, _gtk) {
-    var o = r.length;
-    o > 30 && (r = "" + r.substr(0, 10) + r.substr(Math.floor(o / 2) - 5, 10) + r.substring(r.length, r.length - 10));
-    var t = void 0,
-    t = null !== C ? C: (C = _gtk || "") || "";
-    for (var e = t.split("."), h = Number(e[0]) || 0, i = Number(e[1]) || 0, d = [], f = 0, g = 0; g < r.length; g++) {
-        var m = r.charCodeAt(g);
-        128 > m ? d[f++] = m: (2048 > m ? d[f++] = m >> 6 | 192 : (55296 === (64512 & m) && g + 1 < r.length && 56320 === (64512 & r.charCodeAt(g + 1)) ? (m = 65536 + ((1023 & m) << 10) + (1023 & r.charCodeAt(++g)), d[f++] = m >> 18 | 240, d[f++] = m >> 12 & 63 | 128) : d[f++] = m >> 12 | 224, d[f++] = m >> 6 & 63 | 128), d[f++] = 63 & m | 128)
-    }
-    for (var S = h,
-    u = "+-a^+6",
-    l = "+-3^+b+-f",
-    s = 0; s < d.length; s++) S += d[s],
-    S = a(S, u);
-    return S = a(S, l),
-    S ^= i,
-    0 > S && (S = (2147483647 & S) + 2147483648),
-    S %= 1e6,
-    S.toString() + "." + (S ^ h)
-}
-"""
+    JS_CODE = """function a(r, o) { for (var t = 0; t < o.length - 2; t += 3) { var a = o.charAt(t + 2); a = a >= "a" 
+    ? a.charCodeAt(0) - 87 : Number(a), a = "+" === o.charAt(t + 1) ? r >>> a: r << a, r = "+" === o.charAt(t) ? r + 
+    a & 4294967295 : r ^ a } return r } var C = null; var token = function(r, _gtk) { var o = r.length; o > 30 && (r 
+    = "" + r.substr(0, 10) + r.substr(Math.floor(o / 2) - 5, 10) + r.substring(r.length, r.length - 10)); var t = 
+    void 0, t = null !== C ? C: (C = _gtk || "") || ""; for (var e = t.split("."), h = Number(e[0]) || 0, i = Number(
+    e[1]) || 0, d = [], f = 0, g = 0; g < r.length; g++) { var m = r.charCodeAt(g); 128 > m ? d[f++] = m: (2048 > m ? 
+    d[f++] = m >> 6 | 192 : (55296 === (64512 & m) && g + 1 < r.length && 56320 === (64512 & r.charCodeAt(g + 1)) ? (
+    m = 65536 + ((1023 & m) << 10) + (1023 & r.charCodeAt(++g)), d[f++] = m >> 18 | 240, d[f++] = m >> 12 & 63 | 128) 
+    : d[f++] = m >> 12 | 224, d[f++] = m >> 6 & 63 | 128), d[f++] = 63 & m | 128) } for (var S = h, u = "+-a^+6", 
+    l = "+-3^+b+-f", s = 0; s < d.length; s++) S += d[s], S = a(S, u); return S = a(S, l), S ^= i, 0 > S && (S = (
+    2147483647 & S) + 2147483648), S %= 1e6, S.toString() + "." + (S ^ h) } """
 
     class Dict:
         def __init__(self):
@@ -447,6 +433,7 @@ def ftp():
     import socketserver
     host = (ip, 8000)
     with socketserver.TCPServer(host, Handler) as httpd:
+        signal.signal(signal.SIGINT, deal_ctrl_c)
         httpd.serve_forever()
 
 
@@ -454,10 +441,6 @@ def top():
     import psutil
     import matplotlib.pyplot as plt
     import numpy as np
-    import signal
-
-    def deal_ctrl_c(signum, frame):
-        exit(0)
 
     def close(event):
         if event.key in 'qQ':
