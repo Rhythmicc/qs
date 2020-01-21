@@ -10,8 +10,10 @@ headers = {
 
 system = sys.platform
 base_dir = sys.path[0]
+color_flag = False
 if system.startswith('win'):
     dir_char = '\\'
+    color_flag = True
 else:
     dir_char = '/'
 base_dir += dir_char
@@ -31,24 +33,34 @@ def get_ip():
 
 
 def h():
+    import colorama
+
+    def color_rep(ss):
+        global color_flag
+        if color_flag:
+            colorama.init()
+            color_flag = False
+        ss = ss.split(':->')
+        return colorama.Fore.LIGHTMAGENTA_EX + ss[0] + colorama.Style.RESET_ALL + \
+            ':->' + colorama.Fore.YELLOW + ss[1] + colorama.Style.RESET_ALL
+
     print('help:')
-    print('    qs -u  [url]               :-> open url using default browser')
-    print('    qs -a  [app/(file...)]     :-> open app or open file by app(for Mac OS X)')
-    print('    qs -f  [file...]           :-> open file by default app')
-    print('    qs -dl [urls/""]           :-> download file from url(in clipboard)')
-    print('    qs -trans [words]          :-> translate the content of words or in clipboard')
-    print('    qs -time                   :-> view current time')
-    print('    qs -ftp                    :-> start a simple ftp server')
-    print('    qs -top                    :-> cpu and memory monitor')
-    print('    qs -weather [address]      :-> check weather (of address)')
-    print('    qs -mktar [path]           :-> create gzipped archive for path')
-    print('    qs -untar [path]           :-> extract path.tar.*')
-    print('    qs -mkzip [path]           :-> make a zip for path')
-    print('    qs -unzip [path]           :-> unzip path.zip')
-    print('    qs -upload                 :-> upload your pypi library')
-    print('    qs -upgrade                :-> update qs')
-    print('    qs -pyuninstaller [path]   :-> remove files that pyinstaller create')
-    print('NOTE: The program based on: tar, zip, unzip')
+    print(color_rep('    qs -u  [url]             :-> open url using default browser'))
+    print(color_rep('    qs -a  [app/(file...)]   :-> open app or open file by app(for Mac OS X)'))
+    print(color_rep('    qs -f  [file...]         :-> open file by default app'))
+    print(color_rep('    qs -dl [urls/""]         :-> download file from url(in clipboard)'))
+    print(color_rep('    qs -trans [content]      :-> translate the content(in clipboard)'))
+    print(color_rep('    qs -time                 :-> view current time'))
+    print(color_rep('    qs -ftp                  :-> start a simple ftp server'))
+    print(color_rep('    qs -top                  :-> cpu and memory monitor'))
+    print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
+    print(color_rep('    qs -mktar [path]         :-> create gzipped archive for path'))
+    print(color_rep('    qs -untar [path]         :-> extract path.tar.*'))
+    print(color_rep('    qs -mkzip [path]         :-> make a zip for path'))
+    print(color_rep('    qs -unzip [path]         :-> unzip path.zip'))
+    print(color_rep('    qs -upload               :-> upload your pypi library'))
+    print(color_rep('    qs -upgrade              :-> update qs'))
+    print(color_rep('    qs -pyuninstaller [path] :-> remove files that pyinstaller create'))
 
 
 def check_one_page(url):
@@ -114,7 +126,7 @@ def open_app():
 
 def open_file():
     if system == 'darwin':
-        os.system('open "' + '" "'.join(sys.argv[2:])+'"')
+        os.system('open "' + '" "'.join(sys.argv[2:]) + '"')
     else:
         for file in sys.argv[2:]:
             if os.path.exists(file):
@@ -124,44 +136,6 @@ def open_file():
 
 def init():
     wb.open('http://login.cup.edu.cn')
-    return
-    root = os.path.expanduser('~') + dir_char
-    flag = False
-    try:
-        with open(root + '.wifirc', 'r') as f:
-            user, pwd = f.read().split()
-    except:
-        import getpass
-        user = input('用户:')
-        pwd = getpass.getpass('密码:')
-        with open(root + '.wifirc', 'w') as f:
-            f.write("%s %s" % (user, pwd))
-        flag = True
-    data = {
-        'action': 'login',
-        'ac_id': '1',
-        'user_ip': get_ip(),
-        'nas_ip': '',
-        'user_mac': '',
-        'url': '',
-        'username': user,
-        'password': '{MD5}'+pwd,
-        'remember': '1'
-    }
-
-    html = requests.post('http://login.cup.edu.cn/cgi-bin/srun_portal', data=data, headers=headers)
-    if html:
-        html = html.text
-    else:
-        exit('未接入CUP校园网')
-    print(html)
-    if 'error' in html:
-        print('登录失败, 可以进行以下操作:\n\t* 尝试网络缴费后登录\n\t* 重新尝试登录')
-        remove(root + '.wifirc')
-    else:
-        print('登录成功')
-        if flag:
-            print('(脚本将默认使用当前账户密码登录, 如需更改请编辑或删除"%s"文件)' % (root + '.wifirc'))
 
 
 def translate():
@@ -402,6 +376,7 @@ def m3u8_dl(url):
             print("Download completed!")
             merge_file(download_path, tmp, self.name)
             shutil.rmtree(download_path)
+
     M3U8DL(url, url.split('.')[-2].split('/')[-1], 16).download()
 
 
@@ -578,6 +553,7 @@ def rm_pyinstaller():
 
 
 cmd_config = {
+    '-h': h,
     '-u': u,
     '-a': open_app,
     '-f': open_file,
