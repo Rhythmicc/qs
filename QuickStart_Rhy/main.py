@@ -1,6 +1,7 @@
 import webbrowser as wb
 import requests
 from requests.exceptions import RequestException
+import threading
 import sys
 import os
 import signal
@@ -388,28 +389,38 @@ def download():
 
 
 def weather():
-    def request_data(url):
-        ct = requests.get(url, headers)
-        ct.encoding = 'utf-8'
-        ct = ct.text.split('\n')
-        if dir_char == '/':
-            return ct
-        else:
-            import re
-            for line in range(len(ct)):
-                ct[line] = re.sub('\x1b.*?m', '', ct[line])
-            return ct
+    class pull_data(threading.Thread):
+        def __init__(self, url):
+            threading.Thread.__init__(self)
+            self.url = url
+            self.ret = []
+
+        def run(self):
+            ct = requests.get(self.url, headers)
+            ct.encoding = 'utf-8'
+            ct = ct.text.split('\n')
+            if dir_char == '/':
+                self.ret = ct.copy()
+            else:
+                import re
+                for line in range(len(ct)):
+                    ct[line] = re.sub('\x1b.*?m', '', ct[line])
+                self.ret = ct.copy()
+
+        def get_ret(self):
+            return self.ret
 
     try:
         loc = sys.argv[2]
     except IndexError:
         loc = ''
-    if loc:
-        simple = request_data('https://wttr.in/' + loc)
-        table = request_data('https://v2.wttr.in/' + loc)
-    else:
-        simple = request_data('https://wttr.in/?lang=zh')
-        table = request_data('https://v2.wttr.in/')
+    tls = [pull_data('https://wttr.in/' + (loc if loc else '?lang=zh')), pull_data('https://v2.wttr.in/' + loc)]
+    for i in tls:
+        i.start()
+        i.join()
+    simple = tls[0].get_ret()
+    table = tls[1].get_ret()
+    if not loc:
         print('地区：' + simple[0].split('：')[-1])
     simple = simple[2:7]
     print('\n'.join(simple))
@@ -487,16 +498,27 @@ def untar():
     if arlen == 2:
         exit("No enough parameters")
     file_names = sys.argv[2:]
+
+    class _untar(threading.Thread):
+        def __init__(self, path):
+            threading.Thread.__init__(self)
+            self.path = path
+
+        def run(self):
+            if os.path.exists(self.path):
+                if self.path.endswith('.tar'):
+                    os.system('tar -xf %s' % self.path)
+                elif self.path.endswith('.gz'):
+                    os.system('tar -xzf %s' % self.path)
+                elif self.path.endswith('.bz2'):
+                    os.system('tar -xjf %s' % self.path)
+            else:
+                print("No such file or dictionary:%s" % self.path)
+
     for file_name in file_names:
-        if os.path.exists(file_name):
-            if file_name.endswith('.tar'):
-                os.system('tar -xf %s' % file_name)
-            elif file_name.endswith('.gz'):
-                os.system('tar -xzf %s' % file_name)
-            elif file_name.endswith('.bz2'):
-                os.system('tar -xjf %s' % file_name)
-        else:
-            print("No such file or dictionary:%s" % file_name)
+        t = _untar(file_name)
+        t.start()
+        t.join()
 
 
 def mkzip():
@@ -508,11 +530,22 @@ def unzip():
     if arlen == 2:
         exit("No enough parameters")
     file_names = sys.argv[2:]
+
+    class _unzip(threading.Thread):
+        def __init__(self, path):
+            threading.Thread.__init__(self)
+            self.path = path
+
+        def run(self):
+            if os.path.exists(file_name):
+                os.system('unzip %s' % file_name)
+            else:
+                print("No such file or dictionary:%s" % file_name)
+
     for file_name in file_names:
-        if os.path.exists(file_name):
-            os.system('unzip %s' % file_name)
-        else:
-            print("No such file or dictionary:%s" % file_name)
+        t = _unzip(file_name)
+        t.start()
+        t.join()
 
 
 def upgrade():
