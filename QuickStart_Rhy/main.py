@@ -148,79 +148,7 @@ def init():
 
 def translate():
     import pyperclip
-    import execjs
-    import re
-    JS_CODE = """function a(r, o) { for (var t = 0; t < o.length - 2; t += 3) { var a = o.charAt(t + 2); a = a >= "a" 
-    ? a.charCodeAt(0) - 87 : Number(a), a = "+" === o.charAt(t + 1) ? r >>> a: r << a, r = "+" === o.charAt(t) ? r + 
-    a & 4294967295 : r ^ a } return r } var C = null; var token = function(r, _gtk) { var o = r.length; o > 30 && (r 
-    = "" + r.substr(0, 10) + r.substr(Math.floor(o / 2) - 5, 10) + r.substring(r.length, r.length - 10)); var t = 
-    void 0, t = null !== C ? C: (C = _gtk || "") || ""; for (var e = t.split("."), h = Number(e[0]) || 0, i = Number(
-    e[1]) || 0, d = [], f = 0, g = 0; g < r.length; g++) { var m = r.charCodeAt(g); 128 > m ? d[f++] = m: (2048 > m ? 
-    d[f++] = m >> 6 | 192 : (55296 === (64512 & m) && g + 1 < r.length && 56320 === (64512 & r.charCodeAt(g + 1)) ? (
-    m = 65536 + ((1023 & m) << 10) + (1023 & r.charCodeAt(++g)), d[f++] = m >> 18 | 240, d[f++] = m >> 12 & 63 | 128) 
-    : d[f++] = m >> 12 | 224, d[f++] = m >> 6 & 63 | 128), d[f++] = 63 & m | 128) } for (var S = h, u = "+-a^+6", 
-    l = "+-3^+b+-f", s = 0; s < d.length; s++) S += d[s], S = a(S, u); return S = a(S, l), S ^= i, 0 > S && (S = (
-    2147483647 & S) + 2147483648), S %= 1e6, S.toString() + "." + (S ^ h) } """
-
-    class Dict:
-        def __init__(self):
-            self.sess = requests.Session()
-            self.headers = {
-                'User-Agent':
-                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) '
-                    'Chrome/71.0.3578.98 Safari/537.36 '
-            }
-            self.token = None
-            self.gtk = None
-            self.javascript = execjs.compile(JS_CODE)
-            self.loadMainPage()
-            self.loadMainPage()
-
-        def loadMainPage(self):
-            url = 'https://fanyi.baidu.com'
-            try:
-                r = self.sess.get(url, headers=self.headers)
-                self.token = re.findall(r"token: '(.*?)',", r.text)[0]
-                self.gtk = re.findall(r"window.gtk = '(.*?)';", r.text)[0]
-            except Exception as e:
-                raise e
-
-        def langdetect(self, query):
-            url = 'https://fanyi.baidu.com/langdetect'
-            data = {'query': query}
-            try:
-                r = self.sess.post(url=url, data=data)
-            except Exception as e:
-                raise e
-
-            json = r.json()
-            if 'msg' in json and json['msg'] == 'success':
-                return json['lan']
-            return None
-
-        def dictionary(self, query, dst='zh', src=None):
-            url = 'https://fanyi.baidu.com/v2transapi'
-            sign = self.javascript.call('token', query, self.gtk)
-            if not src:
-                src = self.langdetect(query)
-            data = {
-                'from': src,
-                'to': dst,
-                'query': query,
-                'simple_means_flag': 3,
-                'sign': sign,
-                'token': self.token,
-            }
-            try:
-                r = self.sess.post(url=url, data=data)
-            except Exception as e:
-                raise e
-            if r.status_code == 200:
-                json = r.json()
-                if 'error' in json:
-                    raise Exception('baidu sdk error: {}'.format(json['error']))
-                return json
-            return None
+    from QuickStart_Rhy.Dict import Dict
 
     content = ' '.join(sys.argv[2:])
     if not content:
@@ -253,117 +181,7 @@ def cur_time():
 
 
 def m3u8_dl(url):
-    import threading
-    import urllib3
-    import shutil
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    def merge_file(path, ts_ls, name):
-        if not path.endswith(dir_char):
-            path += dir_char
-        with open(name + '.ts', 'wb') as f:
-            for ts in ts_ls:
-                with open(path + ts, 'rb') as ff:
-                    f.write(ff.read())
-
-    class M3U8DL:
-        class _monitor(threading.Thread):
-            def __init__(self, num, dl_path):
-                threading.Thread.__init__(self)
-                self.num = num
-                self.dl_path = dl_path
-
-            def run(self):
-                import time
-                rd = "|/-\\"
-                pos = 0
-                while True:
-                    ll = len(os.listdir(self.dl_path))
-                    cur = ll / self.num * 100
-                    bar = '#' * int(cur / 2) + ' ' * (50 - int(cur / 2))
-                    print("[%s][%s][%.2f%%" % (rd[pos % 4], bar, cur), end='\r')
-                    if ll == self.num:
-                        break
-                    time.sleep(0.5)
-                    pos += 1
-
-        class _dl(threading.Thread):
-            from Crypto.Cipher import AES
-
-            def __init__(self, job_ls, mutex, path='./'):
-                threading.Thread.__init__(self)
-                self.job_ls = job_ls
-                self.mutex = mutex
-                self.path = path
-
-            def run(self):
-                key = ''
-                while self.job_ls:
-                    self.mutex.acquire()
-                    job = self.job_ls.pop()
-                    self.mutex.release()
-                    if not job[-1]:
-                        uri_pos = job[1].find("URI")
-                        quotation_mark_pos = job[1].rfind('"')
-                        key_path = job[1][uri_pos:quotation_mark_pos].split('"')[1]
-                        key_url = job[0] + key_path
-                        res = requests.get(key_url, verify=False)
-                        key = res.content
-                    else:
-                        pd_url = job[0]
-                        c_fule_name = job[1]
-                        if os.path.exists(os.path.join(self.path, c_fule_name)):
-                            continue
-                        res = requests.get(pd_url, verify=False)
-                        if len(key):
-                            cryptor = self.AES.new(key, self.AES.MODE_CBC, key)
-                            with open(os.path.join(self.path, c_fule_name + ".mp4"), 'ab') as f:
-                                f.write(cryptor.decrypt(res.content))
-                        else:
-                            with open(os.path.join(self.path, c_fule_name), 'ab') as f:
-                                f.write(res.content)
-                                f.flush()
-
-        def __init__(self, target, name, thread_num):
-            self.target = target
-            self.name = name
-            self.th_num = thread_num
-
-        def download(self):
-            target = self.target
-            download_path = os.getcwd() + dir_char + self.name
-            if not os.path.exists(download_path):
-                os.mkdir(download_path)
-            all_content = requests.get(target, verify=False).text
-            if "#EXTM3U" not in all_content:
-                raise BaseException("非M3U8的链接")
-            if "EXT-X-STREAM-INF" in all_content:
-                file_line = all_content.split("\n")
-                for line in file_line:
-                    if '.m3u8' in line:
-                        target = target.rsplit("/", 1)[0] + "/" + line
-                        all_content = requests.get(target, verify=False).text
-            file_line = all_content.split("\n")
-            rt = target.rsplit("/", 1)[0] + "/"
-            tmp = []
-            for index, line in enumerate(file_line):
-                if "#EXT-X-KEY" in line:
-                    tmp.append((rt, line, 0))
-                if "EXTINF" in line:
-                    tmp.append((rt + file_line[index + 1], file_line[index + 1].rsplit("/", 1)[-1], 1))
-            file_line = tmp[::-1]
-            mutex = threading.Lock()
-            tls = [self._monitor(len(file_line), download_path)]
-            tls[0].start()
-            for i in range(self.th_num):
-                tls.append(self._dl(file_line, mutex, download_path))
-                tls[-1].start()
-            for i in tls:
-                i.join()
-            print("Download completed!")
-            merge_file(download_path, tmp, self.name)
-            shutil.rmtree(download_path)
-
+    from QuickStart_Rhy.m3u8_dl import M3U8DL
     M3U8DL(url, url.split('.')[-2].split('/')[-1], 16).download()
 
 
@@ -373,17 +191,12 @@ def download():
         import pyperclip
         urls = pyperclip.paste().split()
     if urls:
+        from QuickStart_Rhy.normal_dl import normal_dl
         for url in urls:
             if url.endswith('.m3u8'):
                 m3u8_dl(url)
             else:
-                package = requests.get(url, headers).content
-                if package:
-                    file_name = url.split('/')[-1]
-                    with open(file_name, 'wb') as f:
-                        f.write(package)
-                else:
-                    print('Download "%s" failed!' % url)
+                normal_dl(url)
     else:
         print("No url found!")
 
@@ -594,7 +407,7 @@ def main():
     if arlen >= 2:
         try:
             cmd_config[sys.argv[1]]()
-        except KeyError:
+        except KeyError as e:
             h()
     else:
         h()
