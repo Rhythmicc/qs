@@ -46,11 +46,11 @@ class Downloader:
                 self.size = -1
             else:
                 self.fileBlock = GetBlockSize(self.size)
-                print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.size)))
         except KeyError:
             self.size = -1
         if self.size > 0:
             print('[INFO] FILE SIZE\t{}'.format(size_format(self.size)))
+            print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.fileBlock)))
 
     def _dl(self, start):
         _sz = min(start + self.fileBlock, self.size)
