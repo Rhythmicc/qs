@@ -407,7 +407,7 @@ def main():
     if arlen >= 2:
         try:
             cmd_config[sys.argv[1]]()
-        except KeyError as e:
+        except KeyError:
             h()
     else:
         h()
