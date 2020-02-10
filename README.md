@@ -10,7 +10,8 @@
 | `qs -trans [words]` | translate the content of `[words]` or the content in clipboard |
 | `qs -time` | view current time |
 | `qs -ftp` | start a simple ftp server |
-| `qs -top` | cpu and memory monitor |
+| `qs -top` | cpu and memory monitor (use matplotlib)|
+| `qs -ftop` | cpu and memory monitor (support *nix)|
 | `qs -weather [address]` | check weather (of address) |
 | `qs -dl [urls/""]` | download file from url(in clipboard) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |
