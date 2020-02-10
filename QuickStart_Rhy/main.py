@@ -209,7 +209,10 @@ def weather():
             self.ret = []
 
         def run(self):
-            ct = requests.get(self.url, headers)
+            try:
+                ct = requests.get(self.url, headers)
+            except:
+                return
             ct.encoding = 'utf-8'
             ct = ct.text.split('\n')
             if dir_char == '/':
@@ -233,18 +236,24 @@ def weather():
         i.join()
     simple = tls[0].get_ret()
     table = tls[1].get_ret()
-    if not loc:
-        print('地区：' + simple[0].split('：')[-1])
-    simple = simple[2:7]
-    print('\n'.join(simple))
-    print(table[3][:-1])
-    bottom_line = 7
-    while '╂' not in table[bottom_line]:
-        bottom_line += 1
-    for i in table[7:bottom_line + 2]:
-        print(i[:-1])
-    print('└────────────────────────────────────────────────────────────────────────')
-    print('\n'.join(table[-3 if not loc else -4:]))
+    if simple:
+        if not loc:
+            print('地区：' + simple[0].split('：')[-1])
+        simple = simple[2:7]
+        print('\n'.join(simple))
+    else:
+        print('Error: Get data failed.')
+    if table:
+        print(table[3][:-1])
+        bottom_line = 7
+        while '╂' not in table[bottom_line]:
+            bottom_line += 1
+        for i in table[7:bottom_line + 2]:
+            print(i[:-1])
+        print('└────────────────────────────────────────────────────────────────────────')
+        print('\n'.join(table[-3 if not loc else -4:]))
+    else:
+        print('Error: Get detail failed.')
 
 
 def ftp():
@@ -262,9 +271,13 @@ def ftp():
 
 
 def top():
-    import psutil
-    import matplotlib.pyplot as plt
-    import numpy as np
+    try:
+        import psutil
+        import matplotlib.pyplot as plt
+        import numpy as np
+        from QuickStart_Rhy import normal_dl
+    except ImportError:
+        exit('You need install "matplotlib", "numpy" first!')
 
     def close(event):
         if event.key in 'qQ':
@@ -282,7 +295,7 @@ def top():
     while True:
         plt.clf()
         cpu_per = psutil.cpu_percent(percpu=True)
-        mem_cur = psutil.virtual_memory().used / 1024 ** 3
+        mem_cur = normal_dl.size_format(psutil.virtual_memory().used)
         cpu_graph = plt.subplot(2, 1, 1)
         cpu_graph.set_title('cpu: %.2f%%' % (sum(cpu_per) / len_x))
         cpu_graph.set_ylabel('percent')
@@ -292,14 +305,52 @@ def top():
         plt.grid(axis="y", linestyle='-.')
         plt.tight_layout()
         mem_graph = plt.subplot(2, 1, 2)
-        mem_graph.set_title('memory: %.2fG' % mem_cur)
+        mem_graph.set_title('memory: %s' % mem_cur)
         mem_graph.set_ylabel('G')
         mem_graph.set_ylim((0, mem_lim))
         mem_graph.set_xticks([])
-        mem_y[mem_p] = mem_cur
+        mem_y[mem_p] = float(mem_cur.split()[0])
         mem_p = mem_p - 1 if mem_p else 9
         plt.plot(mem_x, mem_y)
         plt.pause(1)
+
+
+def ftop():
+    if sys.platform.startswith('win'):
+        exit('This function not support Winodws*')
+    import colorama
+    from colorama import Style
+    import psutil
+    import time
+    import math
+    from QuickStart_Rhy import ChartBar
+    from QuickStart_Rhy import normal_dl
+
+    def deal(a, b):
+        print("\033[H" + "\033[2J" + Style.RESET_ALL + "\033[?25h\033[m", end='')
+        exit(0)
+
+    colorama.init()
+    _kernal = psutil.cpu_count()
+    _total_mem = psutil.virtual_memory().total
+    _cpu_dt = [0] * 40
+    _mem_dt = [0] * 40
+    _cpu_chart = ChartBar.RollBar(_cpu_dt, height=10)
+    _mem_chart = ChartBar.RollBar(_mem_dt, height=10)
+    print("\033[?25l\033[2J")
+    signal.signal(signal.SIGINT, deal)
+    while True:
+        _cpu_cur = sum(psutil.cpu_percent(percpu=True)) / _kernal
+        _mem_cur = psutil.virtual_memory().used
+        _cpu_chart.title('CPU: %.2f%%' % _cpu_cur)
+        _cpu_chart.add(math.ceil(_cpu_cur))
+        _mem_chart.title('MEM: %s' % normal_dl.size_format(_mem_cur))
+        _mem_chart.add(math.ceil(_mem_cur / _total_mem * 100))
+        print("\033[H")
+        print(_cpu_chart, end='\n\n')
+        print(_mem_chart)
+        print("\033[A" + Style.RESET_ALL)
+        time.sleep(1)
 
 
 def mktar():
@@ -325,6 +376,8 @@ def untar():
                     os.system('tar -xzf %s' % self.path)
                 elif self.path.endswith('.bz2'):
                     os.system('tar -xjf %s' % self.path)
+                else:
+                    os.system('tar -xf %s' % self.path)
             else:
                 print("No such file or dictionary:%s" % self.path)
 
@@ -390,6 +443,7 @@ cmd_config = {
     '-trans': translate,
     '-ftp': ftp,
     '-top': top,
+    '-ftop': ftop,
     '-time': cur_time,
     '-weather': weather,
     '-dl': download,

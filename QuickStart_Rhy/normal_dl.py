@@ -2,6 +2,8 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from threading import Lock
 from requests import get, head
 import psutil
+import signal
+import time
 
 core_num = psutil.cpu_count()
 maxBlockSize = int((psutil.virtual_memory().total >> 6) / core_num)
@@ -16,7 +18,7 @@ def size_format(sz):
     elif sz >= 1e3:
         return '%.3f KB' % (sz / 1e3)
     else:
-        return '%d B' % sz
+        return '%.2f B' % sz
 
 
 def GetBlockSize(sz):
@@ -29,9 +31,11 @@ def GetBlockSize(sz):
 
 
 class Downloader:
-    def __init__(self, url, nums):
+    def __init__(self, url, num):
+        signal.signal(signal.SIGINT, self.kill_self)
+        self.has_ctrl = False
         self.url = url
-        self.num = nums
+        self.num = num
         self.name = url.split('/')[-1]
         self.fileLock = Lock()
         self.cur_sz = 0
@@ -52,17 +56,26 @@ class Downloader:
             print('[INFO] FILE SIZE\t{}'.format(size_format(self.size)))
             print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.fileBlock)))
 
+    def kill_self(self, a, b):
+        if not self.has_ctrl:
+            print('[INFO] GET Ctrl C! PLEASE PUSH AGAIN TO CONFIRM!')
+            self.has_ctrl = True
+        exit(0)
+
     def _dl(self, start):
         _sz = min(start + self.fileBlock, self.size)
         headers = {'Range': 'bytes={}-{}'.format(start, _sz)}
+        tm = time.perf_counter()
         r = get(self.url, headers=headers, stream=True)
-        self.fileLock.acquire()
         with open(self.name, 'rb+') as fp:
             fp.seek(start)
             fp.write(r.content)
+        tm = time.perf_counter() - tm
+        speed = size_format((self.fileBlock * self.num / tm))
+        self.fileLock.acquire()
         self.cur_sz += _sz - start
         per = self.cur_sz / self.size
-        print('[%s] %.2f%%' % ('#'*int(40*per)+' '*int(40-40*per), per*100),
+        print('[%s] %.2f%% | %s/s' % ('#'*int(40*per)+' '*int(40-40*per), per*100, speed),
               end='\n' if self.cur_sz == self.size else '\r')
         self.fileLock.release()
 
