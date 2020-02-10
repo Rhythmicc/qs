@@ -2,7 +2,7 @@
 
 ## Use QuickStart to simplify the operation in terminal!
 
-| 命令 | 含义 |
+| Command | Means |
 | :--- | :--- |
 | `qs -u [url] ` | open url using default browser |
 | `qs -a [app/(file...)]` | open app or open file by app(for MacOS X) |
@@ -11,7 +11,7 @@
 | `qs -time` | view current time |
 | `qs -ftp` | start a simple ftp server |
 | `qs -top` | cpu and memory monitor (use matplotlib)|
-| `qs -ftop` | cpu and memory monitor (support *nix)|
+| `qs -ftop` | cpu and memory monitor (not support Windows)|
 | `qs -weather [address]` | check weather (of address) |
 | `qs -dl [urls/""]` | download file from url(in clipboard) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |

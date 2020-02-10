@@ -183,7 +183,7 @@ def cur_time():
 
 def m3u8_dl(url):
     from QuickStart_Rhy.m3u8_dl import M3U8DL
-    M3U8DL(url, url.split('.')[-2].split('/')[-1], 16).download()
+    M3U8DL(url, url.split('.')[-2].split('/')[-1]).download()
 
 
 def download():
@@ -273,12 +273,15 @@ def ftp():
 
 def top():
     try:
-        import psutil
-        import matplotlib.pyplot as plt
-        import numpy as np
-        from QuickStart_Rhy import normal_dl
+        import matplotlib.pyplot
+        import numpy
     except ImportError:
         exit('You need install "matplotlib", "numpy" first!')
+
+    import psutil
+    from QuickStart_Rhy import normal_dl
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     def close(event):
         if event.key in 'qQ':

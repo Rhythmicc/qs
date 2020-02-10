@@ -74,6 +74,5 @@ class M3U8DL:
         work = [pool.submit(self._dl_one, job) for job in file_line]
         wait(work)
         print("Download completed!")
-        print("Download completed!")
         merge_file(download_path, tmp, self.name)
         shutil.rmtree(download_path)
