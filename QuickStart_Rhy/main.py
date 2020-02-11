@@ -60,8 +60,7 @@ def h():
     print(color_rep('    qs -trans [content]      :-> translate the content(in clipboard)'))
     print(color_rep('    qs -time                 :-> view current time'))
     print(color_rep('    qs -ftp                  :-> start a simple ftp server'))
-    print(color_rep('    qs -top                  :-> cpu and memory monitor (use matplotlib)'))
-    print(color_rep('    qs -ftop                 :-> cpu and memory monitor'))
+    print(color_rep('    qs -top                  :-> cpu and memory monitor'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
     print(color_rep('    qs -mktar [path]         :-> create gzipped archive for path'))
     print(color_rep('    qs -untar [path]         :-> extract path.tar.*'))
@@ -272,66 +271,17 @@ def ftp():
 
 
 def top():
-    try:
-        import matplotlib.pyplot
-        import numpy
-    except ImportError:
-        exit('You need install "matplotlib", "numpy" first!')
-
-    import psutil
-    from QuickStart_Rhy import normal_dl
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    def close(event):
-        if event.key in 'qQ':
-            exit(0)
-
-    signal.signal(signal.SIGINT, deal_ctrl_c)
-    cpu_x = np.arange(1, psutil.cpu_count() + 1)
-    len_x = len(cpu_x)
-    mem_x = np.arange(1, 11)
-    mem_y = np.array([0] * 10)
-    mem_p = 9
-    mem_lim = psutil.virtual_memory().total / 1024 ** 3
-    fig = plt.figure(figsize=(6, 4))
-    fig.canvas.mpl_connect('key_press_event', close)
-    while True:
-        plt.clf()
-        cpu_per = psutil.cpu_percent(percpu=True)
-        mem_cur = normal_dl.size_format(psutil.virtual_memory().used)
-        cpu_graph = plt.subplot(2, 1, 1)
-        cpu_graph.set_title('cpu: %.2f%%' % (sum(cpu_per) / len_x))
-        cpu_graph.set_ylabel('percent')
-        cpu_graph.set_ylim((0, 100))
-        cpu_graph.set_xticks([])
-        plt.bar(cpu_x, cpu_per)
-        plt.grid(axis="y", linestyle='-.')
-        plt.tight_layout()
-        mem_graph = plt.subplot(2, 1, 2)
-        mem_graph.set_title('memory: %s' % mem_cur)
-        mem_graph.set_ylabel('G')
-        mem_graph.set_ylim((0, mem_lim))
-        mem_graph.set_xticks([])
-        mem_y[mem_p] = float(mem_cur.split()[0])
-        mem_p = mem_p - 1 if mem_p else 9
-        plt.plot(mem_x, mem_y)
-        plt.pause(1)
-
-
-def ftop():
-    if sys.platform.startswith('win'):
-        exit('This function not support Winodws*')
     import colorama
-    from colorama import Style
     import psutil
     import time
     import math
+    from prettytable import PrettyTable
+    from colorama import Style, ansi, Cursor
     from QuickStart_Rhy import ChartBar
-    from QuickStart_Rhy import normal_dl
+    from QuickStart_Rhy.normal_dl import size_format
 
-    def deal(a, b):
-        print("\033[H" + "\033[2J" + Style.RESET_ALL + "\033[?25h\033[m", end='')
+    def deal():
+        print(ansi.clear_screen() + Cursor.POS(0, 0) + Style.RESET_ALL, end='')
         exit(0)
 
     colorama.init()
@@ -341,20 +291,24 @@ def ftop():
     _mem_dt = [0] * 40
     _cpu_chart = ChartBar.RollBar(_cpu_dt, height=10)
     _mem_chart = ChartBar.RollBar(_mem_dt, height=10)
-    print("\033[?25l\033[2J")
-    signal.signal(signal.SIGINT, deal)
-    while True:
-        _cpu_cur = sum(psutil.cpu_percent(percpu=True)) / _kernal
-        _mem_cur = psutil.virtual_memory().used
-        _cpu_chart.title('CPU: %.2f%%' % _cpu_cur)
-        _cpu_chart.add(math.ceil(_cpu_cur))
-        _mem_chart.title('MEM: %s' % normal_dl.size_format(_mem_cur))
-        _mem_chart.add(math.ceil(_mem_cur / _total_mem * 100))
-        print("\033[H")
-        print(_cpu_chart, end='\n\n')
-        print(_mem_chart)
-        print("\033[A" + Style.RESET_ALL)
-        time.sleep(1)
+    charts = [_cpu_chart, _mem_chart]
+    window = PrettyTable()
+    window.add_row(charts)
+    print(ansi.clear_screen())
+    try:
+        while True:
+            _cpu_cur = sum(psutil.cpu_percent(percpu=True)) / _kernal
+            _mem_cur = psutil.virtual_memory().used
+            _cpu_chart.add(math.ceil(_cpu_cur))
+            _mem_chart.add(math.ceil(_mem_cur / _total_mem * 100))
+            window.field_names = ['CPU: %.2f%%' % _cpu_cur, 'MEM: %s' % size_format(_mem_cur)]
+            print((ansi.clear_screen() if dir_char == '\\' else '') + Cursor.POS(0, 0))
+            print(' ' * 35, end='')
+            cur_time()
+            print(window)
+            time.sleep(1)
+    except:
+        deal()
 
 
 def mktar():
@@ -447,7 +401,6 @@ cmd_config = {
     '-trans': translate,
     '-ftp': ftp,
     '-top': top,
-    '-ftop': ftop,
     '-time': cur_time,
     '-weather': weather,
     '-dl': download,

@@ -33,7 +33,6 @@ class RollBar:
         for _i in self.canvas:
             _i.pop(0)
         cur = math.ceil(val / self.max_ * self.height)
-        # print(val, self.max_, val/self.max_, cur, len(self.canvas))
         for _i in range(cur):
             self.canvas[_i].append(Back.GREEN + ' ' + Style.RESET_ALL)
         for _i in range(cur, self.height):
