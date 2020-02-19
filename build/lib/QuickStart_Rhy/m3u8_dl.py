@@ -33,10 +33,11 @@ class M3U8DL:
         if job[-1]:
             pd_url = job[0]
             c_fule_name = job[1]
-            res = requests.get(pd_url, verify=False)
-            with open(os.path.join(self.path, c_fule_name), 'ab') as f:
-                f.write(res.content)
-                f.flush()
+            if not os.path.exists(os.path.join(self.path, c_fule_name)):
+                res = requests.get(pd_url, verify=False)
+                with open(os.path.join(self.path, c_fule_name), 'ab') as f:
+                    f.write(res.content)
+                    f.flush()
         self._cur += 1
         perc = self._cur / self._all
         leng = int(perc * 40)

@@ -238,7 +238,9 @@ def weather():
     table = tls[1].get_ret()
     if simple:
         if not loc:
-            print('地区：' + simple[0].split('：')[-1])
+            from QuickStart_Rhy.Dict import Dict
+            translator = Dict()
+            print('地区：' + translator.dictionary(simple[0].split('：')[-1])['trans_result']['data'][0]['dst'])
         simple = simple[2:7]
         print('\n'.join(simple))
     else:
@@ -303,9 +305,12 @@ def top():
             _mem_chart.add(math.ceil(_mem_cur / _total_mem * 100))
             window.field_names = ['CPU: %.2f%%' % _cpu_cur, 'MEM: %s' % size_format(_mem_cur)]
             print((ansi.clear_screen() if dir_char == '\\' else '') + Cursor.POS(0, 0))
-            print(' ' * 35, end='')
+            print(' ' * 39, end='')
             cur_time()
-            print(window)
+            cur_img = str(window).split('\n')
+            for i in cur_img:
+                print(' ' * 4, end='')
+                print(i)
             time.sleep(1)
     except:
         deal()
