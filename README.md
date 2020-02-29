@@ -11,6 +11,7 @@
 | `qs -time` | view current time |
 | `qs -ftp` | start a simple ftp server |
 | `qs -top` | cpu and memory monitor|
+| `qs -rmbg picture`| remove image background|
 | `qs -weather [address]` | check weather (of address) |
 | `qs -dl [urls/""]` | download file from url(in clipboard) |
 | `qs -mktar [path]` | create gzipped archive for path(dir/file) |

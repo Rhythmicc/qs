@@ -61,6 +61,7 @@ def h():
     print(color_rep('    qs -time                 :-> view current time'))
     print(color_rep('    qs -ftp                  :-> start a simple ftp server'))
     print(color_rep('    qs -top                  :-> cpu and memory monitor'))
+    print(color_rep('    qs -rmbg picture         :-> remove image background'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
     print(color_rep('    qs -mktar [path]         :-> create gzipped archive for path'))
     print(color_rep('    qs -untar [path]         :-> extract path.tar.*'))
@@ -240,7 +241,10 @@ def weather():
         if not loc:
             from QuickStart_Rhy.Dict import Dict
             translator = Dict()
-            print('地区：' + translator.dictionary(simple[0].split('：')[-1])['trans_result']['data'][0]['dst'])
+            try:
+                print('地区：' + translator.dictionary(simple[0].split('：')[-1])['trans_result']['data'][0]['dst'])
+            except:
+                print('地区：' + simple[0].split('：')[-1])
         simple = simple[2:7]
         print('\n'.join(simple))
     else:
@@ -248,8 +252,11 @@ def weather():
     if table:
         print(table[3][:-1])
         bottom_line = 7
-        while '╂' not in table[bottom_line]:
-            bottom_line += 1
+        try:
+            while '╂' not in table[bottom_line]:
+                bottom_line += 1
+        except IndexError:
+            exit('Get Weather Data failed!')
         for i in table[7:bottom_line + 2]:
             print(i[:-1])
         print('└────────────────────────────────────────────────────────────────────────')
@@ -397,6 +404,16 @@ def rm_pyinstaller():
     remove('dist')
 
 
+def remove_bg():
+    try:
+        path = sys.argv[2]
+    except IndexError:
+        exit('Usage: %s -rmbg picture' % sys.argv[0])
+    else:
+        from QuickStart_Rhy.call_api import rmbg
+        rmbg(path)
+
+
 cmd_config = {
     '-h': h,
     '-u': u,
@@ -407,6 +424,7 @@ cmd_config = {
     '-ftp': ftp,
     '-top': top,
     '-time': cur_time,
+    '-rmbg': remove_bg,
     '-weather': weather,
     '-dl': download,
     '-mktar': mktar,
