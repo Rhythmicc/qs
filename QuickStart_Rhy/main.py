@@ -62,6 +62,7 @@ def h():
     print(color_rep('    qs -ftp                  :-> start a simple ftp server'))
     print(color_rep('    qs -top                  :-> cpu and memory monitor'))
     print(color_rep('    qs -rmbg picture         :-> remove image background'))
+    print(color_rep('    qs -smms picture/*.md    :-> upload img to smms or all in .md'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
     print(color_rep('    qs -mktar [path]         :-> create gzipped archive for path'))
     print(color_rep('    qs -untar [path]         :-> extract path.tar.*'))
@@ -414,6 +415,16 @@ def remove_bg():
         rmbg(path)
 
 
+def ImgBed():
+    try:
+        path = sys.argv[2]
+    except IndexError:
+        exit('Usage: %s -smms picture' % sys.argv[0])
+    else:
+        from QuickStart_Rhy.call_api import smms
+        smms(path)
+
+
 cmd_config = {
     '-h': h,
     '-u': u,
@@ -425,6 +436,7 @@ cmd_config = {
     '-top': top,
     '-time': cur_time,
     '-rmbg': remove_bg,
+    '-smms': ImgBed,
     '-weather': weather,
     '-dl': download,
     '-mktar': mktar,
