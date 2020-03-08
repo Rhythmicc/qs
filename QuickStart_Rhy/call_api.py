@@ -18,7 +18,7 @@ else:
     qsconfig = {}
 
 
-def pre_check(funcName: str):
+def pre_check(funcName: str) -> str:
     try:
         api_key = qsconfig[funcName]
         if not api_key:
@@ -118,3 +118,22 @@ def smms(filePath: str):
                 tb.add_row(
                     [filePath.split(dir_char)[-1], res['success'], '' if not res['success'] else res['data']['url']])
             print(tb)
+
+
+class Aliyun_nas_api:
+    def __init__(self):
+        self.ac_id = pre_check('aliyun_nas_acid')
+        self.ac_key = pre_check('aliyun_nas_ackey')
+        self.bucket_url = pre_check('aliyun_nas_bucket_url')
+
+    def upload(self, filePath: str, bucket=pre_check('aliyun_nas_df_bucket')):
+        import oss2
+        auth = oss2.Auth(self.ac_id, self.ac_key)
+        bucket = oss2.Bucket(auth, self.bucket_url, bucket)
+        oss2.resumable_upload(bucket, filePath.split(dir_char)[-1], filePath, num_threads=4)
+
+    def download(self, filename: str, bucket=pre_check('aliyun_nas_df_bucket')):
+        import oss2
+        auth = oss2.Auth(self.ac_id, self.ac_key)
+        bucket = oss2.Bucket(auth, self.bucket_url, bucket)
+        oss2.resumable_download(bucket, filename, filename, num_threads=4)

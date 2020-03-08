@@ -63,6 +63,7 @@ def h():
     print(color_rep('    qs -top                  :-> cpu and memory monitor'))
     print(color_rep('    qs -rmbg picture         :-> remove image background'))
     print(color_rep('    qs -smms picture/*.md    :-> upload img to smms or all in .md'))
+    print(color_rep('    qs -ali_nas [op] [bucket]:-> call aliyun nas api'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
     print(color_rep('    qs -mktar [path]         :-> create gzipped archive for path'))
     print(color_rep('    qs -untar [path]         :-> extract path.tar.*'))
@@ -175,9 +176,7 @@ def cur_time():
         'Sunday': '周日'
     }
     import time
-    tm = time.strftime('%Y-%m-%d %A %H:%M:%S', time.localtime(time.time())).split()
-    ls = tm[0].split('-')
-    tm[0] = ls[0] + '年' + ls[1] + '月' + ls[2] + '日'
+    tm = time.strftime('%Y年%m月%d日 %A %H:%M:%S', time.localtime(time.time())).split()
     tm[1] = week[tm[1]]
     print(' '.join(tm))
 
@@ -397,14 +396,6 @@ def upload_pypi():
     os.system('twine upload dist%s*' % dir_char)
 
 
-def rm_pyinstaller():
-    file_name = sys.argv[2]
-    remove('build')
-    remove('__pycache__')
-    remove('%s.spec' % file_name)
-    remove('dist')
-
-
 def remove_bg():
     try:
         path = sys.argv[2]
@@ -419,10 +410,34 @@ def ImgBed():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: %s -smms picture' % sys.argv[0])
+        exit('Usage: %s -smms [picture]' % sys.argv[0])
     else:
         from QuickStart_Rhy.call_api import smms
         smms(path)
+
+
+def ali_nas():
+    try:
+        op = sys.argv[2]
+        if op == '-up':
+            file = sys.argv[3]
+        elif op == '-dl':
+            file = sys.argv[3]
+        else:
+            raise IndexError
+        try:
+            bucket = sys.argv[4]
+        except IndexError:
+            bucket = None
+    except IndexError:
+        exit('Usage: %s -ali_nas [-up path/-dl name] [bucket]')
+    else:
+        from QuickStart_Rhy.call_api import Aliyun_nas_api
+        ali_api = Aliyun_nas_api()
+        if op == '-up':
+            ali_api.upload(file) if not bucket else ali_api.upload(file, bucket)
+        else:
+            ali_api.download(file) if not bucket else ali_api.download(file, bucket)
 
 
 cmd_config = {
@@ -437,6 +452,7 @@ cmd_config = {
     '-time': cur_time,
     '-rmbg': remove_bg,
     '-smms': ImgBed,
+    '-ali_nas': ali_nas,
     '-weather': weather,
     '-dl': download,
     '-mktar': mktar,
@@ -444,8 +460,7 @@ cmd_config = {
     '-mkzip': mkzip,
     '-unzip': unzip,
     '-upgrade': upgrade,
-    '-upload': upload_pypi,
-    '-pyuninstaller': rm_pyinstaller
+    '-upload': upload_pypi
 }
 
 
