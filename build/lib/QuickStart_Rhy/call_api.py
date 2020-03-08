@@ -137,3 +137,27 @@ class Aliyun_nas_api:
         auth = oss2.Auth(self.ac_id, self.ac_key)
         bucket = oss2.Bucket(auth, self.bucket_url, bucket)
         oss2.resumable_download(bucket, filename, filename, num_threads=4)
+
+
+class Qiniu_nas_api:
+    def __init__(self):
+        self.ac_key = pre_check('qiniu_ac_key')
+        self.sc_key = pre_check('qiniu_sc_key')
+
+    def upload(self, filePath: str, bucket=pre_check('qiniu_bk_name')):
+        import qiniu
+        auth = qiniu.Auth(self.ac_key, self.sc_key)
+        tk = auth.upload_token(bucket, filePath.split(dir_char)[-1])
+        qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
+
+    def remove(self, filePath: str, bucket=pre_check('qiniu_bk_name')):
+        import qiniu
+        auth = qiniu.Auth(self.ac_key, self.sc_key)
+        bk = qiniu.BucketManager(auth)
+        bk.delete(bucket, filePath)
+
+    def copy_url(self, filePath: str, bucket=pre_check('qiniu_bk_name')):
+        import qiniu
+        auth = qiniu.Auth(self.ac_key, self.sc_key)
+        bk = qiniu.BucketManager(auth)
+        bk.fetch(filePath, bucket, filePath.split('/')[-1])

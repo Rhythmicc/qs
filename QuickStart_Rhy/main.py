@@ -50,28 +50,28 @@ def h():
             color_flag = False
         ss = ss.split(':->')
         return colorama.Fore.LIGHTMAGENTA_EX + ss[0] + colorama.Style.RESET_ALL + \
-            ':->' + colorama.Fore.YELLOW + ss[1] + colorama.Style.RESET_ALL
+               ':->' + colorama.Fore.YELLOW + ss[1] + colorama.Style.RESET_ALL
 
     print('help:')
-    print(color_rep('    qs -u  [url]             :-> open url using default browser'))
-    print(color_rep('    qs -a  [app/(file...)]   :-> open app or open file by app(for Mac OS X)'))
-    print(color_rep('    qs -f  [file...]         :-> open file by default app'))
-    print(color_rep('    qs -dl [urls/""]         :-> download file from url(in clipboard)'))
+    print(color_rep('    qs -u  <url>             :-> open url using default browser'))
+    print(color_rep('    qs -a  <app> [file..]    :-> open app or open file by app(for Mac OS X)'))
+    print(color_rep('    qs -f  <file...>         :-> open file by default app'))
+    print(color_rep('    qs -dl [urls]            :-> download file from url(in clipboard)'))
     print(color_rep('    qs -trans [content]      :-> translate the content(in clipboard)'))
     print(color_rep('    qs -time                 :-> view current time'))
     print(color_rep('    qs -ftp                  :-> start a simple ftp server'))
     print(color_rep('    qs -top                  :-> cpu and memory monitor'))
-    print(color_rep('    qs -rmbg picture         :-> remove image background'))
-    print(color_rep('    qs -smms picture/*.md    :-> upload img to smms or all in .md'))
-    print(color_rep('    qs -ali_nas [op] [bucket]:-> call aliyun nas api'))
+    print(color_rep('    qs -rmbg <picture>       :-> remove image background'))
+    print(color_rep('    qs -smms <picture/*.md>  :-> upload img to smms or all in .md'))
+    print(color_rep('    qs -ali_nas -help        :-> get aliyun nas api help menu'))
+    print(color_rep('    qs -qiniu -help          :-> get qiniu nas api help menu'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
-    print(color_rep('    qs -mktar [path]         :-> create gzipped archive for path'))
-    print(color_rep('    qs -untar [path]         :-> extract path.tar.*'))
-    print(color_rep('    qs -mkzip [path]         :-> make a zip for path'))
-    print(color_rep('    qs -unzip [path]         :-> unzip path.zip'))
+    print(color_rep('    qs -mktar <path>         :-> create gzipped archive for path'))
+    print(color_rep('    qs -untar <path>         :-> extract path.tar.*'))
+    print(color_rep('    qs -mkzip <path>         :-> make a zip for path'))
+    print(color_rep('    qs -unzip <path>         :-> unzip path.zip'))
     print(color_rep('    qs -upload               :-> upload your pypi library'))
     print(color_rep('    qs -upgrade              :-> update qs'))
-    print(color_rep('    qs -pyuninstaller [path] :-> remove files that pyinstaller create'))
 
 
 def check_one_page(url):
@@ -419,18 +419,18 @@ def ImgBed():
 def ali_nas():
     try:
         op = sys.argv[2]
-        if op == '-up':
-            file = sys.argv[3]
-        elif op == '-dl':
-            file = sys.argv[3]
-        else:
+        if op not in ['-dl', '-up']:
             raise IndexError
+        file = sys.argv[3]
         try:
             bucket = sys.argv[4]
         except IndexError:
             bucket = None
     except IndexError:
-        exit('Usage: %s -ali_nas [-up path/-dl name] [bucket]')
+        print('qs -ali_nas:\n'
+              '\t-up <file> [bucket]: upload file to bucket\n'
+              '\t-dl <file> [bucket]: download file from bucket')
+        exit(0)
     else:
         from QuickStart_Rhy.call_api import Aliyun_nas_api
         ali_api = Aliyun_nas_api()
@@ -438,6 +438,33 @@ def ali_nas():
             ali_api.upload(file) if not bucket else ali_api.upload(file, bucket)
         else:
             ali_api.download(file) if not bucket else ali_api.download(file, bucket)
+
+
+def qiniu():
+    try:
+        op = sys.argv[2]
+        if op not in ['-up', '-rm', '-cp']:
+            raise IndexError
+        file = sys.argv[3]
+        try:
+            bucket = sys.argv[4]
+        except IndexError:
+            bucket = None
+    except IndexError:
+        print('qs -qiniu:\n'
+              '\t-up <file> [bucket]: upload file to bucket\n'
+              '\t-rm <file> [bucket]: remove file in bucket\n'
+              '\t-cp <url > [bucket]: copy file from url')
+        exit(0)
+    else:
+        from QuickStart_Rhy.call_api import Qiniu_nas_api
+        qiniu_api = Qiniu_nas_api()
+        if op == '-up':
+            qiniu_api.upload(file) if not bucket else qiniu_api.upload(file, bucket)
+        elif op == '-rm':
+            qiniu_api.remove(file) if not bucket else qiniu_api.remove(file, bucket)
+        elif op == '-cp':
+            qiniu_api.copy_url(file) if not bucket else qiniu_api.copy_url(file, bucket)
 
 
 cmd_config = {
@@ -453,6 +480,7 @@ cmd_config = {
     '-rmbg': remove_bg,
     '-smms': ImgBed,
     '-ali_nas': ali_nas,
+    '-qiniu': qiniu,
     '-weather': weather,
     '-dl': download,
     '-mktar': mktar,

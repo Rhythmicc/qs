@@ -13,7 +13,8 @@
 | `qs -top`                  | cpu and memory monitor                                       |
 | `qs -rmbg <picture>`       | remove image background                                      |
 | `qs -smms <picture/*.md>`  | upload images to sm.ms (or replace paths in markdown)        |
-| `qs -ali_nas <-up/-dl file> [bucket]` | call aliyun nas api to upload or download file               |
+| `qs -ali_nas -help`        | get aliyun nas api help                                      |
+| `qs -qiniu -help`          | get qiniu nas api help                                       |
 | `qs -weather [address]`    | check weather (of address)                                   |
 | `qs -dl [urls]`        | download file from url(in clipboard)                         |
 | `qs -mktar <path>`       | create gzipped archive for path(dir/file)                    |
@@ -35,3 +36,4 @@
 
   [unzip](http://gnuwin32.sourceforge.net/packages/unzip.htm)
 
+~~~~
