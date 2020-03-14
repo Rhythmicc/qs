@@ -26,14 +26,8 @@
 
 (By the way, if you are the one of China University Of Petroleum(Beijing), run `qs -i` to login school network)
 
-## Some tools for Windows user to normally use qs
-
-- almost have installed automatically by system on Linux/MacOS X
-
-  [tar](http://gnuwin32.sourceforge.net/packages/gtar.htm)
-
-  [zip](http://gnuwin32.sourceforge.net/packages/zip.htm)
-
-  [unzip](http://gnuwin32.sourceforge.net/packages/unzip.htm)
-
-~~~~
+## Docs
+|Location|Url|
+|:---:|:---:|
+|China|[Docs](https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/)|
+|Other|[Docs](https://www.rhythmlian.cn/2020/02/14/QuickStart-Rhy/)|

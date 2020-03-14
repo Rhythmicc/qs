@@ -419,9 +419,9 @@ def ImgBed():
 def ali_nas():
     try:
         op = sys.argv[2]
-        if op not in ['-dl', '-up']:
+        if op not in ['-dl', '-up', '-ls']:
             raise IndexError
-        file = sys.argv[3]
+        file = sys.argv[3] if op != '-ls' else None
         try:
             bucket = sys.argv[4]
         except IndexError:
@@ -429,42 +429,54 @@ def ali_nas():
     except IndexError:
         print('qs -ali_nas:\n'
               '\t-up <file> [bucket]: upload file to bucket\n'
-              '\t-dl <file> [bucket]: download file from bucket')
+              '\t-dl <file> [bucket]: download file from bucket\n'
+              '\t-rm <file> [bucket]: remove file in bucket\n'
+              '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
         from QuickStart_Rhy.call_api import Aliyun_nas_api
         ali_api = Aliyun_nas_api()
         if op == '-up':
-            ali_api.upload(file) if not bucket else ali_api.upload(file, bucket)
-        else:
-            ali_api.download(file) if not bucket else ali_api.download(file, bucket)
+            ali_api.upload(file, bucket)
+        elif op == '-dl':
+            ali_api.download(file, bucket)
+        elif op == '-ls':
+            ali_api.list_bucket(bucket)
+        elif op == '-dl':
+            ali_api.remove(file, bucket)
 
 
 def qiniu():
     try:
         op = sys.argv[2]
-        if op not in ['-up', '-rm', '-cp']:
+        if op not in ['-up', '-rm', '-cp', '-ls', '-dl']:
             raise IndexError
-        file = sys.argv[3]
+        file = sys.argv[3] if op != '-ls' else None
         try:
-            bucket = sys.argv[4]
+            bucket = sys.argv[4] if op != '-ls' else sys.argv[3]
         except IndexError:
             bucket = None
     except IndexError:
         print('qs -qiniu:\n'
               '\t-up <file> [bucket]: upload file to bucket\n'
               '\t-rm <file> [bucket]: remove file in bucket\n'
-              '\t-cp <url > [bucket]: copy file from url')
+              '\t-cp <url > [bucket]: copy file from url\n'
+              '\t-dl <file> [bucket]: download file from bucket\n'
+              '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
         from QuickStart_Rhy.call_api import Qiniu_nas_api
         qiniu_api = Qiniu_nas_api()
         if op == '-up':
-            qiniu_api.upload(file) if not bucket else qiniu_api.upload(file, bucket)
+            qiniu_api.upload(file, bucket)
         elif op == '-rm':
-            qiniu_api.remove(file) if not bucket else qiniu_api.remove(file, bucket)
+            qiniu_api.remove(file, bucket)
         elif op == '-cp':
-            qiniu_api.copy_url(file) if not bucket else qiniu_api.copy_url(file, bucket)
+            qiniu_api.copy_url(file, bucket)
+        elif op == '-dl':
+            qiniu_api.download(file, bucket)
+        elif op == '-ls':
+            qiniu_api.list_bucket(bucket)
 
 
 cmd_config = {
