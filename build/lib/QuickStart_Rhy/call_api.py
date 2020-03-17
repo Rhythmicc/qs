@@ -120,44 +120,106 @@ def smms(filePath: str):
             print(tb)
 
 
-class Aliyun_nas_api:
+class Aliyun_oss_api:
     def __init__(self):
-        self.ac_id = pre_check('aliyun_nas_acid')
-        self.ac_key = pre_check('aliyun_nas_ackey')
-        self.bucket_url = pre_check('aliyun_nas_bucket_url')
-
-    def upload(self, filePath: str, bucket=pre_check('aliyun_nas_df_bucket')):
         import oss2
-        auth = oss2.Auth(self.ac_id, self.ac_key)
-        bucket = oss2.Bucket(auth, self.bucket_url, bucket)
+        self.ac_id = pre_check('aliyun_oss_acid')
+        self.ac_key = pre_check('aliyun_oss_ackey')
+        self.bucket_url = pre_check('aliyun_oss_bucket_url')
+        self.df_bucket = pre_check('aliyun_oss_df_bucket')
+        self.auth = oss2.Auth(self.ac_id, self.ac_key)
+
+    def upload(self, filePath: str, bucket=None):
+        import oss2
+        bucket = bucket if bucket else self.df_bucket
+        bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         oss2.resumable_upload(bucket, filePath.split(dir_char)[-1], filePath, num_threads=4)
 
-    def download(self, filename: str, bucket=pre_check('aliyun_nas_df_bucket')):
+    def download(self, filename: str, bucket=None):
         import oss2
-        auth = oss2.Auth(self.ac_id, self.ac_key)
-        bucket = oss2.Bucket(auth, self.bucket_url, bucket)
+        bucket = bucket if bucket else self.df_bucket
+        bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         oss2.resumable_download(bucket, filename, filename, num_threads=4)
 
+    def remove(self, filePath: str, bucket=None):
+        import oss2
+        bucket = bucket if bucket else self.df_bucket
+        bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
+        bucket.delete_object(filePath)
 
-class Qiniu_nas_api:
+    def list_bucket(self, bucket=None):
+        from QuickStart_Rhy.normal_dl import size_format
+        import oss2
+        bucket = bucket if bucket else self.df_bucket
+        ls = oss2.Bucket(self.auth, self.bucket_url, bucket)
+        tb = PrettyTable(['File', 'Size'])
+        for obj in oss2.ObjectIterator(ls):
+            tb.add_row([obj.key, size_format(obj.size)])
+        print('Bucket Url:', 'https://'+bucket+'.'+self.bucket_url+'/')
+        print(tb)
+
+
+class Qiniu_oss_api:
     def __init__(self):
+        import qiniu
         self.ac_key = pre_check('qiniu_ac_key')
         self.sc_key = pre_check('qiniu_sc_key')
+        self.auth = qiniu.Auth(self.ac_key, self.sc_key)
+        self.df_bucket = pre_check('qiniu_bk_name')
 
-    def upload(self, filePath: str, bucket=pre_check('qiniu_bk_name')):
+    def upload(self, filePath: str, bucket=None):
         import qiniu
-        auth = qiniu.Auth(self.ac_key, self.sc_key)
-        tk = auth.upload_token(bucket, filePath.split(dir_char)[-1])
+        tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath.split(dir_char)[-1])
         qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
 
-    def remove(self, filePath: str, bucket=pre_check('qiniu_bk_name')):
+    def remove(self, filePath: str, bucket=None):
         import qiniu
-        auth = qiniu.Auth(self.ac_key, self.sc_key)
-        bk = qiniu.BucketManager(auth)
-        bk.delete(bucket, filePath)
+        bk = qiniu.BucketManager(self.auth)
+        bk.delete(bucket if bucket else self.df_bucket, filePath)
 
-    def copy_url(self, filePath: str, bucket=pre_check('qiniu_bk_name')):
+    def copy_url(self, filePath: str, bucket=None):
         import qiniu
-        auth = qiniu.Auth(self.ac_key, self.sc_key)
-        bk = qiniu.BucketManager(auth)
-        bk.fetch(filePath, bucket, filePath.split('/')[-1])
+        bk = qiniu.BucketManager(self.auth)
+        bk.fetch(filePath, bucket if bucket else self.df_bucket, filePath.split('/')[-1])
+
+    def get_bucket_url(self, bucket=None):
+        bucket = bucket if bucket else self.df_bucket
+        url = 'http://api.qiniu.com/v6/domain/list?tbl=%s' % bucket
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "QBox %s" % self.auth.token_of_request(url)
+        }
+        res = requests.get(url, headers=headers)
+        if res.status_code == requests.codes.ok:
+            return res.json()
+        else:
+            return False
+
+    def list_bucket(self, bucket=None):
+        import qiniu
+        bk = qiniu.BucketManager(self.auth)
+        ret = bk.list(bucket if bucket else self.df_bucket)
+        if not ret[1]:
+            print("ERROR!")
+            exit(0)
+        root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
+        ret = ret[0]['items']
+        from QuickStart_Rhy.normal_dl import size_format
+        tb = PrettyTable(['File', 'Size'])
+        for i in ret:
+            tb.add_row([i['key'], size_format(i['fsize'])])
+        print("Bucket url:", root_url)
+        print(tb)
+
+    def download(self, filePath: str, bucket=None):
+        from QuickStart_Rhy.normal_dl import normal_dl
+        bucket = bucket if bucket else self.df_bucket
+        root_url = self.get_bucket_url(bucket)[0]
+        if root_url:
+            root_url = 'http://' + root_url + '/'
+        else:
+            exit('Get Bucket Url Failed!')
+        dl_url = root_url + filePath
+        if bucket.startswith('admin'):
+            dl_url = self.auth.private_download_url(dl_url)
+        normal_dl(dl_url)

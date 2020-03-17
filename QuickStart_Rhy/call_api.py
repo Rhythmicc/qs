@@ -120,13 +120,13 @@ def smms(filePath: str):
             print(tb)
 
 
-class Aliyun_nas_api:
+class Aliyun_oss_api:
     def __init__(self):
         import oss2
-        self.ac_id = pre_check('aliyun_nas_acid')
-        self.ac_key = pre_check('aliyun_nas_ackey')
-        self.bucket_url = pre_check('aliyun_nas_bucket_url')
-        self.df_bucket = pre_check('aliyun_nas_df_bucket')
+        self.ac_id = pre_check('aliyun_oss_acid')
+        self.ac_key = pre_check('aliyun_oss_ackey')
+        self.bucket_url = pre_check('aliyun_oss_bucket_url')
+        self.df_bucket = pre_check('aliyun_oss_df_bucket')
         self.auth = oss2.Auth(self.ac_id, self.ac_key)
 
     def upload(self, filePath: str, bucket=None):
@@ -159,7 +159,7 @@ class Aliyun_nas_api:
         print(tb)
 
 
-class Qiniu_nas_api:
+class Qiniu_oss_api:
     def __init__(self):
         import qiniu
         self.ac_key = pre_check('qiniu_ac_key')

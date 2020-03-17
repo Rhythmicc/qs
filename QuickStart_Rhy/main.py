@@ -62,8 +62,9 @@ def h():
     print(color_rep('    qs -ftp                  :-> start a simple ftp server'))
     print(color_rep('    qs -top                  :-> cpu and memory monitor'))
     print(color_rep('    qs -rmbg <picture>       :-> remove image background'))
+    print(color_rep('    qs -stbg pic to [from]   :-> color replace for picture'))
     print(color_rep('    qs -smms <picture/*.md>  :-> upload img to smms or all in .md'))
-    print(color_rep('    qs -ali_nas -help        :-> get aliyun nas api help menu'))
+    print(color_rep('    qs -ali_oss -help        :-> get aliyun nas api help menu'))
     print(color_rep('    qs -qiniu -help          :-> get qiniu nas api help menu'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))
     print(color_rep('    qs -mktar <path>         :-> create gzipped archive for path'))
@@ -416,7 +417,7 @@ def ImgBed():
         smms(path)
 
 
-def ali_nas():
+def ali_oss():
     try:
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls']:
@@ -434,8 +435,8 @@ def ali_nas():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.call_api import Aliyun_nas_api
-        ali_api = Aliyun_nas_api()
+        from QuickStart_Rhy.call_api import Aliyun_oss_api
+        ali_api = Aliyun_oss_api()
         if op == '-up':
             ali_api.upload(file, bucket)
         elif op == '-dl':
@@ -465,8 +466,8 @@ def qiniu():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.call_api import Qiniu_nas_api
-        qiniu_api = Qiniu_nas_api()
+        from QuickStart_Rhy.call_api import Qiniu_oss_api
+        qiniu_api = Qiniu_oss_api()
         if op == '-up':
             qiniu_api.upload(file, bucket)
         elif op == '-rm':
@@ -477,6 +478,32 @@ def qiniu():
             qiniu_api.download(file, bucket)
         elif op == '-ls':
             qiniu_api.list_bucket(bucket)
+
+
+def set_img_background():
+    from QuickStart_Rhy.ImageDeal import transport_back, get_color_from_str
+
+    try:
+        img = sys.argv[2]
+        if img == '-help':
+            raise IndexError
+        if not os.path.exists(img):
+            exit('[ERROR] No Such File: %s' % img)
+        to = sys.argv[3]
+        try:
+            frm = sys.argv[4]
+        except IndexError:
+            frm = '0,0,0,0'
+    except IndexError:
+        print('Usage: qs -stbg picture to_color [from_color: default transparency]')
+        exit(0)
+    else:
+        to = get_color_from_str(to)
+        frm = get_color_from_str(frm)
+        img = transport_back(img, to, frm)
+        iname = sys.argv[2].split(',')
+        iname = iname[0] + '_stbg.' + ''.join(iname[1:])
+        img.save(iname)
 
 
 cmd_config = {
@@ -490,8 +517,9 @@ cmd_config = {
     '-top': top,
     '-time': cur_time,
     '-rmbg': remove_bg,
+    '-stbg': set_img_background,
     '-smms': ImgBed,
-    '-ali_nas': ali_nas,
+    '-ali_oss': ali_oss,
     '-qiniu': qiniu,
     '-weather': weather,
     '-dl': download,
