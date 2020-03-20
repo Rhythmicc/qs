@@ -1,31 +1,28 @@
-from PIL import Image
+import sys
+import os
 
 
-def transport_back(src: str, to_color, from_color=(0, 0, 0, 0)):
-    src = Image.open(src)
-    src = src.convert('RGBA')
-    L, H = src.size
-    color_0 = from_color
-    transparency_flag = False if color_0[-1] else True
-    for h_indx in range(H):
-        for l_indx in range(L):
-            dot = (l_indx, h_indx)
-            color_1 = src.getpixel(dot)
-            if transparency_flag and not color_1[-1]:
-                src.putpixel(dot, to_color)
-            elif color_0[:-1] == color_1[:-1]:
-                src.putpixel(dot, to_color)
-    return src
+def set_img_background():
+    from QuickStart_Rhy.ImageDeal.ColorTools import transport_back, get_color_from_str
 
-
-def get_color_from_str(str_color: str):
-    if ',' in str_color:
-        str_color = [int(i) for i in str_color.split(',')]
-        if len(str_color) == 3:
-            str_color.append(255)
-        str_color = tuple(str_color)
-    elif len(str_color) == 6:
-        str_color = (int(str_color[:2], 16), int(str_color[2:4], 16), int(str_color[4:], 16), 255)
+    try:
+        img = sys.argv[2]
+        if img == '-help':
+            raise IndexError
+        if not os.path.exists(img):
+            exit('[ERROR] No Such File: %s' % img)
+        to = sys.argv[3]
+        try:
+            frm = sys.argv[4]
+        except IndexError:
+            frm = '0,0,0,0'
+    except IndexError:
+        print('Usage: qs -stbg picture to_color [from_color: default transparency]')
+        exit(0)
     else:
-        exit('ERROR COLOR!')
-    return str_color
+        to = get_color_from_str(to)
+        frm = get_color_from_str(frm)
+        img = transport_back(img, to, frm)
+        iname = sys.argv[2].split('.')
+        iname = iname[0] + '_stbg.' + ''.join(iname[1:])
+        img.save(iname)
