@@ -1,4 +1,4 @@
-from QuickStart_Rhy.API.API_Init import *
+from QuickStart_Rhy.API.API_init import *
 import qiniu
 
 
@@ -51,7 +51,7 @@ class Qiniu_oss_api:
             exit(0)
         root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
         ret = ret[0]['items']
-        from QuickStart_Rhy.normal_dl import size_format
+        from QuickStart_Rhy.NetTools.normal_dl import size_format
         tb = PrettyTable(['File', 'Size'])
         for i in ret:
             tb.add_row([i['key'], size_format(i['fsize'])])
@@ -59,7 +59,7 @@ class Qiniu_oss_api:
         print(tb)
 
     def download(self, filePath: str, bucket=None):
-        from QuickStart_Rhy.normal_dl import normal_dl
+        from QuickStart_Rhy.NetTools.normal_dl import normal_dl
         bucket = bucket if bucket else self.df_bucket
         root_url = self.get_bucket_url(bucket)[0]
         if root_url:

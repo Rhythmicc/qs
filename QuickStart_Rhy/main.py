@@ -5,8 +5,9 @@ from QuickStart_Rhy.func_list import *
 color_flag = dir_char == '\\'
 
 
-def help():
+def qs_help():
     import colorama
+    from colorama import Fore, Style
 
     def color_rep(ss):
         global color_flag
@@ -14,8 +15,7 @@ def help():
             colorama.init()
             color_flag = False
         ss = ss.split(':->')
-        return colorama.Fore.LIGHTMAGENTA_EX + ss[0] + colorama.Style.RESET_ALL + \
-               ':->' + colorama.Fore.YELLOW + ss[1] + colorama.Style.RESET_ALL
+        return Fore.LIGHTMAGENTA_EX + ss[0] + Style.RESET_ALL + ':->' + Fore.YELLOW + ss[1] + Style.RESET_ALL
 
     print('help:')
     print(color_rep('    qs -u  <url>             :-> open url using default browser'))
@@ -42,22 +42,27 @@ def help():
 
 cmd_config = {}
 for i in basic_funcs:
-    cmd_config[i] = basic_funcs
+    if i.startswith('-'):
+        cmd_config[i] = basic_funcs
 for i in api_funcs:
-    cmd_config[i] = api_funcs
+    if i.startswith('-'):
+        cmd_config[i] = api_funcs
 for i in net_funcs:
-    cmd_config[i] = net_funcs
+    if i.startswith('-'):
+        cmd_config[i] = net_funcs
 for i in image_funcs:
-    cmd_config[i] = image_funcs
+    if i.startswith('-'):
+        cmd_config[i] = image_funcs
 for i in system_funcs:
-    cmd_config[i] = system_funcs
+    if i.startswith('-'):
+        cmd_config[i] = system_funcs
 
 
 def main():
     if len(sys.argv) >= 2:
         func_name = sys.argv[1]
         if func_name not in cmd_config:
-            help()
+            qs_help()
         else:
             func_table = cmd_config[func_name]
             file_name = func_table['self']
@@ -65,7 +70,7 @@ def main():
             exec('from QuickStart_Rhy.%s import %s' % (file_name, func_name))
             eval('%s()' % func_name)
     else:
-        help()
+        qs_help()
 
 
 if __name__ == '__main__':

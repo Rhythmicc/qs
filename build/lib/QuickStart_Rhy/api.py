@@ -1,15 +1,5 @@
 import sys
 
-api_funcs = {
-    'self': 'api',
-    '-trans': 'translate',
-    '-rmbg': 'remove_bg',
-    '-smms': 'ImgBed',
-    '-ali_oss': 'ali_oss',
-    '-qiniu': 'qiniu',
-    '-weather': 'weather',
-}
-
 
 def remove_bg():
     try:

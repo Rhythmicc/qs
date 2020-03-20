@@ -5,12 +5,10 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
                   'Version/11.0.2 Safari/604.4.7'}
 system = sys.platform
-base_dir = sys.path[0]
 if system.startswith('win'):
     dir_char = '\\'
 else:
     dir_char = '/'
-base_dir += dir_char
 
 
 def deal_ctrl_c(signum, frame):

@@ -1,4 +1,4 @@
-from QuickStart_Rhy.API.API_Init import *
+from QuickStart_Rhy.API.API_init import *
 
 
 def rmbg(filePath: str):
