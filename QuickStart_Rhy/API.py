@@ -5,7 +5,7 @@ def remove_bg():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: %s -rmbg picture' % sys.argv[0])
+        exit('Usage: qs -rmbg picture')
     else:
         from QuickStart_Rhy.API.simple_api import rmbg
         rmbg(path)
@@ -15,7 +15,7 @@ def ImgBed():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: %s -smms [picture]' % sys.argv[0])
+        exit('Usage: qs -smms [picture]')
     else:
         from QuickStart_Rhy.API.simple_api import smms
         smms(path)
