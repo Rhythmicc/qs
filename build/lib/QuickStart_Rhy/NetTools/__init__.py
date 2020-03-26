@@ -5,7 +5,7 @@ from QuickStart_Rhy import headers
 
 def check_one_page(url):
     try:
-        response = requests.get(url, headers=headers).status_code
+        response = requests.head(url, headers=headers).status_code
         return response == requests.codes.ok
     except RequestException:
         return False
@@ -43,3 +43,12 @@ def size_format(sz):
         return '%.3f KB' % (sz / 1e3)
     else:
         return '%.2f B' % sz
+
+
+def get_ip_info():
+    import json
+    res = requests.get('http://ip-api.com/json/', headers=headers)
+    if res.status_code == requests.codes.ok:
+        return json.loads(res.text)
+    else:
+        return None

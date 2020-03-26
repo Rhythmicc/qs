@@ -93,44 +93,38 @@ def translate():
 
 
 def weather():
-    import threading
     from QuickStart_Rhy import headers, dir_char
+    from QuickStart_Rhy.ThreadTools import ThreadFunctionWrapper
     import requests
 
-    class pull_data(threading.Thread):
-        def __init__(self, url):
-            threading.Thread.__init__(self)
-            self.url = url
-            self.ret = []
-
-        def run(self):
-            try:
-                ct = requests.get(self.url, headers)
-            except:
-                return
-            ct.encoding = 'utf-8'
-            ct = ct.text.split('\n')
-            if dir_char == '/':
-                self.ret = ct.copy()
-            else:
-                import re
-                for line in range(len(ct)):
-                    ct[line] = re.sub('\x1b.*?m', '', ct[line])
-                self.ret = ct.copy()
-
-        def get_ret(self):
-            return self.ret
+    def get_data(url):
+        try:
+            ct = requests.get(url, headers)
+        except:
+            return
+        ct.encoding = 'utf-8'
+        ct = ct.text.split('\n')
+        if dir_char == '/':
+            res = ct.copy()
+        else:
+            import re
+            for line in range(len(ct)):
+                ct[line] = re.sub('\x1b.*?m', '', ct[line])
+            res = ct.copy()
+        return res
 
     try:
         loc = sys.argv[2]
     except IndexError:
         loc = ''
-    tls = [pull_data('https://wttr.in/' + (loc if loc else '?lang=zh')), pull_data('https://v2.wttr.in/' + loc)]
+    tls = [ThreadFunctionWrapper(get_data, 'https://wttr.in/' + (loc if loc else '?lang=zh')),
+           ThreadFunctionWrapper(get_data, 'https://v2.wttr.in/' + loc)]
     for i in tls:
         i.start()
+    for i in tls:
         i.join()
-    simple = tls[0].get_ret()
-    table = tls[1].get_ret()
+    simple = tls[0].get_res()
+    table = tls[1].get_res()
     if simple:
         if not loc:
             from QuickStart_Rhy.API.Dict import Dict
