@@ -1,6 +1,6 @@
 import requests
 from requests.exceptions import RequestException
-from QuickStart_Rhy.basic import headers
+from QuickStart_Rhy import headers
 
 
 def check_one_page(url):
@@ -32,3 +32,14 @@ def get_ip():
     except Exception:
         s.close()
         return socket.gethostbyname(socket.gethostname())
+
+
+def size_format(sz):
+    if sz >= 1e9:
+        return '%.3f GB' % (sz / 1e9)
+    elif sz >= 1e6:
+        return '%.3f MB' % (sz / 1e6)
+    elif sz >= 1e3:
+        return '%.3f KB' % (sz / 1e3)
+    else:
+        return '%.2f B' % sz

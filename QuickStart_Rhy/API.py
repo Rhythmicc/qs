@@ -94,7 +94,7 @@ def translate():
 
 def weather():
     import threading
-    from QuickStart_Rhy.basic import headers, dir_char
+    from QuickStart_Rhy import headers, dir_char
     import requests
 
     class pull_data(threading.Thread):

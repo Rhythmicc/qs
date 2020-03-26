@@ -1,6 +1,6 @@
 import os
 import sys
-from QuickStart_Rhy.basic import dir_char
+from QuickStart_Rhy import dir_char
 
 
 def get_tar_name():

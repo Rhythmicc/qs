@@ -1,5 +1,5 @@
 import sys
-from QuickStart_Rhy.basic import dir_char
+from QuickStart_Rhy import dir_char
 from QuickStart_Rhy.func_list import *
 
 color_flag = dir_char == '\\'
@@ -67,7 +67,10 @@ def main():
             func_table = cmd_config[func_name]
             file_name = func_table['self']
             func_name = func_table[func_name]
-            exec('from QuickStart_Rhy.%s import %s' % (file_name, func_name))
+            if file_name == 'basic':
+                exec('from QuickStart_Rhy import %s' % func_name)
+            else:
+                exec('from QuickStart_Rhy.%s import %s' % (file_name, func_name))
             eval('%s()' % func_name)
     else:
         qs_help()

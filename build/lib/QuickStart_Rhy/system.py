@@ -1,4 +1,4 @@
-from QuickStart_Rhy.basic import dir_char
+from QuickStart_Rhy import dir_char
 
 
 def top():
@@ -8,8 +8,8 @@ def top():
     import colorama
     from prettytable import PrettyTable
     from colorama import Style, ansi, Cursor
-    from QuickStart_Rhy.basic import cur_time
-    from QuickStart_Rhy.TuiTools import ChartBar
+    from QuickStart_Rhy import cur_time
+    from QuickStart_Rhy.TuiTools import Bar
     from QuickStart_Rhy.NetTools.normal_dl import size_format
 
     def deal():
@@ -21,8 +21,8 @@ def top():
     _total_mem = psutil.virtual_memory().total
     _cpu_dt = [0] * 40
     _mem_dt = [0] * 40
-    _cpu_chart = ChartBar.RollBar(_cpu_dt, height=10)
-    _mem_chart = ChartBar.RollBar(_mem_dt, height=10)
+    _cpu_chart = Bar.RollBar(_cpu_dt, height=10)
+    _mem_chart = Bar.RollBar(_mem_dt, height=10)
     charts = [_cpu_chart, _mem_chart]
     window = PrettyTable()
     window.add_row(charts)

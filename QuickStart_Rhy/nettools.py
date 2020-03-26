@@ -1,7 +1,7 @@
 import sys
 import signal
-from QuickStart_Rhy.NetTools.basic import get_ip
-from QuickStart_Rhy.basic import deal_ctrl_c
+from QuickStart_Rhy.NetTools import get_ip
+from QuickStart_Rhy import deal_ctrl_c
 
 
 def upgrade():
@@ -12,7 +12,7 @@ def upgrade():
 
 def upload_pypi():
     import os
-    from QuickStart_Rhy.basic import remove, dir_char
+    from QuickStart_Rhy import remove, dir_char
     remove('dist')
     if os.system('python3 setup.py sdist bdist_wheel'):
         os.system('python setup.py sdist bdist_wheel')

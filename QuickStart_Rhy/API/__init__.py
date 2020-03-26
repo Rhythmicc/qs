@@ -1,5 +1,3 @@
-from prettytable import PrettyTable
-import requests
 import json
 import sys
 import os
@@ -18,12 +16,15 @@ else:
     qsconfig = {}
 
 
-def pre_check(funcName: str) -> str:
+def pre_check(funcName: str, ext=True):
     try:
         api_key = qsconfig[funcName]
         if not api_key:
             exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
     except KeyError:
-        exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
+        if ext:
+            exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
+        else:
+            return False
     else:
         return api_key
