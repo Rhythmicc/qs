@@ -45,7 +45,7 @@ def cur_time():
 
 def u():
     import webbrowser as wb
-    from QuickStart_Rhy.NetTools.basic import formatUrl
+    from QuickStart_Rhy.NetTools import formatUrl
     for url in sys.argv[2:]:
         url = formatUrl(url)
         wb.open_new_tab(url)
