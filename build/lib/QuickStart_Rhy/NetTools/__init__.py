@@ -34,15 +34,15 @@ def get_ip():
         return socket.gethostbyname(socket.gethostname())
 
 
-def size_format(sz):
+def size_format(sz, align=False):
     if sz >= 1e9:
-        return '%.3f GB' % (sz / 1e9)
+        return '%.3f GB' % (sz / 1e9) if not align else '%7.3f GB' % (sz / 1e9)
     elif sz >= 1e6:
-        return '%.3f MB' % (sz / 1e6)
+        return '%.3f MB' % (sz / 1e6) if not align else '%7.3f MB' % (sz / 1e6)
     elif sz >= 1e3:
-        return '%.3f KB' % (sz / 1e3)
+        return '%.3f KB' % (sz / 1e3) if not align else '%7.3f KB' % (sz / 1e3)
     else:
-        return '%.2f B' % sz
+        return '%.2f B' % sz if not align else '%7.2f B' % sz
 
 
 def get_ip_info():
@@ -52,3 +52,23 @@ def get_ip_info():
         return json.loads(res.text)
     else:
         return None
+
+
+def get_fileinfo(url):
+    import os
+    try:
+        res = requests.head(url, headers=headers)
+    except:
+        return False, False, False
+    while res.status_code == 302:
+        url = res.headers['Location']
+        res = requests.head(url, headers=headers)
+    if 'Content-Disposition' in res.headers:
+        filename = res.headers['Content-Disposition'].split('filename=')[1]
+        filename = filename.replace('"', '').replace("'", '')
+    else:
+        if '?' in url:
+            filename = os.path.basename(url[:url.index['?']])
+        else:
+            filename = os.path.basename(url)
+    return url, filename, res
