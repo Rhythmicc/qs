@@ -4,6 +4,7 @@ from threading import Lock
 from requests import get
 import psutil
 import signal
+import queue
 import time
 import os
 
@@ -46,6 +47,7 @@ class Downloader:
         if self.size > 0:
             self.pool = ThreadPoolExecutor(max_workers=self.num)
             self.futures = []
+            self.job_queue = queue.Queue()
             if os.path.exists(self.name + '.qs_dl'):
                 self.ctn_file = open(self.name + '.qs_dl', 'r+')
                 self.ctn = [int(i) for i in self.ctn_file.read().strip().split()]
@@ -75,7 +77,7 @@ class Downloader:
             tm = time.perf_counter() - tm
             speed = size_format((self.fileBlock * self.num / tm), align=True)
         except:
-            self.futures.append(self.pool.submit(self._dl, start))
+            self.job_queue.put(start)
         else:
             self.fileLock.acquire()
             self.cur_sz += _sz - start
@@ -94,10 +96,17 @@ class Downloader:
                     if i in self.ctn:
                         self.cur_sz += min(i + self.fileBlock, self.size) - i
                     else:
-                        self.futures.append(self.pool.submit(self._dl, i))
+                        self.job_queue.put(i)
                 else:
-                    self.futures.append(self.pool.submit(self._dl, i))
-            wait(self.futures)
+                    self.job_queue.put(i)
+            for i in range(3):
+                self.futures.clear()
+                if self.job_queue.qsize():
+                    while not self.job_queue.empty():
+                        self.futures.append(self.pool.submit(self._dl, self.job_queue.get()))
+                    wait(self.futures)
+                else:
+                    break
             self.ctn_file.close()
             os.remove(self.name + '.qs_dl')
         else:
