@@ -1,4 +1,3 @@
-from QuickStart_Rhy import dir_char
 from QuickStart_Rhy.API import *
 import oss2
 

@@ -29,8 +29,9 @@ api_funcs = {
     '-trans': 'translate',
     '-rmbg': 'remove_bg',
     '-smms': 'ImgBed',
-    '-ali_oss': 'ali_oss',
+    '-alioss': 'ali_oss',
     '-qiniu': 'qiniu',
+    '-txcos': 'txcos',
     '-weather': 'weather',
 }
 

@@ -1,14 +1,14 @@
+from QuickStart_Rhy import dir_char
 import json
-import sys
 import os
 
-dir_char = '\\' if sys.platform.startswith('win') else '/'
-user_root = os.path.expanduser('~')
-if os.path.exists(user_root + dir_char + '.qsrc'):
-    with open(user_root + dir_char + '.qsrc', 'r') as f:
+
+user_root = os.path.expanduser('~') + dir_char
+if os.path.exists(user_root + '.qsrc'):
+    with open(user_root + '.qsrc', 'r') as f:
         qsconfig = json.loads(f.read())
 else:
-    with open(user_root + dir_char + '.qsrc', 'w') as f:
+    with open(user_root + '.qsrc', 'w') as f:
         f.write('{\n'
                 '  "rmbg": "GET API KEY: https://www.remove.bg"\n'
                 '  "smms": "GET API KEY: https://sm.ms"\n'

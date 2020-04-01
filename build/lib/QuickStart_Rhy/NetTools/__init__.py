@@ -55,20 +55,18 @@ def get_ip_info():
 
 
 def get_fileinfo(url):
+    import re
     import os
     try:
         res = requests.head(url, headers=headers)
     except:
         return False, False, False
-    while res.status_code == 302:
+    while res.status_code == 302 or res.status_code == 301:
         url = res.headers['Location']
         res = requests.head(url, headers=headers)
     if 'Content-Disposition' in res.headers:
-        filename = res.headers['Content-Disposition'].split('filename=')[1]
-        filename = filename.replace('"', '').replace("'", '')
+        filename = re.findall('filename=(.*?);', res.headers['Content-Disposition'])[0]
     else:
-        if '?' in url:
-            filename = os.path.basename(url[:url.index['?']])
-        else:
-            filename = os.path.basename(url)
-    return url, filename, res
+        from urllib.parse import urlparse
+        filename = os.path.basename(urlparse(url).path.strip('/'))
+    return url, re.sub(r"^\W+|\W+$", "", filename), res

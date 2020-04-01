@@ -29,7 +29,7 @@ def qs_help():
     print(color_rep('    qs -rmbg <picture>       :-> remove image background'))
     print(color_rep('    qs -stbg pic to [from]   :-> color replace for picture'))
     print(color_rep('    qs -smms <picture/*.md>  :-> upload img to smms or all in .md'))
-    print(color_rep('    qs -alioss -help        :-> get aliyun oss api help menu'))
+    print(color_rep('    qs -alioss -help         :-> get aliyun oss api help menu'))
     print(color_rep('    qs -txcos -help          :-> get tencent cos api help menu'))
     print(color_rep('    qs -qiniu -help          :-> get qiniu oss api help menu'))
     print(color_rep('    qs -weather [address]    :-> check weather (of address)'))

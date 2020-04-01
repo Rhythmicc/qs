@@ -32,7 +32,7 @@ def ali_oss():
         except IndexError:
             bucket = None
     except IndexError:
-        print('qs -ali_nas:\n'
+        print('qs -alioss:\n'
               '\t-up <file> [bucket]: upload file to bucket\n'
               '\t-dl <file> [bucket]: download file from bucket\n'
               '\t-rm <file> [bucket]: remove file in bucket\n'
@@ -70,6 +70,33 @@ def qiniu():
         from QuickStart_Rhy.API.Qiniu_oss import Qiniu_oss_api
         qiniu_api = Qiniu_oss_api()
         func_table = qiniu_api.get_func_table()
+        if not file:
+            func_table[op](bucket)
+        else:
+            func_table[op](file, bucket)
+
+
+def txcos():
+    try:
+        op = sys.argv[2]
+        if op not in ['-dl', '-up', '-ls', '-rm']:
+            raise IndexError
+        file = sys.argv[3] if op != '-ls' else None
+        try:
+            bucket = sys.argv[4] if op != '-ls' else sys.argv[3]
+        except IndexError:
+            bucket = None
+    except IndexError:
+        print('qs -txcos:\n'
+              '\t-up <file> [bucket]: upload file to bucket\n'
+              '\t-dl <file> [bucket]: download file from bucket\n'
+              '\t-rm <file> [bucket]: remove file in bucket\n'
+              '\t-ls [bucket]       : get file info of bucket')
+        exit(0)
+    else:
+        from QuickStart_Rhy.API.txcos import txcos
+        tx_api = txcos()
+        func_table = tx_api.get_func_table()
         if not file:
             func_table[op](bucket)
         else:

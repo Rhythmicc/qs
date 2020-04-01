@@ -1,0 +1,16 @@
+{
+    "pluginName": "QuickStart-Rhy文档",
+    "description": "QuickStart-Rhy文档速查",
+    "preload": "preload.js",
+    "author": "RhythmLian",
+    "homepage": "https://rhythmlian.cn",
+    "logo": "logo.jpg",
+    "version": "0.1.53",
+    "features": [
+        {
+            "code": "qs",
+            "explain": "QuickStart-Rhy Docs",
+            "cmds":["qs", "QuickStart-Rhy"]
+        }
+    ]
+}
