@@ -14,8 +14,8 @@ def upload_pypi():
     import os
     from QuickStart_Rhy import remove, dir_char
     remove('dist')
-    if os.system('python3 setup.py sdist bdist_wheel'):
-        os.system('python setup.py sdist bdist_wheel')
+    if os.system('python3 setup.py sdist'):
+        os.system('python setup.py sdist')
     os.system('twine upload dist%s*' % dir_char)
 
 

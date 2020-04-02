@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: QuickStart-Rhy
+Version: 0.2.2
+Summary: Simplify the operation in terminal!
+Home-page: https://github.com/Rhythmicc/QuickStart
+Author: RhythmLian
+License: MIT
+Description: ## Docs
+        |Location|Url|
+        |:---:|:---:|
+        |China|[Docs](https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/)|
+        |Other|[Docs](https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/)|
+        
+Keywords: Simplify the operation in terminal!
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown

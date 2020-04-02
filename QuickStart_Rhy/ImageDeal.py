@@ -3,7 +3,7 @@ import os
 
 
 def set_img_background():
-    from QuickStart_Rhy.ImageDeal.ColorTools import transport_back, get_color_from_str
+    from QuickStart_Rhy.ImageTools.ColorTools import transport_back, get_color_from_str
 
     try:
         img = sys.argv[2]

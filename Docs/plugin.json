@@ -5,7 +5,7 @@
     "author": "RhythmLian",
     "homepage": "https://rhythmlian.cn",
     "logo": "logo.jpg",
-    "version": "0.1.54",
+    "version": "0.2.2",
     "features": [
         {
             "code": "qs",

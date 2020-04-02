@@ -1,0 +1,7 @@
+pyperclip
+requests
+psutil
+urllib3
+colorama
+prettytable
+diagram

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-VERSION = '0.2'
+VERSION = '0.2.2'
 
 setup(
     name='QuickStart_Rhy',
@@ -17,7 +17,6 @@ setup(
     ],
     keywords='Simplify the operation in terminal!',
     author='RhythmLian',
-    author_mail='RhythmLian@outlook.com',
     url="https://github.com/Rhythmicc/QuickStart",
     license='MIT',
     packages=find_packages(),

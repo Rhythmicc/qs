@@ -1,0 +1,3 @@
+[console_scripts]
+qs = QuickStart_Rhy.main:main
+
