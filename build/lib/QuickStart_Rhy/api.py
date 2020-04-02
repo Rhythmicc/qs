@@ -178,3 +178,8 @@ def weather():
         print('\n'.join(table[-3 if not loc else -4:]))
     else:
         print('Error: Get detail failed.')
+
+
+def ipinfo(ip: str = None):
+    from QuickStart_Rhy.API.IPinfo import get_ip_info
+    return get_ip_info(ip)
