@@ -65,7 +65,11 @@ def get_fileinfo(url):
         url = res.headers['Location']
         res = requests.head(url, headers=headers)
     if 'Content-Disposition' in res.headers:
-        filename = re.findall('filename=(.*?);', res.headers['Content-Disposition'])[0]
+        try:
+            filename = re.findall('filename=(.*?);', res.headers['Content-Disposition'])[0]
+        except IndexError:
+            from urllib.parse import urlparse
+            filename = os.path.basename(urlparse(url).path.strip('/'))
     else:
         from urllib.parse import urlparse
         filename = os.path.basename(urlparse(url).path.strip('/'))

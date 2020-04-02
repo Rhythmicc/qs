@@ -21,7 +21,3 @@ class Line:
         )
         gram.show()
         return str(stream.getvalue(), encoding="utf-8")
-
-
-ss = Line([random.randint(-10, 10) for i in range(12)], 10, 50)
-print(ss)

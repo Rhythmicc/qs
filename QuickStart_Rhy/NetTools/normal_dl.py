@@ -11,7 +11,7 @@ import os
 
 core_num = psutil.cpu_count()
 maxBlockSize = int((psutil.virtual_memory().total >> 6) / core_num)
-minBlockSize = 1 << 17
+minBlockSize = int(5e5)
 
 
 def GetBlockSize(sz):
@@ -20,7 +20,7 @@ def GetBlockSize(sz):
     elif sz <= minBlockSize << 3:
         return minBlockSize
     else:
-        return max(sz >> 10, minBlockSize)
+        return max(sz >> 9, minBlockSize)
 
 
 class Downloader:
@@ -38,9 +38,9 @@ class Downloader:
             exit(0)
         try:
             self.size = int(r.headers['Content-Length'])
-            if self.size < 1e6:
+            if self.size < 5e6:
                 print('[INFO] FILE SIZE\t{}'.format(size_format(self.size)))
-                self.size = -1
+                self.size = -self.size
             else:
                 self.fileBlock = GetBlockSize(self.size)
         except KeyError:
@@ -56,43 +56,54 @@ class Downloader:
                 self.ctn_file = open(self.name + '.qs_dl', 'w')
                 self.ctn = []
             self.writers = FileWriters(self.name, max(2, int(core_num / 2)), "rb+" if self.ctn else "wb")
-            print('[INFO] FILE SIZE\t{}'.format(size_format(self.size)))
-            print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.fileBlock)))
+            print('[INFO] FILE SIZE\t{}'.format(size_format(self.size, align=True)))
+            print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.fileBlock, align=True)))
 
     def _kill_self(self, signum, frame):
-        if not self.has_ctrl:
-            print('\n[INFO] GET Ctrl C! PLEASE PUSH AGAIN TO CONFIRM!')
-            self.has_ctrl = True
-            if self.size > 0:
-                self.ctn_file.close()
-        exit(0)
+        if self.size > 0:
+            print('\n[INFO] Get Ctrl-C, exiting...')
+            self.ctn_file.close()
+            self.writers.wait()
+            print('[INFO] Deal Done!')
+        os._exit(0)
 
     def _dl(self, start):
         try:
             _sz = min(start + self.fileBlock, self.size)
             headers = {'Range': 'bytes={}-{}'.format(start, _sz)}
             tm = time.perf_counter()
-            r = get(self.url, headers=headers)
+            r = get(self.url, headers=headers, timeout=50)
             tm = time.perf_counter() - tm
             self.writers.new_job(r.content, start)
             speed = size_format((self.fileBlock * self.num / tm), align=True)
         except Exception as e:
-            print('[ERROR] %s' % e)
+            msg = repr(e)
+            print('\n[ERROR] %s' % msg[:msg.index('(')])
             self.job_queue.put(start)
         else:
             self.fileLock.acquire()
+            self.ctn.append(start)
+            self.ctn_file.write('%d\n' % start)
             self.cur_sz += _sz - start
+            self.fileLock.release()
             per = self.cur_sz / self.size
             print('\r[%s] %.2f%% | %s/s' % ('#' * int(40 * per) + ' ' * int(40 - 40 * per), per * 100, speed),
                   end='\n' if self.cur_sz == self.size else '')
-            self.ctn_file.write('%d\n' % start)
-            self.fileLock.release()
 
     def _single_dl(self):
         r = get(self.url, stream=True)
+        Flag = self.size != -1
+        self.size = -self.size
         with open(self.name, 'wb') as f:
             for chunk in r.iter_content(8192):
                 f.write(chunk)
+                self.cur_sz += 8192
+                if Flag:
+                    self.cur_sz = min(self.cur_sz, self.size)
+                print('\r[PROC] %s' % size_format(self.cur_sz, align=True), end='')
+            print('')
+            if Flag and self.cur_sz < self.size:
+                print('[ERROR] Data loss!')
 
     def run(self):
         if self.size > 0:
@@ -104,16 +115,18 @@ class Downloader:
                     self.cur_sz += min(i + self.fileBlock, self.size) - i
                 else:
                     self.job_queue.put(i)
-            for i in range(4):
+            retry_cnt = 0
+            while not self.job_queue.empty():
                 self.futures.clear()
-                if self.job_queue.qsize():
-                    while not self.job_queue.empty():
-                        cur = self.job_queue.get()
-                        if cur not in self.ctn:
-                            self.futures.append(self.pool.submit(self._dl, cur))
-                    wait(self.futures)
-                else:
-                    break
+                while not self.job_queue.empty():
+                    cur = self.job_queue.get()
+                    if cur not in self.ctn:
+                        self.futures.append(self.pool.submit(self._dl, cur))
+                wait(self.futures)
+                if not self.job_queue.empty() and retry_cnt > 2:
+                    print('\r[INFO] Exists File Block Lost, Retrying after 0.5 sec')
+                    time.sleep(0.5)
+                retry_cnt += 1
             self.writers.wait()
             self.ctn_file.close()
             os.remove(self.name + '.qs_dl')
