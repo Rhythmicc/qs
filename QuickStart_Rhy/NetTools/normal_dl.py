@@ -10,7 +10,7 @@ import time
 import os
 
 core_num = psutil.cpu_count()
-maxBlockSize = int((psutil.virtual_memory().total >> 6) / core_num)
+maxBlockSize = int(1e6)
 minBlockSize = int(5e5)
 
 
@@ -87,8 +87,12 @@ class Downloader:
             self.cur_sz += _sz - start
             self.fileLock.release()
             per = self.cur_sz / self.size
-            print('\r[%s] %.2f%% | %s/s' % ('#' * int(40 * per) + ' ' * int(40 - 40 * per), per * 100, speed),
-                  end='\n' if self.cur_sz == self.size else '')
+            print('\r[%s] %.2f%% | %s/s' % (
+                    '#' * int(40 * per) + ' ' * int(40 - 40 * per),
+                    per * 100, speed
+                ),
+                end='\n' if self.cur_sz == self.size else ''
+            )
 
     def _single_dl(self):
         r = get(self.url, stream=True)
