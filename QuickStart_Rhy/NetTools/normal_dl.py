@@ -10,7 +10,7 @@ import time
 import os
 
 core_num = psutil.cpu_count()
-maxBlockSize = int(1e6)
+maxBlockSize = int(1.5e6)
 minBlockSize = int(5e5)
 
 
@@ -75,7 +75,6 @@ class Downloader:
             r = get(self.url, headers=headers, timeout=50)
             tm = time.perf_counter() - tm
             self.writers.new_job(r.content, start)
-            speed = size_format((self.fileBlock * self.num / tm), align=True)
         except Exception as e:
             msg = repr(e)
             print('\n[ERROR] %s' % msg[:msg.index('(')])
@@ -86,6 +85,7 @@ class Downloader:
             self.ctn_file.write('%d\n' % start)
             self.cur_sz += _sz - start
             self.fileLock.release()
+            speed = size_format((self.fileBlock * self.num / tm), align=True)
             per = self.cur_sz / self.size
             print('\r[%s] %.2f%% | %s/s' % (
                     '#' * int(40 * per) + ' ' * int(40 - 40 * per),

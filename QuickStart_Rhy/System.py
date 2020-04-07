@@ -48,72 +48,95 @@ def top():
 
 def mktar():
     import os
-    from QuickStart_Rhy.SystemTools.Compress import get_tar_name
+    from QuickStart_Rhy.SystemTools.Compress import get_tar_name, Tar
     tar_name, ls = get_tar_name()
-    os.system('tar -czf %s.tar.gz %s' % (tar_name, ' '.join(ls)))
+    tar = Tar(tar_name+'.tar.gz', 'write')
+
+    def dfs(cur_p):
+        if os.path.isfile(cur_p):
+            tar.add_file(cur_p)
+            return
+        file_ls = os.listdir(cur_p)
+        flag = cur_p.endswith(dir_char)
+        for fp in file_ls:
+            fp = cur_p + ('' if flag else dir_char) + fp
+            dfs(fp)
+    for i in ls:
+        dfs(i)
+    tar.save()
 
 
 def untar():
     import os
     import sys
-    import threading
 
     file_names = sys.argv[2:]
     if not file_names:
         exit("No enough parameters")
+    from QuickStart_Rhy.SystemTools.Compress import Tar
+    from QuickStart_Rhy.NetTools.normal_dl import core_num
+    from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
-    class _untar(threading.Thread):
-        def __init__(self, path):
-            threading.Thread.__init__(self)
-            self.path = path
+    pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
+    job_q = []
 
-        def run(self):
-            if os.path.exists(self.path):
-                if self.path.endswith('.tar'):
-                    os.system('tar -xf %s' % self.path)
-                elif self.path.endswith('.gz'):
-                    os.system('tar -xzf %s' % self.path)
-                elif self.path.endswith('.bz2'):
-                    os.system('tar -xjf %s' % self.path)
-                else:
-                    os.system('tar -xf %s' % self.path)
-            else:
-                print("No such file or dictionary:%s" % self.path)
+    def run(path):
+        if os.path.exists(path):
+            cur_tar = Tar(path)
+            cur_tar.extract()
+            del cur_tar
+        else:
+            print("No such file or dictionary:%s" % path)
 
     for file_name in file_names:
-        t = _untar(file_name)
-        t.start()
-        t.join()
+        job_q.append(pool.submit(run, file_name))
+    wait(job_q)
 
 
 def mkzip():
     import os
-    from QuickStart_Rhy.SystemTools.Compress import get_tar_name
+    from QuickStart_Rhy.SystemTools.Compress import get_tar_name, Zip
     zip_name, ls = get_tar_name()
-    os.system('zip -r -9 %s.zip %s' % (zip_name, ' '.join(ls)))
+    z = Zip(zip_name+'.zip', mode='write')
+
+    def dfs(cur_p):
+        if os.path.isfile(cur_p):
+            z.add_file(cur_p)
+            return
+        file_ls = os.listdir(cur_p)
+        flag = cur_p.endswith(dir_char)
+        for fp in file_ls:
+            fp = cur_p + ('' if flag else dir_char) + fp
+            dfs(fp)
+    for i in ls:
+        dfs(i)
+    z.save()
 
 
 def unzip():
     import os
     import sys
-    import threading
 
     file_names = sys.argv[2:]
     if not file_names:
         exit("No enough parameters")
+    from QuickStart_Rhy.SystemTools.Compress import Zip
+    from QuickStart_Rhy.NetTools.normal_dl import core_num
+    from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
-    class _unzip(threading.Thread):
-        def __init__(self, path):
-            threading.Thread.__init__(self)
-            self.path = path
+    pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
+    job_q = []
 
-        def run(self):
-            if os.path.exists(file_name):
-                os.system('unzip %s' % file_name)
-            else:
-                print("No such file or dictionary:%s" % file_name)
+    def run(path):
+        if os.path.exists(path):
+            try:
+                z = Zip(path)
+                z.extract()
+            except:
+                print('[ERROR] %s extract failed!' % path)
+        else:
+            print("No such file or dictionary:%s" % path)
 
     for file_name in file_names:
-        t = _unzip(file_name)
-        t.start()
-        t.join()
+        job_q.append(pool.submit(run, file_name))
+    wait(job_q)
