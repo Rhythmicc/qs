@@ -23,6 +23,7 @@ def qs_help():
     print(color_rep('    qs -f  <file...>          :-> open file by default app'))
     print(color_rep('    qs -dl [urls]             :-> download file from url(in clipboard)'))
     print(color_rep('    qs -trans [content]       :-> translate the content(in clipboard)'))
+    print(color_rep('    qs -cal exp               :-> calculate exp'))
     print(color_rep('    qs -time                  :-> view current time'))
     print(color_rep('    qs -ftp                   :-> start a simple ftp server'))
     print(color_rep('    qs -top                   :-> cpu and memory monitor'))

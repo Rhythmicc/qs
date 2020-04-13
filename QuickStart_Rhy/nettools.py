@@ -1,6 +1,5 @@
 import sys
 import signal
-from QuickStart_Rhy.NetTools import get_ip
 from QuickStart_Rhy import deal_ctrl_c
 
 
@@ -41,14 +40,19 @@ def download():
 
 
 def ftp():
-    ip = get_ip()
+    if len(sys.argv) > 2:
+        ip, port = sys.argv[2].split(':')
+        port = int(port)
+    else:
+        ip = '127.0.0.1'
+        port = 80
     if not ip:
         exit('get ip failed!')
-    print('starting ftp simple server: address http://%s:8000/' % ip)
+    print('starting http simple server: address http://%s:%s/' % (ip, port))
     import http.server
     Handler = http.server.SimpleHTTPRequestHandler
     import socketserver
-    host = (ip, 8000)
+    host = (ip, port)
     with socketserver.TCPServer(host, Handler) as httpd:
         signal.signal(signal.SIGINT, deal_ctrl_c)
         httpd.serve_forever()

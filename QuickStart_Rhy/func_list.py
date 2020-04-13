@@ -5,6 +5,7 @@ basic_funcs = {
     '-f': 'open_file',
     '-i': 'init',
     '-time': 'cur_time',
+    '-cal': 'calculate'
 }
 
 system_funcs = {

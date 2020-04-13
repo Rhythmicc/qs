@@ -72,3 +72,11 @@ def open_file():
 def init():
     import webbrowser as wb
     wb.open('http://login.cup.edu.cn')
+
+
+def calculate():
+    try:
+        exp = ' '.join(sys.argv[2:])
+        print('%s = %s' % (exp, eval(exp)))
+    except Exception as e:
+        exit('[ERROR] %s' % repr(e))
