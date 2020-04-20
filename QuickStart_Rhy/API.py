@@ -183,3 +183,14 @@ def weather():
 def ipinfo(ip: str = None):
     from QuickStart_Rhy.API.IPinfo import get_ip_info
     return get_ip_info(ip)
+
+
+def largeImage():
+    try:
+        path = sys.argv[2]
+    except IndexError:
+        exit('Usage qs -lp img')
+    else:
+        from QuickStart_Rhy.API import AipImage
+        aip_cli = AipImage.ImageDeal()
+        aip_cli.largeImage(path)

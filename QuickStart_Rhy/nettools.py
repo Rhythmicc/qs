@@ -48,11 +48,5 @@ def ftp():
         port = 80
     if not ip:
         exit('get ip failed!')
-    print('starting http simple server: address http://%s:%s/' % (ip, port))
-    import http.server
-    Handler = http.server.SimpleHTTPRequestHandler
-    import socketserver
-    host = (ip, port)
-    with socketserver.TCPServer(host, Handler) as httpd:
-        signal.signal(signal.SIGINT, deal_ctrl_c)
-        httpd.serve_forever()
+    from QuickStart_Rhy.NetTools.server import HttpServers
+    HttpServers(ip, port).start()

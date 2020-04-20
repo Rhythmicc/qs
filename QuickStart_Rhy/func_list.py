@@ -33,6 +33,7 @@ api_funcs = {
     '-alioss': 'ali_oss',
     '-qiniu': 'qiniu',
     '-txcos': 'txcos',
+    '-LG': 'largeImage',
     '-weather': 'weather',
 }
 

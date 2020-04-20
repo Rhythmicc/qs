@@ -79,7 +79,7 @@ def smms(filePath: str):
     try:
         is_md = filePath.endswith('.md')
     except IndexError:
-        exit('Usage: %s {*.md} | {picture}' % sys.argv[0])
+        exit('Usage: qs {*.md} | {picture}')
     else:
         if is_md:
             format_markdown(filePath)
