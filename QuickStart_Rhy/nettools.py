@@ -1,6 +1,4 @@
 import sys
-import signal
-from QuickStart_Rhy import deal_ctrl_c
 
 
 def upgrade():
@@ -45,7 +43,7 @@ def ftp():
         port = int(port)
     else:
         ip = '127.0.0.1'
-        port = 80
+        port = 8000
     if not ip:
         exit('get ip failed!')
     from QuickStart_Rhy.NetTools.server import HttpServers
