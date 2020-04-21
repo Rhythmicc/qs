@@ -16,6 +16,7 @@ QuickStart_Rhy.egg-info/requires.txt
 QuickStart_Rhy.egg-info/top_level.txt
 QuickStart_Rhy.egg-info/zip-safe
 QuickStart_Rhy/API/AipImage.py
+QuickStart_Rhy/API/AipNLP.py
 QuickStart_Rhy/API/Aliyun_oss.py
 QuickStart_Rhy/API/Dict.py
 QuickStart_Rhy/API/IPinfo.py

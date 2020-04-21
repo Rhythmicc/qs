@@ -189,8 +189,24 @@ def largeImage():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage qs -lp img')
+        exit('Usage qs -LG img')
     else:
         from QuickStart_Rhy.API import AipImage
         aip_cli = AipImage.ImageDeal()
         aip_cli.largeImage(path)
+
+
+def AipNLP():
+    from QuickStart_Rhy.API.AipNLP import AipNLP
+    import pyperclip
+    ct = sys.argv[2:]
+    if not ct:
+        ct = [pyperclip.paste()]
+    NLP = AipNLP()
+    for id, line in enumerate(ct):
+        ct[id] = NLP.get_res(line)
+        if id == 9:
+            print('...')
+        elif id < 9:
+            print(ct[id])
+    pyperclip.copy('\n'.join(ct))
