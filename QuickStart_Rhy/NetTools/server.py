@@ -157,14 +157,12 @@ class HttpServers:
             delete_file(self.cert_file_path)
             print('HTTPS Server: Started on', self.web_address, 'Port', self.ssl_port)
             HttpServers.qrcode_terminal.draw('http://' + self.web_address + ':' + str(self.ssl_port))
-            while self.keep_server_running:
-                self.httpd.handle_request()
         else:
             self.httpd = self.HTTPServer((self.web_address, self.web_port), ReqHandler)
             print('HTTP Server: Started on', self.web_address, 'Port', self.web_port)
             HttpServers.qrcode_terminal.draw('http://' + self.web_address + ':' + str(self.web_port))
-            while self.keep_server_running:
-                self.httpd.handle_request()
+        while self.keep_server_running:
+            self.httpd.handle_request()
 
     def shutdown(self, a, b):
         self.httpd.server_close()

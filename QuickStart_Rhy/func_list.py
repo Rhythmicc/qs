@@ -1,23 +1,18 @@
-from QuickStart_Rhy import dir_char
 import colorama
 from colorama import Fore, Style
-color_flag = dir_char == '\\'
+colorama.init()
 
 
 def color_rep(ss):
-    global color_flag
-    if color_flag:
-        colorama.init()
-        color_flag = False
     ss = ss.strip('\n').split('\n')
-    for id, line in enumerate(ss):
+    for i, line in enumerate(ss):
         if ':->' in line:
             line = line.split(':->')
             line = Fore.LIGHTMAGENTA_EX + line[0] + Style.RESET_ALL + ':->' + Fore.YELLOW + line[1] + Style.RESET_ALL
         if '|' in line:
             line = line.split('|')
             line = line[0] + Style.RESET_ALL + '|' + Fore.GREEN + line[1] + Style.RESET_ALL
-        ss[id] = line
+        ss[i] = line
     return '\n'.join(ss)
 
 
