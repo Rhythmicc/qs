@@ -40,6 +40,7 @@ class HttpServers:
     from http.server import SimpleHTTPRequestHandler
     from http.server import CGIHTTPRequestHandler
     from ssl import wrap_socket as ssl_wrap_socket
+    import qrcode_terminal
     import signal
     # PEM: http://www.cert-depot.com/
 
@@ -139,8 +140,6 @@ class HttpServers:
                 t.join()
 
     def start(self):
-        print('CGI Enabled:', self.use_cgi)
-        print('SSL Enabled:', self.use_ssl)
         if self.use_cgi:
             ReqHandler = self.CGIRequestHandler
         else:
@@ -157,11 +156,13 @@ class HttpServers:
             delete_file(self.key_file_path)
             delete_file(self.cert_file_path)
             print('HTTPS Server: Started on', self.web_address, 'Port', self.ssl_port)
+            HttpServers.qrcode_terminal.draw('http://' + self.web_address + ':' + str(self.ssl_port))
             while self.keep_server_running:
                 self.httpd.handle_request()
         else:
             self.httpd = self.HTTPServer((self.web_address, self.web_port), ReqHandler)
             print('HTTP Server: Started on', self.web_address, 'Port', self.web_port)
+            HttpServers.qrcode_terminal.draw('http://' + self.web_address + ':' + str(self.web_port))
             while self.keep_server_running:
                 self.httpd.handle_request()
 

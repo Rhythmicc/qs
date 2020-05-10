@@ -42,7 +42,8 @@ def ftp():
         ip, port = sys.argv[2].split(':')
         port = int(port)
     else:
-        ip = '127.0.0.1'
+        from QuickStart_Rhy.NetTools import get_ip
+        ip = get_ip()
         port = 8000
     if not ip:
         exit('get ip failed!')
