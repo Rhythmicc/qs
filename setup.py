@@ -22,7 +22,8 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=True,
-    install_requires=['pyperclip', 'requests', 'psutil', 'urllib3', 'colorama', 'prettytable', 'diagram'],
+    install_requires=['pyperclip', 'requests', 'psutil', 'urllib3', 'colorama',
+                      'prettytable', 'diagram', 'qrcode_terminal'],
     entry_points={
         'console_scripts': [
             'qs = QuickStart_Rhy.main:main'
