@@ -82,7 +82,7 @@ class HttpServers:
 
     keep_server_running = True
 
-    def __init__(self, ip='localhost', port=8000, ssl_port=1443, use_ssl=False, use_cgi=False, pem_cert_file='',
+    def __init__(self, ip='localhost', port=8000, url='', ssl_port=1443, use_ssl=False, use_cgi=False, pem_cert_file='',
                  pem_key_file=''):
         self.web_address = ip
         self.web_port = port
@@ -92,6 +92,7 @@ class HttpServers:
         self.cert_file_path = pem_cert_file
         self.key_file_path = pem_key_file
         self.httpd = None
+        self.bind_url = url
 
     class CGIRequestHandler(CGIHTTPRequestHandler):
         from QuickStart_Rhy.ThreadTools import ThreadFunctionWrapper
@@ -155,16 +156,19 @@ class HttpServers:
                                                             keyfile=self.key_file_path, certfile=self.cert_file_path)
             delete_file(self.key_file_path)
             delete_file(self.cert_file_path)
-            print('HTTPS Server: Started on', self.web_address, 'Port', self.ssl_port)
-            HttpServers.qrcode_terminal.draw('http://' + self.web_address + ':' + str(self.ssl_port))
+            if not self.bind_url:
+                self.bind_url = 'http://' + self.web_address + ':' + str(self.ssl_port)
         else:
             self.httpd = self.HTTPServer((self.web_address, self.web_port), ReqHandler)
-            print('HTTP Server: Started on', self.web_address, 'Port', self.web_port)
-            HttpServers.qrcode_terminal.draw('http://' + self.web_address + ':' + str(self.web_port))
+            if not self.bind_url:
+                self.bind_url = 'http://' + self.web_address + ':' + str(self.web_port)
+        print(self.bind_url)
+        HttpServers.qrcode_terminal.draw(self.bind_url)
         while self.keep_server_running:
             self.httpd.handle_request()
 
     def shutdown(self, a, b):
+        HttpServers.keep_server_running = False
         self.httpd.server_close()
         print('HTTP Server: Closed.')
         exit(0)

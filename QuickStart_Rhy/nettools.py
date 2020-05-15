@@ -38,9 +38,18 @@ def download():
 
 
 def ftp():
+    url = ''
     if len(sys.argv) > 2:
         ip, port = sys.argv[2].split(':')
         port = int(port)
+        if '-bind' in sys.argv:
+            try:
+                url = sys.argv[sys.argv.index('-bind') + 1]
+                from QuickStart_Rhy.NetTools import formatUrl
+                url = formatUrl(url)
+            except IndexError:
+                print('Usage: qs -ftp ip:port -bind url')
+                exit(0)
     else:
         from QuickStart_Rhy.NetTools import get_ip
         ip = get_ip()
@@ -48,4 +57,4 @@ def ftp():
     if not ip:
         exit('get ip failed!')
     from QuickStart_Rhy.NetTools.server import HttpServers
-    HttpServers(ip, port).start()
+    HttpServers(ip, port, url).start()
