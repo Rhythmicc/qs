@@ -6,7 +6,7 @@ def qs_help(rep=''):
     if not rep or rep not in menu_table:
         print('help:')
         print(color_rep(
-"""
+            """
     qs -basic   :-> basic   tools help | -u, -a, -f, -cal, -time
     qs -system  :-> system  tools help | -top, -[mk/un][zip/tar]
     qs -net     :-> network tools help | -ftp, -dl, -up[load/grade]

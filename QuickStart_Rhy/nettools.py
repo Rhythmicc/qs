@@ -37,7 +37,7 @@ def download():
         print("No url found!")
 
 
-def ftp():
+def http():
     url = ''
     if len(sys.argv) > 2:
         ip, port = sys.argv[2].split(':')
