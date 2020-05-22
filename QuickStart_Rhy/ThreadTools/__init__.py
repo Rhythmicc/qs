@@ -23,11 +23,11 @@ class FileWriters:
         self.handles = [open(filename, mode) for i in range(workers)]
         self.handles_lock = [threading.Lock() for i in range(workers)]
         self.pool = ThreadPoolExecutor(max_workers=workers)
-        self.all_done = []
+        self.job_q = []
         self.cur_handle = 0
 
     def wait(self):
-        wait(self.all_done)
+        wait(self.job_q)
 
     def _write(self, handle: int, content, index):
         fp = self.handles[handle]
@@ -37,5 +37,9 @@ class FileWriters:
         self.handles_lock[handle].release()
 
     def new_job(self, content, index):
-        self.all_done.append(self.pool.submit(self._write, self.cur_handle, content, index))
+        self.job_q.append(self.pool.submit(self._write, self.cur_handle, content, index))
         self.cur_handle = (self.cur_handle+1) % self.workers
+
+    def __del__(self):
+        self.wait()
+        self.pool.shutdown()

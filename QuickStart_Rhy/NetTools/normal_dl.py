@@ -63,6 +63,7 @@ class Downloader:
         if self.size > 0:
             print('\n[INFO] Get Ctrl-C, exiting...')
             self.ctn_file.close()
+            self.pool.shutdown()
             self.writers.wait()
             print('[INFO] Deal Done!')
         os._exit(0)

@@ -1,6 +1,5 @@
 import diagram
 import io
-import random
 
 
 class Line:
@@ -21,3 +20,9 @@ class Line:
         )
         gram.show()
         return str(stream.getvalue(), encoding="utf-8")
+
+    def push(self, x):
+        self.values.append(x)
+
+    def pop(self):
+        self.values.pop(0)
