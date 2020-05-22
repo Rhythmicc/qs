@@ -51,6 +51,26 @@ class Dict:
             return json['lan']
         return None
 
+    def mymemory(self, query, dst='zh', src=None):
+        if not src:
+            src = self.langdetect(query)
+        params = {
+            'q': query,
+            'langpair': '{}|{}'.format(src, dst)
+        }
+        try:
+            r = requests.get('https://api.mymemory.translated.net/get', params=params, headers=self.headers)
+        except:
+            return None
+        if r.status_code == requests.codes.ok:
+            r = r.json()['matches']
+            for i in r:
+                if self.langdetect(i['translation']) == dst:
+                    return i['translation']
+            return r[0]['translation']
+        else:
+            return None
+
     def dictionary(self, query, dst='zh', src=None):
         url = 'https://fanyi.baidu.com/v2transapi'
         sign = self.javascript.call('token', query, self.gtk)
@@ -72,5 +92,5 @@ class Dict:
             json = r.json()
             if 'error' in json:
                 raise Exception('baidu sdk error: {}'.format(json['error']))
-            return json
-        return None
+            return json['trans_result']['data'][0]['dst']
+        return self.mymemory(query, dst, src)
