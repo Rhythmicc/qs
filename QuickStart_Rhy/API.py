@@ -114,7 +114,7 @@ def translate():
         content.replace('\n', ' ')
         translator = Dict()
         ret = translator.dictionary(content)
-        print(ret['trans_result']['data'][0]['dst'] if ret else 'Translate Failed!')
+        print(ret if ret else 'Translate Failed!')
     else:
         print("No content in your clipboard or command parameters!")
 
@@ -158,8 +158,7 @@ def weather():
             translator = Dict()
             try:
                 trans_loaction = translator.dictionary(simple[0].split('：')[-1])
-                print('地区：' + trans_loaction['trans_result']['data'][0]['dst']
-                      if trans_loaction else simple[0].split('：')[-1])
+                print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
             except:
                 print('地区：' + simple[0].split('：')[-1])
         simple = simple[2:7]
