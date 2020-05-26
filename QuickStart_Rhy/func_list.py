@@ -52,7 +52,8 @@ def api_menu():
     qs -qiniu -help           :-> get qiniu oss api help menu
     qs -weather [address]     :-> check weather (of address)
     qs -LG <image>            :-> make image larger(with AI)
-    qs -nlp [words]           :-> Text(or in clipboard) error correction"""))
+    qs -nlp [words]           :-> Text(or in clipboard) error correction
+    qs -sea [method] [msg]    :-> Get Or Post msg by Seafile."""))
 
 
 def image_menu():
@@ -109,7 +110,8 @@ api_funcs = {
     '-txcos': 'txcos',
     '-LG': 'largeImage',
     '-weather': 'weather',
-    '-nlp': 'AipNLP'
+    '-nlp': 'AipNLP',
+    '-sea': 'Seafile_Communicate'
 }
 
 image_funcs = {

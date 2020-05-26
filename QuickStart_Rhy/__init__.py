@@ -46,9 +46,14 @@ def cur_time():
 def u():
     import webbrowser as wb
     from QuickStart_Rhy.NetTools import formatUrl
-    for url in sys.argv[2:]:
-        url = formatUrl(url)
-        wb.open_new_tab(url)
+    if sys.argv[2:]:
+        for url in sys.argv[2:]:
+            url = formatUrl(url)
+            wb.open_new_tab(url)
+    else:
+        import pyperclip
+        url = pyperclip.paste()
+        wb.open_new_tab(formatUrl(url))
 
 
 def open_app():
