@@ -211,3 +211,17 @@ def AipNLP():
         elif id < 9:
             print(ct[id])
     pyperclip.copy('\n'.join(ct))
+
+
+def Seafile_Communicate():
+    from QuickStart_Rhy.API.Seafile import Seafile
+    try:
+        method = sys.argv[2]
+        if method == 'get':
+            Seafile().get_msg()
+        elif method == 'post':
+            msg = ' '.join(sys.argv[3:]) if len(sys.argv) > 3 else None
+            Seafile().post_msg(msg) if msg else Seafile().post_msg()
+    except IndexError:
+        print("Usage:\n  1. qs -sea get\n  2. qs -sea post [msg]")
+        exit(0)
