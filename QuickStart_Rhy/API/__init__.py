@@ -5,8 +5,8 @@ import os
 
 user_root = os.path.expanduser('~') + dir_char
 if os.path.exists(user_root + '.qsrc'):
-    with open(user_root + '.qsrc', 'r') as f:
-        qsconfig = json.loads(f.read())
+    with open(user_root + '.qsrc', 'r', encoding='utf8') as f:
+        qsconfig = json.loads(f.read(), encoding='utf8')
 else:
     with open(user_root + '.qsrc', 'w') as f:
         f.write('{\n'

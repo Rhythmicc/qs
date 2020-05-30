@@ -53,7 +53,8 @@ def api_menu():
     qs -weather [address]     :-> check weather (of address)
     qs -LG <image>            :-> make image larger(with AI)
     qs -nlp [words]           :-> Text(or in clipboard) error correction
-    qs -sea [method] [msg]    :-> Get Or Post msg by Seafile."""))
+    qs -sea [method] [msg]    :-> Get Or Post msg by Seafile.
+    qs -pasteme [method] [*]  :-> get with key, [password] or post clipboard content"""))
 
 
 def image_menu():
@@ -111,7 +112,8 @@ api_funcs = {
     '-LG': 'largeImage',
     '-weather': 'weather',
     '-nlp': 'AipNLP',
-    '-sea': 'Seafile_Communicate'
+    '-sea': 'Seafile_Communicate',
+    '-pasteme': 'Pasteme'
 }
 
 image_funcs = {

@@ -92,3 +92,38 @@ def smms(filePath: str):
                 tb.add_row(
                     [filePath.split(dir_char)[-1], res['success'], '' if not res['success'] else res['data']['url']])
             print(tb)
+
+
+def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
+    import pyperclip
+    from colorama import Fore, Style
+    if mode == 'get':
+        if password:
+            r = requests.get('https://api.pasteme.cn/%s,%s' % (key, password), params={'json': True})
+        else:
+            r = requests.get('https://api.pasteme.cn/%s' % key, params={'json': True})
+        if r.status_code == requests.codes.ok:
+            js = json.loads(r.content)
+            if js['status'] == 200:
+                pyperclip.copy(js['content'])
+                with open("%s.%s" % (key, js['lang']), 'w') as f:
+                    f.write(js['content'])
+            else:
+                print(Fore.RED, 'Wrong Password' if password else 'Password is required', Style.RESET_ALL)
+        else:
+            print(Fore.RED, 'Unknown error', Style.RESET_ALL)
+    else:
+        ss = pyperclip.paste()
+        js = {
+            'lang': key if key else 'txt',
+            'content': ss
+        }
+        if password:
+            js['password'] = password
+        r = requests.post('https://api.pasteme.cn',
+                          headers={'Content-Type': 'application/json'},
+                          json=js)
+        if r.status_code == 201:
+            print(json.loads(r.content))
+        else:
+            print('post failed')
