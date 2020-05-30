@@ -225,3 +225,15 @@ def Seafile_Communicate():
     except IndexError:
         print("Usage:\n  1. qs -sea get\n  2. qs -sea post [msg]")
         exit(0)
+
+
+def Pasteme():
+    from QuickStart_Rhy.API.simple_api import pasteme
+    try:
+        method = sys.argv[2]
+        key = sys.argv[3]
+        password = sys.argv[4] if len(sys.argv) > 4 else ''
+        pasteme(key, password, method)
+    except IndexError:
+        print("Usage:\n  1. qs -pasteme get key [password]\n  2. qs -pasteme post lang [password]")
+        exit(0)
