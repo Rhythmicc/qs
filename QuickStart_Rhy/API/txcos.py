@@ -5,9 +5,9 @@ import qcloud_cos
 
 class txcos:
     def __init__(self):
-        scid = pre_check('txyun_cos_scid')
-        sckey = pre_check('txyun_cos_sckey')
-        self.region = pre_check('txyun_cos_df_region')
+        scid = pre_check('txyun_scid')
+        sckey = pre_check('txyun_sckey')
+        self.region = pre_check('txyun_df_region')
         self.df_bucket = pre_check('txyun_cos_df_bucket')
         config = qcloud_cos.CosConfig(Region=self.region,
                                       SecretId=scid,
