@@ -105,15 +105,15 @@ def txcos():
 
 def translate():
     import pyperclip
-    from QuickStart_Rhy.API.Dict import Dict
+    from QuickStart_Rhy.API.TencentTranslate import Translate
 
     content = ' '.join(sys.argv[2:])
     if not content:
         content = pyperclip.paste()
     if content:
         content.replace('\n', ' ')
-        translator = Dict()
-        ret = translator.dictionary(content)
+        translator = Translate()
+        ret = translator.translate(content)
         print(ret if ret else 'Translate Failed!')
     else:
         print("No content in your clipboard or command parameters!")
@@ -154,12 +154,13 @@ def weather():
     table = tls[1].get_res()
     if simple:
         if not loc:
-            from QuickStart_Rhy.API.Dict import Dict
-            translator = Dict()
-            try:
-                trans_loaction = translator.dictionary(simple[0].split('：')[-1])
+            from QuickStart_Rhy.API import pre_check
+            if pre_check("txyun_scid", False) and pre_check("txyun_sckey", False):
+                from QuickStart_Rhy.API.TencentTranslate import Translate
+                translator = Translate()
+                trans_loaction = translator.translate(simple[0].split('：')[-1])
                 print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
-            except:
+            else:
                 print('地区：' + simple[0].split('：')[-1])
         simple = simple[2:7]
         print('\n'.join(simple))
