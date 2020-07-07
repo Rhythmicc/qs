@@ -22,17 +22,22 @@ def m3u8_dl(url):
 
 
 def download():
+    ytb_flag = '--ytb' in sys.argv
+    if ytb_flag:
+        sys.argv.remove('--ytb')
     urls = sys.argv[2:]
     if not urls:
         import pyperclip
         urls = pyperclip.paste().split()
     if urls:
+        if ytb_flag:
+            from youtube_dl import _real_main
         from QuickStart_Rhy.NetTools.normal_dl import normal_dl
         for url in urls:
             if url.endswith('.m3u8'):
                 m3u8_dl(url)
             else:
-                normal_dl(url)
+                normal_dl(url) if not ytb_flag else _real_main([url])
     else:
         print("No url found!")
 
@@ -58,3 +63,39 @@ def http():
         exit('get ip failed!')
     from QuickStart_Rhy.NetTools.server import HttpServers
     HttpServers(ip, port, url).start()
+
+
+def netinfo():
+    import json
+    import socket
+    import requests
+    import pyperclip
+    import prettytable
+    import urllib.parse
+    from QuickStart_Rhy import headers
+
+    def print_ip_info(info_ls):
+        table = prettytable.PrettyTable(['ip', '运营商', '地址', '经纬'])
+        for info in info_ls:
+            table.add_row([info['ip'], info['isp'], info['pos'], str(info['location'])[1:-1].replace("'", '')])
+        print(table)
+
+    urls = sys.argv[2:] if len(sys.argv) > 2 else []
+    urls += pyperclip.paste().strip().split() if not urls else []
+    if not urls:
+        urls.append('me')
+    res_ls = []
+    for i in urls:
+        try:
+            addr = ''
+            if i != 'me':
+                addr = urllib.parse.urlparse(i).netloc
+                addr = socket.getaddrinfo(addr if addr else i, 'http')[0][-1][0]
+            res = requests.post('https://v1.alapi.cn/api/ip', data="ip=%s&format=json" % addr,
+                                headers={'Content-Type': "application/x-www-form-urlencoded"} if addr else headers)
+            res = json.loads(res.text)['data']
+            res_ls.append(res)
+        except:
+            print('[ERROR] Get domain failed:', i)
+            continue
+    print_ip_info(res_ls)

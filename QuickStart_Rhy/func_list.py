@@ -37,6 +37,7 @@ def system_menu():
 def net_menu():
     print(color_rep("""Net Tools help:
     qs -http [ip] [-bind url] :-> start a multithread ftp server
+    qs -netinfo [<domains>..] :-> get url's info which in clipboard or params 
     qs -dl [urls]             :-> download file from url(in clipboard)
     qs -upload                :-> upload your pypi library
     qs -upgrade               :-> update qs"""))
@@ -98,7 +99,8 @@ net_funcs = {
     '-http': 'http',
     '-dl': 'download',
     '-upgrade': 'upgrade',
-    '-upload': 'upload_pypi'
+    '-upload': 'upload_pypi',
+    '-netinfo': 'netinfo'
 }
 
 api_funcs = {

@@ -20,7 +20,11 @@ class ImageDeal:
         img_name = img_name[:img_name.index('.')] + '_LG.' + '.'.join(img_name.split('.')[1:])
         with open(path, 'rb') as f:
             img = f.read()
-        img = self.client.imageQualityEnhance(img)['image']
-        img = base64.b64decode(img)
-        with open(img_name, 'wb') as f:
-            f.write(img)
+        img = self.client.imageQualityEnhance(img)
+        try:
+            img = base64.b64decode(img['image'])
+            with open(img_name, 'wb') as f:
+                f.write(img)
+        except :
+            from pprint import pprint
+            pprint(img)
