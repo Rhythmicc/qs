@@ -106,8 +106,8 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
             js = json.loads(r.content)
             if js['status'] == 200:
                 pyperclip.copy(js['content'])
-                with open("%s.%s" % (key, js['lang']), 'w') as f:
-                    f.write(js['content'])
+                with open("%s.%s" % (key, js['lang']), 'w') as file:
+                    file.write(js['content'])
             else:
                 print(Fore.RED, 'Wrong Password' if password else 'Password is required', Style.RESET_ALL)
         else:
@@ -127,3 +127,68 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
             print(json.loads(r.content))
         else:
             print('post failed')
+
+
+def upimg(filePath: str, plt_type: str = 'Ali'):
+    from prettytable import PrettyTable
+
+    def post_img(path):
+        try:
+            data = {'type': plt_type}
+            file = [('image', open(path, 'rb'))]
+        except:
+            return False
+        res_json = requests.post('https://v1.alapi.cn/api/image',
+                                 data=data, files=file).text
+        return json.loads(res_json)
+
+    def get_path(rt, rel):
+        return os.path.abspath(rt + rel)
+
+    def format_markdown(path):
+        import re
+        _user_path = os.path.expanduser('~')
+        rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
+        res_tb = PrettyTable()
+        res_tb.field_names = ['File', 'Status', 'url']
+        img_set = {}
+        with open(path, 'r') as fp:
+            ct = fp.read()
+        aims = re.findall('!\[.*?\]\((.*?)\)', ct, re.M)
+        for aim in aims:
+            raw_path = aim
+            aim = aim.replace('~', _user_path)
+            aim = aim if aim.startswith(dir_char) else get_path(rt_path, aim)
+            if aim not in img_set:
+                res_dict = post_img(aim)
+                if not res_dict:
+                    res_tb.add_row([aim.split(dir_char)[-1], 'No File', ''])
+                    img_set[aim] = False
+                else:
+                    res_tb.add_row([aim.split(dir_char)[-1], res_dict['msg'],
+                                    '' if res['code'] != 200 else res_dict['data']['url'][plt_type]])
+                    if res_dict['code'] != 200:
+                        break
+                    img_set[aim] = res_dict['data']['url'][plt_type] if res_dict['code'] != 200 else False
+            if img_set[aim]:
+                ct = ct.replace(raw_path, img_set[aim])
+        with open(path, 'w') as fp:
+            fp.write(ct)
+        print(res_tb)
+
+    try:
+        is_md = filePath.endswith('.md')
+    except IndexError:
+        exit('Usage: qs {*.md} | {picture}')
+    else:
+        if is_md:
+            format_markdown(filePath)
+        else:
+            res = post_img(filePath)
+            tb = PrettyTable(['File', 'Status', 'url'])
+            if not res:
+                tb.add_row([filePath.split(dir_char)[-1], 'No File', ''])
+            else:
+                tb.add_row([filePath.split(dir_char)[-1], res['msg'],
+                            '' if res['code'] != 200 else res['data']['url'][plt_type]])
+            print(tb)

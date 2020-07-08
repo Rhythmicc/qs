@@ -46,16 +46,17 @@ def net_menu():
 def api_menu():
     print(color_rep("""API Tools help:
     qs -trans [content]       :-> translate the content(in clipboard)
-    qs -rmbg <picture>        :-> remove image background
-    qs -smms <picture/*.md>   :-> upload img to smms or all in .md
+    qs -rmbg <img>            :-> remove image background
+    qs -smms <img/*.md>       :-> upload img or img in markdown to sm.ms
+    qs -upimg  -help          :-> upload img or img in markdown to platform
     qs -alioss -help          :-> get aliyun oss api help menu
-    qs -txcos -help           :-> get tencent cos api help menu
-    qs -qiniu -help           :-> get qiniu oss api help menu
+    qs -txcos  -help          :-> get tencent cos api help menu
+    qs -qiniu  -help          :-> get qiniu oss api help menu
     qs -weather [address]     :-> check weather (of address)
     qs -LG <image>            :-> make image larger(with AI)
     qs -nlp [words]           :-> Text(or in clipboard) error correction
-    qs -sea [method] [msg]    :-> Get Or Post msg by Seafile.
-    qs -pasteme [method] [*]  :-> get with key, [password] or post clipboard content"""))
+    qs -sea <method> [msg]    :-> Get Or Post msg by Seafile.
+    qs -pasteme <method> [*]  :-> get with key, [password] or post clipboard content"""))
 
 
 def image_menu():
@@ -107,7 +108,8 @@ api_funcs = {
     'self': 'api',
     '-trans': 'translate',
     '-rmbg': 'remove_bg',
-    '-smms': 'ImgBed',
+    '-smms': 'smms',
+    '-upimg': 'up_img',
     '-alioss': 'ali_oss',
     '-qiniu': 'qiniu',
     '-txcos': 'txcos',

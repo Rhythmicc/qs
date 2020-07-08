@@ -7,18 +7,51 @@ def remove_bg():
     except IndexError:
         exit('Usage: qs -rmbg picture')
     else:
+        if path == '-help':
+            print('Usage: qs -rmbg picture')
+            return
         from QuickStart_Rhy.API.simple_api import rmbg
         rmbg(path)
 
 
-def ImgBed():
+def smms():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -smms [picture]')
+        exit('Usage: qs -smms [picture | *.md]')
     else:
+        if path == '-help':
+            print('Usage: qs -smms [picture | *.md]')
+            return
         from QuickStart_Rhy.API.simple_api import smms
         smms(path)
+
+
+def up_img():
+    try:
+        path = sys.argv[2]
+    except IndexError:
+        exit('Usage: qs -upimg [picture]')
+    else:
+        from QuickStart_Rhy.API.simple_api import upimg
+        import random
+        spt_type = {'Ali': '阿里云', 'Sogou': '搜狗', 'Vimcn': 'Vim-cn.com', 'Niupic': '牛图', 'Juejin': '掘进',
+                    'UploadLiu': 'upload.ouliu.net', 'Catbox': 'catbox', 'NetEasy': '网易', 'Prnt': 'Prnt',
+                    'Qihoo': '360奇虎', 'Souhu': '搜狐', 'Toutiao': '头条', 'Xiaomi': '小米', 'ImgTg': 'imt.tg'}
+        spt_type_keys = list(spt_type.keys())
+        if path == '-help':
+            print('Usage: qs -upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):')
+            print(''.join(['%-10s: %s%s' % (spt_type_keys[i], spt_type[spt_type_keys[i]], '\t' if (i + 1) % 3 else '\n')
+                           for i in range(len(spt_type_keys))]))
+            print('\n[NOTE] If you do not set platform, qs will randomly choose one.')
+            return
+        type_map = {}
+        for i in spt_type:
+            type_map[i.lower()] = i
+            type_map[i] = i
+        upimg(path, type_map[sys.argv[3]]) if len(sys.argv) > 3 and sys.argv[3] in type_map \
+            else upimg(path, random.choice(spt_type_keys)), \
+            print('No such platform: %s' % sys.argv[3]) if len(sys.argv) > 3 else 1
 
 
 def ali_oss():

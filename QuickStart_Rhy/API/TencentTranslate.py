@@ -18,7 +18,7 @@ class Translate:
     def langdetect(self, text):
         req = models.LanguageDetectRequest()
         req.from_json_string(json.dumps({
-            "Text": text,
+            "Text": text[:len(text) // 2],
             "ProjectId": 0
         }))
         return json.loads(self.client.LanguageDetect(req).to_json_string())['Lang']
@@ -32,4 +32,3 @@ class Translate:
             "ProjectId": 0
         }))
         return json.loads(self.client.TextTranslate(req).to_json_string())['TargetText']
-
