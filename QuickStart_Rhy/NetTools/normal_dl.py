@@ -15,6 +15,12 @@ minBlockSize = int(5e5)
 
 
 def GetBlockSize(sz):
+    """
+    自动规划块大小
+
+    :param sz: 文件大小
+    :return: 块大小
+    """
     if sz >= maxBlockSize << 10:
         return maxBlockSize
     elif sz <= minBlockSize << 3:
@@ -25,6 +31,12 @@ def GetBlockSize(sz):
 
 class Downloader:
     def __init__(self, url: str, num: int):
+        """
+        qs普通文件下载引擎
+
+        :param url: 文件url
+        :param num: 线程数量
+        """
         signal.signal(signal.SIGINT, self._kill_self)
         self.has_ctrl = False
         self.url = url
@@ -60,6 +72,13 @@ class Downloader:
             print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.fileBlock, align=True)))
 
     def _kill_self(self, signum, frame):
+        """
+        结束下载任务，保存断点
+
+        :param signum: 信号
+        :param frame: frame
+        :return: None
+        """
         if self.size > 0:
             print('\n[INFO] Get Ctrl-C, exiting...')
             self.ctn_file.close()
@@ -69,6 +88,12 @@ class Downloader:
         os._exit(0)
 
     def _dl(self, start):
+        """
+        执行文加快下载任务
+
+        :param start: 文件块起始偏移量
+        :return: None
+        """
         try:
             _sz = min(start + self.fileBlock, self.size)
             headers = {'Range': 'bytes={}-{}'.format(start, _sz)}
@@ -96,6 +121,11 @@ class Downloader:
             )
 
     def _single_dl(self):
+        """
+        无法并行下载或无需并行下载时采用串行下载
+
+        :return: None
+        """
         r = get(self.url, stream=True)
         Flag = self.size != -1
         self.size = -self.size
@@ -111,6 +141,17 @@ class Downloader:
                 print('[ERROR] Data loss!')
 
     def run(self):
+        """
+        规划下载任务并开始下载
+
+        qs可以有效应对网络问题对下载任务造成的影响，如：
+          1.下载过程中切换代理
+
+          2.链路异常
+        并确保下载任务顺利完成
+
+        :return: None
+        """
         if self.size > 0:
             if not self.ctn:
                 with open(self.name, "wb") as fp:
@@ -141,4 +182,10 @@ class Downloader:
 
 
 def normal_dl(url):
+    """
+    自动规划下载线程数量并开始并行下载
+
+    :param url: 文件url
+    :return: None
+    """
     Downloader(url, min(16, core_num * 4)).run()

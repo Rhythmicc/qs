@@ -3,6 +3,12 @@ from QuickStart_Rhy import dir_char
 
 
 def VideoWrapper(func):
+    """
+    视频处理的函数装饰器
+
+    :param func: 函数
+    :return: wrapper
+    """
     def wrapper(path, *args, **kwargs):
         try:
             import moviepy
@@ -21,6 +27,14 @@ def VideoWrapper(func):
 
 @VideoWrapper
 def video_2_gif(path, size=(480, 320), fps=None):
+    """
+    视频转gif（gif生成在视频路径的同目录下）
+
+    :param path: 视频路径
+    :param size: gif尺寸
+    :param fps: fps
+    :return: None
+    """
     import moviepy.editor as mpy
     file_name = '.'.join(os.path.basename(path).split('.')[:-1]) + '.gif'
     dir_name = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
@@ -30,6 +44,12 @@ def video_2_gif(path, size=(480, 320), fps=None):
 
 @VideoWrapper
 def rm_audio(path):
+    """
+    删除视频的音频
+
+    :param path: 视频路径
+    :return: None
+    """
     import moviepy.editor as mpy
     file_name = os.path.basename(path)
     if '.' in file_name:
@@ -46,6 +66,12 @@ def rm_audio(path):
 
 @VideoWrapper
 def tomp4(path):
+    """
+    将视频转为mp4
+
+    :param path: 视频路径
+    :return: None
+    """
     import moviepy.editor as mpy
     file_name = os.path.basename(path)
     file_name = '.'.join(file_name[:-1]) + '.mp4' if '.' in file_name else file_name + '.mp4'

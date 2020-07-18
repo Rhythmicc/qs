@@ -3,6 +3,7 @@ from QuickStart_Rhy.func_list import *
 
 
 def qs_help(rep=''):
+    """输出菜单"""
     if not rep or rep not in menu_table:
         print('help:')
         print(color_rep(
@@ -38,6 +39,7 @@ for i in system_funcs:
 
 
 def main():
+    """执行命令"""
     if len(sys.argv) >= 2:
         func_name = sys.argv[1]
         if func_name not in cmd_config:

@@ -14,11 +14,24 @@ else:
 
 
 def deal_ctrl_c(signum, frame):
+    """
+    默认的处理ctrl c的函数
+
+    :param signum: signum
+    :param frame: frame
+    :return: None
+    """
     if signum or frame or True:
         exit(0)
 
 
 def remove(path):
+    """
+    删除文件或文件夹
+
+    :param path: 路径
+    :return: None
+    """
     if os.path.exists(path):
         if os.path.isdir(path):
             import shutil
@@ -28,6 +41,11 @@ def remove(path):
 
 
 def cur_time():
+    """
+    获取当前时间
+
+    :return: None
+    """
     week = {
         'Monday': '周一',
         'Tuesday': '周二',
@@ -44,6 +62,11 @@ def cur_time():
 
 
 def u():
+    """
+    打开命令行参数中的链接
+
+    :return: None
+    """
     import webbrowser as wb
     from QuickStart_Rhy.NetTools import formatUrl
     if sys.argv[2:]:
@@ -57,6 +80,11 @@ def u():
 
 
 def open_app():
+    """
+    Mac OS X下的open（不支持其他平台）
+
+    :return: None
+    """
     if system == 'darwin':
         os.system('open -a ' + ' '.join(sys.argv[2:]))
     else:
@@ -64,6 +92,11 @@ def open_app():
 
 
 def open_file():
+    """
+    使用合适应用打开文件
+
+    :return: None
+    """
     import webbrowser as wb
     if system == 'darwin':
         os.system('open "' + '" "'.join(sys.argv[2:]) + '"')
@@ -80,6 +113,11 @@ def init():
 
 
 def calculate():
+    """
+    执行算数表达式
+
+    :return: None
+    """
     try:
         exp = ' '.join(sys.argv[2:])
         print('%s = %s' % (exp, eval(exp)))

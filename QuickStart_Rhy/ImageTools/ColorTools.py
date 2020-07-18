@@ -2,6 +2,14 @@ from PIL import Image
 
 
 def transport_back(src: str, to_color, from_color=(0, 0, 0, 0)):
+    """
+    图片颜色替换
+
+    :param src: 图片路径
+    :param to_color: RGBA四元组 -> 转换至目标颜色
+    :param from_color: RGBA四元组 -> 需要被转换的颜色
+    :return:
+    """
     src = Image.open(src)
     src = src.convert('RGBA')
     L, H = src.size
@@ -19,6 +27,12 @@ def transport_back(src: str, to_color, from_color=(0, 0, 0, 0)):
 
 
 def get_color_from_str(str_color: str):
+    """
+    解析字符串为RGBA四元组
+
+    :param str_color: 表示颜色的字符串（支持16进制、RGB或RGBA）
+    :return: RGBA四元组
+    """
     if ',' in str_color:
         str_color = [int(i) for i in str_color.split(',')]
         if len(str_color) == 3:

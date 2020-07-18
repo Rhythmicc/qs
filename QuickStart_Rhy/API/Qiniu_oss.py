@@ -3,13 +3,27 @@ import qiniu
 
 
 class Qiniu_oss_api:
-    def __init__(self):
-        self.ac_key = pre_check('qiniu_ac_key')
-        self.sc_key = pre_check('qiniu_sc_key')
+    def __init__(self, ac_key=pre_check('qiniu_ac_key'),
+                 sc_key=pre_check('qiniu_sc_key'),
+                 df_bucket=pre_check('qiniu_bk_name')):
+        """
+        初始化并登陆七牛云对象存储
+
+        :param ac_key: Access Key
+        :param sc_key: Secret Key
+        :param df_bucket: 默认桶名称
+        """
+        self.ac_key = ac_key
+        self.sc_key = sc_key
         self.auth = qiniu.Auth(self.ac_key, self.sc_key)
-        self.df_bucket = pre_check('qiniu_bk_name')
+        self.df_bucket = df_bucket
 
     def get_func_table(self):
+        """
+        获取对象支持的操作
+
+        :return: 函数表
+        """
         return {
             '-up': self.upload,
             '-rm': self.remove,
@@ -19,18 +33,45 @@ class Qiniu_oss_api:
         }
 
     def upload(self, filePath: str, bucket=None):
+        """
+        上传文件
+
+        :param filePath: 文件路径
+        :param bucket: 桶名称，缺省使用self.df_bucket
+        :return: None
+        """
         tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath.split(dir_char)[-1])
         qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
 
     def remove(self, filePath: str, bucket=None):
+        """
+        删除文件
+
+        :param filePath: 文件路径（对象存储中）
+        :param bucket: 桶名称，缺省使用self.df_bucket
+        :return: None
+        """
         bk = qiniu.BucketManager(self.auth)
         bk.delete(bucket if bucket else self.df_bucket, filePath)
 
     def copy_url(self, filePath: str, bucket=None):
+        """
+        通过url拷贝文件（这个接口貌似没有卵用，七牛云那边并不会生效）
+
+        :param filePath: 文件链接
+        :param bucket: 桶名称，缺省使用self.df_bucket
+        :return: None
+        """
         bk = qiniu.BucketManager(self.auth)
         bk.fetch(filePath, bucket if bucket else self.df_bucket, filePath.split('/')[-1])
 
     def get_bucket_url(self, bucket=None):
+        """
+        获取当前桶的访问链接
+
+        :param bucket: 桶名称，缺省使用self.df_bucket
+        :return: 成功返回json，否则False
+        """
         import requests
         bucket = bucket if bucket else self.df_bucket
         url = 'http://api.qiniu.com/v6/domain/list?tbl=%s' % bucket
@@ -45,6 +86,12 @@ class Qiniu_oss_api:
             return False
 
     def list_bucket(self, bucket=None):
+        """
+        展示bucket中所有的文件
+
+        :param bucket: 桶名称，缺省使用self.df_bucket
+        :return: None
+        """
         from prettytable import PrettyTable
         bk = qiniu.BucketManager(self.auth)
         ret = bk.list(bucket if bucket else self.df_bucket)
@@ -61,6 +108,13 @@ class Qiniu_oss_api:
         print(tb)
 
     def download(self, filePath: str, bucket=None):
+        """
+        下载文件
+
+        :param filePath: 文件在桶中的路径
+        :param bucket: 桶名称，缺省使用self.df_bucket
+        :return: None
+        """
         from QuickStart_Rhy.NetTools.normal_dl import normal_dl
         bucket = bucket if bucket else self.df_bucket
         root_url = self.get_bucket_url(bucket)[0]

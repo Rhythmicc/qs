@@ -1,7 +1,14 @@
-from QuickStart_Rhy import dir_char
+from QuickStart_Rhy import dir_char, system
+
+miss_file = ['.DS_Store']
 
 
 def top():
+    """
+    CPU和内存监测
+
+    :return: None
+    """
     import time
     import math
     import psutil
@@ -46,7 +53,29 @@ def top():
         deal()
 
 
+def clear_mem():
+    """
+    清理系统内存
+
+    :return: None
+    """
+    if dir_char == '\\':
+        print("Not support")
+    else:
+        import os
+        if system.startswith("darwin"):
+            os.system("sudo purge")
+        else:
+            os.system('sync')
+            os.system("echo 3 > /proc/sys/vm/drop_caches")
+
+
 def mktar():
+    """
+    创建tar包
+
+    :return: None
+    """
     import os
     from QuickStart_Rhy.SystemTools.Compress import get_tar_name, Tar
     tar_name, ls = get_tar_name()
@@ -57,9 +86,9 @@ def mktar():
             tar.add_file(cur_p)
             return
         file_ls = os.listdir(cur_p)
-        flag = cur_p.endswith(dir_char)
+        flag_ch = '' if cur_p.endswith(dir_char) else dir_char
         for fp in file_ls:
-            fp = cur_p + ('' if flag else dir_char) + fp
+            fp = cur_p + flag_ch + fp
             dfs(fp)
     for i in ls:
         dfs(i)
@@ -67,6 +96,11 @@ def mktar():
 
 
 def untar():
+    """
+    解压tar包
+
+    :return: None
+    """
     import os
     import sys
 
@@ -82,9 +116,11 @@ def untar():
 
     def run(path):
         if os.path.exists(path):
-            cur_tar = Tar(path)
-            cur_tar.extract()
-            del cur_tar
+            try:
+                cur_tar = Tar(path)
+                cur_tar.extract()
+            except Exception as e:
+                print('[ERROR] %s' % e)
         else:
             print("No such file or dictionary:%s" % path)
 
@@ -94,6 +130,11 @@ def untar():
 
 
 def mkzip():
+    """
+    创建ZIP包
+
+    :return: None
+    """
     import os
     from QuickStart_Rhy.SystemTools.Compress import get_tar_name, Zip
     zip_name, ls = get_tar_name()
@@ -104,9 +145,9 @@ def mkzip():
             z.add_file(cur_p)
             return
         file_ls = os.listdir(cur_p)
-        flag = cur_p.endswith(dir_char)
+        flag_ch = '' if cur_p.endswith(dir_char) else dir_char
         for fp in file_ls:
-            fp = cur_p + ('' if flag else dir_char) + fp
+            fp = cur_p + flag_ch + fp
             dfs(fp)
     for i in ls:
         dfs(i)
@@ -114,6 +155,11 @@ def mkzip():
 
 
 def unzip():
+    """
+    解压ZIP包
+
+    :return: None
+    """
     import os
     import sys
 
@@ -132,8 +178,42 @@ def unzip():
             try:
                 z = Zip(path)
                 z.extract()
-            except:
-                print('[ERROR] %s extract failed!' % path)
+            except Exception as e:
+                print('[ERROR] %s' % e)
+        else:
+            print("[ERROR] No such file or dictionary:%s" % path)
+
+    for file_name in file_names:
+        job_q.append(pool.submit(run, file_name))
+    wait(job_q)
+
+
+def unrar():
+    """
+    解压RAR包
+
+    :return: None
+    """
+    import os
+    import sys
+
+    file_names = sys.argv[2:]
+    if not file_names:
+        exit("No enough parameters")
+    from QuickStart_Rhy.SystemTools.Compress import RAR
+    from QuickStart_Rhy.NetTools.normal_dl import core_num
+    from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
+
+    pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
+    job_q = []
+
+    def run(path):
+        if os.path.exists(path):
+            try:
+                z = RAR(path)
+                z.extract(os.path.basename(path).split('.')[0])
+            except Exception as e:
+                print('[ERROR] %s' % e)
         else:
             print("No such file or dictionary:%s" % path)
 

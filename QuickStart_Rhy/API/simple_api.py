@@ -3,6 +3,12 @@ import requests
 
 
 def rmbg(filePath: str):
+    """
+    删除图片背景
+
+    :param filePath: 图片的路径
+    :return: None
+    """
     api_key = pre_check('rmbg')
     res = requests.post(
         'https://api.remove.bg/v1.0/removebg',
@@ -23,6 +29,12 @@ def rmbg(filePath: str):
 
 
 def smms(filePath: str):
+    """
+    上传图片或Markdown中所有的图片到smms中
+
+    :param filePath: 图片或Markdown文件的路径
+    :return: None
+    """
     from prettytable import PrettyTable
     api_key = pre_check('smms')
 
@@ -95,6 +107,14 @@ def smms(filePath: str):
 
 
 def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
+    """
+    利用pasteme实现的信息收发
+
+    :param key: 信息编号
+    :param password: 获取信息可能需要的密码
+    :param mode: 'get' 或 'post'，get时将信息写入key.*文件中，post将剪切板内容上传至pasteme
+    :return: None
+    """
     import pyperclip
     from colorama import Fore, Style
     if mode == 'get':
@@ -130,6 +150,13 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
 
 
 def upimg(filePath: str, plt_type: str = 'Ali'):
+    """
+    上传图片或Markdown中所有的图片到多平台（免API KEY，但不保证数据安全）
+
+    :param filePath: 图片或Markdown文件路径
+    :param plt_type: 平台（使用 qs -upimg -help查看支持的平台）
+    :return: None
+    """
     from prettytable import PrettyTable
 
     def post_img(path):
@@ -166,7 +193,11 @@ def upimg(filePath: str, plt_type: str = 'Ali'):
                     img_set[aim] = False
                 else:
                     res_tb.add_row([aim.split(dir_char)[-1], res_dict['msg'],
-                                    '' if res['code'] != 200 else res_dict['data']['url'][plt_type]])
+                                    '' if res['code'] != 200 else (
+                                        res_dict['data']['url'][plt_type]
+                                        if res_dict['data']['url'][plt_type].lower() != 'null'
+                                        else plt_type + ' failed')]
+                                   )
                     if res_dict['code'] != 200:
                         break
                     img_set[aim] = res_dict['data']['url'][plt_type] if res_dict['code'] != 200 else False
@@ -190,5 +221,8 @@ def upimg(filePath: str, plt_type: str = 'Ali'):
                 tb.add_row([filePath.split(dir_char)[-1], 'No File', ''])
             else:
                 tb.add_row([filePath.split(dir_char)[-1], res['msg'],
-                            '' if res['code'] != 200 else res['data']['url'][plt_type]])
+                            '' if res['code'] != 200 else (
+                                res['data']['url'][plt_type]
+                                if res['data']['url'][plt_type].lower() != 'null' else plt_type + ' failed')]
+                           )
             print(tb)

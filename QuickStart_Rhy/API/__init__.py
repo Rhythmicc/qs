@@ -17,6 +17,14 @@ else:
 
 
 def pre_check(funcName: str, ext=True):
+    """
+    获取用户保存的API KEY
+
+    :param funcName: API KEY在~/.qsrc的名称
+    :param ext: 获取失败是否退出程序（默认退出）
+
+    :return: 找到的API KEY
+    """
     try:
         api_key = qsconfig[funcName]
         if not api_key:

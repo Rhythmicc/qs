@@ -7,6 +7,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def merge_file(path, ts_ls, name):
+    """
+    将全部ts文件合并
+
+    :param path: 文件夹路径
+    :param ts_ls: ts文件路径列表
+    :param name: 合并后的ts文件名
+    :return:
+    """
     if not path.endswith(dir_char):
         path += dir_char
     with open(name + '.ts', 'wb') as f:
@@ -17,6 +25,12 @@ def merge_file(path, ts_ls, name):
 
 class M3U8DL:
     def __init__(self, target, name):
+        """
+        初始化M3U8下载引擎
+
+        :param target: 目标url
+        :param name: 文件名
+        """
         self.path = ''
         self._cur = 0
         self._all = 0
@@ -24,6 +38,12 @@ class M3U8DL:
         self.name = name
 
     def _dl_one(self, job):
+        """
+        下载一个ts文件
+
+        :param job: 任务信息
+        :return: None
+        """
         if job[-1]:
             pd_url = job[0]
             c_fule_name = job[1]
@@ -40,6 +60,11 @@ class M3U8DL:
               end='\n' if self._cur == self._all else '\r')
 
     def download(self):
+        """
+        下载
+
+        :return: None
+        """
         target = self.target
         download_path = os.getcwd() + dir_char + self.name
         self.path = download_path

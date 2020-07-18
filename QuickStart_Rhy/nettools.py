@@ -2,12 +2,14 @@ import sys
 
 
 def upgrade():
+    """更新qs"""
     import os
     if os.system('pip3 install QuickStart-Rhy --upgrade'):
         os.system('pip install QuickStart-Rhy --upgrade')
 
 
 def upload_pypi():
+    """将pypi库上传"""
     import os
     from QuickStart_Rhy import remove, dir_char
     remove('dist')
@@ -17,11 +19,13 @@ def upload_pypi():
 
 
 def m3u8_dl(url):
+    """下载m3u8"""
     from QuickStart_Rhy.NetTools.m3u8_dl import M3U8DL
     M3U8DL(url, url.split('.')[-2].split('/')[-1]).download()
 
 
 def download():
+    """qs下载引擎，使用--ytb使用youtube-dl下载视频"""
     ytb_flag = '--ytb' in sys.argv
     if ytb_flag:
         sys.argv.remove('--ytb')
@@ -43,6 +47,7 @@ def download():
 
 
 def http():
+    """开启http服务"""
     url = ''
     if len(sys.argv) > 2:
         ip, port = sys.argv[2].split(':')
@@ -66,6 +71,7 @@ def http():
 
 
 def netinfo():
+    """通过域名或ip查询ip信息"""
     import json
     import socket
     import requests

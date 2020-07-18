@@ -4,6 +4,12 @@ colorama.init()
 
 
 def color_rep(ss):
+    """
+    格式化菜单文本（添加颜色）
+
+    :param ss: 文本
+    :return: 处理后的文本
+    """
     ss = ss.strip('\n').split('\n')
     for i, line in enumerate(ss):
         if ':->' in line:
@@ -17,6 +23,7 @@ def color_rep(ss):
 
 
 def base_menu():
+    """基础类菜单"""
     print(color_rep("""Basic Tools help:
     qs -u  <url>              :-> open url using default browser
     qs -a  <app> [file..]     :-> open app or open file by app(for Mac OS X)
@@ -26,15 +33,19 @@ def base_menu():
 
 
 def system_menu():
+    """系统类菜单"""
     print(color_rep("""System Tools help:
     qs -top                   :-> cpu and memory monitor
+    qs -clear                 :-> free memory
     qs -mktar <path...>       :-> create gzipped archive for path
-    qs -untar <path>          :-> extract path.tar.*
+    qs -untar <path...>       :-> extract path.tar.*
     qs -mkzip <path...>       :-> make a zip for path
-    qs -unzip <path>          :-> unzip path.zip"""))
+    qs -unzip <path...>       :-> extract *.zip file
+    qs -unrar <path...>       :-> extract *.rar file"""))
 
 
 def net_menu():
+    """网络类菜单"""
     print(color_rep("""Net Tools help:
     qs -http [ip] [-bind url] :-> start a multithread ftp server
     qs -netinfo [<domains>..] :-> get url's info which in clipboard or params 
@@ -44,6 +55,7 @@ def net_menu():
 
 
 def api_menu():
+    """api类菜单"""
     print(color_rep("""API Tools help:
     qs -trans [content]       :-> translate the content(in clipboard)
     qs -rmbg <img>            :-> remove image background
@@ -60,6 +72,7 @@ def api_menu():
 
 
 def image_menu():
+    """图像处理类菜单"""
     print(color_rep("""Image Tools help:
     qs -stbg pic to [from]    :-> color replace for picture
     qs -v2gif path [sz] [fps] :-> generate gif from video
@@ -89,10 +102,12 @@ basic_funcs = {
 system_funcs = {
     'self': 'system',
     '-top': 'top',
+    '-clear': 'clear_mem',
     '-mktar': 'mktar',
     '-untar': 'untar',
     '-mkzip': 'mkzip',
     '-unzip': 'unzip',
+    '-unrar': 'unrar'
 }
 
 net_funcs = {

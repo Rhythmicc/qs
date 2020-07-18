@@ -1,4 +1,10 @@
 def set_timeout(num):
+    """
+    定时函数装饰器
+
+    :param num: 时间（秒）
+    :return: wrapper
+    """
     def wrapper(func):
         def handle(signum, frame):
             raise RuntimeError

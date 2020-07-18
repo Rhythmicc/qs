@@ -3,6 +3,11 @@ import sys
 
 
 def get_console_width():
+    """
+    获取当前终端下的宽度
+
+    :return: 宽度
+    """
     if os.name == 'nt':
         STD_OUTPUT_HANDLE = -11
         from ctypes import windll, Structure, byref

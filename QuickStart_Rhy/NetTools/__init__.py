@@ -4,6 +4,12 @@ from QuickStart_Rhy import headers
 
 
 def check_one_page(url):
+    """
+    检查url是否可访问
+
+    :param url: url
+    :return: True或False
+    """
     try:
         response = requests.head(url, headers=headers).status_code
         return response == requests.codes.ok
@@ -12,6 +18,12 @@ def check_one_page(url):
 
 
 def formatUrl(try_url):
+    """
+    为url添加https或http使其能被访问
+
+    :param try_url: 待尝试的url
+    :return: 能被成功访问的url
+    """
     if try_url.startswith('http://') or try_url.startswith('https://'):
         return try_url
     res_url = try_url
@@ -23,6 +35,11 @@ def formatUrl(try_url):
 
 
 def get_ip():
+    """
+    获取本机ip
+
+    :return: ip
+    """
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -35,6 +52,13 @@ def get_ip():
 
 
 def size_format(sz, align=False):
+    """
+    格式化文件大小显示
+
+    :param sz: 整数，表示文件大小
+    :param align: 是否对齐
+    :return: 文件大小字符串
+    """
     if sz >= 1e9:
         return '%.3f GB' % (sz / 1e9) if not align else '%7.3f GB' % (sz / 1e9)
     elif sz >= 1e6:
@@ -46,6 +70,11 @@ def size_format(sz, align=False):
 
 
 def get_ip_info():
+    """
+    通过ip-api获取本机ip信息
+
+    :return: ip信息的dict，失败返回None
+    """
     import json
     res = requests.get('http://ip-api.com/json/', headers=headers)
     if res.status_code == requests.codes.ok:
@@ -55,6 +84,12 @@ def get_ip_info():
 
 
 def get_fileinfo(url):
+    """
+    获取待下载的文件信息
+
+    :param url: 文件url
+    :return: 真实url，文件名，http头部信息
+    """
     import re
     import os
     try:

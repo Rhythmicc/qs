@@ -2,6 +2,7 @@ import sys
 
 
 def remove_bg():
+    """删除图片背景"""
     try:
         path = sys.argv[2]
     except IndexError:
@@ -15,6 +16,7 @@ def remove_bg():
 
 
 def smms():
+    """上传图片或Markdown中图片到smms"""
     try:
         path = sys.argv[2]
     except IndexError:
@@ -28,6 +30,7 @@ def smms():
 
 
 def up_img():
+    """上传图片或Markdown中图片到多平台（不保证数据安全）"""
     try:
         path = sys.argv[2]
     except IndexError:
@@ -48,13 +51,17 @@ def up_img():
         type_map = {}
         for i in spt_type:
             type_map[i.lower()] = i
-            type_map[i] = i
-        upimg(path, type_map[sys.argv[3]]) if len(sys.argv) > 3 and sys.argv[3] in type_map \
-            else upimg(path, random.choice(spt_type_keys)), \
-            print('No such platform: %s' % sys.argv[3]) if len(sys.argv) > 3 else 1
+        argv_len_3 = len(sys.argv) > 3
+        if argv_len_3:
+            sys.argv[3] = sys.argv[3].lower()
+        upimg(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
+            upimg(path, random.choice(spt_type_keys)),
+            print('No such platform: %s' % sys.argv[3]) if argv_len_3 else 1
+        )
 
 
 def ali_oss():
+    """阿里云对象存储"""
     try:
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls', '-rm']:
@@ -82,6 +89,7 @@ def ali_oss():
 
 
 def qiniu():
+    """七牛云对象存储"""
     try:
         op = sys.argv[2]
         if op not in ['-up', '-rm', '-cp', '-ls', '-dl']:
@@ -110,6 +118,7 @@ def qiniu():
 
 
 def txcos():
+    """腾讯云对象存储"""
     try:
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls', '-rm']:
@@ -137,6 +146,7 @@ def txcos():
 
 
 def translate():
+    """qs默认的翻译引擎（腾讯云）"""
     import pyperclip
     from QuickStart_Rhy.API.TencentTranslate import Translate
 
@@ -153,6 +163,7 @@ def translate():
 
 
 def weather():
+    """查天气"""
     from QuickStart_Rhy import headers, dir_char
     from QuickStart_Rhy.ThreadTools import ThreadFunctionWrapper
     import requests
@@ -216,11 +227,13 @@ def weather():
 
 
 def ipinfo(ip: str = None):
+    """通过ipinfo查ip（定位不准）"""
     from QuickStart_Rhy.API.IPinfo import get_ip_info
     return get_ip_info(ip)
 
 
 def largeImage():
+    """百度图片效果增强"""
     try:
         path = sys.argv[2]
     except IndexError:
@@ -232,6 +245,7 @@ def largeImage():
 
 
 def AipNLP():
+    """百度NLP"""
     from QuickStart_Rhy.API.AipNLP import AipNLP
     import pyperclip
     ct = sys.argv[2:]
@@ -248,6 +262,7 @@ def AipNLP():
 
 
 def Seafile_Communicate():
+    """Seafile做共享粘贴板"""
     from QuickStart_Rhy.API.Seafile import Seafile
     try:
         method = sys.argv[2]
@@ -262,6 +277,7 @@ def Seafile_Communicate():
 
 
 def Pasteme():
+    """Pasteme信息传递"""
     from QuickStart_Rhy.API.simple_api import pasteme
     try:
         method = sys.argv[2]
