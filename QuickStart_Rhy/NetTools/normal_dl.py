@@ -128,16 +128,16 @@ class Downloader:
         """
         r = get(self.url, stream=True)
         Flag = self.size != -1
-        self.size = -self.size
+        size = -self.size
         with open(self.name, 'wb') as f:
             for chunk in r.iter_content(8192):
                 f.write(chunk)
                 self.cur_sz += 8192
                 if Flag:
-                    self.cur_sz = min(self.cur_sz, self.size)
+                    self.cur_sz = min(self.cur_sz, size)
                 print('\r[PROC] %s' % size_format(self.cur_sz, align=True), end='')
             print('')
-            if Flag and self.cur_sz < self.size:
+            if Flag and self.cur_sz < size:
                 print('[ERROR] Data loss!')
 
     def run(self):

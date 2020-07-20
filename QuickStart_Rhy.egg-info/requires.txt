@@ -6,3 +6,4 @@ colorama
 prettytable
 diagram
 qrcode_terminal
+rarfile

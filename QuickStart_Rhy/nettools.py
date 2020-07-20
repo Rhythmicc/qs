@@ -83,7 +83,9 @@ def netinfo():
     def print_ip_info(info_ls):
         table = prettytable.PrettyTable(['ip', '运营商', '地址', '经纬'])
         for info in info_ls:
-            table.add_row([info['ip'], info['isp'], info['pos'], str(info['location'])[1:-1].replace("'", '')])
+            table.add_row([info['ip'],
+                           info['isp'] if 'isp' in info else '未知', info['pos'],
+                           str(info['location'])[1:-1].replace("'", '')])
         print(table)
 
     urls = sys.argv[2:] if len(sys.argv) > 2 else []
