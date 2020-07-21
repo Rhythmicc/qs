@@ -125,7 +125,10 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
         if r.status_code == requests.codes.ok:
             js = json.loads(r.content)
             if js['status'] == 200:
-                pyperclip.copy(js['content'])
+                try:
+                    pyperclip.copy(js['content'])
+                except:
+                    print("Sorry, but your system is not supported by `pyperclip`")
                 with open("%s.%s" % (key, js['lang']), 'w') as file:
                     file.write(js['content'])
             else:
@@ -133,7 +136,12 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
         else:
             print(Fore.RED, 'Unknown error', Style.RESET_ALL)
     else:
-        ss = pyperclip.paste()
+        try:
+            ss = pyperclip.paste()
+        except :
+            path = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input file path: ')
+            with open(path, 'r') as file:
+                ss = file.read()
         js = {
             'lang': key if key else 'txt',
             'content': ss

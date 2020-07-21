@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-VERSION = '0.2.21'
+VERSION = '0.2.22'
 
 setup(
     name='QuickStart_Rhy',

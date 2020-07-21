@@ -10,7 +10,7 @@ if os.path.exists(user_root + '.qsrc'):
 else:
     with open(user_root + '.qsrc', 'w') as f:
         f.write('{\n'
-                '  "rmbg": "GET API KEY: https://www.remove.bg"\n'
+                '  "rmbg": "GET API KEY: https://www.remove.bg",\n'
                 '  "smms": "GET API KEY: https://sm.ms"\n'
                 '}')
     qsconfig = {}

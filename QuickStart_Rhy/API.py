@@ -152,7 +152,10 @@ def translate():
 
     content = ' '.join(sys.argv[2:])
     if not content:
-        content = pyperclip.paste()
+        try:
+            content = pyperclip.paste()
+        except:
+            input('Sorry, but your system is not supported by `pyperclip`\nSo you need input manually: ')
     if content:
         content.replace('\n', ' ')
         translator = Translate()
@@ -250,7 +253,10 @@ def AipNLP():
     import pyperclip
     ct = sys.argv[2:]
     if not ct:
-        ct = [pyperclip.paste()]
+        try:
+            ct = [pyperclip.paste()]
+        except :
+            ct = [input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: ')]
     NLP = AipNLP()
     for id, line in enumerate(ct):
         ct[id] = NLP.get_res(line)
@@ -258,7 +264,10 @@ def AipNLP():
             print('...')
         elif id < 9:
             print(ct[id])
-    pyperclip.copy('\n'.join(ct))
+    try:
+        pyperclip.copy('\n'.join(ct))
+    except:
+        pass
 
 
 def Seafile_Communicate():

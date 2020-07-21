@@ -18,7 +18,11 @@ class Seafile:
         :return: None
         """
         with open(self.path, 'rb') as f:
-            pyperclip.copy(f.read().decode('utf-8'))
+            try:
+                pyperclip.copy(f.read().decode('utf-8'))
+            except pyperclip.PyperclipException:
+                from QuickStart_Rhy import open_file
+                open_file([self.path])
 
     def post_msg(self, msg=pyperclip.paste()):
         """

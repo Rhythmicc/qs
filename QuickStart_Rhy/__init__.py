@@ -75,7 +75,10 @@ def u():
             wb.open_new_tab(url)
     else:
         import pyperclip
-        url = pyperclip.paste()
+        try:
+            url = pyperclip.paste()
+        except :
+            url = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input url manually: ')
         wb.open_new_tab(formatUrl(url))
 
 
@@ -91,17 +94,20 @@ def open_app():
         print('"-a" is only support Mac OS X')
 
 
-def open_file():
+def open_file(argv=None):
     """
     使用合适应用打开文件
 
     :return: None
     """
     import webbrowser as wb
+
+    if not argv:
+        argv = sys.argv[2:]
     if system == 'darwin':
-        os.system('open "' + '" "'.join(sys.argv[2:]) + '"')
+        os.system('open "' + '" "'.join(argv) + '"')
     else:
-        for file in sys.argv[2:]:
+        for file in argv:
             if os.path.exists(file):
                 path = os.path.abspath(file)
                 wb.open('file://%s' % path)

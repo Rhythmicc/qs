@@ -89,7 +89,12 @@ def netinfo():
         print(table)
 
     urls = sys.argv[2:] if len(sys.argv) > 2 else []
-    urls += pyperclip.paste().strip().split() if not urls else []
+    if not urls:
+        try:
+            urls += pyperclip.paste().strip().split() if not urls else []
+        except :
+            urls = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input urls manually: ')\
+                .strip().split()
     if not urls:
         urls.append('me')
     res_ls = []
