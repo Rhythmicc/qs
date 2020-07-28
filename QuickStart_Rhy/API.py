@@ -296,3 +296,21 @@ def Pasteme():
     except IndexError:
         print("Usage:\n  1. qs -pasteme get key [password]\n  2. qs -pasteme post lang [password]")
         exit(0)
+
+
+def bili_cover():
+    """下载Bilibili视频、直播的封面图片（视频链接、视频号均可识别）"""
+    from QuickStart_Rhy.API.simple_api import bili_cover as bc
+    import pyperclip
+
+    try:
+        url = sys.argv[2]
+    except IndexError:
+        try:
+            url = pyperclip.paste()
+        except :
+            print('Sorry, but your system may not be suppported by `pyperclip`')
+            return
+    if not url:
+        exit('Usage: qs -bcv <url/video code>')
+    bc(url)

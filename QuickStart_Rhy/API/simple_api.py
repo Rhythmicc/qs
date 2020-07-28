@@ -234,3 +234,28 @@ def upimg(filePath: str, plt_type: str = 'Ali'):
                                 if res['data']['url'][plt_type].lower() != 'null' else plt_type + ' failed')]
                            )
             print(tb)
+
+
+def bili_cover(url: str):
+    """
+    获取BiliBili视频封面
+
+    :param url: BiliBili视频链接或视频号
+    :return:
+    """
+    import json
+    from QuickStart_Rhy.NetTools.normal_dl import normal_dl
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    res = requests.post('https://v1.alapi.cn/api/bbcover', data='c='+url, headers=headers)
+    if res.status_code == requests.codes.ok:
+        res = json.loads(res.text)
+        if res['code'] != 200 or res['msg'] != 'success':
+            print("[ERROR] Get cover with: %s failed")
+            return
+        res = res['data']
+        print('[TITLE]: %s' % res['title'])
+        print('[INFO ]:\n', end='\t')
+        print(res['description'].replace('<br />', '\n\t'))
+        normal_dl(res['cover'], res['title'] + '.' + res['cover'].split('.')[-1])
+    else:
+        print("[ERROR] Get cover with: %s failed" % url)

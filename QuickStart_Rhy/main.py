@@ -9,13 +9,13 @@ def qs_help(rep=''):
         print(color_rep(
             """
     qs -basic   :-> basic   tools help | -u, -a, -f, -cal, -time
-    qs -system  :-> system  tools help | -top, -[mk/un][zip/tar]
-    qs -net     :-> network tools help | -ftp, -dl, -up[load/grade]
+    qs -system  :-> system  tools help | -top, -[mk/un][zip/tar]...
+    qs -net     :-> network tools help | -http, -dl, -up[load/grade]
     qs -api     :-> api     tools help | -trans, -smms, -rmbg...
     qs -image   :-> image   tools help | -stbg, -v2gif, -v2mp4...
 """))
-        print('Docs:\n  -China: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
-        print('  -Other: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+        print('Docs:\n  · China: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+        print('  · Other: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
     else:
         menu_table[rep]()
 

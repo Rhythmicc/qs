@@ -68,7 +68,8 @@ def api_menu():
     qs -LG <image>            :-> make image larger(with AI)
     qs -nlp [words]           :-> Text(or in clipboard) error correction
     qs -sea <method> [msg]    :-> Get Or Post msg by Seafile.
-    qs -pasteme <method> [*]  :-> get with key, [password] or post clipboard content"""))
+    qs -pasteme <method> [*]  :-> get with key, [password] or post clipboard content
+    qs -bcv <url/video code>  :-> get Bilibili video cover image with <url>"""))
 
 
 def image_menu():
@@ -132,7 +133,8 @@ api_funcs = {
     '-weather': 'weather',
     '-nlp': 'AipNLP',
     '-sea': 'Seafile_Communicate',
-    '-pasteme': 'Pasteme'
+    '-pasteme': 'Pasteme',
+    '-bcv': 'bili_cover'
 }
 
 image_funcs = {

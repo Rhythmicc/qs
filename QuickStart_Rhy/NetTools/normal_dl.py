@@ -30,7 +30,7 @@ def GetBlockSize(sz):
 
 
 class Downloader:
-    def __init__(self, url: str, num: int):
+    def __init__(self, url: str, num: int, set_name: str = ''):
         """
         qs普通文件下载引擎
 
@@ -45,6 +45,8 @@ class Downloader:
         self.fileLock = Lock()
         self.cur_sz = 0
         self.url, self.name, r = get_fileinfo(url)
+        if set_name:
+            self.name = set_name
         if not self.url:
             print('[ERROR] Connection Error!')
             exit(0)
@@ -114,11 +116,11 @@ class Downloader:
             speed = size_format((self.fileBlock * self.num / tm), align=True)
             per = self.cur_sz / self.size
             print('\r[%s] %.2f%% | %s/s' % (
-                    '#' * int(40 * per) + ' ' * int(40 - 40 * per),
-                    per * 100, speed
-                ),
-                end='\n' if self.cur_sz == self.size else ''
-            )
+                '#' * int(40 * per) + ' ' * int(40 - 40 * per),
+                per * 100, speed
+            ),
+                  end='\n' if self.cur_sz == self.size else ''
+                  )
 
     def _single_dl(self):
         """
@@ -127,17 +129,17 @@ class Downloader:
         :return: None
         """
         r = get(self.url, stream=True)
-        Flag = self.size != -1
+        flag = self.size != -1
         size = -self.size
         with open(self.name, 'wb') as f:
             for chunk in r.iter_content(8192):
                 f.write(chunk)
                 self.cur_sz += 8192
-                if Flag:
+                if flag:
                     self.cur_sz = min(self.cur_sz, size)
                 print('\r[PROC] %s' % size_format(self.cur_sz, align=True), end='')
             print('')
-            if Flag and self.cur_sz < size:
+            if flag and self.cur_sz < size:
                 print('[ERROR] Data loss!')
 
     def run(self):
@@ -181,11 +183,12 @@ class Downloader:
         print('[INFO] %s download done!' % self.name)
 
 
-def normal_dl(url):
+def normal_dl(url, set_name: str = ''):
     """
     自动规划下载线程数量并开始并行下载
 
+    :param set_name: 设置文件名（默认采用url所指向的资源名）
     :param url: 文件url
     :return: None
     """
-    Downloader(url, min(16, core_num * 4)).run()
+    Downloader(url, min(16, core_num * 4), set_name).run()
