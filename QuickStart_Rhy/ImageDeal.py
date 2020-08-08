@@ -1,9 +1,10 @@
+# coding=utf-8
 import sys
 import os
 
 
 def set_img_background():
-    """替换图片颜色"""
+    """替换图片颜色 | Replace color in image"""
     from QuickStart_Rhy.ImageTools.ColorTools import transport_back, get_color_from_str
 
     try:
@@ -30,7 +31,7 @@ def set_img_background():
 
 
 def v2gif():
-    """视频转gif"""
+    """视频转gif | video to gif"""
     from QuickStart_Rhy.ImageTools.VideoTools import video_2_gif
 
     try:
@@ -55,7 +56,7 @@ def v2gif():
 
 
 def rmaudio():
-    """删除视频的音频"""
+    """删除视频的音频 | remove audio in mp4"""
     from QuickStart_Rhy.ImageTools.VideoTools import rm_audio
     try:
         video = sys.argv[2]
@@ -66,7 +67,7 @@ def rmaudio():
 
 
 def v2mp4():
-    """视频转mp4"""
+    """视频转mp4 | transfer video to mp4"""
     from QuickStart_Rhy.ImageTools.VideoTools import tomp4
     try:
         video = sys.argv[2]

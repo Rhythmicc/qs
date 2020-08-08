@@ -1,3 +1,4 @@
+# coding=utf-8
 from QuickStart_Rhy import dir_char, system
 
 miss_file = ['.DS_Store']
@@ -6,6 +7,8 @@ miss_file = ['.DS_Store']
 def top():
     """
     CPU和内存监测
+
+    CPU and memory monitoring
 
     :return: None
     """
@@ -57,6 +60,8 @@ def clear_mem():
     """
     清理系统内存
 
+    Clean system memory
+
     :return: None
     """
     if dir_char == '\\':
@@ -73,6 +78,8 @@ def clear_mem():
 def mktar():
     """
     创建tar包
+
+    Create a tar packages
 
     :return: None
     """
@@ -98,6 +105,8 @@ def mktar():
 def untar():
     """
     解压tar包
+
+    Unpack the tar packages
 
     :return: None
     """
@@ -133,6 +142,8 @@ def mkzip():
     """
     创建ZIP包
 
+    Create a ZIP package
+
     :return: None
     """
     import os
@@ -157,6 +168,8 @@ def mkzip():
 def unzip():
     """
     解压ZIP包
+
+    Unpack the ZIP package
 
     :return: None
     """
@@ -191,6 +204,8 @@ def unzip():
 def unrar():
     """
     解压RAR包
+
+    Extract RAR package
 
     :return: None
     """
