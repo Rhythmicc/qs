@@ -1,8 +1,14 @@
+# coding=utf-8
 import sys
+from QuickStart_Rhy import user_lang
 
 
 def remove_bg():
-    """删除图片背景"""
+    """
+    删除图片背景
+
+    Delete image background
+    """
     try:
         path = sys.argv[2]
     except IndexError:
@@ -11,12 +17,16 @@ def remove_bg():
         if path == '-help':
             print('Usage: qs -rmbg picture')
             return
-        from QuickStart_Rhy.API.simple_api import rmbg
+        from QuickStart_Rhy.API.SimpleAPI import rmbg
         rmbg(path)
 
 
 def smms():
-    """上传图片或Markdown中图片到smms"""
+    """
+    上传图片或Markdown中图片到smms
+
+    Upload images or Markdown images to SMMS
+    """
     try:
         path = sys.argv[2]
     except IndexError:
@@ -25,18 +35,22 @@ def smms():
         if path == '-help':
             print('Usage: qs -smms [picture | *.md]')
             return
-        from QuickStart_Rhy.API.simple_api import smms
+        from QuickStart_Rhy.API.SimpleAPI import smms
         smms(path)
 
 
 def up_img():
-    """上传图片或Markdown中图片到多平台（不保证数据安全）"""
+    """
+    上传图片或Markdown中图片到多平台（不保证数据安全）
+
+    Upload images or Markdown images to multiple platforms (data security is not guaranteed)
+    """
     try:
         path = sys.argv[2]
     except IndexError:
         exit('Usage: qs -upimg [picture]')
     else:
-        from QuickStart_Rhy.API.simple_api import upimg
+        from QuickStart_Rhy.API.alapi import upimg
         import random
         spt_type = {'Ali': '阿里云', 'Sogou': '搜狗', 'Vimcn': 'Vim-cn.com', 'Niupic': '牛图', 'Juejin': '掘进',
                     'UploadLiu': 'upload.ouliu.net', 'Catbox': 'catbox', 'NetEasy': '网易', 'Prnt': 'Prnt',
@@ -61,7 +75,11 @@ def up_img():
 
 
 def ali_oss():
-    """阿里云对象存储"""
+    """
+    阿里云对象存储
+
+    Ali Cloud object storage
+    """
     try:
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls', '-rm']:
@@ -79,7 +97,7 @@ def ali_oss():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.API.Aliyun_oss import Aliyun_oss_api
+        from QuickStart_Rhy.API.AliCloud import Aliyun_oss_api
         ali_api = Aliyun_oss_api()
         func_table = ali_api.get_func_table()
         if not file:
@@ -89,7 +107,11 @@ def ali_oss():
 
 
 def qiniu():
-    """七牛云对象存储"""
+    """
+    七牛云对象存储
+
+    Qiniu cloud object storage
+    """
     try:
         op = sys.argv[2]
         if op not in ['-up', '-rm', '-cp', '-ls', '-dl']:
@@ -118,7 +140,11 @@ def qiniu():
 
 
 def txcos():
-    """腾讯云对象存储"""
+    """
+    腾讯云对象存储
+
+    Tencent Cloud object storage
+    """
     try:
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls', '-rm']:
@@ -136,7 +162,7 @@ def txcos():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.API.txcos import txcos
+        from QuickStart_Rhy.API.TencentCloud import txcos
         tx_api = txcos()
         func_table = tx_api.get_func_table()
         if not file:
@@ -146,27 +172,39 @@ def txcos():
 
 
 def translate():
-    """qs默认的翻译引擎（腾讯云）"""
+    """
+    qs默认的翻译引擎
+
+    Qs default Translation engine
+    """
+    global Translate, translate
+    from QuickStart_Rhy import trans_engine
     import pyperclip
-    from QuickStart_Rhy.API.TencentTranslate import Translate
+    if trans_engine != 'default':
+        from QuickStart_Rhy.API.TencentCloud import Translate
+    else:
+        from QuickStart_Rhy.API.alapi import translate
 
     content = ' '.join(sys.argv[2:])
     if not content:
         try:
             content = pyperclip.paste()
         except:
-            input('Sorry, but your system is not supported by `pyperclip`\nSo you need input manually: ')
+            content = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content '
+                            'manually: '
+                            if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
     if content:
-        content.replace('\n', ' ')
-        translator = Translate()
-        ret = translator.translate(content)
+        if trans_engine == 'TencentCloud':
+            ret = Translate().translate(content.replace('\n', ' '))
+        else:
+            ret = translate(content.replace('\n', ' '))
         print(ret if ret else 'Translate Failed!')
     else:
         print("No content in your clipboard or command parameters!")
 
 
 def weather():
-    """查天气"""
+    """查天气 | Check weather"""
     from QuickStart_Rhy import headers, dir_char
     from QuickStart_Rhy.ThreadTools import ThreadFunctionWrapper
     import requests
@@ -201,18 +239,16 @@ def weather():
     table = tls[1].get_res()
     if simple:
         if not loc:
-            from QuickStart_Rhy.API import pre_check
-            if pre_check("txyun_scid", False) and pre_check("txyun_sckey", False):
-                from QuickStart_Rhy.API.TencentTranslate import Translate
-                translator = Translate()
-                trans_loaction = translator.translate(simple[0].split('：')[-1])
+            if user_lang == 'zh':
+                from QuickStart_Rhy.API.alapi import translate
+                trans_loaction = translate(simple[0].split('：')[-1])
                 print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
             else:
-                print('地区：' + simple[0].split('：')[-1])
+                print('Location：' + simple[0].split('：')[-1])
         simple = simple[2:7]
         print('\n'.join(simple))
     else:
-        print('Error: Get data failed.')
+        print('Error: Get data failed.' if user_lang != 'zh' else '错误: 获取数据失败')
     if table:
         print(table[3][:-1])
         bottom_line = 7
@@ -220,50 +256,59 @@ def weather():
             while '╂' not in table[bottom_line]:
                 bottom_line += 1
         except IndexError:
-            exit('Get Weather Data failed!')
+            exit('Get Weather Data failed!' if user_lang != 'zh' else '获取天气数据失败')
         for i in table[7:bottom_line + 2]:
             print(i[:-1])
         print('└────────────────────────────────────────────────────────────────────────')
         print('\n'.join(table[-3 if not loc else -4:]))
     else:
-        print('Error: Get detail failed.')
+        print('Error: Get data failed.' if user_lang != 'zh' else '错误: 获取数据失败')
 
 
 def ipinfo(ip: str = None):
-    """通过ipinfo查ip（定位不准）"""
+    """
+    通过ipinfo查ip（定位不准）
+
+    Check IP via IPInfo (incorrect location)
+    """
     from QuickStart_Rhy.API.IPinfo import get_ip_info
     return get_ip_info(ip)
 
 
 def largeImage():
-    """百度图片效果增强"""
+    """
+    百度图片效果增强
+
+    Baidu picture effect enhancement
+    """
     try:
         path = sys.argv[2]
     except IndexError:
         exit('Usage qs -LG img')
     else:
-        from QuickStart_Rhy.API import AipImage
-        aip_cli = AipImage.ImageDeal()
+        from QuickStart_Rhy.API.BaiduCloud import ImageDeal
+        aip_cli = ImageDeal()
         aip_cli.largeImage(path)
 
 
 def AipNLP():
-    """百度NLP"""
-    from QuickStart_Rhy.API.AipNLP import AipNLP
+    """百度NLP | Baidu NLP"""
+    from QuickStart_Rhy.API.BaiduCloud import AipNLP
     import pyperclip
     ct = sys.argv[2:]
     if not ct:
         try:
             ct = [pyperclip.paste()]
         except :
-            ct = [input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: ')]
+            ct = [input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                        if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')]
     NLP = AipNLP()
-    for id, line in enumerate(ct):
-        ct[id] = NLP.get_res(line)
-        if id == 9:
+    for _id, line in enumerate(ct):
+        ct[_id] = NLP.get_res(line)
+        if _id == 9:
             print('...')
-        elif id < 9:
-            print(ct[id])
+        elif _id < 9:
+            print(ct[_id])
     try:
         pyperclip.copy('\n'.join(ct))
     except:
@@ -287,7 +332,7 @@ def Seafile_Communicate():
 
 def Pasteme():
     """Pasteme信息传递"""
-    from QuickStart_Rhy.API.simple_api import pasteme
+    from QuickStart_Rhy.API.SimpleAPI import pasteme
     try:
         method = sys.argv[2]
         key = sys.argv[3]
@@ -300,7 +345,7 @@ def Pasteme():
 
 def bili_cover():
     """下载Bilibili视频、直播的封面图片（视频链接、视频号均可识别）"""
-    from QuickStart_Rhy.API.simple_api import bili_cover as bc
+    from QuickStart_Rhy.API.alapi import bili_cover as bc
     import pyperclip
 
     try:

@@ -1,15 +1,24 @@
+# coding=utf-8
 import sys
 
 
 def upgrade():
-    """更新qs"""
+    """
+    更新qs
+
+    Upgrade qs
+    """
     import os
     if os.system('pip3 install QuickStart-Rhy --upgrade'):
         os.system('pip install QuickStart-Rhy --upgrade')
 
 
 def upload_pypi():
-    """将pypi库上传"""
+    """
+    将pypi库上传
+
+    Upload Pypi Library
+    """
     import os
     from QuickStart_Rhy import remove, dir_char
     remove('dist')
@@ -19,13 +28,22 @@ def upload_pypi():
 
 
 def m3u8_dl(url):
-    """下载m3u8"""
+    """
+    下载m3u8
+
+    Download *.m3u8
+    """
     from QuickStart_Rhy.NetTools.m3u8_dl import M3U8DL
     M3U8DL(url, url.split('.')[-2].split('/')[-1]).download()
 
 
 def download():
-    """qs下载引擎，使用--ytb使用youtube-dl下载视频"""
+    """
+    qs下载引擎，使用--ytb使用youtube-dl下载视频
+
+    qs download engine, use -ytb to download videos using youtube-dl.
+    """
+    global _real_main
     ytb_flag = '--ytb' in sys.argv
     if ytb_flag:
         sys.argv.remove('--ytb')
@@ -47,7 +65,11 @@ def download():
 
 
 def http():
-    """开启http服务"""
+    """
+    开启http服务
+
+    Turn on the http service.
+    """
     url = ''
     if len(sys.argv) > 2:
         ip, port = sys.argv[2].split(':')
@@ -71,14 +93,17 @@ def http():
 
 
 def netinfo():
-    """通过域名或ip查询ip信息"""
-    import json
+    """
+    通过域名或ip查询ip信息
+
+    Query ip information via domain name or ip.
+    """
     import socket
-    import requests
     import pyperclip
     import prettytable
     import urllib.parse
-    from QuickStart_Rhy import headers
+    from QuickStart_Rhy import user_lang
+    from QuickStart_Rhy.API.alapi import ip_info
 
     def print_ip_info(info_ls):
         table = prettytable.PrettyTable(['ip', '运营商', '地址', '经纬'])
@@ -93,7 +118,8 @@ def netinfo():
         try:
             urls += pyperclip.paste().strip().split() if not urls else []
         except :
-            urls = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input urls manually: ')\
+            urls = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                         if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')\
                 .strip().split()
     if not urls:
         urls.append('me')
@@ -104,10 +130,7 @@ def netinfo():
             if i != 'me':
                 addr = urllib.parse.urlparse(i).netloc
                 addr = socket.getaddrinfo(addr if addr else i, 'http')[0][-1][0]
-            res = requests.post('https://v1.alapi.cn/api/ip', data="ip=%s&format=json" % addr,
-                                headers={'Content-Type': "application/x-www-form-urlencoded"} if addr else headers)
-            res = json.loads(res.text)['data']
-            res_ls.append(res)
+            res_ls.append(ip_info(addr))
         except:
             print('[ERROR] Get domain failed:', i)
             continue

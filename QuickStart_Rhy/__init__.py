@@ -1,5 +1,7 @@
+# coding=utf-8
 import os
 import sys
+import json
 
 
 name = 'QuickStart_Rhy'
@@ -12,10 +14,59 @@ if system.startswith('win'):
 else:
     dir_char = '/'
 
+user_root = os.path.expanduser('~') + dir_char
+if os.path.exists(user_root + '.qsrc'):
+    with open(user_root + '.qsrc', 'r', encoding='utf8') as f:
+        qs_config = json.loads(f.read(), encoding='utf8')
+else:
+    with open(user_root + '.qsrc', 'w') as f:
+        f.write("""{
+  "basic_settings": {
+    "default_language": "zh",
+    "default_translate_engine": {
+      "index": 0,
+      "support": ["default", "TencentCloud"]
+    }
+  },
+  "API_settings": {
+    "rmbg": "GET: https://www.remove.bg",
+    "smms": "GET: https://sm.ms",
+    "darksky": "GET: https://darksky.net/",
+    "aliyun_oss_acid": "GET: https://www.aliyun.com/product/oss",
+    "aliyun_oss_ackey": "GET: https://www.aliyun.com/product/oss",
+    "aliyun_oss_bucket_url": "GET: https://www.aliyun.com/product/oss",
+    "aliyun_oss_df_bucket": "GET: https://www.aliyun.com/product/oss",
+    "txyun_scid": "GET: https://console.cloud.tencent.com/",
+    "txyun_sckey": "GET: https://console.cloud.tencent.com/",
+    "txyun_cos_df_bucket": "GET: https://console.cloud.tencent.com/",
+    "txyun_df_region": "GET: ap-[location]",
+    "qiniu_ac_key": "GET: http://qiniu.com/",
+    "qiniu_sc_key": "GET: http://qiniu.com/",
+    "qiniu_bk_name": "GET: [Qiniu Bucket Name]",
+    "gitee": "GET: http://gitee.com/",
+    "ipinfo": "GET: https://ipinfo.io/",
+    "AipImageAPP_ID": "GET: https://cloud.baidu.com/product/imageprocess",
+    "AipImageAPP_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
+    "AipImageSECRET_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
+    "AipNlpAPP_ID" : "GET: https://cloud.baidu.com/product/nlp_apply",
+    "AipNlpAPP_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
+    "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
+    "seafile_communicate_path": "GET: /Path/to/file"
+  }
+}
+""")
+    qs_config = {}
+    exit("You need set qs configure at: ~/.qsrc when you first run!")
+user_lang = qs_config['basic_settings']['default_language']
+trans_engine = qs_config['basic_settings']['default_translate_engine']['support']
+trans_engine = trans_engine[qs_config['basic_settings']['default_translate_engine']['index']]
+
 
 def deal_ctrl_c(signum, frame):
     """
     默认的处理ctrl c的函数
+
+    default function to deal [CTRL C]
 
     :param signum: signum
     :param frame: frame
@@ -28,6 +79,8 @@ def deal_ctrl_c(signum, frame):
 def remove(path):
     """
     删除文件或文件夹
+
+    delete file or folder.
 
     :param path: 路径
     :return: None
@@ -43,6 +96,8 @@ def remove(path):
 def cur_time():
     """
     获取当前时间
+
+    get time of now
 
     :return: None
     """
@@ -65,6 +120,8 @@ def u():
     """
     打开命令行参数中的链接
 
+    open urls in argv
+
     :return: None
     """
     import webbrowser as wb
@@ -78,13 +135,16 @@ def u():
         try:
             url = pyperclip.paste()
         except :
-            url = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input url manually: ')
+            url = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                        if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
         wb.open_new_tab(formatUrl(url))
 
 
 def open_app():
     """
-    Mac OS X下的open（不支持其他平台）
+    Mac OS下的open（不支持其他平台）
+
+    open app (only support Mac OS)
 
     :return: None
     """
@@ -97,6 +157,8 @@ def open_app():
 def open_file(argv=None):
     """
     使用合适应用打开文件
+
+    Open file with appropriate application
 
     :return: None
     """
@@ -121,6 +183,8 @@ def init():
 def calculate():
     """
     执行算数表达式
+
+    Execute the arithmetic expression.
 
     :return: None
     """

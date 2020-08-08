@@ -1,3 +1,4 @@
+# coding=utf-8
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait
 
@@ -6,6 +7,8 @@ class ThreadFunctionWrapper(threading.Thread):
     def __init__(self, function, *args, **kwargs):
         """
         开辟子线程执行任务（初始化）
+
+        Create child threads to perform tasks (initialization)
 
         :param function: 函数
         :param args: 参数
@@ -21,6 +24,8 @@ class ThreadFunctionWrapper(threading.Thread):
         """
         执行任务，结果保存在self.res
 
+        Execute the task and save the results in self.res
+
         :return: None
         """
         self.res = self.function(*self.args, **self.kwargs)
@@ -28,6 +33,8 @@ class ThreadFunctionWrapper(threading.Thread):
     def get_res(self):
         """
         获取任务执行结果
+
+        Gets the task execution results
 
         :return: self.res
         """

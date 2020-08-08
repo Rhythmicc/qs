@@ -1,3 +1,4 @@
+# coding=utf-8
 import urllib3
 from concurrent.futures import ThreadPoolExecutor, wait
 import requests
@@ -9,6 +10,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def merge_file(path, ts_ls, name):
     """
     将全部ts文件合并
+
+    Merge all TS files
 
     :param path: 文件夹路径
     :param ts_ls: ts文件路径列表
@@ -28,6 +31,8 @@ class M3U8DL:
         """
         初始化M3U8下载引擎
 
+        Initialize the M3U8 download engine
+
         :param target: 目标url
         :param name: 文件名
         """
@@ -40,6 +45,8 @@ class M3U8DL:
     def _dl_one(self, job):
         """
         下载一个ts文件
+
+        Download a TS file
 
         :param job: 任务信息
         :return: None

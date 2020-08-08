@@ -1,3 +1,4 @@
+# coding=utf-8
 import diagram
 import io
 
@@ -6,6 +7,8 @@ class Line:
     def __init__(self, values, height, width):
         """
         折线图
+
+        line chart
 
         :param values: 值列表
         :param height: 高度
@@ -18,6 +21,8 @@ class Line:
     def __str__(self):
         """
         绘图并返回字符串
+
+        Draw and return a string
 
         :return: 折线图的字符串
         """
@@ -37,6 +42,8 @@ class Line:
         """
         尾部添加值
 
+        Tail add value
+
         :param x: 值
         :return: None
         """
@@ -45,6 +52,8 @@ class Line:
     def pop(self):
         """
         删除首部值
+
+        Delete bow value
 
         :return: None
         """

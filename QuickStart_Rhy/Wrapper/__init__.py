@@ -1,6 +1,9 @@
+# coding=utf-8
 def set_timeout(num):
     """
     定时函数装饰器
+
+    Timing function decorator
 
     :param num: 时间（秒）
     :return: wrapper

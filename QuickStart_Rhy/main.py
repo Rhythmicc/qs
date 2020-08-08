@@ -1,21 +1,31 @@
+# coding=utf-8
 import sys
 from QuickStart_Rhy.func_list import *
 
 
 def qs_help(rep=''):
-    """输出菜单"""
+    """输出菜单 | Output menu"""
     if not rep or rep not in menu_table:
-        print('help:')
-        print(color_rep(
-            """
+        if user_lang != 'zh':
+            print('help:')
+            print(color_rep("""
     qs -basic   :-> basic   tools help | -u, -a, -f, -cal, -time
     qs -system  :-> system  tools help | -top, -[mk/un][zip/tar]...
     qs -net     :-> network tools help | -http, -dl, -up[load/grade]
     qs -api     :-> api     tools help | -trans, -smms, -rmbg...
-    qs -image   :-> image   tools help | -stbg, -v2gif, -v2mp4...
-"""))
-        print('Docs:\n  · China: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
-        print('  · Other: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+    qs -image   :-> image   tools help | -stbg, -v2gif, -v2mp4..."""))
+            print('Docs:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+            print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+        else:
+            print("帮助:")
+            print(color_rep("""
+    qs -basic   :-> 基础工具帮助 | -u, -a, -f, -cal, -time
+    qs -system  :-> 系统工具帮助 | -top, -[mk/un][zip/tar]...
+    qs -net     :-> 网络工具帮助 | -http, -dl, -up[load/grade]
+    qs -api     :-> 扩展工具帮助 | -trans, -smms, -rmbg...
+    qs -image   :-> 图像工具帮助 | -stbg, -v2gif, -v2mp4..."""))
+            print('文档:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+            print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
     else:
         menu_table[rep]()
 
@@ -39,7 +49,7 @@ for i in system_funcs:
 
 
 def main():
-    """执行命令"""
+    """执行命令 | Execute"""
     if len(sys.argv) >= 2:
         func_name = sys.argv[1]
         if func_name not in cmd_config:

@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 from QuickStart_Rhy import dir_char
 
@@ -5,6 +6,8 @@ from QuickStart_Rhy import dir_char
 def VideoWrapper(func):
     """
     视频处理的函数装饰器
+
+    Video processing function decorator
 
     :param func: 函数
     :return: wrapper
@@ -30,6 +33,8 @@ def video_2_gif(path, size=(480, 320), fps=None):
     """
     视频转gif（gif生成在视频路径的同目录下）
 
+    Video transfer GIF (GIF generated in the same directory as the video path)
+
     :param path: 视频路径
     :param size: gif尺寸
     :param fps: fps
@@ -46,6 +51,8 @@ def video_2_gif(path, size=(480, 320), fps=None):
 def rm_audio(path):
     """
     删除视频的音频
+
+    Delete the audio of the video
 
     :param path: 视频路径
     :return: None
@@ -68,6 +75,8 @@ def rm_audio(path):
 def tomp4(path):
     """
     将视频转为mp4
+
+    Convert the video to MP4
 
     :param path: 视频路径
     :return: None

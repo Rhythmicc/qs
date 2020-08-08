@@ -1,3 +1,4 @@
+# coding=utf-8
 from colorama import Back, Style
 import math
 
@@ -6,6 +7,8 @@ class RollBar:
     def __init__(self, values, max_=100, height=10):
         """
         滚动柱状图初始化
+
+        Rolling histogram initialization
 
         :param values: 值列表
         :param max_: 最大值
@@ -27,6 +30,8 @@ class RollBar:
         """
         返回字符串形式的图
 
+        Returns a graph as a string
+
         :return: 字符串形式的图
         """
         if self.title:
@@ -42,6 +47,8 @@ class RollBar:
         """
         打印柱状图
 
+        Print the bar chart
+
         :return: None
         """
         print(self)
@@ -49,6 +56,8 @@ class RollBar:
     def add(self, val):
         """
         扔掉第一个值，并在尾部添加val
+
+        Drop the first value and add Val at the end
 
         :param val: 值
         :return: None
@@ -65,6 +74,8 @@ class RollBar:
         """
         设置柱状图的标题
 
+        Sets the title of the bar chart
+
         :param _title: 标题
         :return: None
         """
@@ -73,6 +84,8 @@ class RollBar:
     def set(self, vals):
         """
         设置柱状图的全部值
+
+        Sets all values of the histogram
 
         :param vals: 值列表
         :return: None

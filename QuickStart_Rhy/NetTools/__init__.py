@@ -1,3 +1,4 @@
+# coding=utf-8
 import requests
 from requests.exceptions import RequestException
 from QuickStart_Rhy import headers
@@ -6,6 +7,8 @@ from QuickStart_Rhy import headers
 def check_one_page(url):
     """
     检查url是否可访问
+
+    Check that the URL is accessible
 
     :param url: url
     :return: True或False
@@ -20,6 +23,8 @@ def check_one_page(url):
 def formatUrl(try_url):
     """
     为url添加https或http使其能被访问
+
+    Add HTTPS or HTTP to the URL to make it accessible
 
     :param try_url: 待尝试的url
     :return: 能被成功访问的url
@@ -38,6 +43,8 @@ def get_ip():
     """
     获取本机ip
 
+    Get native IP
+
     :return: ip
     """
     import socket
@@ -54,6 +61,8 @@ def get_ip():
 def size_format(sz, align=False):
     """
     格式化文件大小显示
+
+    Format file size display
 
     :param sz: 整数，表示文件大小
     :param align: 是否对齐
@@ -73,6 +82,8 @@ def get_ip_info():
     """
     通过ip-api获取本机ip信息
 
+    Get native IP information through IP-API
+
     :return: ip信息的dict，失败返回None
     """
     import json
@@ -86,6 +97,8 @@ def get_ip_info():
 def get_fileinfo(url):
     """
     获取待下载的文件信息
+
+    Gets information about the file to be downloaded
 
     :param url: 文件url
     :return: 真实url，文件名，http头部信息

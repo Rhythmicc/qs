@@ -1,3 +1,4 @@
+# coding=utf-8
 from QuickStart_Rhy.NetTools import size_format, get_fileinfo
 from concurrent.futures import ThreadPoolExecutor, wait
 from QuickStart_Rhy.ThreadTools import FileWriters
@@ -18,6 +19,8 @@ def GetBlockSize(sz):
     """
     自动规划块大小
 
+    Automatically program the block size
+
     :param sz: 文件大小
     :return: 块大小
     """
@@ -33,6 +36,8 @@ class Downloader:
     def __init__(self, url: str, num: int, set_name: str = ''):
         """
         qs普通文件下载引擎
+
+        Qs general file download engine
 
         :param url: 文件url
         :param num: 线程数量
@@ -77,6 +82,8 @@ class Downloader:
         """
         结束下载任务，保存断点
 
+        Finish the download and save the breakpoint
+
         :param signum: 信号
         :param frame: frame
         :return: None
@@ -91,7 +98,9 @@ class Downloader:
 
     def _dl(self, start):
         """
-        执行文加快下载任务
+        执行文件块下载任务
+
+        Perform the file block download task
 
         :param start: 文件块起始偏移量
         :return: None
@@ -125,6 +134,8 @@ class Downloader:
     def _single_dl(self):
         """
         无法并行下载或无需并行下载时采用串行下载
+
+        Parallel downloads are not possible or serial downloads are not required
 
         :return: None
         """
@@ -186,6 +197,8 @@ class Downloader:
 def normal_dl(url, set_name: str = ''):
     """
     自动规划下载线程数量并开始并行下载
+
+    Automatically schedule the number of download threads and begin parallel downloads
 
     :param set_name: 设置文件名（默认采用url所指向的资源名）
     :param url: 文件url

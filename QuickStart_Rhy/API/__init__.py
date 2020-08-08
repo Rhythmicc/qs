@@ -1,32 +1,20 @@
-from QuickStart_Rhy import dir_char
-import json
-import os
-
-
-user_root = os.path.expanduser('~') + dir_char
-if os.path.exists(user_root + '.qsrc'):
-    with open(user_root + '.qsrc', 'r', encoding='utf8') as f:
-        qsconfig = json.loads(f.read(), encoding='utf8')
-else:
-    with open(user_root + '.qsrc', 'w') as f:
-        f.write('{\n'
-                '  "rmbg": "GET API KEY: https://www.remove.bg",\n'
-                '  "smms": "GET API KEY: https://sm.ms"\n'
-                '}')
-    qsconfig = {}
+# coding=utf-8
+from QuickStart_Rhy import *
 
 
 def pre_check(funcName: str, ext=True):
     """
     获取用户保存的API KEY
 
-    :param funcName: API KEY在~/.qsrc的名称
-    :param ext: 获取失败是否退出程序（默认退出）
+    Gets the API KEY saved by the user.
 
-    :return: 找到的API KEY
+    :param funcName: API KEY在~/.qsrc的名称 | API KEY in the name of the .qsrc.
+    :param ext: 获取失败是否退出程序 | Get failed whether to exit the program
+
+    :return: 找到的API KEY | API KEY found.
     """
     try:
-        api_key = qsconfig[funcName]
+        api_key = qs_config['API_settings'][funcName]
         if not api_key:
             exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
     except KeyError:
@@ -35,4 +23,4 @@ def pre_check(funcName: str, ext=True):
         else:
             return False
     else:
-        return api_key
+        return api_key if not api_key.startswith('GET:') else False

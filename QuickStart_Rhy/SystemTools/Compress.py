@@ -1,3 +1,4 @@
+# coding=utf-8
 import io
 import os
 import sys
@@ -11,7 +12,9 @@ def get_tar_name():
     """
     从命令行参数中，解析并返回压缩包名称
 
-    :return: 压缩包名称，合法的文件列表
+    From the command line arguments, the package name is parsed and returned.
+
+    :return: 压缩包名称，合法的文件列表 | Compressed package name, a list of legitimate files.
     """
     file_names = sys.argv[2:]
     if not file_names:
@@ -37,8 +40,10 @@ class Tar:
         """
         Tar协议初始化
 
-        :param path: 压缩包路径
-        :param mode: 工作模式（'read' 或 'write'）
+        Tar protocol initialization.
+
+        :param path: 压缩包路径 | The package path is compressed.
+        :param mode: 工作模式 | Working mode ('read' or 'write')
         """
         if mode == 'read':
             if os.path.exists(path):
@@ -56,6 +61,8 @@ class Tar:
         """
         向压缩包添加文件（工作在'write'模式下）
 
+        Add files to the compressed package (works in 'write' mode)
+
         :param path: 文件路径
         :return: None
         """
@@ -70,6 +77,8 @@ class Tar:
         """
         解压缩
 
+        extract
+
         :return: None
         """
         if self.mode:
@@ -79,7 +88,7 @@ class Tar:
             raise io.UnsupportedOperation
 
     def save(self):
-        """保存"""
+        """保存 | save"""
         self.src.close()
 
 

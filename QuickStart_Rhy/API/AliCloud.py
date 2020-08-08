@@ -1,3 +1,4 @@
+# coding=utf-8
 from QuickStart_Rhy.API import *
 import oss2
 
@@ -8,9 +9,11 @@ class Aliyun_oss_api:
         """
         初始化并登陆阿里云对象存储
 
+        Initializes and logs into ali cloud object storage
+
         :param ac_id: Access id
         :param ac_key: Access key
-        :param bucket_url: oss-地区.aliyuncs.com
+        :param bucket_url: oss-[地区 | location].aliyuncs.com
         :param df_bucket: 桶名称
         """
         self.ac_id = ac_id
@@ -22,6 +25,9 @@ class Aliyun_oss_api:
     def get_func_table(self):
         """
         获取OSS类支持的操作
+
+        Get the operations supported by the OSS class
+
         :return: 支持的函数字典
         """
         return {
@@ -35,6 +41,8 @@ class Aliyun_oss_api:
         """
         上传文件（支持断点续传）
 
+        Upload file (support breakpoint continuation)
+
         :param filePath: 文件路径
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
@@ -46,6 +54,8 @@ class Aliyun_oss_api:
     def download(self, filename: str, bucket=None):
         """
         下载文件（支持断点续传）
+
+        Download file (support breakpoint continuation)
 
         :param filename: 文件在bucket中的路径
         :param bucket: 桶名称，缺省使用self.df_bucket
@@ -59,6 +69,8 @@ class Aliyun_oss_api:
         """
         删除文件
 
+        delete file
+
         :param filePath: 文件在bucket中的路径
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
@@ -70,6 +82,8 @@ class Aliyun_oss_api:
     def list_bucket(self, bucket=None):
         """
         打印桶中的文件表
+
+        Print the file table in the bucket
 
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None

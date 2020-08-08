@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 import sys
 
@@ -5,6 +6,8 @@ import sys
 def get_console_width():
     """
     获取当前终端下的宽度
+
+    Gets the width under the current terminal
 
     :return: 宽度
     """

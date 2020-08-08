@@ -1,3 +1,4 @@
+# coding=utf-8
 from socketserver import ThreadingMixIn
 from http.server import SimpleHTTPRequestHandler
 from http.server import HTTPServer
@@ -10,6 +11,8 @@ class HttpServers:
     def __init__(self, ip='localhost', port=8000, url=''):
         """
         http服务类初始化
+
+        HTTP service class initialization
 
         :param ip: 绑定的ip
         :param port: 端口
@@ -26,6 +29,8 @@ class HttpServers:
     def start(self):
         """
         开启http服务
+
+        Start the HTTP service
 
         :return: None
         """

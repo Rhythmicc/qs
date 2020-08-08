@@ -1,3 +1,4 @@
+# coding=utf-8
 from QuickStart_Rhy.API import *
 import qiniu
 
@@ -8,6 +9,8 @@ class Qiniu_oss_api:
                  df_bucket=pre_check('qiniu_bk_name')):
         """
         初始化并登陆七牛云对象存储
+
+        Initializes and logs in qiniu cloud object storage
 
         :param ac_key: Access Key
         :param sc_key: Secret Key
@@ -21,6 +24,8 @@ class Qiniu_oss_api:
     def get_func_table(self):
         """
         获取对象支持的操作
+
+        Gets the operations supported by the object
 
         :return: 函数表
         """
@@ -36,6 +41,8 @@ class Qiniu_oss_api:
         """
         上传文件
 
+        Upload file
+
         :param filePath: 文件路径
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
@@ -46,6 +53,8 @@ class Qiniu_oss_api:
     def remove(self, filePath: str, bucket=None):
         """
         删除文件
+
+        Delete file
 
         :param filePath: 文件路径（对象存储中）
         :param bucket: 桶名称，缺省使用self.df_bucket
@@ -58,6 +67,8 @@ class Qiniu_oss_api:
         """
         通过url拷贝文件（这个接口貌似没有卵用，七牛云那边并不会生效）
 
+        Copy files through URL (this interface seems to have no egg use, qiniu cloud will not work)
+
         :param filePath: 文件链接
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
@@ -68,6 +79,8 @@ class Qiniu_oss_api:
     def get_bucket_url(self, bucket=None):
         """
         获取当前桶的访问链接
+
+        Gets the access link for the current bucket
 
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: 成功返回json，否则False
@@ -88,6 +101,8 @@ class Qiniu_oss_api:
     def list_bucket(self, bucket=None):
         """
         展示bucket中所有的文件
+
+        Displays all the files in the bucket
 
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
@@ -110,6 +125,8 @@ class Qiniu_oss_api:
     def download(self, filePath: str, bucket=None):
         """
         下载文件
+
+        Download file
 
         :param filePath: 文件在桶中的路径
         :param bucket: 桶名称，缺省使用self.df_bucket

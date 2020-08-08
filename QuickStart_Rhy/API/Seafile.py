@@ -1,3 +1,4 @@
+# coding=utf-8
 from QuickStart_Rhy.API import pre_check
 import pyperclip
 
@@ -7,6 +8,8 @@ class Seafile:
         """
         利用Seafile实现的共享剪切板
 
+        The sharing clipboard realized by Seafile
+
         :param path: 用于设备间沟通的共享文件路径
         """
         self.path = path
@@ -14,6 +17,8 @@ class Seafile:
     def get_msg(self):
         """
         获取信息到剪切板
+
+        Get the information to the clipboard
 
         :return: None
         """
@@ -27,6 +32,8 @@ class Seafile:
     def post_msg(self, msg=pyperclip.paste()):
         """
         发送信息
+
+        Get the information to the clipboard
 
         :param msg: 信息内容（缺省时使用粘贴板中的内容）
         :return: None
