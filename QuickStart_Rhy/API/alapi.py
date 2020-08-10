@@ -1,5 +1,6 @@
 # coding=utf-8
 from QuickStart_Rhy.API import *
+from urllib.parse import quote
 import requests
 
 # alapi_token = pre_check('alapi_token')
@@ -100,16 +101,16 @@ def translate(text: str, from_lang: str = None, to_lang: str = user_lang):
     :param to_lang: 翻译成的语种 | Translated into the language
     :return: 翻译的文本 | Translated text
     """
-    from urllib.parse import quote
     request_info = 'q={}&from={}&to={}'.format(quote(text, 'utf-8'), from_lang, to_lang) if from_lang \
         else 'q={}&to={}'.format(quote(text, 'utf-8'), to_lang)
     res = requests.post('https://v1.alapi.cn/api/fanyi', data=request_info,
                         headers={'Content-Type': "application/x-www-form-urlencoded"})
     if res.status_code == requests.codes.ok:
         res = json.loads(res.text)
-    if res['code'] != 200:
-        return "[ERROR] {}".format(res['msg'])
-    return res['data']['trans_result'][0]['dst']
+        if res['code'] != 200:
+            return "[ERROR] {}".format(res['msg'])
+        return res['data']['trans_result'][0]['dst']
+    return "[ERROR] 未知错误 | Unknown Error"
 
 
 def bili_cover(url: str):
@@ -133,7 +134,7 @@ def bili_cover(url: str):
         res = res['data']
         res['description'] = res['description'].replace('<br />', '\n\t')
         res['description'] = res['description'].replace('&nbsp;', ' ')
-        res['description'] = re.sub('<.*?>', '', res['description']).strip()
+        res['description'] = re.sub('<.*?>', '', res['description']).strip()  # 忽略HTML标签
         print('[TITLE] %s' % res['title'])
         print('[INFO ]\n', end='\t')
         print(res['description'], end='\n\n')
@@ -154,3 +155,47 @@ def ip_info(ip: str):
     res = requests.post('https://v1.alapi.cn/api/ip', data="ip=%s&format=json" % ip,
                         headers={'Content-Type': "application/x-www-form-urlencoded"} if ip else headers)
     return json.loads(res.text)['data']
+
+
+def garbage_classification(query_ls: list):
+    """
+    查询中国垃圾分类
+
+    Search Chinese garbage classification
+
+    :param query_ls: 待查询的垃圾列表 | garbage list
+    :return: 查询结果的字符串表格 | string table
+    """
+    def fmt_string(string, pre_num):
+        return '\n' * pre_num + '\n'.join([string[i: i+10] for i in range(0, len(string), 10)])
+
+    import prettytable
+    import math
+    table = prettytable.PrettyTable(['名称', '分类', '解释', '提示'])
+    first_flag = True
+    for query_el in query_ls:
+        if first_flag:
+            first_flag = False
+        else:
+            table.add_row(['-'] * 4)
+        res = requests.post("https://v1.alapi.cn/api/lajifenlei", data="name={}".format(quote(query_el, 'utf-8')),
+                            headers={'Content-Type': "application/x-www-form-urlencoded"})
+        if res.status_code == requests.codes.ok:
+            res = json.loads(res.text)
+            if res['code'] != 200:
+                table.add_row([fmt_string(query_el, 0), '', '', fmt_string(res['msg'], 0)])
+                continue
+            try:
+                res = res['data'][0]
+                half_rows = [math.ceil(len(query_el) / 20), 1, math.ceil(len(res['explain']) / 20),
+                             math.ceil(len(res['tip']) / 20)]
+                max_row = max(half_rows)
+                half_rows = [max_row - i for i in half_rows]
+                table.add_row([fmt_string(query_el, half_rows[0]),
+                               fmt_string(['可回收', '有害', '厨余(湿)', '其他(干)'][res['type']-1], half_rows[1]),
+                               fmt_string(res['explain'], half_rows[2]), fmt_string(res['tip'], half_rows[3])])
+            except IndexError:
+                table.add_row([fmt_string(query_el, 0), 'Unknown', '未知垃圾', '未知垃圾'])
+        else:
+            table.add_row([fmt_string(query_el, 0), 'Unknown', 'None', 'Request Error'])
+    return str(table)

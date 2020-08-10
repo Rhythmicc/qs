@@ -93,7 +93,8 @@ def api_menu():
     qs -nlp [words]           :-> Text(or in clipboard) error correction
     qs -sea <method> [msg]    :-> Get Or Post msg by Seafile.
     qs -pasteme <method> [*]  :-> get with key, [password] or post clipboard content
-    qs -bcv <url/video code>  :-> get Bilibili video cover image with <url>"""))\
+    qs -bcv <url/video code>  :-> get Bilibili video cover image with <url>
+    qs -gbc <garbage...>      :-> check Chinese garbage classification"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs -trans [content]       :-> 翻译命令参数或剪切板中的内容
     qs -rmbg <img>            :-> 移除图片背景
@@ -107,7 +108,8 @@ def api_menu():
     qs -nlp [words]           :-> 通过百度NLP进行文本纠错
     qs -sea <method> [msg]    :-> 通过Seafile get或post信息
     qs -pasteme <method> [*]  :-> 通过pasteme get或post信息
-    qs -bcv <url/video code>  :-> 获取B站视频、直播封面图片"""))
+    qs -bcv <url/video code>  :-> 获取B站视频、直播封面图片
+    qs -gbc <garbage...>      :-> 查询垃圾分类"""))
 
 
 def image_menu():
@@ -177,7 +179,8 @@ api_funcs = {
     '-nlp': 'AipNLP',
     '-sea': 'Seafile_Communicate',
     '-pasteme': 'Pasteme',
-    '-bcv': 'bili_cover'
+    '-bcv': 'bili_cover',
+    '-gbc': 'gbc'
 }
 
 image_funcs = {

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 
 setup(
     name='QuickStart_Rhy',
@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=True,
-    install_requires=['pyperclip', 'requests', 'psutil', 'urllib3', 'colorama',
+    install_requires=['pyperclip', 'requests', 'psutil', 'urllib3', 'colorama', 'langdetect',
                       'prettytable', 'diagram', 'qrcode_terminal', 'rarfile', 'youtube_dl'],
     entry_points={
         'console_scripts': [

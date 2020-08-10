@@ -229,7 +229,7 @@ def weather():
         loc = sys.argv[2]
     except IndexError:
         loc = ''
-    tls = [ThreadFunctionWrapper(get_data, 'https://wttr.in/' + (loc if loc else '?lang=zh')),
+    tls = [ThreadFunctionWrapper(get_data, 'https://wttr.in/' + (loc if loc else '?lang={}'.format(user_lang))),
            ThreadFunctionWrapper(get_data, 'https://v2.wttr.in/' + loc)]
     for i in tls:
         i.start()
@@ -244,7 +244,7 @@ def weather():
                 trans_loaction = translate(simple[0].split('：')[-1])
                 print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
             else:
-                print('Location：' + simple[0].split('：')[-1])
+                print('Location' + simple[0][simple[0].index(':'):])
         simple = simple[2:7]
         print('\n'.join(simple))
     else:
@@ -359,3 +359,12 @@ def bili_cover():
     if not url:
         exit('Usage: qs -bcv <url/video code>')
     bc(url)
+
+
+def gbc():
+    """查询中国垃圾分类（且仅支持中文查询）"""
+    from QuickStart_Rhy.API.alapi import garbage_classification
+    try:
+        print(garbage_classification(sys.argv[2:]))
+    except :
+        exit('Usage: qs -gbc <garbage...>')

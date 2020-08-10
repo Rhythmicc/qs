@@ -97,6 +97,7 @@ class txcos:
 
 
 class Translate:
+    from langdetect import detect, DetectorFactory
     from tencentcloud.common import credential
     from tencentcloud.common.profile.client_profile import ClientProfile
     from tencentcloud.common.profile.http_profile import HttpProfile
@@ -112,6 +113,7 @@ class Translate:
         :param sckey: secret key
         :param region: 地区
         """
+        Translate.DetectorFactory.seed = 0
         cred = Translate.credential.Credential(scid, sckey)
         http_profile = Translate.HttpProfile()
         http_profile.endpoint = "tmt.tencentcloudapi.com"
@@ -128,12 +130,7 @@ class Translate:
         :param text: 待识别文本
         :return: 语言类型
         """
-        req = Translate.models.LanguageDetectRequest()
-        req.from_json_string(json.dumps({
-            "Text": text[:len(text) // 2],
-            "ProjectId": 0
-        }))
-        return json.loads(self.client.LanguageDetect(req).to_json_string())['Lang']
+        return Translate.detect(text)
 
     def translate(self, text: str):
         """
