@@ -127,9 +127,7 @@ class Downloader:
             print('\r[%s] %.2f%% | %s/s' % (
                 '#' * int(40 * per) + ' ' * int(40 - 40 * per),
                 per * 100, speed
-            ),
-                  end='\n' if self.cur_sz == self.size else ''
-                  )
+            ), end='\n' if self.cur_sz == self.size else '')
 
     def _single_dl(self):
         """

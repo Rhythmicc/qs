@@ -1,9 +1,10 @@
 # coding=utf-8
 from QuickStart_Rhy.API import *
-import qcloud_cos
 
 
-class txcos:
+class TxCOS:
+    import qcloud_cos
+
     def __init__(self):
         """
         初始化并登陆腾讯云对象存储
@@ -14,10 +15,10 @@ class txcos:
         sckey = pre_check('txyun_sckey')
         self.region = pre_check('txyun_df_region')
         self.df_bucket = pre_check('txyun_cos_df_bucket')
-        config = qcloud_cos.CosConfig(Region=self.region,
-                                      SecretId=scid,
-                                      SecretKey=sckey)
-        self.client = qcloud_cos.CosS3Client(config)
+        config = TxCOS.qcloud_cos.CosConfig(Region=self.region,
+                                            SecretId=scid,
+                                            SecretKey=sckey)
+        self.client = TxCOS.qcloud_cos.CosS3Client(config)
 
     def get_func_table(self):
         """
@@ -58,7 +59,7 @@ class txcos:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.normal_dl import normal_dl
+        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
         bucket = bucket if bucket else self.df_bucket
         url = 'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/' + filename
         normal_dl(url)  # * 由于腾讯云没有提供可调用的下载sdk，因此使用qs下载引擎下载
@@ -85,7 +86,7 @@ class txcos:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.normal_dl import size_format
+        from QuickStart_Rhy.NetTools.NormalDL import size_format
         from prettytable import PrettyTable
         bucket = bucket if bucket else self.df_bucket
         ls = self.client.list_objects(Bucket=bucket)['Contents']
@@ -103,7 +104,8 @@ class Translate:
     from tencentcloud.common.profile.http_profile import HttpProfile
     from tencentcloud.tmt.v20180321 import tmt_client, models
 
-    def __init__(self, scid=pre_check('txyun_scid'), sckey=pre_check('txyun_sckey'), region=pre_check('txyun_df_region')):
+    def __init__(self, scid=pre_check('txyun_scid'), sckey=pre_check('txyun_sckey'),
+                 region=pre_check('txyun_df_region')):
         """
         初始化并登陆腾讯翻译接口
 

@@ -3,7 +3,7 @@ from QuickStart_Rhy.API import *
 import oss2
 
 
-class Aliyun_oss_api:
+class AliyunOSS:
     def __init__(self, ac_id=pre_check('aliyun_oss_acid'), ac_key=pre_check('aliyun_oss_ackey'),
                  bucket_url=pre_check('aliyun_oss_bucket_url'), df_bucket=pre_check('aliyun_oss_df_bucket')):
         """
@@ -88,12 +88,17 @@ class Aliyun_oss_api:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.normal_dl import size_format
+        from QuickStart_Rhy.NetTools.NormalDL import size_format
         from prettytable import PrettyTable
         bucket = bucket if bucket else self.df_bucket
         ls = oss2.Bucket(self.auth, self.bucket_url, bucket)
         tb = PrettyTable(['File', 'Size'])
+        prefix = dict()
         for obj in oss2.ObjectIterator(ls):
-            tb.add_row([obj.key, size_format(obj.size)])
+            if '/' in obj.key:
+
+                prefix[obj.key[obj.key[:obj.key.index('/')]]] = 0
+
+            tb.add_row([obj.key, size_format(obj.size, True)])
         print('Bucket Url:', 'https://' + bucket + '.' + self.bucket_url + '/')
         print(tb)

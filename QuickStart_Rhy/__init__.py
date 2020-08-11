@@ -51,7 +51,8 @@ else:
     "AipNlpAPP_ID" : "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpAPP_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
-    "seafile_communicate_path": "GET: /Path/to/file"
+    "seafile_communicate_path": "GET: /Path/to/file",
+    "alapi_token": "GET: https://user.alapi.cn/"
   }
 }
 """)

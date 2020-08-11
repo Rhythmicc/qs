@@ -3,17 +3,17 @@ from QuickStart_Rhy.API import *
 from urllib.parse import quote
 import requests
 
-# alapi_token = pre_check('alapi_token')
+alapi_token = pre_check('alapi_token', False)
 
 
-def upimg(filePath: str, plt_type: str = 'Ali'):
+def upload_image(filePath: str, plt_type: str = 'Ali'):
     """
     上传图片或Markdown中所有的图片到多平台（免API KEY，但不保证数据安全）
 
     Upload images or all images from Markdown to multiple platforms (API-free KEY, but data security is not guaranteed)
 
     :param filePath: 图片或Markdown文件路径
-    :param plt_type: 平台（使用 qs -upimg -help查看支持的平台）
+    :param plt_type: 平台（使用 qs -upload_image -help查看支持的平台）
     :return: None
     """
     from prettytable import PrettyTable
@@ -26,8 +26,9 @@ def upimg(filePath: str, plt_type: str = 'Ali'):
             file = [('image', open(path, 'rb'))]
         except:
             return False
-        res_json = requests.post('https://v1.alapi.cn/api/image',
-                                 data=data, files=file).text
+        res_json = requests.post('https://v1.alapi.cn/api/image', data=data, files=file).text \
+            if not alapi_token else \
+            requests.post('https://v1.alapi.cn/api/image', data=data, files=file, headers={'token': alapi_token}).text
         return json.loads(res_json)
 
     def get_path(rt, rel):
@@ -104,7 +105,8 @@ def translate(text: str, from_lang: str = None, to_lang: str = user_lang):
     request_info = 'q={}&from={}&to={}'.format(quote(text, 'utf-8'), from_lang, to_lang) if from_lang \
         else 'q={}&to={}'.format(quote(text, 'utf-8'), to_lang)
     res = requests.post('https://v1.alapi.cn/api/fanyi', data=request_info,
-                        headers={'Content-Type': "application/x-www-form-urlencoded"})
+                        headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
+                        if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
     if res.status_code == requests.codes.ok:
         res = json.loads(res.text)
         if res['code'] != 200:
@@ -123,9 +125,10 @@ def bili_cover(url: str):
     :return:
     """
     import re
-    from QuickStart_Rhy.NetTools.normal_dl import normal_dl
+    from QuickStart_Rhy.NetTools.NormalDL import normal_dl
     res = requests.post('https://v1.alapi.cn/api/bbcover', data='c='+url,
-                        headers={'Content-Type': 'application/x-www-form-urlencoded'})
+                        headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token}
+                        if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
     if res.status_code == requests.codes.ok:
         res = json.loads(res.text)
         if res['code'] != 200 or res['msg'] != 'success':
@@ -153,7 +156,9 @@ def ip_info(ip: str):
     :return: data dict
     """
     res = requests.post('https://v1.alapi.cn/api/ip', data="ip=%s&format=json" % ip,
-                        headers={'Content-Type': "application/x-www-form-urlencoded"} if ip else headers)
+                        headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
+                        if ip and alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'}
+                        if ip else headers.update({'token': alapi_token} if alapi_token else headers))
     return json.loads(res.text)['data']
 
 
@@ -179,7 +184,8 @@ def garbage_classification(query_ls: list):
         else:
             table.add_row(['-'] * 4)
         res = requests.post("https://v1.alapi.cn/api/lajifenlei", data="name={}".format(quote(query_el, 'utf-8')),
-                            headers={'Content-Type': "application/x-www-form-urlencoded"})
+                            headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
+                            if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
         if res.status_code == requests.codes.ok:
             res = json.loads(res.text)
             if res['code'] != 200:

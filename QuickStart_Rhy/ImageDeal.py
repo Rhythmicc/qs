@@ -55,13 +55,13 @@ def v2gif():
             if sz else video_2_gif(video, fps) if fps else video_2_gif(video)
 
 
-def rmaudio():
+def remove_audio():
     """删除视频的音频 | remove audio in mp4"""
     from QuickStart_Rhy.ImageTools.VideoTools import rm_audio
     try:
         video = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -rmaudio *.mp4')
+        exit('Usage: qs -remove_audio *.mp4')
     else:
         rm_audio(video)
 

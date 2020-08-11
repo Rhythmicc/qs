@@ -3,6 +3,7 @@ requests
 psutil
 urllib3
 colorama
+langdetect
 prettytable
 diagram
 qrcode_terminal

@@ -3,7 +3,7 @@ from QuickStart_Rhy.API import *
 import qiniu
 
 
-class Qiniu_oss_api:
+class QiniuOSS:
     def __init__(self, ac_key=pre_check('qiniu_ac_key'),
                  sc_key=pre_check('qiniu_sc_key'),
                  df_bucket=pre_check('qiniu_bk_name')):
@@ -115,10 +115,10 @@ class Qiniu_oss_api:
             exit(0)
         root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
         ret = ret[0]['items']
-        from QuickStart_Rhy.NetTools.normal_dl import size_format
+        from QuickStart_Rhy.NetTools.NormalDL import size_format
         tb = PrettyTable(['File', 'Size'])
         for i in ret:
-            tb.add_row([i['key'], size_format(i['fsize'])])
+            tb.add_row([i['key'], size_format(i['fsize'], True)])
         print("Bucket url:", root_url)
         print(tb)
 
@@ -132,7 +132,7 @@ class Qiniu_oss_api:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.normal_dl import normal_dl
+        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
         bucket = bucket if bucket else self.df_bucket
         root_url = self.get_bucket_url(bucket)[0]
         if root_url:

@@ -15,12 +15,12 @@ def pre_check(funcName: str, ext=True):
     """
     try:
         api_key = qs_config['API_settings'][funcName]
-        if not api_key:
-            exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
+        if api_key.startswith("GET:"):
+            raise KeyError
     except KeyError:
         if ext:
             exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
         else:
             return False
     else:
-        return api_key if not api_key.startswith('GET:') else False
+        return api_key

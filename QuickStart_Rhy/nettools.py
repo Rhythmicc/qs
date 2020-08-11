@@ -33,7 +33,7 @@ def m3u8_dl(url):
 
     Download *.m3u8
     """
-    from QuickStart_Rhy.NetTools.m3u8_dl import M3U8DL
+    from QuickStart_Rhy.NetTools.M3u8DL import M3U8DL
     M3U8DL(url, url.split('.')[-2].split('/')[-1]).download()
 
 
@@ -54,7 +54,7 @@ def download():
     if urls:
         if ytb_flag:
             from youtube_dl import _real_main
-        from QuickStart_Rhy.NetTools.normal_dl import normal_dl
+        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
         for url in urls:
             if url.endswith('.m3u8'):
                 m3u8_dl(url)
@@ -88,7 +88,7 @@ def http():
         port = 8000
     if not ip:
         exit('get ip failed!')
-    from QuickStart_Rhy.NetTools.server import HttpServers
+    from QuickStart_Rhy.NetTools.HttpServer import HttpServers
     HttpServers(ip, port, url).start()
 
 

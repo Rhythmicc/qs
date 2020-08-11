@@ -20,7 +20,7 @@ def top():
     from colorama import Style, ansi, Cursor
     from QuickStart_Rhy import cur_time
     from QuickStart_Rhy.TuiTools import Bar
-    from QuickStart_Rhy.NetTools.normal_dl import size_format
+    from QuickStart_Rhy.NetTools.NormalDL import size_format
 
     def deal():
         print(ansi.clear_screen() + Cursor.POS(0, 0) + Style.RESET_ALL, end='')
@@ -117,7 +117,7 @@ def untar():
     if not file_names:
         exit("No enough parameters")
     from QuickStart_Rhy.SystemTools.Compress import Tar
-    from QuickStart_Rhy.NetTools.normal_dl import core_num
+    from QuickStart_Rhy.NetTools.NormalDL import core_num
     from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
     pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
@@ -180,7 +180,7 @@ def unzip():
     if not file_names:
         exit("No enough parameters")
     from QuickStart_Rhy.SystemTools.Compress import Zip
-    from QuickStart_Rhy.NetTools.normal_dl import core_num
+    from QuickStart_Rhy.NetTools.NormalDL import core_num
     from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
     pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
@@ -216,7 +216,7 @@ def unrar():
     if not file_names:
         exit("No enough parameters")
     from QuickStart_Rhy.SystemTools.Compress import RAR
-    from QuickStart_Rhy.NetTools.normal_dl import core_num
+    from QuickStart_Rhy.NetTools.NormalDL import core_num
     from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
     pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))

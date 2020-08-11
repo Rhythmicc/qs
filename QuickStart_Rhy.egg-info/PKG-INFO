@@ -1,15 +1,15 @@
 Metadata-Version: 2.1
 Name: QuickStart-Rhy
-Version: 0.3.0
+Version: 0.3.2
 Summary: Simplify the operation in terminal!
 Home-page: https://github.com/Rhythmicc/QuickStart
 Author: RhythmLian
 License: MIT
 Description: ## Docs
-        |Location|Url|
+        | |Url|
         |:---:|:---:|
-        |China|[Docs](https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/)|
-        |Other|[Docs](https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/)|
+        |1|https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/      |
+        |2|https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/|
         
 Keywords: Simplify the operation in terminal!
 Platform: UNKNOWN

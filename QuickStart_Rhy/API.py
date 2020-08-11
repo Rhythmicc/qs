@@ -48,16 +48,16 @@ def up_img():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -upimg [picture]')
+        exit('Usage: qs -upload_image [picture]')
     else:
-        from QuickStart_Rhy.API.alapi import upimg
+        from QuickStart_Rhy.API.alapi import upload_image
         import random
         spt_type = {'Ali': '阿里云', 'Sogou': '搜狗', 'Vimcn': 'Vim-cn.com', 'Niupic': '牛图', 'Juejin': '掘进',
                     'UploadLiu': 'upload.ouliu.net', 'Catbox': 'catbox', 'NetEasy': '网易', 'Prnt': 'Prnt',
                     'Qihoo': '360奇虎', 'Souhu': '搜狐', 'Toutiao': '头条', 'Xiaomi': '小米', 'ImgTg': 'imt.tg'}
         spt_type_keys = list(spt_type.keys())
         if path == '-help':
-            print('Usage: qs -upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):')
+            print('Usage: qs -upload_image <picture | *.md> [platform]\n\nSupport ([platform]: description):')
             print(''.join(['%-10s: %s%s' % (spt_type_keys[i], spt_type[spt_type_keys[i]], '\t' if (i + 1) % 3 else '\n')
                            for i in range(len(spt_type_keys))]))
             print('\n[NOTE] If you do not set platform, qs will randomly choose one.')
@@ -68,8 +68,8 @@ def up_img():
         argv_len_3 = len(sys.argv) > 3
         if argv_len_3:
             sys.argv[3] = sys.argv[3].lower()
-        upimg(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
-            upimg(path, random.choice(spt_type_keys)),
+        upload_image(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
+            upload_image(path, random.choice(spt_type_keys)),
             print('No such platform: %s' % sys.argv[3]) if argv_len_3 else 1
         )
 
@@ -97,8 +97,8 @@ def ali_oss():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.API.AliCloud import Aliyun_oss_api
-        ali_api = Aliyun_oss_api()
+        from QuickStart_Rhy.API.AliCloud import AliyunOSS
+        ali_api = AliyunOSS()
         func_table = ali_api.get_func_table()
         if not file:
             func_table[op](bucket)
@@ -130,8 +130,8 @@ def qiniu():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.API.Qiniu_oss import Qiniu_oss_api
-        qiniu_api = Qiniu_oss_api()
+        from QuickStart_Rhy.API.QiniuOSS import QiniuOSS
+        qiniu_api = QiniuOSS()
         func_table = qiniu_api.get_func_table()
         if not file:
             func_table[op](bucket)
@@ -162,8 +162,8 @@ def txcos():
               '\t-ls [bucket]       : get file info of bucket')
         exit(0)
     else:
-        from QuickStart_Rhy.API.TencentCloud import txcos
-        tx_api = txcos()
+        from QuickStart_Rhy.API.TencentCloud import TxCOS
+        tx_api = TxCOS()
         func_table = tx_api.get_func_table()
         if not file:
             func_table[op](bucket)
@@ -271,7 +271,7 @@ def ipinfo(ip: str = None):
 
     Check IP via IPInfo (incorrect location)
     """
-    from QuickStart_Rhy.API.IPinfo import get_ip_info
+    from QuickStart_Rhy.API.IpInfo import get_ip_info
     return get_ip_info(ip)
 
 

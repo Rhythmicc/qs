@@ -187,6 +187,6 @@ image_funcs = {
     'self': 'imagedeal',
     '-stbg': 'set_img_background',
     '-v2gif': 'v2gif',
-    '-rmaudio': 'rmaudio',
+    '-rmaudio': 'remove_audio',
     '-v2mp4': 'v2mp4'
 }
