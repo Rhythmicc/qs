@@ -368,3 +368,65 @@ def gbc():
         print(garbage_classification(sys.argv[2:]))
     except :
         exit('Usage: qs -gbc <garbage...>')
+
+
+def short_video_info(son_call=False):
+    """
+    获取短视频信息 | Get short video information
+
+    :return:
+    """
+    from QuickStart_Rhy.API.alapi import short_video_info
+    from QuickStart_Rhy.NetTools import get_fileinfo, size_format
+    import pyperclip
+    try:
+        url = sys.argv[2]
+    except IndexError:
+        try:
+            url = pyperclip.paste()
+        except:
+            print('Sorry, but your system may not be suppported by `pyperclip`')
+            return
+    if not url:
+        exit('Usage: qs -svi <url/video code>' if not son_call else 'Usage: qs -svd <url/video code>')
+    output_prefix = {
+        'title': 'Title ' if user_lang != 'zh' else '标题',
+        'video': 'Video ' if user_lang != 'zh' else '视频',
+        'cover': 'Cover ' if user_lang != 'zh' else '封面',
+        'source': 'Source' if user_lang != 'zh' else '来源'
+    }
+    status, res = short_video_info(url.strip('/'))
+    if not status:
+        print(res)
+        print(res['title'] + ':' + res['source'])
+        return status
+    print('[{}] {}'.format(output_prefix['title'], res['title']))
+    sz = int(get_fileinfo(res['video_url'])[-1].headers['Content-Length']) if not son_call else -1
+    print('[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--', res['video_url']))
+    sz = int(get_fileinfo(res['cover_url'])[-1].headers['Content-Length'])
+    print('\n[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
+    if 'source' in res:
+        print('\n[{}] {}'.format(output_prefix['source'], res['source']))
+    return res
+
+
+def short_video_dl():
+    """
+    下载短视频为mp4格式
+
+    Download short video as mp4
+
+    :return:
+    """
+    from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+    from QuickStart_Rhy.ImageTools.VideoTools import tomp4
+    from QuickStart_Rhy import remove
+    res = short_video_info(son_call=True)
+
+    print()
+    if not res:
+        print('Download failed' if user_lang != 'zh' else '下载失败')
+        return
+    normal_dl(res['video_url'], set_name=res['title'])
+    tomp4(res['title'])
+    remove(res['title'])
