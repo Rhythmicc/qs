@@ -159,7 +159,14 @@ def ip_info(ip: str):
                         headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                         if ip and alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'}
                         if ip else headers.update({'token': alapi_token} if alapi_token else headers))
-    return json.loads(res.text)['data']
+    try:
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return [ip, '', res['msg'], '{code, %s}' % res['code']]
+        return res['data']
+    except :
+        print(res.text)
+        return [ip, '', '网络错误', '{code, %s}' % res.status_code]
 
 
 def garbage_classification(query_ls: list):
@@ -205,3 +212,25 @@ def garbage_classification(query_ls: list):
         else:
             table.add_row([fmt_string(query_el, 0), 'Unknown', 'None', 'Request Error'])
     return str(table)
+
+
+def short_video_info(url: str):
+    """
+    解析多平台短视频，并返回视频信息与下载直链
+
+    Parse multi - platform short video and return video information with download straight link
+
+    :param url: 短视频分享链接 | Short video sharing link
+    :return:
+    """
+    res = requests.post("https://v1.alapi.cn/api/video/url", data="url={}".format(quote(url, 'utf-8')),
+                        headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
+                        if alapi_token else {'Content-Type': "application/x-www-form-urlencoded"})
+    try:
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, {'title': res['msg'], 'cover_url': 'None', 'video_url': 'None', 'source': res['code']}
+        return True, res['data']
+    except :
+        return False, {'title': '网络错误' if user_lang == 'zh' else 'Network Error',
+                       'cover_url': 'None', 'video_url': 'None', 'source': 'Unknown'}

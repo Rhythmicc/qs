@@ -180,7 +180,9 @@ api_funcs = {
     '-sea': 'Seafile_Communicate',
     '-pasteme': 'Pasteme',
     '-bcv': 'bili_cover',
-    '-gbc': 'gbc'
+    '-gbc': 'gbc',
+    '-svi': 'short_video_info',
+    '-svd': 'short_video_dl'
 }
 
 image_funcs = {

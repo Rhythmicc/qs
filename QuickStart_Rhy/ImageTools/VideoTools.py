@@ -86,4 +86,4 @@ def tomp4(path):
     file_name = '.'.join(file_name[:-1]) + '.mp4' if '.' in file_name else file_name + '.mp4'
     dir_name = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
     ct = mpy.VideoFileClip(path)
-    ct.write_videofile(dir_name + file_name)
+    ct.write_videofile(dir_name + file_name, audio_codec='aac')

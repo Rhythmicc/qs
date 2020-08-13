@@ -109,7 +109,7 @@ def netinfo():
         table = prettytable.PrettyTable(['ip', '运营商', '地址', '经纬'])
         for info in info_ls:
             table.add_row([info['ip'],
-                           info['isp'] if 'isp' in info else '未知', info['pos'],
+                           info['isp'].strip() if 'isp' in info else '未知', info['pos'],
                            str(info['location'])[1:-1].replace("'", '')])
         print(table)
 
@@ -128,8 +128,12 @@ def netinfo():
         try:
             addr = ''
             if i != 'me':
-                addr = urllib.parse.urlparse(i).netloc
-                addr = socket.getaddrinfo(addr if addr else i, 'http')[0][-1][0]
+                if '://' in i:
+                    protocol, domain = i[:i.index('://')], urllib.parse.urlparse(i).netloc
+                    addr = socket.getaddrinfo(domain, protocol)[0][-1][0]
+                else:  # 无网络协议或直接使用IP地址时默认采用http
+                    addr = urllib.parse.urlparse(i).netloc
+                    addr = socket.getaddrinfo(addr if addr else i, 'http')[0][-1][0]
             res_ls.append(ip_info(addr))
         except:
             print('[ERROR] Get domain failed:', i)
