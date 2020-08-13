@@ -54,15 +54,16 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
                     res_tb.add_row([aim.split(dir_char)[-1], 'No File', ''])
                     img_set[aim] = False
                 else:
+                    res_plt = list(res_dict['data']['url'].keys())[0]
                     res_tb.add_row([aim.split(dir_char)[-1], res_dict['msg'],
                                     '' if res['code'] != 200 else (
-                                        res_dict['data']['url'][plt_type]
-                                        if res_dict['data']['url'][plt_type].lower() != 'null'
-                                        else plt_type + ' failed')]
+                                        res_dict['data']['url'][res_plt]
+                                        if res_dict['data']['url'][res_plt].lower() != 'null'
+                                        else res_plt + ' failed')]
                                    )
                     if res_dict['code'] != 200:
                         break
-                    img_set[aim] = res_dict['data']['url'][plt_type] if res_dict['code'] != 200 else False
+                    img_set[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] != 200 else False
             if img_set[aim]:
                 ct = ct.replace(raw_path, img_set[aim])
         with open(path, 'w') as fp:
@@ -82,6 +83,7 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
             if not res:
                 tb.add_row([filePath.split(dir_char)[-1], 'No File', ''])
             else:
+                plt_type = list(res['data']['url'].keys())[0]
                 tb.add_row([filePath.split(dir_char)[-1], res['msg'],
                             '' if res['code'] != 200 else (
                                 res['data']['url'][plt_type]

@@ -94,7 +94,9 @@ def api_menu():
     qs -sea <method> [msg]    :-> Get Or Post msg by Seafile.
     qs -pasteme <method> [*]  :-> get with key, [password] or post clipboard content
     qs -bcv <url/video code>  :-> get Bilibili video cover image with <url>
-    qs -gbc <garbage...>      :-> check Chinese garbage classification"""))\
+    qs -gbc <garbage...>      :-> check Chinese garbage classification
+    qs -svi <url>             :-> get short video info
+    qs -svd <url>             :-> download short video info as mp4"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs -trans [content]       :-> 翻译命令参数或剪切板中的内容
     qs -rmbg <img>            :-> 移除图片背景
@@ -109,7 +111,9 @@ def api_menu():
     qs -sea <method> [msg]    :-> 通过Seafile get或post信息
     qs -pasteme <method> [*]  :-> 通过pasteme get或post信息
     qs -bcv <url/video code>  :-> 获取B站视频、直播封面图片
-    qs -gbc <garbage...>      :-> 查询垃圾分类"""))
+    qs -gbc <garbage...>      :-> 查询垃圾分类
+    qs -svi <url>             :-> 获取多平台短视频信息
+    qs -svd <url>             :-> 下载多平台短视频为mp4"""))
 
 
 def image_menu():
