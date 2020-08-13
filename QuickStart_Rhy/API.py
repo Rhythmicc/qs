@@ -52,9 +52,8 @@ def up_img():
     else:
         from QuickStart_Rhy.API.alapi import upload_image
         import random
-        spt_type = {'Ali': '阿里云', 'Sogou': '搜狗', 'Vimcn': 'Vim-cn.com', 'Niupic': '牛图', 'Juejin': '掘进',
-                    'UploadLiu': 'upload.ouliu.net', 'Catbox': 'catbox', 'NetEasy': '网易', 'Prnt': 'Prnt',
-                    'Qihoo': '360奇虎', 'Souhu': '搜狐', 'Toutiao': '头条', 'Xiaomi': '小米', 'ImgTg': 'imt.tg'}
+        spt_type = {'ali': '阿里云', 'sogou': '搜狗', 'alapi': 'Alapi',
+                    'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米', 'imgTg': 'imt.tg'}
         spt_type_keys = list(spt_type.keys())
         if path == '-help':
             print('Usage: qs -upload_image <picture | *.md> [platform]\n\nSupport ([platform]: description):')
