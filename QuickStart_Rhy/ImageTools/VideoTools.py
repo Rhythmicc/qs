@@ -29,7 +29,7 @@ def VideoWrapper(func):
 
 
 @VideoWrapper
-def video_2_gif(path, size=(480, 320), fps=None):
+def video_2_gif(path: str, size: tuple = (480, 320), fps: int = None):
     """
     视频转gif（gif生成在视频路径的同目录下）
 
@@ -48,7 +48,7 @@ def video_2_gif(path, size=(480, 320), fps=None):
 
 
 @VideoWrapper
-def rm_audio(path):
+def rm_audio(path: str):
     """
     删除视频的音频
 
@@ -72,7 +72,7 @@ def rm_audio(path):
 
 
 @VideoWrapper
-def tomp4(path):
+def tomp4(path: str):
     """
     将视频转为mp4
 
@@ -83,7 +83,23 @@ def tomp4(path):
     """
     import moviepy.editor as mpy
     file_name = os.path.basename(path)
-    file_name = '.'.join(file_name[:-1]) + '.mp4' if '.' in file_name else file_name + '.mp4'
+    file_name = '.'.join(file_name.split('.')[:-1]) + '.mp4' if '.' in file_name else file_name + '.mp4'
     dir_name = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
     ct = mpy.VideoFileClip(path)
     ct.write_videofile(dir_name + file_name, audio_codec='aac')
+
+
+@VideoWrapper
+def video_2_mp3(path: str):
+    """
+    提取视频的音频并保存为mp3格式
+
+    Extract the audio from the video and save it in MP3 format
+
+    :return:
+    """
+    import moviepy.editor as mpy
+    file_name = os.path.basename(path)
+    file_name = '.'.join(file_name[:-1].split('.')) + '.mp3' if '.' in file_name else file_name + '.mp3'
+    dir_name = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
+    mpy.VideoFileClip(path).audio.write_audiofile(dir_name + file_name)

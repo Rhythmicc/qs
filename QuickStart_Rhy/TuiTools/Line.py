@@ -4,7 +4,7 @@ import io
 
 
 class Line:
-    def __init__(self, values, height, width):
+    def __init__(self, values: list, height: int, width: int):
         """
         折线图
 
@@ -38,7 +38,7 @@ class Line:
         gram.show()
         return str(stream.getvalue(), encoding="utf-8")
 
-    def push(self, x):
+    def push(self, x: float):
         """
         尾部添加值
 

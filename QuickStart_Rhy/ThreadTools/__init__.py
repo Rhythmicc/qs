@@ -42,7 +42,17 @@ class ThreadFunctionWrapper(threading.Thread):
 
 
 class FileWriters:
-    def __init__(self, filename, workers, mode):
+    def __init__(self, filename: str, workers: int, mode: str):
+        """
+        写文件线程池，为了适配密集io而设计的并行写算法。(采用多个文件指针加速)
+
+        Write file thread pool, a parallel write algorithm designed to accommodate dense IO.
+        (Multiple file pointer acceleration)
+
+        :param filename: 文件名
+        :param workers: 线程数
+        :param mode: 读写模式，如'wb', 'rb+'
+        """
         self.workers = workers
         self.handles = [open(filename, mode) for i in range(workers)]
         self.handles_lock = [threading.Lock() for i in range(workers)]
@@ -51,6 +61,13 @@ class FileWriters:
         self.cur_handle = 0
 
     def wait(self):
+        """
+        等待完全完成任务
+
+        Wait for the task to complete
+
+        :return:
+        """
         wait(self.job_q)
 
     def _write(self, handle: int, content, index):
@@ -60,10 +77,26 @@ class FileWriters:
         fp.write(content)
         self.handles_lock[handle].release()
 
-    def new_job(self, content, index):
+    def new_job(self, content: bytes, index: int):
+        """
+        写入新的文件块
+
+        Write a new file block
+
+        :param content: 文件内容
+        :param index: 起始位置
+        :return:
+        """
         self.job_q.append(self.pool.submit(self._write, self.cur_handle, content, index))
         self.cur_handle = (self.cur_handle+1) % self.workers
 
     def __del__(self):
+        """
+        删除对象，必须等待线程池工作结束
+
+        To delete an object, you must wait for the thread pool to finish working
+
+        :return:
+        """
         self.wait()
         self.pool.shutdown()

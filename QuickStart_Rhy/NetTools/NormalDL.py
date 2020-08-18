@@ -2,6 +2,7 @@
 from QuickStart_Rhy.NetTools import size_format, get_fileinfo
 from concurrent.futures import ThreadPoolExecutor, wait
 from QuickStart_Rhy.ThreadTools import FileWriters
+from QuickStart_Rhy import user_lang
 from threading import Lock
 from requests import get
 import psutil
@@ -33,6 +34,10 @@ def GetBlockSize(sz):
 
 
 class Downloader:
+    proc_string = 'PROC' if user_lang != 'zh' else '进度'
+    info_string = 'INFO' if user_lang != 'zh' else '信息'
+    erro_string = 'ERROR' if user_lang != 'zh' else '错误'
+
     def __init__(self, url: str, num: int, set_name: str = ''):
         """
         qs普通文件下载引擎
@@ -53,12 +58,13 @@ class Downloader:
         if set_name:
             self.name = set_name
         if not self.url:
-            print('[ERROR] Connection Error!')
+            print('[ERROR] Connection Error!' if user_lang != 'zh' else '[错误] 连接失败!')
             exit(0)
         try:
             self.size = int(r.headers['Content-Length'])
             if self.size < 5e6:
-                print('[INFO] FILE SIZE\t{}'.format(size_format(self.size)))
+                print('[{}] {}\t{}'.format(Downloader.info_string, 'FILE SIZE' if user_lang != 'zh' else '文件大小'
+                                           , size_format(self.size)))
                 self.size = -self.size
             else:
                 self.fileBlock = GetBlockSize(self.size)
@@ -75,25 +81,27 @@ class Downloader:
                 self.ctn_file = open(self.name + '.qs_dl', 'w')
                 self.ctn = []
             self.writers = FileWriters(self.name, max(2, int(core_num / 2)), "rb+" if self.ctn else "wb")
-            print('[INFO] FILE SIZE\t{}'.format(size_format(self.size, align=True)))
-            print('[INFO] BLOCK SIZE\t{}'.format(size_format(self.fileBlock, align=True)))
+            print('[{}] {}\t{}'.format(Downloader.info_string, 'FILE SIZE' if user_lang != 'zh' else '文件大小'
+                                       , size_format(self.size, align=True)))
+            print('[{}] {}\t{}'.format(Downloader.info_string, 'BLOCK SIZE' if user_lang != 'zh' else '块大小'
+                                       , size_format(self.fileBlock, align=True)))
 
     def _kill_self(self, signum, frame):
         """
-        结束下载任务，保存断点
+        终止下载任务，保存断点
 
-        Finish the download and save the breakpoint
+        Terminate the download and save the breakpoint
 
         :param signum: 信号
         :param frame: frame
         :return: None
         """
         if self.size > 0:
-            print('\n[INFO] Get Ctrl-C, exiting...')
+            print('\n[INFO] Get Ctrl-C, exiting...' if user_lang != 'zh' else '\n[信息] 捕获Ctrl-C, 正在退出...')
             self.ctn_file.close()
-            self.pool.shutdown()
+            self.pool.shutdown(wait=False)
             self.writers.wait()
-            print('[INFO] Deal Done!')
+            print('[INFO] Deal Done!' if user_lang != 'zh' else '[信息] 处理完成!')
         os._exit(0)
 
     def _dl(self, start):
@@ -114,7 +122,7 @@ class Downloader:
             self.writers.new_job(r.content, start)
         except Exception as e:
             msg = repr(e)
-            print('\n[ERROR] %s' % msg[:msg.index('(')])
+            print('\n[%s] %s' % (Downloader.erro_string, msg[:msg.index('(')]))
             self.job_queue.put(start)
         else:
             self.fileLock.acquire()
@@ -146,10 +154,10 @@ class Downloader:
                 self.cur_sz += 8192
                 if flag:
                     self.cur_sz = min(self.cur_sz, size)
-                print('\r[PROC] %s' % size_format(self.cur_sz, align=True), end='')
+                print('\r[%s] %s' % (Downloader.proc_string, size_format(self.cur_sz, align=True)), end='')
             print('')
             if flag and self.cur_sz < size:
-                print('[ERROR] Data loss!')
+                print('[{}] Data loss!'.format(Downloader.erro_string))
 
     def run(self):
         """
@@ -181,7 +189,8 @@ class Downloader:
                         self.futures.append(self.pool.submit(self._dl, cur))
                 wait(self.futures)
                 if not self.job_queue.empty() and retry_cnt > 2:
-                    print('\r[INFO] Exists File Block Lost, Retrying after 0.5 sec')
+                    print('\r[{}] {}'.format(Downloader.info_string, 'Exists File Block Lost, Retrying after 0.5 sec'
+                          if user_lang != 'zh' else '存在文件块丢失，0.5秒后重试'))
                     time.sleep(0.5)
                 retry_cnt += 1
             self.writers.wait()
@@ -189,7 +198,7 @@ class Downloader:
             os.remove(self.name + '.qs_dl')
         else:
             self._single_dl()
-        print('[INFO] %s download done!' % self.name)
+        print('[%s] %s %s' % (Downloader.info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!'))
 
 
 def normal_dl(url, set_name: str = ''):

@@ -4,9 +4,9 @@ import qiniu
 
 
 class QiniuOSS:
-    def __init__(self, ac_key=pre_check('qiniu_ac_key'),
-                 sc_key=pre_check('qiniu_sc_key'),
-                 df_bucket=pre_check('qiniu_bk_name')):
+    def __init__(self, ac_key: str = pre_check('qiniu_ac_key'),
+                 sc_key: str = pre_check('qiniu_sc_key'),
+                 df_bucket: str = pre_check('qiniu_bk_name')):
         """
         初始化并登陆七牛云对象存储
 
@@ -37,7 +37,7 @@ class QiniuOSS:
             '-ls': self.list_bucket
         }
 
-    def upload(self, filePath: str, bucket=None):
+    def upload(self, filePath: str, bucket: str = None):
         """
         上传文件
 
@@ -50,7 +50,7 @@ class QiniuOSS:
         tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath.split(dir_char)[-1])
         qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
 
-    def remove(self, filePath: str, bucket=None):
+    def remove(self, filePath: str, bucket: str = None):
         """
         删除文件
 
@@ -63,7 +63,7 @@ class QiniuOSS:
         bk = qiniu.BucketManager(self.auth)
         bk.delete(bucket if bucket else self.df_bucket, filePath)
 
-    def copy_url(self, filePath: str, bucket=None):
+    def copy_url(self, filePath: str, bucket: str = None):
         """
         通过url拷贝文件（这个接口貌似没有卵用，七牛云那边并不会生效）
 
@@ -76,7 +76,7 @@ class QiniuOSS:
         bk = qiniu.BucketManager(self.auth)
         bk.fetch(filePath, bucket if bucket else self.df_bucket, filePath.split('/')[-1])
 
-    def get_bucket_url(self, bucket=None):
+    def get_bucket_url(self, bucket: str = None):
         """
         获取当前桶的访问链接
 
@@ -98,7 +98,7 @@ class QiniuOSS:
         else:
             return False
 
-    def list_bucket(self, bucket=None):
+    def list_bucket(self, bucket: str = None):
         """
         展示bucket中所有的文件
 
@@ -111,18 +111,18 @@ class QiniuOSS:
         bk = qiniu.BucketManager(self.auth)
         ret = bk.list(bucket if bucket else self.df_bucket)
         if not ret[1]:
-            print("ERROR!")
+            print("ERROR!" if user_lang != 'zh' else '错误!')
             exit(0)
         root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
         ret = ret[0]['items']
         from QuickStart_Rhy.NetTools.NormalDL import size_format
-        tb = PrettyTable(['File', 'Size'])
+        tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
         for i in ret:
             tb.add_row([i['key'], size_format(i['fsize'], True)])
-        print("Bucket url:", root_url)
+        print("Bucket url:" if user_lang != 'zh' else '桶链接:', root_url)
         print(tb)
 
-    def download(self, filePath: str, bucket=None):
+    def download(self, filePath: str, bucket: str = None):
         """
         下载文件
 
@@ -138,7 +138,7 @@ class QiniuOSS:
         if root_url:
             root_url = 'http://' + root_url + '/'
         else:
-            exit('Get Bucket Url Failed!')
+            exit('Get Bucket Url Failed!' if user_lang != 'zh' else '获取桶链接失败!')
         dl_url = root_url + filePath
         if bucket.startswith('admin'):
             dl_url = self.auth.private_download_url(dl_url)

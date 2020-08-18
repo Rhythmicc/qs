@@ -1,5 +1,5 @@
 # coding=utf-8
-def set_timeout(num):
+def set_timeout(num: int):
     """
     定时函数装饰器
 

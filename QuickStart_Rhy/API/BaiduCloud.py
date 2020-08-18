@@ -14,9 +14,9 @@ class ImageDeal:
     """
     import base64
 
-    def __init__(self, app_id=pre_check('AipImageAPP_ID'),
-                 app_key=pre_check('AipImageAPP_KEY'),
-                 secret_key=pre_check('AipImageSECRET_KEY')):
+    def __init__(self, app_id: str = pre_check('AipImageAPP_ID'),
+                 app_key: str = pre_check('AipImageAPP_KEY'),
+                 secret_key: str = pre_check('AipImageSECRET_KEY')):
         """
         初始化并登陆百度图像处理
 
@@ -28,7 +28,7 @@ class ImageDeal:
         """
         self.client = aip.AipImageProcess(app_id, app_key, secret_key)
 
-    def largeImage(self, path):
+    def largeImage(self, path: str):
         """
         放大图片 (图像效果增强)
 
@@ -38,7 +38,7 @@ class ImageDeal:
         :return: None
         """
         if not os.path.exists(path) or not os.path.isfile(path):
-            print('No file named: %s' % path)
+            print(('No file named: %s' if user_lang != 'zh' else '没有文件: %s') % path)
             return
         img_name = os.path.basename(path)
         img_name = img_name[:img_name.index('.')] + '_LG.' + '.'.join(img_name.split('.')[1:])
@@ -61,9 +61,9 @@ class AipNLP:
     Baidu language processing class
     """
     def __init__(self,
-                 appid=pre_check("AipNlpAPP_ID"),
-                 appkey=pre_check("AipNlpAPP_KEY"),
-                 sckey=pre_check("AipNlpSECRET_KEY")):
+                 appid: str = pre_check("AipNlpAPP_ID"),
+                 appkey: str = pre_check("AipNlpAPP_KEY"),
+                 sckey: str = pre_check("AipNlpSECRET_KEY")):
         """
         初始化并登陆百度语言处理应用
 
@@ -75,7 +75,7 @@ class AipNLP:
         """
         self.client = aip.AipNlp(appid, appkey, sckey)
 
-    def get_res(self, words):
+    def get_res(self, words: str):
         """
         文本纠错
 

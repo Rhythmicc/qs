@@ -4,7 +4,7 @@ import pyperclip
 
 
 class Seafile:
-    def __init__(self, path=pre_check('seafile_communicate_path')):
+    def __init__(self, path: str = pre_check('seafile_communicate_path')):
         """
         利用Seafile实现的共享剪切板
 
@@ -29,7 +29,7 @@ class Seafile:
                 from QuickStart_Rhy import open_file
                 open_file([self.path])
 
-    def post_msg(self, msg=pyperclip.paste()):
+    def post_msg(self, msg: str = pyperclip.paste()):
         """
         发送信息
 

@@ -161,8 +161,10 @@ class RAR:
         elif mode == 'write':
             raise NotImplementedError("qs not support to create rar file because `RarFile`")
 
-    def add_file(self, path):
+    def add_file(self, path: str):
         """
+        请勿调用 | Please do not call
+
         向压缩包添加文件（工作在'write'模式下）
 
         :param path: 文件路径

@@ -2,7 +2,7 @@
 from PIL import Image
 
 
-def transport_back(src: str, to_color, from_color=(0, 0, 0, 0)):
+def transport_back(src: str, to_color: tuple, from_color: tuple = (0, 0, 0, 0)) -> Image.Image:
     """
     图片颜色替换
 
@@ -29,14 +29,14 @@ def transport_back(src: str, to_color, from_color=(0, 0, 0, 0)):
     return src
 
 
-def get_color_from_str(str_color: str):
+def get_color_from_str(str_color: str) -> tuple:
     """
     解析字符串为RGBA四元组
 
     Parse strings for RGBA quaternions
 
-    :param str_color: 表示颜色的字符串（支持16进制、RGB或RGBA）
-    :return: RGBA四元组
+    :param str_color: 表示颜色的字符串(支持16进制、RGB或RGBA) | String representing color (hex, RGB, or RGBA support)
+    :return: RGBA四元组 | RGBA quad
     """
     if ',' in str_color:
         str_color = [int(i) for i in str_color.split(',')]

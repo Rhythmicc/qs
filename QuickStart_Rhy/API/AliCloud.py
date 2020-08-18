@@ -37,7 +37,7 @@ class AliyunOSS:
             '-ls': self.list_bucket
         }
 
-    def upload(self, filePath: str, bucket=None):
+    def upload(self, filePath: str, bucket: str = None):
         """
         上传文件（支持断点续传）
 
@@ -51,7 +51,7 @@ class AliyunOSS:
         bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         oss2.resumable_upload(bucket, filePath.split(dir_char)[-1], filePath, num_threads=4)
 
-    def download(self, filename: str, bucket=None):
+    def download(self, filename: str, bucket: str = None):
         """
         下载文件（支持断点续传）
 
@@ -65,7 +65,7 @@ class AliyunOSS:
         bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         oss2.resumable_download(bucket, filename, filename, num_threads=4)
 
-    def remove(self, filePath: str, bucket=None):
+    def remove(self, filePath: str, bucket: str = None):
         """
         删除文件
 
@@ -79,7 +79,7 @@ class AliyunOSS:
         bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         bucket.delete_object(filePath)
 
-    def list_bucket(self, bucket=None):
+    def list_bucket(self, bucket: str = None):
         """
         打印桶中的文件表
 
@@ -92,7 +92,7 @@ class AliyunOSS:
         from prettytable import PrettyTable
         bucket = bucket if bucket else self.df_bucket
         ls = oss2.Bucket(self.auth, self.bucket_url, bucket)
-        tb = PrettyTable(['File', 'Size'])
+        tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
         prefix = dict()
         for obj in oss2.ObjectIterator(ls):
             if '/' in obj.key:
@@ -100,5 +100,5 @@ class AliyunOSS:
                 prefix[obj.key[obj.key[:obj.key.index('/')]]] = 0
 
             tb.add_row([obj.key, size_format(obj.size, True)])
-        print('Bucket Url:', 'https://' + bucket + '.' + self.bucket_url + '/')
+        print('Bucket Url:' if user_lang != 'zh' else '桶链接:', 'https://' + bucket + '.' + self.bucket_url + '/')
         print(tb)

@@ -2,7 +2,7 @@
 from QuickStart_Rhy import *
 
 
-def pre_check(funcName: str, ext=True):
+def pre_check(funcName: str, ext: bool = True) -> str:
     """
     获取用户保存的API KEY
 
@@ -21,6 +21,6 @@ def pre_check(funcName: str, ext=True):
         if ext:
             exit('You should set %s api key at: %s' % (funcName, user_root + dir_char + '.qsrc'))
         else:
-            return False
+            return ''
     else:
         return api_key

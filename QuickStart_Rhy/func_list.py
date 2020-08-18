@@ -96,7 +96,8 @@ def api_menu():
     qs -bcv <url/video code>  :-> get Bilibili video cover image with <url>
     qs -gbc <garbage...>      :-> check Chinese garbage classification
     qs -svi <url>             :-> get short video info
-    qs -svd <url>             :-> download short video info as mp4"""))\
+    qs -svd <url>             :-> download short video info as mp4
+    qs -acg [save]            :-> get an acg image link (or save)"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs -trans [content]       :-> 翻译命令参数或剪切板中的内容
     qs -rmbg <img>            :-> 移除图片背景
@@ -113,7 +114,8 @@ def api_menu():
     qs -bcv <url/video code>  :-> 获取B站视频、直播封面图片
     qs -gbc <garbage...>      :-> 查询垃圾分类
     qs -svi <url>             :-> 获取多平台短视频信息
-    qs -svd <url>             :-> 下载多平台短视频为mp4"""))
+    qs -svd <url>             :-> 下载多平台短视频为mp4
+    qs -acg [save]            :-> 获取一张acg图片链接（或保存）"""))
 
 
 def image_menu():
@@ -122,11 +124,13 @@ def image_menu():
     qs -stbg pic to [from]    :-> color replace for picture
     qs -v2gif path [sz] [fps] :-> generate gif from video
     qs -v2mp4 <video>         :-> format video to mp4
+    qs -v2mp3 <video>         :-> extract audio from video and save in MP3
     qs -rmaudio <video>       :-> remove audio in video (return mp4 only)""")) \
         if user_lang != 'zh' else print(color_rep("""图像处理:
     qs -stbg pic to [from]    :-> 替换图片颜色（from默认为透明）
     qs -v2gif path [sz] [fps] :-> 将视频导出为gif
     qs -v2mp4 <video>         :-> 将视频导出为mp4
+    qs -v2mp3 <video>         :-> 提取视频音频为mp3
     qs -rmaudio <video>       :-> 删除mp4文件音频"""))
 
 
@@ -186,7 +190,8 @@ api_funcs = {
     '-bcv': 'bili_cover',
     '-gbc': 'gbc',
     '-svi': 'short_video_info',
-    '-svd': 'short_video_dl'
+    '-svd': 'short_video_dl',
+    '-acg': 'acg'
 }
 
 image_funcs = {
@@ -194,5 +199,6 @@ image_funcs = {
     '-stbg': 'set_img_background',
     '-v2gif': 'v2gif',
     '-rmaudio': 'remove_audio',
-    '-v2mp4': 'v2mp4'
+    '-v2mp4': 'v2mp4',
+    '-v2mp3': 'v2mp3'
 }

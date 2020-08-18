@@ -12,10 +12,10 @@ def remove_bg():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -rmbg picture')
+        exit('%s: qs -rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
     else:
         if path == '-help':
-            print('Usage: qs -rmbg picture')
+            print('%s: qs -rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
             return
         from QuickStart_Rhy.API.SimpleAPI import rmbg
         rmbg(path)
@@ -30,10 +30,10 @@ def smms():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -smms [picture | *.md]')
+        exit('%s: qs -smms <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
     else:
         if path == '-help':
-            print('Usage: qs -smms [picture | *.md]')
+            print('%s: qs -smms <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
             return
         from QuickStart_Rhy.API.SimpleAPI import smms
         smms(path)
@@ -48,18 +48,22 @@ def up_img():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -upload_image [picture]')
+        exit('%s: qs -upimg <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
     else:
         from QuickStart_Rhy.API.alapi import upload_image
         import random
         spt_type = {'ali': '阿里云', 'sogou': '搜狗', 'alapi': 'Alapi',
                     'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米', 'imgTg': 'imt.tg'}
         spt_type_keys = list(spt_type.keys())
-        if path == '-help':
-            print('Usage: qs -upload_image <picture | *.md> [platform]\n\nSupport ([platform]: description):')
-            print(''.join(['%-10s: %s%s' % (spt_type_keys[i], spt_type[spt_type_keys[i]], '\t' if (i + 1) % 3 else '\n')
-                           for i in range(len(spt_type_keys))]))
-            print('\n[NOTE] If you do not set platform, qs will randomly choose one.')
+        if path == '-help' or path == '-h':
+            print('Usage: qs -upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'
+                  if user_lang != 'zh' else
+                  '用法: qs -upimg <图像 | *.md> [平台]\n\n支持 ([可选平台]: 描述):')
+            print(''.join(['%14s' % '%s: %s%s' % (
+                spt_type_keys[i], spt_type[spt_type_keys[i]], '\t' if (i + 1) % 3 else '\n'
+            ) for i in range(len(spt_type_keys))]))
+            print('\n[NOTE] If you do not set platform, qs will randomly choose one.' if user_lang != 'zh' else
+                  '\n[提示] 如果你没有设置平台，qs将随机抽取一个可用平台')
             return
         type_map = {}
         for i in spt_type:
@@ -69,7 +73,7 @@ def up_img():
             sys.argv[3] = sys.argv[3].lower()
         upload_image(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
             upload_image(path, random.choice(spt_type_keys)),
-            print('No such platform: %s' % sys.argv[3]) if argv_len_3 else 1
+            print(('No such platform: %s' if user_lang != 'zh' else '没有这个平台: %s') % sys.argv[3]) if argv_len_3 else 1
         )
 
 
@@ -90,10 +94,16 @@ def ali_oss():
             bucket = None
     except IndexError:
         print('qs -alioss:\n'
-              '\t-up <file> [bucket]: upload file to bucket\n'
-              '\t-dl <file> [bucket]: download file from bucket\n'
-              '\t-rm <file> [bucket]: remove file in bucket\n'
-              '\t-ls [bucket]       : get file info of bucket')
+              '    -up <file> [bucket]: upload file to bucket\n'
+              '    -dl <file> [bucket]: download file from bucket\n'
+              '    -rm <file> [bucket]: remove file in bucket\n'
+              '    -ls [bucket]       : get file info of bucket') \
+            if user_lang != 'zh' else \
+            print('qs -alioss:\n'
+                  '    -up <文件> [桶]: 上传文件至桶\n'
+                  '    -dl <文件> [桶]: 从桶下载文件\n'
+                  '    -rm <文件> [桶]: 从桶删除文件\n'
+                  '    -ls [桶]       : 获取桶文件信息')
         exit(0)
     else:
         from QuickStart_Rhy.API.AliCloud import AliyunOSS
@@ -122,11 +132,18 @@ def qiniu():
             bucket = None
     except IndexError:
         print('qs -qiniu:\n'
-              '\t-up <file> [bucket]: upload file to bucket\n'
-              '\t-rm <file> [bucket]: remove file in bucket\n'
-              '\t-cp <url > [bucket]: copy file from url\n'
-              '\t-dl <file> [bucket]: download file from bucket\n'
-              '\t-ls [bucket]       : get file info of bucket')
+              '    -up <file> [bucket]: upload file to bucket\n'
+              '    -dl <file> [bucket]: download file from bucket\n'
+              '    -cp <url > [bucket]: copy file from url\n'
+              '    -rm <file> [bucket]: remove file in bucket\n'
+              '    -ls [bucket]       : get file info of bucket') \
+            if user_lang != 'zh' else \
+            print('qs -qiniu:\n'
+                  '    -up <文件> [桶]: 上传文件至桶\n'
+                  '    -dl <文件> [桶]: 从桶下载文件\n'
+                  '    -cp <链接> [桶]: 从链接下载文件到桶\n'
+                  '    -rm <文件> [桶]: 从桶删除文件\n'
+                  '    -ls [桶]       : 获取桶文件信息')
         exit(0)
     else:
         from QuickStart_Rhy.API.QiniuOSS import QiniuOSS
@@ -155,10 +172,16 @@ def txcos():
             bucket = None
     except IndexError:
         print('qs -txcos:\n'
-              '\t-up <file> [bucket]: upload file to bucket\n'
-              '\t-dl <file> [bucket]: download file from bucket\n'
-              '\t-rm <file> [bucket]: remove file in bucket\n'
-              '\t-ls [bucket]       : get file info of bucket')
+              '    -up <file> [bucket]: upload file to bucket\n'
+              '    -dl <file> [bucket]: download file from bucket\n'
+              '    -rm <file> [bucket]: remove file in bucket\n'
+              '    -ls [bucket]       : get file info of bucket') \
+            if user_lang != 'zh' else \
+            print('qs -txcos:\n'
+                  '    -up <文件> [桶]: 上传文件至桶\n'
+                  '    -dl <文件> [桶]: 从桶下载文件\n'
+                  '    -rm <文件> [桶]: 从桶删除文件\n'
+                  '    -ls [桶]       : 获取桶文件信息')
         exit(0)
     else:
         from QuickStart_Rhy.API.TencentCloud import TxCOS
@@ -199,7 +222,9 @@ def translate():
             ret = translate(content.replace('\n', ' '))
         print(ret if ret else 'Translate Failed!')
     else:
-        print("No content in your clipboard or command parameters!")
+        print("No content in your clipboard or command parameters!"
+              if user_lang != 'zh' else
+              '剪贴板或命令参数没有内容!')
 
 
 def weather():
@@ -283,7 +308,7 @@ def largeImage():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('Usage qs -LG img')
+        exit('%s: qs -LG img' % 'Usage' if user_lang != 'zh' else '用法')
     else:
         from QuickStart_Rhy.API.BaiduCloud import ImageDeal
         aip_cli = ImageDeal()
@@ -298,7 +323,7 @@ def AipNLP():
     if not ct:
         try:
             ct = [pyperclip.paste()]
-        except :
+        except:
             ct = [input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
                         if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')]
     NLP = AipNLP()
@@ -325,7 +350,9 @@ def Seafile_Communicate():
             msg = ' '.join(sys.argv[3:]) if len(sys.argv) > 3 else None
             Seafile().post_msg(msg) if msg else Seafile().post_msg()
     except IndexError:
-        print("Usage:\n  1. qs -sea get\n  2. qs -sea post [msg]")
+        print("Usage:\n  1. qs -sea get\n  2. qs -sea post [msg]"
+              if user_lang != 'zh' else
+              '用法:\n  1. qs -sea get\n  2. qs -sea post [消息]')
         exit(0)
 
 
@@ -338,7 +365,9 @@ def Pasteme():
         password = sys.argv[4] if len(sys.argv) > 4 else ''
         pasteme(key, password, method)
     except IndexError:
-        print("Usage:\n  1. qs -pasteme get key [password]\n  2. qs -pasteme post lang [password]")
+        print("Usage:\n  1. qs -pasteme get  key [password]\n  2. qs -pasteme post lang [password]"
+              if user_lang != 'zh' else
+              "用法:\n  1. qs -pasteme get  键值 [密码]\n  2. qs -pasteme post 语言 [密码]")
         exit(0)
 
 
@@ -352,11 +381,15 @@ def bili_cover():
     except IndexError:
         try:
             url = pyperclip.paste()
-        except :
-            print('Sorry, but your system may not be suppported by `pyperclip`')
+        except:
+            print('Sorry, but your system may not be suppported by `pyperclip`'
+                  if user_lang != 'zh' else
+                  '抱歉，但是“pyperclip”不支持你的系统')
             return
     if not url:
-        exit('Usage: qs -bcv <url/video code>')
+        exit('Usage: qs -bcv <url/video code>'
+             if user_lang != 'zh' else
+             '用法: qs -bcv <链接/视频码>')
     bc(url)
 
 
@@ -365,8 +398,10 @@ def gbc():
     from QuickStart_Rhy.API.alapi import garbage_classification
     try:
         print(garbage_classification(sys.argv[2:]))
-    except :
-        exit('Usage: qs -gbc <garbage...>')
+    except:
+        exit('Usage: qs -gbc <garbage...>'
+             if user_lang != 'zh' else
+             '用法: qs -gbc <垃圾...>')
 
 
 def short_video_info(son_call=False):
@@ -384,7 +419,9 @@ def short_video_info(son_call=False):
         try:
             url = pyperclip.paste()
         except:
-            print('Sorry, but your system may not be suppported by `pyperclip`')
+            print('Sorry, but your system may not be suppported by `pyperclip`'
+                  if user_lang != 'zh' else
+                  '抱歉，但是“pyperclip”不支持你的系统')
             return
     if not url:
         exit('Usage: qs -svi <url/video code>' if not son_call else 'Usage: qs -svd <url/video code>')
@@ -429,3 +466,24 @@ def short_video_dl():
     normal_dl(res['video_url'], set_name=res['title'])
     tomp4(res['title'])
     remove(res['title'])
+
+
+def acg():
+    """
+    获取随机acg图片链接（可选择下载）
+
+    Get links to random ACG images (download optional)
+
+    :return:
+    """
+    from QuickStart_Rhy.API.alapi import acg
+
+    status, acg_link, width, height = acg()
+    print("[%s] %s" % ('链接' if status else '错误', acg_link)) \
+        if user_lang == 'zh' else \
+        print("[%s] %s" % ('LINK' if status else 'ERROR', acg_link))
+    if status:
+        print('[尺寸]' if user_lang == 'zh' else '[SIZE]', width, '×', height)
+        if 'save' in sys.argv[2:]:
+            from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+            normal_dl(acg_link)

@@ -61,7 +61,7 @@ def remove_audio():
     try:
         video = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -remove_audio *.mp4')
+        exit('Usage: qs -rmaudio *.mp4')
     else:
         rm_audio(video)
 
@@ -75,3 +75,14 @@ def v2mp4():
         exit('Usage: qs -v2mp4 <video>')
     else:
         tomp4(video)
+
+
+def v2mp3():
+    """提取视频音频为mp3 | Extract the audio from the video and save it in MP3 format"""
+    from QuickStart_Rhy.ImageTools.VideoTools import video_2_mp3
+    try:
+        video = sys.argv[2]
+    except IndexError:
+        exit('Usage: qs -v2mp3 <video>')
+    else:
+        video_2_mp3(video)

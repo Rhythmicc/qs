@@ -28,7 +28,7 @@ def rmbg(filePath: str):
         with open(img_root + img_name + '_rmbg.png', 'wb') as imgfile:
             imgfile.write(res.content)
     else:
-        print('ERROR:', res.status_code, res.text)
+        print('ERROR:' if user_lang != 'zh' else '错误:', res.status_code, res.text)
 
 
 def smms(filePath: str):
@@ -43,7 +43,7 @@ def smms(filePath: str):
     from prettytable import PrettyTable
     api_key = pre_check('smms')
 
-    def post_img(path):
+    def post_img(path: str) -> dict:
         headers = {
             'Authorization': api_key,
         }
@@ -53,7 +53,7 @@ def smms(filePath: str):
                 'format': 'json'
             }
         except:
-            return False
+            return {}
         res_json = requests.post('https://sm.ms/api/v2/upload', headers=headers, files=data).text
         return json.loads(res_json)
 
@@ -65,7 +65,7 @@ def smms(filePath: str):
         _user_path = os.path.expanduser('~')
         rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
         res_tb = PrettyTable()
-        res_tb.field_names = ['File', 'Status', 'url']
+        res_tb.field_names = ['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']
         img_set = {}
         with open(path, 'r') as fp:
             ct = fp.read()
@@ -135,13 +135,15 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
                 try:
                     pyperclip.copy(js['content'])
                 except:
-                    print("Sorry, but your system is not supported by `pyperclip`")
+                    print('Sorry, but your system may not be suppported by `pyperclip`'
+                          if user_lang != 'zh' else
+                          '抱歉，但是“pyperclip”不支持你的系统')
                 with open("%s.%s" % (key, js['lang']), 'w') as file:
                     file.write(js['content'])
             else:
                 print(Fore.RED, 'Wrong Password' if password else 'Password is required', Style.RESET_ALL)
         else:
-            print(Fore.RED, 'Unknown error', Style.RESET_ALL)
+            print(Fore.RED, 'Unknown error' if user_lang != 'zh' else '未知错误', Style.RESET_ALL)
     else:
         try:
             ss = pyperclip.paste()
@@ -162,4 +164,4 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
         if r.status_code == 201:
             print(json.loads(r.content))
         else:
-            print('post failed')
+            print('post failed' if user_lang != 'zh' else '发送失败')

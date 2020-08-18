@@ -4,7 +4,7 @@ import math
 
 
 class RollBar:
-    def __init__(self, values, max_=100, height=10):
+    def __init__(self, values: list, max_: int = 100, height: int = 10):
         """
         滚动柱状图初始化
 
@@ -53,7 +53,7 @@ class RollBar:
         """
         print(self)
 
-    def add(self, val):
+    def add(self, val: float):
         """
         扔掉第一个值，并在尾部添加val
 
@@ -81,7 +81,7 @@ class RollBar:
         """
         self._title = _title
 
-    def set(self, vals):
+    def set(self, vals: list):
         """
         设置柱状图的全部值
 

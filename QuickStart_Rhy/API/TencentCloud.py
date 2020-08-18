@@ -35,7 +35,7 @@ class TxCOS:
             '-ls': self.list_bucket
         }
 
-    def upload(self, filePath: str, bucket=None):
+    def upload(self, filePath: str, bucket: str = None):
         """
         上传文件
 
@@ -49,7 +49,7 @@ class TxCOS:
         filename = filePath.split(dir_char)[-1]
         self.client.upload_file(Bucket=bucket, LocalFilePath=filePath, Key=filename)
 
-    def download(self, filename: str, bucket=None):
+    def download(self, filename: str, bucket: str = None):
         """
         下载文件
 
@@ -64,7 +64,7 @@ class TxCOS:
         url = 'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/' + filename
         normal_dl(url)  # * 由于腾讯云没有提供可调用的下载sdk，因此使用qs下载引擎下载
 
-    def remove(self, filePath: str, bucket=None):
+    def remove(self, filePath: str, bucket: str = None):
         """
         删除桶中的文件
 
@@ -77,7 +77,7 @@ class TxCOS:
         bucket = bucket if bucket else self.df_bucket
         self.client.delete_object(bucket, filePath)
 
-    def list_bucket(self, bucket=None):
+    def list_bucket(self, bucket: str = None):
         """
         展示桶中的全部文件信息
 
@@ -90,10 +90,11 @@ class TxCOS:
         from prettytable import PrettyTable
         bucket = bucket if bucket else self.df_bucket
         ls = self.client.list_objects(Bucket=bucket)['Contents']
-        tb = PrettyTable(['File', 'Size'])
+        tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
         for obj in ls:
             tb.add_row([obj['Key'], size_format(int(obj['Size']), align=True)])
-        print('Bucket Url: https://' + bucket + '.cos.' + self.region + '.myqcloud.com/')
+        print('Bucket Url:' if user_lang != 'zh' else '桶链接:',
+              'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/')
         print(tb)
 
 
@@ -104,8 +105,8 @@ class Translate:
     from tencentcloud.common.profile.http_profile import HttpProfile
     from tencentcloud.tmt.v20180321 import tmt_client, models
 
-    def __init__(self, scid=pre_check('txyun_scid'), sckey=pre_check('txyun_sckey'),
-                 region=pre_check('txyun_df_region')):
+    def __init__(self, scid: str = pre_check('txyun_scid'), sckey: str = pre_check('txyun_sckey'),
+                 region: str = pre_check('txyun_df_region')):
         """
         初始化并登陆腾讯翻译接口
 
@@ -123,7 +124,7 @@ class Translate:
         clientProfile.httpProfile = http_profile
         self.client = Translate.tmt_client.TmtClient(cred, region, clientProfile)
 
-    def langdetect(self, text):
+    def langdetect(self, text: str) -> str:
         """
         获取文本的语言类型
 
@@ -134,7 +135,7 @@ class Translate:
         """
         return Translate.detect(text)
 
-    def translate(self, text: str):
+    def translate(self, text: str) -> dict:
         """
         翻译文本至默认语言
 

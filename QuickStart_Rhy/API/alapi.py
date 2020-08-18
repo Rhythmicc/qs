@@ -39,7 +39,7 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
         _user_path = os.path.expanduser('~')
         rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
         res_tb = PrettyTable()
-        res_tb.field_names = ['File', 'Status', 'url']
+        res_tb.field_names = ['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']
         img_set = {}
         with open(path, 'r') as fp:
             ct = fp.read()
@@ -73,7 +73,7 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
     try:
         is_md = filePath.endswith('.md')
     except IndexError:
-        exit('Usage: qs {*.md} | {picture}')
+        exit('Usage: qs -upimg {*.md} | {picture}' if user_lang != 'zh' else '使用: qs -upimg {Markdown文件} 或 {任意图片文件}')
     else:
         if is_md:
             format_markdown(filePath)
@@ -85,11 +85,8 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
             else:
                 plt_type = list(res['data']['url'].keys())[0]
                 tb.add_row([filePath.split(dir_char)[-1], res['msg'],
-                            '' if res['code'] != 200 else (
-                                res['data']['url'][plt_type]
-                                if str(res['data']['url'][plt_type].lower()) not in ['false', 'null']
-                                else plt_type + ' failed')]
-                           )
+                            '' if res['code'] != 200 else (res['data']['url'][plt_type]
+                            if res['data']['url'][plt_type] else plt_type + ' failed')])
             print(tb)
 
 
@@ -134,18 +131,18 @@ def bili_cover(url: str):
     if res.status_code == requests.codes.ok:
         res = json.loads(res.text)
         if res['code'] != 200 or res['msg'] != 'success':
-            print("[ERROR] Get cover with: %s failed")
+            print(("[ERROR] Get cover with: %s failed" if user_lang != 'zh' else '[错误] 下载封面: %s 失败') % url)
             return
         res = res['data']
         res['description'] = res['description'].replace('<br />', '\n\t')
         res['description'] = res['description'].replace('&nbsp;', ' ')
         res['description'] = re.sub('<.*?>', '', res['description']).strip()  # 忽略HTML标签
-        print('[TITLE] %s' % res['title'])
-        print('[INFO ]\n', end='\t')
+        print('[TITLE]' if user_lang != 'zh' else '[标题]', '%s' % res['title'])
+        print('[INFO ]' if user_lang != 'zh' else '[简介]', end='\n\t')
         print(res['description'], end='\n\n')
         normal_dl(res['cover'], res['title'] + '.' + res['cover'].split('.')[-1])
     else:
-        print("[ERROR] Get cover with: %s failed" % url)
+        print(("[ERROR] Get cover with: %s failed" if user_lang != 'zh' else '[错误] 下载封面: %s 失败') % url)
 
 
 def ip_info(ip: str):
@@ -236,3 +233,23 @@ def short_video_info(url: str):
     except :
         return False, {'title': '网络错误' if user_lang == 'zh' else 'Network Error',
                        'cover_url': 'None', 'video_url': 'None', 'source': 'Unknown'}
+
+
+def acg():
+    """
+    随机获取一张acg图片链接
+
+    Get a random link to an ACG image
+
+    :return: acg image link
+    """
+    res = requests.post('https://v1.alapi.cn/api/acg', data='format=json',
+                        headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
+                        if alapi_token else {'Content-Type': "application/x-www-form-urlencoded"})
+    try:
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, res['msg'], 0, 0
+        return True, res['data']['url'], res['data']['width'], res['data']['height']
+    except :
+        return False, ('Network Error' if user_lang != 'zh' else '网络错误'), 0, 0

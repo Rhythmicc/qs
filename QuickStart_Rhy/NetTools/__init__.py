@@ -4,7 +4,7 @@ from requests.exceptions import RequestException
 from QuickStart_Rhy import headers
 
 
-def check_one_page(url):
+def check_one_page(url: str):
     """
     检查url是否可访问
 
@@ -20,7 +20,7 @@ def check_one_page(url):
         return False
 
 
-def formatUrl(try_url):
+def formatUrl(try_url: str):
     """
     为url添加https或http使其能被访问
 
@@ -58,7 +58,7 @@ def get_ip():
         return socket.gethostbyname(socket.gethostname())
 
 
-def size_format(sz, align=False):
+def size_format(sz: int, align: bool = False):
     """
     格式化文件大小显示
 
@@ -94,7 +94,7 @@ def get_ip_info():
         return None
 
 
-def get_fileinfo(url):
+def get_fileinfo(url: str):
     """
     获取待下载的文件信息
 
