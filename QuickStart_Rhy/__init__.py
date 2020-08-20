@@ -26,7 +26,8 @@ else:
     "default_translate_engine": {
       "index": 0,
       "support": ["default", "TencentCloud"]
-    }
+    },
+    "default_proxy": "user:password@ip:port or ip:port"
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",

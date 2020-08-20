@@ -37,8 +37,9 @@ class Downloader:
     proc_string = 'PROC' if user_lang != 'zh' else '进度'
     info_string = 'INFO' if user_lang != 'zh' else '信息'
     erro_string = 'ERROR' if user_lang != 'zh' else '错误'
+    proxies = {}
 
-    def __init__(self, url: str, num: int, set_name: str = ''):
+    def __init__(self, url: str, num: int, set_name: str = '', proxy: str = ''):
         """
         qs普通文件下载引擎
 
@@ -54,9 +55,14 @@ class Downloader:
         self.name = os.path.basename(url)
         self.fileLock = Lock()
         self.cur_sz = 0
-        self.url, self.name, r = get_fileinfo(url)
+        self.url, self.name, r = get_fileinfo(url, proxy)
         if set_name:
             self.name = set_name
+        if proxy:
+            Downloader.proxies = {
+                'http': 'http://'+proxy,
+                'https': 'https://'+proxy
+            }
         if not self.url:
             print('[ERROR] Connection Error!' if user_lang != 'zh' else '[错误] 连接失败!')
             exit(0)
@@ -117,7 +123,7 @@ class Downloader:
             _sz = min(start + self.fileBlock, self.size)
             headers = {'Range': 'bytes={}-{}'.format(start, _sz)}
             tm = time.perf_counter()
-            r = get(self.url, headers=headers, timeout=50)
+            r = get(self.url, headers=headers, timeout=50, proxies=Downloader.proxies)
             tm = time.perf_counter() - tm
             self.writers.new_job(r.content, start)
         except Exception as e:
@@ -145,7 +151,7 @@ class Downloader:
 
         :return: None
         """
-        r = get(self.url, stream=True)
+        r = get(self.url, stream=True, proxies=Downloader.proxies)
         flag = self.size != -1
         size = -self.size
         with open(self.name, 'wb') as f:
@@ -201,14 +207,15 @@ class Downloader:
         print('[%s] %s %s' % (Downloader.info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!'))
 
 
-def normal_dl(url, set_name: str = ''):
+def normal_dl(url, set_name: str = '', set_proxy: str = ''):
     """
     自动规划下载线程数量并开始并行下载
 
     Automatically schedule the number of download threads and begin parallel downloads
 
-    :param set_name: 设置文件名（默认采用url所指向的资源名）
     :param url: 文件url
+    :param set_name: 设置文件名（默认采用url所指向的资源名）
+    :param set_proxy: 设置代理（默认无代理）
     :return: None
     """
-    Downloader(url, min(16, core_num * 4), set_name).run()
+    Downloader(url, min(16, core_num * 4), set_name, set_proxy).run()

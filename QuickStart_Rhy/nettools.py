@@ -39,14 +39,25 @@ def m3u8_dl(url):
 
 def download():
     """
-    qs下载引擎，使用--ytb使用youtube-dl下载视频
+    qs下载引擎，使用--video or -v使用youtube-dl下载视频
 
-    qs download engine, use -ytb to download videos using youtube-dl.
+    Qs download engine, use --video or -v use the default video download engine download
     """
+    if any([i in sys.argv for i in ['-h', '-help', '--help']]):
+        from QuickStart_Rhy import user_lang
+        print('Usage: qs -dl [url...]\n'
+              '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
+              '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc'
+              if user_lang != 'zh' else
+              '使用: qs -dl [链接...]\n'
+              '  [--video] | [-v]  :-> 使用youtube-dl下载视频\n'
+              '  [--proxy] | ]-px] :-> 使用配置表中的默认代理下载')
+        return
     global _real_main
-    ytb_flag = '--ytb' in sys.argv
-    if ytb_flag:
-        sys.argv.remove('--ytb')
+    ytb_flag = '--video' in sys.argv or '-v' in sys.argv
+    use_proxy = '--proxy' in sys.argv or '-px' in sys.argv
+    if ytb_flag or use_proxy:
+        [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px']]
     urls = sys.argv[2:]
     if not urls:
         import pyperclip
@@ -55,11 +66,16 @@ def download():
         if ytb_flag:
             from youtube_dl import _real_main
         from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+        from QuickStart_Rhy import qs_config
         for url in urls:
             if url.endswith('.m3u8'):
                 m3u8_dl(url)
             else:
-                normal_dl(url) if not ytb_flag else _real_main([url])
+                if use_proxy:
+                    normal_dl(url, set_proxy=qs_config['basic_settings']['default_proxy']) \
+                        if not ytb_flag else _real_main([url, '--proxy', qs_config['basic_settings']['default_proxy']])
+                else:
+                    normal_dl(url) if not ytb_flag else _real_main([url])
     else:
         print("No url found!")
 

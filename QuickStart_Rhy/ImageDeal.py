@@ -52,7 +52,7 @@ def v2gif():
         exit(0)
     else:
         video_2_gif(video, sz, fps) if sz and fps else video_2_gif(video, sz) \
-            if sz else video_2_gif(video, fps) if fps else video_2_gif(video)
+            if sz else video_2_gif(video, fps=fps) if fps else video_2_gif(video)
 
 
 def remove_audio():

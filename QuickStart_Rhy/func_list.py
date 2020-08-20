@@ -67,7 +67,7 @@ def net_menu():
     print(color_rep("""Net Tools help:
     qs -http [ip] [-bind url] :-> start a multithread ftp server
     qs -netinfo [<domains>..] :-> get url's info which in clipboard or params 
-    qs -dl [urls]             :-> download file from url(in clipboard)
+    qs -dl [urls] [-help]     :-> download file from url(in clipboard)
     qs -upload                :-> upload your pypi library
     qs -upgrade               :-> update qs""")) \
         if user_lang != 'zh' else print(color_rep("""网络工具:

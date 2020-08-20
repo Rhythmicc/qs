@@ -94,24 +94,29 @@ def get_ip_info():
         return None
 
 
-def get_fileinfo(url: str):
+def get_fileinfo(url: str, proxy: str = ''):
     """
     获取待下载的文件信息
 
     Gets information about the file to be downloaded
 
     :param url: 文件url
+    :param proxy: 代理
     :return: 真实url，文件名，http头部信息
     """
     import re
     import os
+    proxies = {
+        'http': 'http://'+proxy,
+        'https': 'https://'+proxy
+    } if proxy else {}
     try:
-        res = requests.head(url, headers=headers)
-    except:
+        res = requests.head(url, headers=headers, proxies=proxies)
+    except Exception as e:
         return False, False, False
     while res.status_code == 302 or res.status_code == 301:
         url = res.headers['Location']
-        res = requests.head(url, headers=headers)
+        res = requests.head(url, headers=headers, proxies=proxies)
     if 'Content-Disposition' in res.headers:
         try:
             filename = re.findall('filename=(.*?);', res.headers['Content-Disposition'])[0]

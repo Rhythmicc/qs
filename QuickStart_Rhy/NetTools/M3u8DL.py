@@ -27,7 +27,9 @@ def merge_file(path, ts_ls, name):
 
 
 class M3U8DL:
-    def __init__(self, target, name):
+    proxies = {}
+
+    def __init__(self, target, name, proxy: str = ''):
         """
         初始化M3U8下载引擎
 
@@ -41,6 +43,11 @@ class M3U8DL:
         self._all = 0
         self.target = target
         self.name = name
+        if proxy:
+            M3U8DL.proxies = {
+                'http': 'http://'+proxy,
+                'https': 'https://'+proxy
+            }
 
     def _dl_one(self, job):
         """
@@ -55,7 +62,7 @@ class M3U8DL:
             pd_url = job[0]
             c_fule_name = job[1]
             if not os.path.exists(os.path.join(self.path, c_fule_name)):
-                res = requests.get(pd_url, verify=False)
+                res = requests.get(pd_url, verify=False, proxies=M3U8DL.proxies)
                 with open(os.path.join(self.path, c_fule_name), 'ab') as f:
                     f.write(res.content)
                     f.flush()
@@ -77,7 +84,7 @@ class M3U8DL:
         self.path = download_path
         if not os.path.exists(download_path):
             os.mkdir(download_path)
-        all_content = requests.get(target, verify=False, headers=headers).text
+        all_content = requests.get(target, verify=False, headers=headers, proxies=M3U8DL.proxies).text
         if "#EXTM3U" not in all_content:
             raise BaseException("非M3U8的链接")
         if "EXT-X-STREAM-INF" in all_content:
@@ -85,7 +92,7 @@ class M3U8DL:
             for line in file_line:
                 if '.m3u8' in line:
                     target = target.rsplit("/", 1)[0] + "/" + line
-                    all_content = requests.get(target, verify=False, headers=headers).text
+                    all_content = requests.get(target, verify=False, headers=headers, proxies=M3U8DL.proxies).text
         file_line = all_content.split("\n")
         _rt = target.rsplit("/", 1)[0] + "/"
         tmp = []
