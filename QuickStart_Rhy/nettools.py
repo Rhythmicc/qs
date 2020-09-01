@@ -73,9 +73,10 @@ def download():
             else:
                 if use_proxy:
                     normal_dl(url, set_proxy=qs_config['basic_settings']['default_proxy']) \
-                        if not ytb_flag else _real_main([url, '--proxy', qs_config['basic_settings']['default_proxy']])
+                        if not ytb_flag else _real_main([url, '--proxy', qs_config['basic_settings']['default_proxy'],
+                                                         '--merge-output-format', 'mp4'])
                 else:
-                    normal_dl(url) if not ytb_flag else _real_main([url])
+                    normal_dl(url) if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'])
     else:
         print("No url found!")
 
@@ -155,3 +156,31 @@ def netinfo():
             print('[ERROR] Get domain failed:', i)
             continue
     print_ip_info(res_ls)
+
+
+def wifi():
+    from QuickStart_Rhy import system, user_lang
+    from prettytable import PrettyTable
+    if system.lower() != 'darwin':
+        from QuickStart_Rhy.NetTools.WiFi import WiFi
+    else:
+        from QuickStart_Rhy.NetTools.WiFiDarwin import WiFi
+    _wifi = WiFi()
+    table = PrettyTable(['id', 'ssid', 'signal'] if user_lang != 'zh' else ['序号', '名称', '信号'])
+    connectable_wifi = _wifi.scan()
+    for i, l in enumerate(connectable_wifi):
+        table.add_row([i] + l)
+    print(table)
+    while True:
+        try:
+            ssid = int(input('Input id: ' if user_lang != 'zh' else '输入序号: '))
+            ssid = connectable_wifi[ssid]
+            password = input('Input password: ' if user_lang != 'zh' else '输入密码: ')
+            print('Connect succeed' if user_lang != 'zh' else '连接成功') \
+                if _wifi.conn(ssid, password) else print('Connect failed' if user_lang != 'zh' else '连接失败')
+            break
+        except:
+            if input('%s(Y/N): ' % ('Continue' if user_lang != 'zh' else '是否继续')) in ['Y', 'y']:
+                continue
+            else:
+                break

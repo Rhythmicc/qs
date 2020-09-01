@@ -68,12 +68,14 @@ def net_menu():
     qs -http [ip] [-bind url] :-> start a multithread ftp server
     qs -netinfo [<domains>..] :-> get url's info which in clipboard or params 
     qs -dl [urls] [-help]     :-> download file from url(in clipboard)
+    qs -wifi                  :-> connect wifi
     qs -upload                :-> upload your pypi library
     qs -upgrade               :-> update qs""")) \
         if user_lang != 'zh' else print(color_rep("""网络工具:
     qs -http [ip] [-bind url] :-> 在当前路径下开启多线程http服务
     qs -netinfo [<domains>..] :-> 获取命令参数或剪切板中链接或ip的信息 
     qs -dl [urls]             :-> 从命令参数或剪切板中链接下载文件
+    qs -wifi                  :-> 连接wifi
     qs -upload                :-> 上传你的pypi仓库
     qs -upgrade               :-> 更新qs"""))
 
@@ -168,6 +170,7 @@ net_funcs = {
     'self': 'nettools',
     '-http': 'http',
     '-dl': 'download',
+    '-wifi': 'wifi',
     '-upgrade': 'upgrade',
     '-upload': 'upload_pypi',
     '-netinfo': 'netinfo'

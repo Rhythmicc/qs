@@ -31,6 +31,8 @@ QuickStart_Rhy/ImageTools/__init__.py
 QuickStart_Rhy/NetTools/HttpServer.py
 QuickStart_Rhy/NetTools/M3u8DL.py
 QuickStart_Rhy/NetTools/NormalDL.py
+QuickStart_Rhy/NetTools/WiFi.py
+QuickStart_Rhy/NetTools/WiFiDarwin.py
 QuickStart_Rhy/NetTools/__init__.py
 QuickStart_Rhy/SystemTools/Compress.py
 QuickStart_Rhy/SystemTools/__init__.py
