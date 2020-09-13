@@ -124,12 +124,14 @@ def image_menu():
     """图像处理类菜单 | Image Deal Menu"""
     print(color_rep("""Image Tools help:
     qs -stbg pic to [from]    :-> color replace for picture
+    qs -icat <img>            :-> preview image on terminal
     qs -v2gif path [sz] [fps] :-> generate gif from video
     qs -v2mp4 <video>         :-> format video to mp4
     qs -v2mp3 <video>         :-> extract audio from video and save in MP3
     qs -rmaudio <video>       :-> remove audio in video (return mp4 only)""")) \
         if user_lang != 'zh' else print(color_rep("""图像处理:
     qs -stbg pic to [from]    :-> 替换图片颜色（from默认为透明）
+    qs -icat <img>            :-> 在终端预览图片
     qs -v2gif path [sz] [fps] :-> 将视频导出为gif
     qs -v2mp4 <video>         :-> 将视频导出为mp4
     qs -v2mp3 <video>         :-> 提取视频音频为mp3
@@ -200,6 +202,7 @@ api_funcs = {
 image_funcs = {
     'self': 'imagedeal',
     '-stbg': 'set_img_background',
+    '-icat': 'icat',
     '-v2gif': 'v2gif',
     '-rmaudio': 'remove_audio',
     '-v2mp4': 'v2mp4',

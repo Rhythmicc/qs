@@ -86,3 +86,17 @@ def v2mp3():
         exit('Usage: qs -v2mp3 <video>')
     else:
         video_2_mp3(video)
+
+
+def icat():
+    try:
+        path = sys.argv[2]
+        is_url = '-u' in sys.argv
+        if not os.path.exists(path) and not is_url:
+            print('No such file:', path)
+            raise FileNotFoundError
+    except:
+        exit('Usage: qs -icat <img/url>')
+    else:
+        from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+        image_preview(open(path)) if not is_url else image_preview(path, is_url)

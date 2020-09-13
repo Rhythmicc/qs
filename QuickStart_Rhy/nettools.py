@@ -159,6 +159,13 @@ def netinfo():
 
 
 def wifi():
+    """
+    扫描附近wifi，选择连接
+
+    Scan nearby wifi and select connection
+
+    :return:
+    """
     from QuickStart_Rhy import system, user_lang
     from prettytable import PrettyTable
     if system.lower() != 'darwin':

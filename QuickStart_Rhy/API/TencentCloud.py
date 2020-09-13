@@ -15,6 +15,9 @@ class TxCOS:
         sckey = pre_check('txyun_sckey')
         self.region = pre_check('txyun_df_region')
         self.df_bucket = pre_check('txyun_cos_df_bucket')
+        self.cdn_url = pre_check('txyun_df_cdn_url', ext=False)
+        if self.cdn_url and not self.cdn_url.endswith('/'):
+            self.cdn_url += '/'
         config = TxCOS.qcloud_cos.CosConfig(Region=self.region,
                                             SecretId=scid,
                                             SecretKey=sckey)
@@ -61,7 +64,10 @@ class TxCOS:
         """
         from QuickStart_Rhy.NetTools.NormalDL import normal_dl
         bucket = bucket if bucket else self.df_bucket
-        url = 'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/' + filename
+
+        url = self.cdn_url + filename \
+            if bucket == self.df_bucket and self.cdn_url else \
+            'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/' + filename
         normal_dl(url)  # * 由于腾讯云没有提供可调用的下载sdk，因此使用qs下载引擎下载
 
     def remove(self, filePath: str, bucket: str = None):
@@ -94,6 +100,7 @@ class TxCOS:
         for obj in ls:
             tb.add_row([obj['Key'], size_format(int(obj['Size']), align=True)])
         print('Bucket Url:' if user_lang != 'zh' else '桶链接:',
+              self.cdn_url if bucket == self.df_bucket and self.cdn_url else
               'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/')
         print(tb)
 
