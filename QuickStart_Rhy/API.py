@@ -53,7 +53,7 @@ def up_img():
         from QuickStart_Rhy.API.alapi import upload_image
         import random
         spt_type = {'ali': '阿里云', 'sogou': '搜狗', 'alapi': 'Alapi',
-                    'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米', 'imgTg': 'imt.tg'}
+                    'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米'}
         spt_type_keys = list(spt_type.keys())
         if path == '-help' or path == '-h':
             print('Usage: qs -upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'

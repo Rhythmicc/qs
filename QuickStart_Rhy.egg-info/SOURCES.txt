@@ -26,6 +26,7 @@ QuickStart_Rhy/API/TencentCloud.py
 QuickStart_Rhy/API/__init__.py
 QuickStart_Rhy/API/alapi.py
 QuickStart_Rhy/ImageTools/ColorTools.py
+QuickStart_Rhy/ImageTools/ImagePreview.py
 QuickStart_Rhy/ImageTools/VideoTools.py
 QuickStart_Rhy/ImageTools/__init__.py
 QuickStart_Rhy/NetTools/HttpServer.py
