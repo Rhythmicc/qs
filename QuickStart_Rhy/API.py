@@ -1,6 +1,6 @@
 # coding=utf-8
 import sys
-from QuickStart_Rhy import user_lang
+from QuickStart_Rhy import user_lang, system
 
 
 def remove_bg():
@@ -487,3 +487,6 @@ def acg():
         if 'save' in sys.argv[2:]:
             from QuickStart_Rhy.NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
+        if system == 'darwin':  # Only support iTerm for Mac OS X
+            from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+            image_preview(acg_link.split('/')[-1] if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])

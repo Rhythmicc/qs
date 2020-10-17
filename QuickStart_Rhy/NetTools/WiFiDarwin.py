@@ -42,6 +42,7 @@ class WiFi:
 
         :return: 按信号强度排序好的可连接wifi列表 | A list of available wifi connections sorted by signal strength
         """
+        from . import is_mac
         with os.popen(
                 '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport scan') as pipe:
             res = pipe.read().strip().split('\n')[1:]
@@ -49,9 +50,19 @@ class WiFi:
             has_add = set()
             res = []
             for i in tmp_ls:
+                mac_index = 0
+                while mac_index < len(i):
+                    if is_mac(i[mac_index]):
+                        break
+                    else:
+                        mac_index += 1
+                if mac_index >= len(i):
+                    print("Failed to get info with:", i)
+                    continue
+                ssid = ' '.join(i[:mac_index])
                 if i[0] not in has_add:
-                    res.append([i[0], int(i[2])])
-                    has_add.add(i[0])
+                    res.append([ssid, int(i[mac_index+1]), i[-1]])
+                    has_add.add(ssid)
         return sorted(res, key=lambda x: x[1], reverse=True)
 
     def set_iface(self):

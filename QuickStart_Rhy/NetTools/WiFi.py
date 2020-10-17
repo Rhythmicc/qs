@@ -38,7 +38,7 @@ class WiFi:
         wifi_ls = []
         for i in res:
             if i not in wifi_ls and i.signal > -90:
-                wifi_ls.append((i.ssid, i.signal))
+                wifi_ls.append((i.ssid, i.signal, i.akm))
         return sorted(wifi_ls, key=lambda x: x[1], reverse=True)
 
     def set_iface(self):

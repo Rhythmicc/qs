@@ -4,6 +4,27 @@ from requests.exceptions import RequestException
 from QuickStart_Rhy import headers
 
 
+def is_mac(addr: str):
+    """
+    检查addr是否为mac地址
+
+    Check whether addr is a mac address
+
+    :param addr: string like '80:8f:1d:e2:f2:f5'
+    :return: bool
+    """
+    part = addr.split(':')
+    if len(part) != 6:
+        return False
+    for i in part:
+        if len(i) != 2:
+            return False
+        for j in i:
+            if j not in '0123456789abcdefABCDEF':
+                return False
+    return True
+
+
 def check_one_page(url: str):
     """
     检查url是否可访问

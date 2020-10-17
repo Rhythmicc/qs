@@ -173,7 +173,7 @@ def wifi():
     else:
         from QuickStart_Rhy.NetTools.WiFiDarwin import WiFi
     _wifi = WiFi()
-    table = PrettyTable(['id', 'ssid', 'signal'] if user_lang != 'zh' else ['序号', '名称', '信号'])
+    table = PrettyTable(['id', 'ssid', 'signal', 'lock'] if user_lang != 'zh' else ['序号', '名称', '信号', '加密'])
     connectable_wifi = _wifi.scan()
     for i, l in enumerate(connectable_wifi):
         table.add_row([i] + l)

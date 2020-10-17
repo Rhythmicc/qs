@@ -40,36 +40,37 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
         rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
         res_tb = PrettyTable()
         res_tb.field_names = ['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']
-        img_set = {}
+        img_dict = {}
         with open(path, 'r') as fp:
             ct = fp.read()
-        aims = re.findall('!\[.*?]\((.*?)\)', ct, re.M)
+        aims = re.findall('!\[.*?]\((.*?)\)', ct, re.M) + re.findall('<img.*?src="(.*?)".*?>', ct, re.M)
         for aim in aims:
             raw_path = aim
             aim = aim.replace('~', _user_path)
             aim = aim if aim.startswith(dir_char) else get_path(rt_path, aim)
-            if aim not in img_set:
+            if aim not in img_dict:
                 res_dict = post_img(aim)
                 if not res_dict:
                     res_tb.add_row([aim.split(dir_char)[-1], 'No File', ''])
-                    img_set[aim] = False
+                    img_dict[aim] = False
                 else:
                     try:
                         res_plt = list(res_dict['data']['url'].keys())[0]
                     except Exception:
                         res_tb.add_row([aim.split(dir_char)[-1], res_dict['code'], res_dict['msg']])
+                        img_dict[aim] = False
                     else:
                         res_tb.add_row([aim.split(dir_char)[-1], res_dict['code'],
-                                        res_dict['msg']if res['code'] != 200 else (
+                                        res_dict['msg'] if res_dict['code'] != 200 else (
                                         res_dict['data']['url'][res_plt]
                                         if res_dict['data']['url'][res_plt].lower() != 'null'
-                                        else res_plt + ' failed')]
-                                       )
+                                        else res_plt + ' failed')])
                         if res_dict['code'] != 200:
                             break
-                        img_set[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] != 200 else False
-            if img_set[aim]:
-                ct = ct.replace(raw_path, img_set[aim])
+                        img_dict[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] != 200 else False
+                if img_dict[aim]:
+                    print('replacing img: "{}" with "{}"'.format(raw_path, img_dict[aim]))
+                    ct = ct.replace(raw_path, img_dict[aim])
         with open(path, 'w') as fp:
             fp.write(ct)
         print(res_tb)

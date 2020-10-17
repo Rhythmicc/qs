@@ -133,7 +133,10 @@ class Zip:
         :return: None
         """
         if self.mode:
-            self.src.extractall()
+            from pathlib import Path
+            for fn in self.src.namelist():
+                path = Path(self.src.extract(fn))
+                path.rename(fn.encode('cp437').decode('utf-8'))
             self.save()
         else:
             raise io.UnsupportedOperation('not readable')
