@@ -1,4 +1,5 @@
 from imgcat import imgcat
+from QuickStart_Rhy import headers
 
 
 def image_preview(img, is_url=False):
@@ -15,6 +16,6 @@ def image_preview(img, is_url=False):
         from PIL import Image
         from io import BytesIO
         import requests
-        res = requests.get(img).content
+        res = requests.get(img, headers=headers).content
         img = Image.open(BytesIO(res))
     imgcat(img)

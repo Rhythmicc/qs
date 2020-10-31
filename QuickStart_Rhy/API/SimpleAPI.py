@@ -69,7 +69,7 @@ def smms(filePath: str):
         img_set = {}
         with open(path, 'r') as fp:
             ct = fp.read()
-        aims = re.findall('!\[.*?\]\((.*?)\)', ct, re.M)
+        aims = re.findall('!\[.*?]\((.*?)\)', ct, re.M) + re.findall('<img.*?src="(.*?)".*?>', ct, re.M)
         for aim in aims:
             raw_path = aim
             aim = aim.replace('~', _user_path)
@@ -165,3 +165,21 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
             print(json.loads(r.content))
         else:
             print('post failed' if user_lang != 'zh' else '发送失败')
+
+
+def imgs_in_url(url: str):
+    from QuickStart_Rhy import headers
+    html = requests.get(url, headers=headers)
+    if html.status_code != requests.codes.ok:
+        print('Failed')
+        return
+    import re
+    from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+
+    imgs = re.findall('<img.*?src="(.*?)".*?>', html.text)
+    for url in imgs:
+        if not url.startswith('http'):
+            continue
+        print('[Link]' if user_lang != 'zh' else '[链接]', url[:100] + ('' if len(url) <= 100 else '...'))
+        if system == 'darwin':
+            image_preview(url, True)

@@ -490,3 +490,9 @@ def acg():
         if system == 'darwin':  # Only support iTerm for Mac OS X
             from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
             image_preview(acg_link.split('/')[-1] if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
+
+
+def preview_html_images():
+    from QuickStart_Rhy.API.SimpleAPI import imgs_in_url
+    for url in sys.argv[2:]:
+        imgs_in_url(url)

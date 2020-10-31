@@ -51,7 +51,11 @@ def system_menu():
     qs -untar <path...>       :-> extract path.tar.*
     qs -mkzip <path...>       :-> make a zip for path
     qs -unzip <path...>       :-> extract *.zip file
-    qs -unrar <path...>       :-> extract *.rar file""")) \
+    qs -unrar <path...>       :-> extract *.rar file
+    qs -md5   <path...>       :-> calculate md5 of files
+    qs -sha1  <path...>       :-> calculate SHA1 of files
+    qs -sha256 <path...>      :-> calculate SHA256 of files
+    qs -sha512 <path...>      :-> calculate SHA512 of files""")) \
         if user_lang != 'zh' else print(color_rep("""系统工具:
     qs -top                   :-> CPU和内存监控器
     qs -clear                 :-> 清理本机内存
@@ -59,7 +63,11 @@ def system_menu():
     qs -untar <path...>       :-> 解压各种格式的tar包
     qs -mkzip <path...>       :-> 使用多个文件或文件夹创建zip压缩包
     qs -unzip <path...>       :-> 解压zip压缩包
-    qs -unrar <path...>       :-> 解压rar压缩包"""))
+    qs -unrar <path...>       :-> 解压rar压缩包
+    qs -md5   <path...>       :-> 计算文件的md5值
+    qs -sha1 <path...>        :-> 计算文件sha1值
+    qs -sha256 <path...>      :-> 计算文件sha256值
+    qs -sha512 <path...>      :-> 计算文件sha512值"""))
 
 
 def net_menu():
@@ -99,7 +107,8 @@ def api_menu():
     qs -gbc <garbage...>      :-> check Chinese garbage classification
     qs -svi <url>             :-> get short video info
     qs -svd <url>             :-> download short video info as mp4
-    qs -acg [save]            :-> get an acg image link (or save)"""))\
+    qs -acg [save]            :-> get an acg image link (or save)
+    qs -phi <url>             :-> get <image url> in url (preview on Mac)"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs -trans [content]       :-> 翻译命令参数或剪切板中的内容
     qs -rmbg <img>            :-> 移除图片背景
@@ -117,7 +126,8 @@ def api_menu():
     qs -gbc <garbage...>      :-> 查询垃圾分类
     qs -svi <url>             :-> 获取多平台短视频信息
     qs -svd <url>             :-> 下载多平台短视频为mp4
-    qs -acg [save]            :-> 获取一张acg图片链接（或保存）"""))
+    qs -acg [save]            :-> 获取一张acg图片链接（或保存）
+    qs -phi <url>             :-> 获取url里的图片链接 (Mac上iTerm可预览)"""))
 
 
 def image_menu():
@@ -146,7 +156,6 @@ menu_table = {
     '-image': image_menu
 }
 
-
 basic_funcs = {
     'self': 'basic',
     '-u': 'u',
@@ -165,7 +174,11 @@ system_funcs = {
     '-untar': 'untar',
     '-mkzip': 'mkzip',
     '-unzip': 'unzip',
-    '-unrar': 'unrar'
+    '-unrar': 'unrar',
+    '-md5': 'md5',
+    '-sha1': 'sha1',
+    '-sha256': 'sha256',
+    '-sha512': 'sha512'
 }
 
 net_funcs = {
@@ -196,7 +209,8 @@ api_funcs = {
     '-gbc': 'gbc',
     '-svi': 'short_video_info',
     '-svd': 'short_video_dl',
-    '-acg': 'acg'
+    '-acg': 'acg',
+    '-phi': 'preview_html_images'
 }
 
 image_funcs = {
