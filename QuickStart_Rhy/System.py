@@ -1,5 +1,5 @@
 # coding=utf-8
-from QuickStart_Rhy import dir_char, system
+from QuickStart_Rhy import dir_char, system, user_lang
 
 miss_file = ['.DS_Store']
 
@@ -235,3 +235,54 @@ def unrar():
     for file_name in file_names:
         job_q.append(pool.submit(run, file_name))
     wait(job_q)
+
+
+def _HashWrapper(algorithm: str):
+    def Wrapper(func):
+        def _wrapper():
+            import sys
+
+            ls = sys.argv[2:]
+            if not ls:
+                print('Usage: qs -%s file1 file2 ...' % algorithm)
+                return
+            from prettytable import PrettyTable
+            exec('from QuickStart_Rhy.SystemTools.FileHash import %s' % algorithm)
+            resTable = PrettyTable(['文件' if user_lang == 'zh' else 'File', algorithm.upper()])
+            for file in ls:
+                exec('resTable.add_row([file, %s(file)])' % algorithm)
+            print(resTable)
+        return _wrapper
+    return Wrapper
+
+
+@_HashWrapper('md5')
+def md5():
+    """
+    获取文件md5值
+    :return:
+    """
+
+
+@_HashWrapper('sha1')
+def sha1():
+    """
+    获取文件sha1值
+    :return:
+    """
+
+
+@_HashWrapper('sha256')
+def sha256():
+    """
+    获取文件sha256值
+    :return:
+    """
+
+
+@_HashWrapper('sha512')
+def sha512():
+    """
+    获取文件sha512值
+    :return:
+    """
