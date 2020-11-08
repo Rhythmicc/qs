@@ -89,6 +89,7 @@ def v2mp3():
 
 
 def icat():
+    """Mac::iTerm下预览图片 | Preview the picture under Mac::iTerm"""
     try:
         path = sys.argv[2]
         is_url = '-u' in sys.argv

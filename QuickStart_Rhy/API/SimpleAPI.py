@@ -168,6 +168,14 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
 
 
 def imgs_in_url(url: str):
+    """
+    提取url中的img标签链接
+
+    Extract img tag links from url
+
+    :param url:
+    :return:
+    """
     from QuickStart_Rhy import headers
     html = requests.get(url, headers=headers)
     if html.status_code != requests.codes.ok:

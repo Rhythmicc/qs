@@ -155,9 +155,9 @@ class Downloader:
         flag = self.size != -1
         size = -self.size
         with open(self.name, 'wb') as f:
-            for chunk in r.iter_content(8192):
+            for chunk in r.iter_content(16384):
                 f.write(chunk)
-                self.cur_sz += 8192
+                self.cur_sz += 16384
                 if flag:
                     self.cur_sz = min(self.cur_sz, size)
                 print('\r[%s] %s' % (Downloader.proc_string, size_format(self.cur_sz, align=True)), end='')

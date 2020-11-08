@@ -1,6 +1,9 @@
 # coding=utf-8
 from QuickStart_Rhy.API import *
-import oss2
+try:
+    import oss2
+except ImportError:
+    exit('You need to install "oss2"')
 
 
 class AliyunOSS:

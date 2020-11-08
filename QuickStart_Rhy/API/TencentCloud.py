@@ -3,7 +3,10 @@ from QuickStart_Rhy.API import *
 
 
 class TxCOS:
-    import qcloud_cos
+    try:
+        import qcloud_cos
+    except ImportError:
+        exit('You need to install "cos-python-sdk-v5"')
 
     def __init__(self):
         """
@@ -142,20 +145,26 @@ class Translate:
         """
         return Translate.detect(text)
 
-    def translate(self, text: str) -> dict:
+    def translate(self, text: str, from_lang: str = None, to_lang: str = user_lang) -> str:
         """
         翻译文本至默认语言
 
         Translate text to the default language
 
+        :param from_lang: 文本语言
+        :param to_lang: 目标语言
         :param text: 文本
         :return: 翻译结果
         """
         req = Translate.models.TextTranslateRequest()
         req.from_json_string(json.dumps({
             "SourceText": text,
-            "Source": self.langdetect(text),
-            "Target": user_lang,
+            "Source": self.langdetect(text) if not from_lang else from_lang,
+            "Target": to_lang,
             "ProjectId": 0
         }))
         return json.loads(self.client.TextTranslate(req).to_json_string())['TargetText']
+
+
+def translate(text: str, from_lang: str = None, to_lang: str = user_lang) -> str:
+    return Translate().translate(text, from_lang, to_lang)

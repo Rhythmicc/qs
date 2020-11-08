@@ -1,5 +1,6 @@
 # coding=utf-8
 from QuickStart_Rhy import user_lang
+from QuickStart_Rhy.qsLesson import lesson
 import colorama
 from colorama import Fore, Style
 colorama.init()
@@ -153,7 +154,8 @@ menu_table = {
     '-system': system_menu,
     '-net': net_menu,
     '-api': api_menu,
-    '-image': image_menu
+    '-image': image_menu,
+    '-lesson': lesson
 }
 
 basic_funcs = {

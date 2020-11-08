@@ -3,7 +3,7 @@ from QuickStart_Rhy.API import *
 try:
     import aip
 except ImportError:
-    exit('You need install: baidu-aip')
+    exit('You need to install: baidu-aip')
 
 
 class ImageDeal:

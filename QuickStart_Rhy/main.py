@@ -14,8 +14,10 @@ def qs_help(rep=''):
     qs -net     :-> network tools help | -http, -dl, -up[load/grade]
     qs -api     :-> api     tools help | -trans, -smms, -rmbg...
     qs -image   :-> image   tools help | -stbg, -v2gif, -v2mp4..."""))
+            print('Tutorial:\n   ' + Fore.LIGHTMAGENTA_EX + 'qs -lesson' + Style.RESET_ALL)
             print('Docs:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
             print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+            print('  · 3: ' + Fore.CYAN + 'https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
         else:
             print("帮助:")
             print(color_rep("""
@@ -24,8 +26,10 @@ def qs_help(rep=''):
     qs -net     :-> 网络工具帮助 | -http, -dl, -up[load/grade]
     qs -api     :-> 扩展工具帮助 | -trans, -smms, -rmbg...
     qs -image   :-> 图像工具帮助 | -stbg, -v2gif, -v2mp4..."""))
-            print('文档:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
-            print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+            print('引导:\n    ' + Fore.LIGHTMAGENTA_EX + 'qs -lesson' + Style.RESET_ALL)
+            print('文档:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
+            print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
+            print('  · 3: ' + Fore.CYAN + 'https://blog.rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
     else:
         menu_table[rep]()
 

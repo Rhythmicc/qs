@@ -5,6 +5,12 @@ BlockSize = 8096
 
 
 def hashWrapper(algorithm):
+    """
+    计算文件哈希值(通用)
+
+    :param algorithm: 算法名 [md5, sha1, sha256, sha512]
+    :return:
+    """
     def Wrapper(func):
         def wrapper(filePath: str) -> str:
             global cal

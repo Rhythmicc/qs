@@ -4,7 +4,7 @@ from QuickStart_Rhy import dir_char, system, user_lang
 miss_file = ['.DS_Store']
 
 
-def top():
+def _top():
     """
     CPU和内存监测
 
@@ -54,6 +54,24 @@ def top():
             time.sleep(1)
     except:
         deal()
+
+
+def top():
+    """
+    CPU和内存监测
+
+    CPU and memory monitoring
+
+    :return: None
+    """
+    if dir_char == '\\':
+        _top()
+    else:
+        import sys
+        sys.argv = ['bpytop'] + sys.argv[2:]
+
+        from bpytop import main
+        main()
 
 
 def clear_mem():
@@ -238,6 +256,12 @@ def unrar():
 
 
 def _HashWrapper(algorithm: str):
+    """
+    文件哈希值计算(通用函数)
+
+    :param algorithm: 算法名称 [md5, sha1, sha256, sha512]
+    :return:
+    """
     def Wrapper(func):
         def _wrapper():
             import sys

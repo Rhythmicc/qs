@@ -203,7 +203,7 @@ def translate():
     from QuickStart_Rhy import trans_engine
     import pyperclip
     if trans_engine != 'default':
-        from QuickStart_Rhy.API.TencentCloud import Translate
+        from QuickStart_Rhy.API.TencentCloud import translate
     else:
         from QuickStart_Rhy.API.alapi import translate
 
@@ -216,10 +216,7 @@ def translate():
                             'manually: '
                             if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
     if content:
-        if trans_engine == 'TencentCloud':
-            ret = Translate().translate(content.replace('\n', ' '))
-        else:
-            ret = translate(content.replace('\n', ' '))
+        ret = translate(content.replace('\n', ' '))
         print(ret if ret else 'Translate Failed!')
     else:
         print("No content in your clipboard or command parameters!"
@@ -413,11 +410,13 @@ def short_video_info(son_call=False):
     from QuickStart_Rhy.API.alapi import short_video_info
     from QuickStart_Rhy.NetTools import get_fileinfo, size_format
     import pyperclip
+    import re
     try:
         url = sys.argv[2]
     except IndexError:
         try:
             url = pyperclip.paste()
+            url = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2})|[/])+', url)[0]
         except:
             print('Sorry, but your system may not be suppported by `pyperclip`'
                   if user_lang != 'zh' else
@@ -433,7 +432,6 @@ def short_video_info(son_call=False):
     }
     status, res = short_video_info(url.strip('/'))
     if not status:
-        print(res)
         print(res['title'] + ':' + res['source'])
         return status
     print('[{}] {}'.format(output_prefix['title'], res['title']))
@@ -441,7 +439,10 @@ def short_video_info(son_call=False):
     print('[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--', res['video_url']))
     sz = int(get_fileinfo(res['cover_url'])[-1].headers['Content-Length'])
     print('\n[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
-    if 'source' in res:
+    if system == 'darwin':
+        from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+        image_preview(res['cover_url'], True)
+    if 'source' in res and res['source']:
         print('\n[{}] {}'.format(output_prefix['source'], res['source']))
     return res
 
@@ -493,6 +494,13 @@ def acg():
 
 
 def preview_html_images():
+    """
+    获取网页中图片链接（可在Mac::iTerm中自动预览）
+
+    Get links to pictures in the web page (automatically previewed in Mac::iTerm)
+
+    :return:
+    """
     from QuickStart_Rhy.API.SimpleAPI import imgs_in_url
     for url in sys.argv[2:]:
         imgs_in_url(url)

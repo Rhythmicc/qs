@@ -56,5 +56,3 @@ class HttpServers:
         self.httpd.server_close()
         print('HTTP Server: Closed.')
         exit(0)
-
-

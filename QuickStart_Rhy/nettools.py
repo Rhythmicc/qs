@@ -175,19 +175,42 @@ def wifi():
     _wifi = WiFi()
     table = PrettyTable(['id', 'ssid', 'signal', 'lock'] if user_lang != 'zh' else ['序号', '名称', '信号', '加密'])
     connectable_wifi = _wifi.scan()
+    if not connectable_wifi:
+        print("No available wifi" if user_lang != 'zh' else '没有可用的wifi')
+        return
+
+    from PyInquirer import prompt
+    from prompt_toolkit.validation import Validator, ValidationError
+
+    class ssidValidator(Validator):
+        def validate(self, document):
+            document = document.text
+            try:
+                if int(document) >= len(connectable_wifi):
+                    raise IndexError
+            except:
+                raise ValidationError(message='请输入合法序号' if user_lang == 'zh' else 'Input validate id', cursor_position=len(document))
+            return True
+
+    questions = [{
+        'type': 'input',
+        'name': 'ssid',
+        'message': '选择序号以连接:' if user_lang == 'zh' else 'Choose id to connect:',
+        'validate': ssidValidator
+    }, {
+        'type': 'password',
+        'name': 'password',
+        'message': '输入密码:' if user_lang == 'zh' else 'Input password:'
+    }]
+
     for i, l in enumerate(connectable_wifi):
         table.add_row([i] + l)
     print(table)
-    while True:
-        try:
-            ssid = int(input('Input id: ' if user_lang != 'zh' else '输入序号: '))
-            ssid = connectable_wifi[ssid]
-            password = input('Input password: ' if user_lang != 'zh' else '输入密码: ')
-            print('Connect succeed' if user_lang != 'zh' else '连接成功') \
-                if _wifi.conn(ssid, password) else print('Connect failed' if user_lang != 'zh' else '连接失败')
-            break
-        except:
-            if input('%s(Y/N): ' % ('Continue' if user_lang != 'zh' else '是否继续')) in ['Y', 'y']:
-                continue
-            else:
-                break
+
+    res = prompt(questions)
+    if not res:
+        return
+    ssid = connectable_wifi[int(res['ssid'])]
+    password = res['password']
+    print('Connect succeed' if user_lang != 'zh' else '连接成功') \
+        if _wifi.conn(ssid, password) else print('Connect failed' if user_lang != 'zh' else '连接失败')

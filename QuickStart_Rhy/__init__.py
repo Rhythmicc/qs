@@ -19,46 +19,9 @@ if os.path.exists(user_root + '.qsrc'):
     with open(user_root + '.qsrc', 'r', encoding='utf8') as f:
         qs_config = json.loads(f.read(), encoding='utf8')
 else:
-    with open(user_root + '.qsrc', 'w') as f:
-        f.write("""{
-  "basic_settings": {
-    "default_language": "zh",
-    "default_translate_engine": {
-      "index": 0,
-      "support": ["default", "TencentCloud"]
-    },
-    "default_proxy": "user:password@ip:port or ip:port"
-  },
-  "API_settings": {
-    "rmbg": "GET: https://www.remove.bg",
-    "smms": "GET: https://sm.ms",
-    "darksky": "GET: https://darksky.net/",
-    "aliyun_oss_acid": "GET: https://www.aliyun.com/product/oss",
-    "aliyun_oss_ackey": "GET: https://www.aliyun.com/product/oss",
-    "aliyun_oss_bucket_url": "GET: https://www.aliyun.com/product/oss",
-    "aliyun_oss_df_bucket": "GET: https://www.aliyun.com/product/oss",
-    "txyun_scid": "GET: https://console.cloud.tencent.com/",
-    "txyun_sckey": "GET: https://console.cloud.tencent.com/",
-    "txyun_cos_df_bucket": "GET: https://console.cloud.tencent.com/",
-    "txyun_df_region": "GET: ap-[location]",
-    "qiniu_ac_key": "GET: http://qiniu.com/",
-    "qiniu_sc_key": "GET: http://qiniu.com/",
-    "qiniu_bk_name": "GET: [Qiniu Bucket Name]",
-    "gitee": "GET: http://gitee.com/",
-    "ipinfo": "GET: https://ipinfo.io/",
-    "AipImageAPP_ID": "GET: https://cloud.baidu.com/product/imageprocess",
-    "AipImageAPP_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
-    "AipImageSECRET_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
-    "AipNlpAPP_ID" : "GET: https://cloud.baidu.com/product/nlp_apply",
-    "AipNlpAPP_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
-    "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
-    "seafile_communicate_path": "GET: /Path/to/file",
-    "alapi_token": "GET: https://user.alapi.cn/"
-  }
-}
-""")
-    qs_config = {}
-    exit("You need set qs configure at: ~/.qsrc when you first run!")
+    import QuickStart_Rhy.firstRun as Init
+    qs_config = Init.main(user_root)
+
 user_lang = qs_config['basic_settings']['default_language']
 trans_engine = qs_config['basic_settings']['default_translate_engine']['support']
 trans_engine = trans_engine[qs_config['basic_settings']['default_translate_engine']['index']]

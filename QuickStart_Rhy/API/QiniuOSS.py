@@ -1,6 +1,9 @@
 # coding=utf-8
 from QuickStart_Rhy.API import *
-import qiniu
+try:
+    import qiniu
+except ImportError:
+    exit('You need to install "qiniu"')
 
 
 class QiniuOSS:

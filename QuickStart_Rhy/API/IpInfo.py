@@ -1,6 +1,9 @@
 # coding=utf-8
 from QuickStart_Rhy.API import pre_check
-import ipinfo
+try:
+    import ipinfo
+except ImportError:
+    exit('You need to install "ipinfo"')
 
 
 def get_ip_info(ip: str = None):

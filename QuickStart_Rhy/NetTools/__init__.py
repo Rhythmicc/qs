@@ -1,10 +1,39 @@
 # coding=utf-8
+import socket
 import requests
 from requests.exceptions import RequestException
 from QuickStart_Rhy import headers
 
 
-def is_mac(addr: str):
+def is_ipv4(ip: str) -> bool:
+    try:
+        socket.inet_pton(socket.AF_INET, ip)
+    except AttributeError:  # no inet_pton here, sorry
+        try:
+            socket.inet_aton(ip)
+        except socket.error:
+            return False
+        return ip.count('.') == 3
+    except socket.error:  # not a valid ip
+        return False
+    return True
+
+
+def is_ipv6(ip: str) -> bool:
+    try:
+        socket.inet_pton(socket.AF_INET6, ip)
+    except socket.error:  # not a valid ip
+        return False
+    return True
+
+
+def is_ip(ip: str) -> bool:
+    if ip == 'localhost':
+        return True
+    return is_ipv4(ip) or is_ipv6(ip)
+
+
+def is_mac(addr: str) -> bool:
     """
     检查addr是否为mac地址
 
@@ -25,7 +54,7 @@ def is_mac(addr: str):
     return True
 
 
-def check_one_page(url: str):
+def check_one_page(url: str) -> bool:
     """
     检查url是否可访问
 
@@ -41,7 +70,7 @@ def check_one_page(url: str):
         return False
 
 
-def formatUrl(try_url: str):
+def formatUrl(try_url: str) -> str:
     """
     为url添加https或http使其能被访问
 
@@ -60,7 +89,21 @@ def formatUrl(try_url: str):
     return res_url
 
 
-def get_ip():
+def open_url(url: str):
+    """
+    使用默认浏览器打开url
+
+    Open url using the default browser
+
+    :param url:
+    :return:
+    """
+    import webbrowser as wb
+    url = formatUrl(url)
+    wb.open_new_tab(url)
+
+
+def get_ip() -> str:
     """
     获取本机ip
 
@@ -79,7 +122,7 @@ def get_ip():
         return socket.gethostbyname(socket.gethostname())
 
 
-def size_format(sz: int, align: bool = False):
+def size_format(sz: int, align: bool = False) -> str:
     """
     格式化文件大小显示
 
@@ -99,7 +142,7 @@ def size_format(sz: int, align: bool = False):
         return '%.2f B' % sz if not align else '%7.2f B' % sz
 
 
-def get_ip_info():
+def get_ip_info() -> dict:
     """
     通过ip-api获取本机ip信息
 
@@ -112,7 +155,7 @@ def get_ip_info():
     if res.status_code == requests.codes.ok:
         return json.loads(res.text)
     else:
-        return None
+        return {}
 
 
 def get_fileinfo(url: str, proxy: str = ''):
