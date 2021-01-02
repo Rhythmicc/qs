@@ -108,7 +108,8 @@ def api_menu():
     qs -gbc <garbage...>      :-> check Chinese garbage classification
     qs -svi <url>             :-> get short video info
     qs -svd <url>             :-> download short video info as mp4
-    qs -acg [save]            :-> get an acg image link (or save)
+    qs -acg  [save]           :-> get an acg image link (or save)
+    qs -bing [save]           :-> get an bing image link (or save)
     qs -phi <url>             :-> get <image url> in url (preview on Mac)"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs -trans [content]       :-> 翻译命令参数或剪切板中的内容
@@ -127,7 +128,8 @@ def api_menu():
     qs -gbc <garbage...>      :-> 查询垃圾分类
     qs -svi <url>             :-> 获取多平台短视频信息
     qs -svd <url>             :-> 下载多平台短视频为mp4
-    qs -acg [save]            :-> 获取一张acg图片链接（或保存）
+    qs -acg  [save]           :-> 获取一张acg图片链接（或保存）
+    qs -bing [save]           :-> 获取一张bing图片链接（或保存）
     qs -phi <url>             :-> 获取url里的图片链接 (Mac上iTerm可预览)"""))
 
 
@@ -212,6 +214,7 @@ api_funcs = {
     '-svi': 'short_video_info',
     '-svd': 'short_video_dl',
     '-acg': 'acg',
+    '-bing': 'bingImg',
     '-phi': 'preview_html_images'
 }
 

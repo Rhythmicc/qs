@@ -68,7 +68,7 @@ class WiFi:
     def set_iface(self):
         raise NotImplementedError
 
-    def conn(self, ssid, password):
+    def conn(self, ssid: list, password: str):
         """
         连接WiFi
 
@@ -78,7 +78,7 @@ class WiFi:
         :param password: 密码
         :return: status
         """
-        os.system('networksetup -setairportnetwork %s %s %s' % (self.iface[0], ssid, password))
+        os.system('networksetup -setairportnetwork %s %s "%s"' % (self.iface[0], ssid[0], password))
         return self.status()
 
     def disconn(self):

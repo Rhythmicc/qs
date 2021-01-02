@@ -490,7 +490,31 @@ def acg():
             normal_dl(acg_link)
         if system == 'darwin':  # Only support iTerm for Mac OS X
             from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
-            image_preview(acg_link.split('/')[-1] if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
+            image_preview(open(acg_link.split('/')[-1]) if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
+
+
+def bingImg():
+    """
+    获取随机bing图片链接（可选择下载）
+
+    Get links to random ACG images (download optional)
+
+    :return:
+    """
+    from QuickStart_Rhy.API.alapi import bingImg
+
+    status, acg_link, cprt = bingImg()
+    print("[%s] %s" % ('链接' if status else '错误', acg_link)) \
+        if user_lang == 'zh' else \
+        print("[%s] %s" % ('LINK' if status else 'ERROR', acg_link))
+    if status:
+        print('[版权]' if user_lang == 'zh' else '[CPRT]', cprt)
+        if 'save' in sys.argv[2:]:
+            from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+            normal_dl(acg_link)
+        if system == 'darwin':  # Only support iTerm for Mac OS X
+            from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+            image_preview(open(acg_link.split('/')[-1]) if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
 
 
 def preview_html_images():

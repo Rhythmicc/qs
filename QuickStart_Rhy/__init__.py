@@ -127,13 +127,16 @@ def open_file(argv=None):
 
     :return: None
     """
-    import webbrowser as wb
-
     if not argv:
         argv = sys.argv[2:]
     if system == 'darwin':
         os.system('open "' + '" "'.join(argv) + '"')
+    elif system == 'linux':
+        from subprocess import run
+        run(['xdg-open'] + ['"' + i + '"' for i in argv])
     else:
+        import webbrowser as wb
+
         for file in argv:
             if os.path.exists(file):
                 path = os.path.abspath(file)

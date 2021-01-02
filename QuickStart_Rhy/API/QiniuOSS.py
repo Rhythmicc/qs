@@ -1,12 +1,13 @@
 # coding=utf-8
 from QuickStart_Rhy.API import *
-try:
-    import qiniu
-except ImportError:
-    exit('You need to install "qiniu"')
 
 
 class QiniuOSS:
+    try:
+        import qiniu
+    except ImportError:
+        exit('You need to install "qiniu"')
+
     def __init__(self, ac_key: str = pre_check('qiniu_ac_key'),
                  sc_key: str = pre_check('qiniu_sc_key'),
                  df_bucket: str = pre_check('qiniu_bk_name')):
@@ -21,7 +22,7 @@ class QiniuOSS:
         """
         self.ac_key = ac_key
         self.sc_key = sc_key
-        self.auth = qiniu.Auth(self.ac_key, self.sc_key)
+        self.auth = QiniuOSS.qiniu.Auth(self.ac_key, self.sc_key)
         self.df_bucket = df_bucket
 
     def get_func_table(self):
@@ -51,7 +52,7 @@ class QiniuOSS:
         :return: None
         """
         tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath.split(dir_char)[-1])
-        qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
+        QiniuOSS.qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
 
     def remove(self, filePath: str, bucket: str = None):
         """
@@ -63,7 +64,7 @@ class QiniuOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        bk = qiniu.BucketManager(self.auth)
+        bk = QiniuOSS.qiniu.BucketManager(self.auth)
         bk.delete(bucket if bucket else self.df_bucket, filePath)
 
     def copy_url(self, filePath: str, bucket: str = None):
@@ -76,7 +77,7 @@ class QiniuOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        bk = qiniu.BucketManager(self.auth)
+        bk = QiniuOSS.qiniu.BucketManager(self.auth)
         bk.fetch(filePath, bucket if bucket else self.df_bucket, filePath.split('/')[-1])
 
     def get_bucket_url(self, bucket: str = None):
@@ -91,11 +92,10 @@ class QiniuOSS:
         import requests
         bucket = bucket if bucket else self.df_bucket
         url = 'http://api.qiniu.com/v6/domain/list?tbl=%s' % bucket
-        headers = {
+        res = requests.get(url, headers= {
             "Content-Type": "application/x-www-form-urlencoded",
             "Authorization": "QBox %s" % self.auth.token_of_request(url)
-        }
-        res = requests.get(url, headers=headers)
+        })
         if res.status_code == requests.codes.ok:
             return res.json()
         else:
@@ -111,7 +111,7 @@ class QiniuOSS:
         :return: None
         """
         from prettytable import PrettyTable
-        bk = qiniu.BucketManager(self.auth)
+        bk = QiniuOSS.qiniu.BucketManager(self.auth)
         ret = bk.list(bucket if bucket else self.df_bucket)
         if not ret[1]:
             print("ERROR!" if user_lang != 'zh' else '错误!')

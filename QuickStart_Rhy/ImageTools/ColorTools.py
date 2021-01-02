@@ -24,7 +24,7 @@ def transport_back(src: str, to_color: tuple, from_color: tuple = (0, 0, 0, 0)) 
             color_1 = src.getpixel(dot)
             if transparency_flag and not color_1[-1]:
                 src.putpixel(dot, to_color)
-            elif color_0[:-1] == color_1[:-1]:
+            elif color_0[:-1] == color_1[:-1] and color_1[-1]:
                 src.putpixel(dot, to_color)
     return src
 

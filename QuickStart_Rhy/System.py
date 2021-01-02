@@ -47,10 +47,8 @@ def _top():
             print((ansi.clear_screen() if dir_char == '\\' else '') + Cursor.POS(0, 0))
             print(' ' * 39, end='')
             cur_time()
-            cur_img = str(window).split('\n')
-            for i in cur_img:
-                print(' ' * 4, end='')
-                print(i)
+            cur_img = '    '.join(str(window).split('\n') + [' '])
+            print(cur_img)
             time.sleep(1)
     except:
         deal()

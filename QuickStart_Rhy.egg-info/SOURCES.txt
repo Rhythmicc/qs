@@ -3,10 +3,12 @@ setup.cfg
 setup.py
 QuickStart_Rhy/__init__.py
 QuickStart_Rhy/api.py
+QuickStart_Rhy/firstRun.py
 QuickStart_Rhy/func_list.py
 QuickStart_Rhy/imagedeal.py
 QuickStart_Rhy/main.py
 QuickStart_Rhy/nettools.py
+QuickStart_Rhy/qsLesson.py
 QuickStart_Rhy/system.py
 QuickStart_Rhy.egg-info/PKG-INFO
 QuickStart_Rhy.egg-info/SOURCES.txt

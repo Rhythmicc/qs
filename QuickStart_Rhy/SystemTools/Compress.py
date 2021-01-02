@@ -136,7 +136,10 @@ class Zip:
             from pathlib import Path
             for fn in self.src.namelist():
                 path = Path(self.src.extract(fn))
-                path.rename(fn.encode('cp437').decode('utf-8'))
+                try:
+                    path.rename(fn.encode('cp437').decode('utf-8'))
+                except:
+                    path.rename(fn.encode('cp437').decode('gbk'))
             self.save()
         else:
             raise io.UnsupportedOperation('not readable')

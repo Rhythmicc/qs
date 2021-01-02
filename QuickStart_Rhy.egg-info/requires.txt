@@ -10,3 +10,5 @@ qrcode_terminal
 rarfile
 youtube_dl
 pywifi
+PyInquirer
+bpytop

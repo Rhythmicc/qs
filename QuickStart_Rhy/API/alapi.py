@@ -45,13 +45,17 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
             ct = fp.read()
         aims = re.findall('!\[.*?]\((.*?)\)', ct, re.M) + re.findall('<img.*?src="(.*?)".*?>', ct, re.M)
         for aim in aims:
+            if aim.startswith('http'):  # Uploaded
+                continue
             raw_path = aim
             aim = aim.replace('~', _user_path)
             aim = aim if aim.startswith(dir_char) else get_path(rt_path, aim)
             if aim not in img_dict:
+                print('Start uploading:' if user_lang != 'zh' else '正在上传:', aim,
+                      '\nResult:' if user_lang != 'zh' else '\n结果:')
                 res_dict = post_img(aim)
                 if not res_dict:
-                    res_tb.add_row([aim.split(dir_char)[-1], 'No File', ''])
+                    res_tb.add_row([aim.split(dir_char)[-1], 'No File' if user_lang != 'zh' else '无文件', ''])
                     img_dict[aim] = False
                 else:
                     try:
@@ -60,16 +64,18 @@ def upload_image(filePath: str, plt_type: str = 'Ali'):
                         res_tb.add_row([aim.split(dir_char)[-1], res_dict['code'], res_dict['msg']])
                         img_dict[aim] = False
                     else:
+                        print(res_dict)
                         res_tb.add_row([aim.split(dir_char)[-1], res_dict['code'],
                                         res_dict['msg'] if res_dict['code'] != 200 else (
                                         res_dict['data']['url'][res_plt]
-                                        if res_dict['data']['url'][res_plt].lower() != 'null'
+                                        if res_dict['data']['url'][res_plt]
                                         else res_plt + ' failed')])
                         if res_dict['code'] != 200:
                             break
-                        img_dict[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] != 200 else False
+                        img_dict[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] == 200 else False
                 if img_dict[aim]:
-                    print('replacing img: "{}" with "{}"'.format(raw_path, img_dict[aim]))
+                    print('replacing img:' if user_lang != 'zh' else '替换路径',
+                          '"{}" with "{}"'.format(raw_path, img_dict[aim]))
                     ct = ct.replace(raw_path, img_dict[aim])
         with open(path, 'w') as fp:
             fp.write(ct)
@@ -262,3 +268,22 @@ def acg():
         return True, res['data']['url'], res['data']['width'], res['data']['height']
     except :
         return False, ('Network Error' if user_lang != 'zh' else '网络错误'), 0, 0
+
+
+def bingImg():
+    """
+    随机获取一张bing图片链接
+
+    Get a link to a bing picture at random
+    :return: image link
+    """
+    res = requests.post('https://v1.alapi.cn/api/bing', data='format=json',
+                        headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
+                        if alapi_token else {'Content-Type': "application/x-www-form-urlencoded"})
+    try:
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, res['msg'], ''
+        return True, res['data']['url'], res['data']['copyright']
+    except:
+        return False, ('Network Error' if user_lang != 'zh' else '网络错误'), ''

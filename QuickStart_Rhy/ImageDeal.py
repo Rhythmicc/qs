@@ -97,7 +97,7 @@ def icat():
             print('No such file:', path)
             raise FileNotFoundError
     except:
-        exit('Usage: qs -icat <img/url>')
+        exit('Usage: qs -icat <img path/url> [-u if is url]')
     else:
         from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
         image_preview(open(path)) if not is_url else image_preview(path, is_url)

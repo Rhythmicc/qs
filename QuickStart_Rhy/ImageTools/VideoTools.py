@@ -44,7 +44,7 @@ def video_2_gif(path: str, size: tuple = (480, 320), fps: int = None):
     file_name = '.'.join(os.path.basename(path).split('.')[:-1]) + '.gif'
     dir_name = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
     ct = mpy.VideoFileClip(path) if not size else mpy.VideoFileClip(path).resize(size)
-    ct.write_gif(dir_name + file_name, fps=fps) if fps else ct.write_gif(dir_char + file_name)
+    ct.write_gif(dir_name + file_name, fps=fps) if fps else ct.write_gif(dir_name + file_name)
 
 
 @VideoWrapper
