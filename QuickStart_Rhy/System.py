@@ -1,57 +1,12 @@
 # coding=utf-8
-from QuickStart_Rhy import dir_char, system, user_lang
+"""
+调用各种系统工具
+
+Call various system tools
+"""
+import QuickStart_Rhy.Wrapper as _wrapper
 
 miss_file = ['.DS_Store']
-
-
-def _top():
-    """
-    CPU和内存监测
-
-    CPU and memory monitoring
-
-    :return: None
-    """
-    import time
-    import math
-    import psutil
-    import colorama
-    from prettytable import PrettyTable
-    from colorama import Style, ansi, Cursor
-    from QuickStart_Rhy import cur_time
-    from QuickStart_Rhy.TuiTools import Bar
-    from QuickStart_Rhy.NetTools.NormalDL import size_format
-
-    def deal():
-        print(ansi.clear_screen() + Cursor.POS(0, 0) + Style.RESET_ALL, end='')
-        exit(0)
-
-    colorama.init()
-    _kernal = psutil.cpu_count()
-    _total_mem = psutil.virtual_memory().total
-    _cpu_dt = [0] * 40
-    _mem_dt = [0] * 40
-    _cpu_chart = Bar.RollBar(_cpu_dt, height=10)
-    _mem_chart = Bar.RollBar(_mem_dt, height=10)
-    charts = [_cpu_chart, _mem_chart]
-    window = PrettyTable()
-    window.add_row(charts)
-    print(ansi.clear_screen())
-    try:
-        while True:
-            _cpu_cur = sum(psutil.cpu_percent(percpu=True)) / _kernal
-            _mem_cur = psutil.virtual_memory().used
-            _cpu_chart.add(math.ceil(_cpu_cur))
-            _mem_chart.add(math.ceil(_mem_cur / _total_mem * 100))
-            window.field_names = ['CPU: %.2f%%' % _cpu_cur, 'MEM: %s' % size_format(_mem_cur)]
-            print((ansi.clear_screen() if dir_char == '\\' else '') + Cursor.POS(0, 0))
-            print(' ' * 39, end='')
-            cur_time()
-            cur_img = '    '.join(str(window).split('\n') + [' '])
-            print(cur_img)
-            time.sleep(1)
-    except:
-        deal()
 
 
 def top():
@@ -62,8 +17,10 @@ def top():
 
     :return: None
     """
+    from . import dir_char
     if dir_char == '\\':
-        _top()
+        from .SystemTools.Monitor import top
+        top()
     else:
         import sys
         sys.argv = ['bpytop'] + sys.argv[2:]
@@ -80,15 +37,14 @@ def clear_mem():
 
     :return: None
     """
-    if dir_char == '\\':
-        print("Not support")
-    else:
-        import os
-        if system.startswith("darwin"):
-            os.system("sudo purge")
-        else:
-            os.system('sync')
-            os.system("echo 3 > /proc/sys/vm/drop_caches")
+    from .SystemTools import clear_mem
+    clear_mem()
+
+
+@_wrapper.mkCompressPackageWrap
+def _mktar(filePath: str = ''):
+    from .SystemTools.Compress import Tar
+    return Tar(filePath + '.tar.gz', 'w')
 
 
 def mktar():
@@ -99,23 +55,13 @@ def mktar():
 
     :return: None
     """
-    import os
-    from QuickStart_Rhy.SystemTools.Compress import get_tar_name, Tar
-    tar_name, ls = get_tar_name()
-    tar = Tar(tar_name+'.tar.gz', 'write')
+    return _mktar()
 
-    def dfs(cur_p):
-        if os.path.isfile(cur_p):
-            tar.add_file(cur_p)
-            return
-        file_ls = os.listdir(cur_p)
-        flag_ch = '' if cur_p.endswith(dir_char) else dir_char
-        for fp in file_ls:
-            fp = cur_p + flag_ch + fp
-            dfs(fp)
-    for i in ls:
-        dfs(i)
-    tar.save()
+
+@_wrapper.unCompressPackageWrap
+def _untar(filePath: str = ''):
+    from .SystemTools.Compress import Tar
+    return Tar(filePath)
 
 
 def untar():
@@ -126,32 +72,13 @@ def untar():
 
     :return: None
     """
-    import os
-    import sys
+    return _untar()
 
-    file_names = sys.argv[2:]
-    if not file_names:
-        exit("No enough parameters")
-    from QuickStart_Rhy.SystemTools.Compress import Tar
-    from QuickStart_Rhy.NetTools.NormalDL import core_num
-    from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
-    pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
-    job_q = []
-
-    def run(path):
-        if os.path.exists(path):
-            try:
-                cur_tar = Tar(path)
-                cur_tar.extract()
-            except Exception as e:
-                print('[ERROR] %s' % e)
-        else:
-            print("No such file or dictionary:%s" % path)
-
-    for file_name in file_names:
-        job_q.append(pool.submit(run, file_name))
-    wait(job_q)
+@_wrapper.mkCompressPackageWrap
+def _mkzip(filePath: str = ''):
+    from .SystemTools.Compress import Zip
+    return Zip(filePath + '.zip', 'w')
 
 
 def mkzip():
@@ -162,23 +89,13 @@ def mkzip():
 
     :return: None
     """
-    import os
-    from QuickStart_Rhy.SystemTools.Compress import get_tar_name, Zip
-    zip_name, ls = get_tar_name()
-    z = Zip(zip_name+'.zip', mode='write')
+    return _mkzip()
 
-    def dfs(cur_p):
-        if os.path.isfile(cur_p):
-            z.add_file(cur_p)
-            return
-        file_ls = os.listdir(cur_p)
-        flag_ch = '' if cur_p.endswith(dir_char) else dir_char
-        for fp in file_ls:
-            fp = cur_p + flag_ch + fp
-            dfs(fp)
-    for i in ls:
-        dfs(i)
-    z.save()
+
+@_wrapper.unCompressPackageWrap
+def _unzip(filePath: str = ''):
+    from .SystemTools.Compress import Zip
+    return Zip(filePath, 'w')
 
 
 def unzip():
@@ -189,32 +106,13 @@ def unzip():
 
     :return: None
     """
-    import os
-    import sys
+    return _unzip()
 
-    file_names = sys.argv[2:]
-    if not file_names:
-        exit("No enough parameters")
-    from QuickStart_Rhy.SystemTools.Compress import Zip
-    from QuickStart_Rhy.NetTools.NormalDL import core_num
-    from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
 
-    pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
-    job_q = []
-
-    def run(path):
-        if os.path.exists(path):
-            try:
-                z = Zip(path)
-                z.extract()
-            except Exception as e:
-                print('[ERROR] %s' % e)
-        else:
-            print("[ERROR] No such file or dictionary:%s" % path)
-
-    for file_name in file_names:
-        job_q.append(pool.submit(run, file_name))
-    wait(job_q)
+@_wrapper.unCompressPackageWrap
+def _unrar(filePath: str = ''):
+    from .SystemTools.Compress import Rar
+    return Rar(filePath)
 
 
 def unrar():
@@ -225,60 +123,44 @@ def unrar():
 
     :return: None
     """
-    import os
-    import sys
-
-    file_names = sys.argv[2:]
-    if not file_names:
-        exit("No enough parameters")
-    from QuickStart_Rhy.SystemTools.Compress import RAR
-    from QuickStart_Rhy.NetTools.NormalDL import core_num
-    from QuickStart_Rhy.ThreadTools import ThreadPoolExecutor, wait
-
-    pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
-    job_q = []
-
-    def run(path):
-        if os.path.exists(path):
-            try:
-                z = RAR(path)
-                z.extract(os.path.basename(path).split('.')[0])
-            except Exception as e:
-                print('[ERROR] %s' % e)
-        else:
-            print("No such file or dictionary:%s" % path)
-
-    for file_name in file_names:
-        job_q.append(pool.submit(run, file_name))
-    wait(job_q)
+    return _unrar()
 
 
-def _HashWrapper(algorithm: str):
+@_wrapper.mkCompressPackageWrap
+def _mk7z(filePath: str = ''):
+    from .SystemTools.Compress import SevenZip
+    return SevenZip(filePath + '.7z', 'w')
+
+
+def mk7z():
     """
-    文件哈希值计算(通用函数)
+    创建7z包
 
-    :param algorithm: 算法名称 [md5, sha1, sha256, sha512]
+    Create 7z package
+
+    :return: None
+    """
+    return _mk7z()
+
+
+@_wrapper.unCompressPackageWrap
+def _un7z(filePath: str = ''):
+    from .SystemTools.Compress import SevenZip
+    return SevenZip(filePath)
+
+
+def un7z():
+    """
+    解压7z包
+
+    Extract 7z package
+
     :return:
     """
-    def Wrapper(func):
-        def _wrapper():
-            import sys
-
-            ls = sys.argv[2:]
-            if not ls:
-                print('Usage: qs -%s file1 file2 ...' % algorithm)
-                return
-            from prettytable import PrettyTable
-            exec('from QuickStart_Rhy.SystemTools.FileHash import %s' % algorithm)
-            resTable = PrettyTable(['文件' if user_lang == 'zh' else 'File', algorithm.upper()])
-            for file in ls:
-                exec('resTable.add_row([file, %s(file)])' % algorithm)
-            print(resTable)
-        return _wrapper
-    return Wrapper
+    return _un7z()
 
 
-@_HashWrapper('md5')
+@_wrapper.HashWrapper('md5')
 def md5():
     """
     获取文件md5值
@@ -286,7 +168,7 @@ def md5():
     """
 
 
-@_HashWrapper('sha1')
+@_wrapper.HashWrapper('sha1')
 def sha1():
     """
     获取文件sha1值
@@ -294,7 +176,7 @@ def sha1():
     """
 
 
-@_HashWrapper('sha256')
+@_wrapper.HashWrapper('sha256')
 def sha256():
     """
     获取文件sha256值
@@ -302,7 +184,7 @@ def sha256():
     """
 
 
-@_HashWrapper('sha512')
+@_wrapper.HashWrapper('sha512')
 def sha512():
     """
     获取文件sha512值

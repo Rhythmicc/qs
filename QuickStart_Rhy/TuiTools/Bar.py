@@ -1,4 +1,9 @@
 # coding=utf-8
+"""
+柱状图
+
+histogram
+"""
 from colorama import Back, Style
 import math
 

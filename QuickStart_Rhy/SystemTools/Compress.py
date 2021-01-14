@@ -1,14 +1,20 @@
 # coding=utf-8
+"""
+压缩与解压缩各种文件
+
+Compress and decompress all kinds of files
+"""
 import io
 import os
 import sys
 import tarfile
 import zipfile
 import rarfile
-from QuickStart_Rhy import dir_char
+import py7zr
+from .. import dir_char, user_lang
 
 
-def get_tar_name():
+def get_compress_package_name():
     """
     从命令行参数中，解析并返回压缩包名称
 
@@ -35,8 +41,121 @@ def get_tar_name():
     return tar_name, ls
 
 
-class Tar:
-    def __init__(self, path, mode='read'):
+def checkIsProtocolFile(protocol, path):
+    """
+    验证压缩包文件
+
+    Verify compressed package file
+    :param protocol: 压缩协议 | compress protocol
+    :param path: 文件路径 | File Path
+    :return:
+    """
+    if os.path.exists(path):
+        if protocol == tarfile and not tarfile.is_tarfile(path):
+            raise TypeError("%s " + ('Not recognized by tar protocol' if user_lang != 'zh' else '无法被tar协议识别'))
+        elif protocol == zipfile and not zipfile.is_zipfile(path):
+            raise TypeError("%s" + ('Not recognized by zip protocol' if user_lang != 'zh' else '无法被zip协议识别'))
+        elif protocol == rarfile and not rarfile.is_rarfile(path):
+            raise TypeError("%s" + ('Not recognized by rar protocol' if user_lang != 'zh' else '无法被rar协议识别'))
+        elif protocol == py7zr and not py7zr.is_7zfile(path):
+            raise TypeError("%s" + ('Not recognized by 7z protocol' if user_lang != 'zh' else '无法被7z协议识别'))
+    else:
+        raise FileNotFoundError
+
+
+class _NormalCompressedPackage:
+    """
+    通用压缩协议类，如果你不懂它是做什么的，请不要调用它
+
+    General compression protocol class, if you do not understand what it does, please do not call it
+    """
+    def __init__(self, _protocol, path: str, mode='r'):
+        """
+        通用压缩协议类初始化
+
+        General compression protocol class initialization
+
+        :param _protocol: 压缩协议包 | General compression protocol packages
+        :param path: 压缩包路径 | compression package path
+        :param mode: 读写模式 | 'r' or 'w', which 'r' means read and 'w' means write
+        """
+        self._protocol = _protocol
+        self.path = path
+        if mode not in ('r', 'w'):
+            raise ValueError("Requires mode 'r', 'w'")
+        if mode == 'r':
+            checkIsProtocolFile(_protocol, path)
+            if _protocol == zipfile:
+                self.src = zipfile.ZipFile(path, 'r')
+            elif _protocol == py7zr:
+                self.src = py7zr.SevenZipFile(path, 'r')
+            else:
+                self.src = _protocol.open(path, 'r')
+            self.mode = True
+        elif mode == 'w':
+            if _protocol == tarfile:
+                self.src = _protocol.open(path, 'x:gz')
+            elif _protocol == zipfile:
+                self.src = _protocol.ZipFile(path, 'w')
+            elif _protocol == rarfile:
+                raise NotImplementedError('qs not support to create rar file because `RarFile`')
+            elif _protocol == py7zr:
+                self.src = _protocol.SevenZipFile(path, 'w')
+            self.mode = False
+
+    def add_file(self, path):
+        """
+        向压缩包添加文件（工作在'w'模式下）
+
+        Add file to the compressed package (works in 'w' mode)
+
+        :param path: 文件路径 | File path
+        :return: None
+        """
+        if self.mode:
+            raise io.UnsupportedOperation
+        if os.path.exists(path):
+            if self._protocol == tarfile:
+                self.src.add(path)
+            elif self._protocol in [zipfile, py7zr]:
+                self.src.write(path)
+        else:
+            raise FileNotFoundError
+
+    def extract(self):
+        """
+        解压缩 | extract
+
+        :return: None
+        """
+        if self.mode:
+            if self._protocol in [tarfile, rarfile, py7zr]:
+                self.src.extractall()
+            elif self._protocol in [zipfile]:
+                from pathlib import Path
+                for fn in self.src.namelist():
+                    path = Path(self.src.extract(fn))
+                    try:
+                        path.rename(fn.encode('cp437').decode('utf-8'))
+                    except:
+                        path.rename(fn.encode('cp437').decode('gbk'))
+            else:
+                raise NotImplementedError
+            self.save()
+        else:
+            raise io.UnsupportedOperation
+
+    def save(self):
+        """
+        保存 | Save
+
+        :return: None
+        """
+        self.src.close()
+
+
+class Tar(_NormalCompressedPackage):
+    def __init__(self, path, mode='r'):
         """
         Tar协议初始化
 
@@ -45,17 +164,7 @@ class Tar:
         :param path: 压缩包路径 | The package path is compressed.
         :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        if mode == 'read':
-            if os.path.exists(path):
-                if not tarfile.is_tarfile(path):
-                    raise TypeError("%s not a tar file" % path)
-                self.src = tarfile.open(path, 'r')
-                self.mode = True
-            else:
-                raise FileNotFoundError
-        elif mode == 'write':
-            self.src = tarfile.open(path, 'x:gz')
-            self.mode = False
+        super().__init__(tarfile, path, mode)
 
     def add_file(self, path):
         """
@@ -66,12 +175,6 @@ class Tar:
         :param path: 文件路径
         :return: None
         """
-        if self.mode:
-            raise io.UnsupportedOperation
-        if os.path.exists(path):
-            self.src.add(path)
-        else:
-            raise FileNotFoundError
 
     def extract(self):
         """
@@ -81,118 +184,120 @@ class Tar:
 
         :return: None
         """
-        if self.mode:
-            self.src.extractall()
-            self.save()
-        else:
-            raise io.UnsupportedOperation
 
     def save(self):
         """保存 | save"""
-        self.src.close()
 
 
-class Zip:
-    def __init__(self, path, mode='read'):
+class Zip(_NormalCompressedPackage):
+    def __init__(self, path, mode='r'):
         """
-        ZIP协议初始化
+        Zip协议初始化
 
-        :param path: 压缩包路径
-        :param mode: 工作模式（'read' 或 'write'）
+        Zip protocol initialization.
+
+        :param path: 压缩包路径 | The package path is compressed.
+        :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        if mode == 'read':
-            if os.path.exists(path):
-                self.src = zipfile.ZipFile(path, 'r')
-                self.mode = True
-            else:
-                raise FileNotFoundError
-        elif mode == 'write':
-            if os.path.exists(path):
-                raise io.UnsupportedOperation('File exists!')
-            self.src = zipfile.ZipFile(path, 'w')
-            self.mode = False
+        super().__init__(zipfile, path, mode)
 
     def add_file(self, path):
         """
-        向压缩包添加文件（工作在'write'模式下）
+        向压缩包添加文件（工作在'w'模式下）
+
+        Add files to the compressed package (works in 'write' mode)
 
         :param path: 文件路径
         :return: None
         """
-        if self.mode:
-            raise io.UnsupportedOperation('not writeable')
-        if os.path.exists(path):
-            self.src.write(path)
-        else:
-            raise FileNotFoundError
+        return super().add_file(path)
 
     def extract(self):
         """
         解压缩
 
+        extract
+
         :return: None
         """
-        if self.mode:
-            from pathlib import Path
-            for fn in self.src.namelist():
-                path = Path(self.src.extract(fn))
-                try:
-                    path.rename(fn.encode('cp437').decode('utf-8'))
-                except:
-                    path.rename(fn.encode('cp437').decode('gbk'))
-            self.save()
-        else:
-            raise io.UnsupportedOperation('not readable')
+        return super().extract()
 
     def save(self):
-        """保存"""
-        self.src.close()
+        """保存 | save"""
+        return super().save()
 
 
-class RAR:
-    def __init__(self, path, mode='read'):
+class Rar(_NormalCompressedPackage):
+    def __init__(self, path, mode='r'):
         """
-        RAR协议初始化
+        Rar协议初始化
 
-        :param path: 压缩包路径
-        :param mode: 工作模式（'read' 或 'write'）
+        Rar protocol initialization.
+
+        :param path: 压缩包路径 | The package path is compressed.
+        :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        if mode == 'read':
-            if os.path.exists(path):
-                path = os.path.abspath(path)
-                self.src = rarfile.RarFile(path, 'r')
-                self.mode = True
-            else:
-                raise FileNotFoundError
-        elif mode == 'write':
-            raise NotImplementedError("qs not support to create rar file because `RarFile`")
+        super().__init__(rarfile, path, mode)
 
-    def add_file(self, path: str):
+    def add_file(self, path):
         """
-        请勿调用 | Please do not call
+        向压缩包添加文件（工作在'w'模式下）
 
-        向压缩包添加文件（工作在'write'模式下）
+        Add files to the compressed package (works in 'write' mode)
 
         :param path: 文件路径
         :return: None
         """
-        raise io.UnsupportedOperation('not writeable')
+        return super().add_file(path)
 
-    def extract(self, dir_name):
+    def extract(self):
         """
         解压缩
 
+        extract
+
         :return: None
         """
-        if self.mode:
-            if not (os.path.exists(dir_name) and os.path.isdir(dir_name)):
-                os.mkdir(dir_name)
-            os.chdir(dir_name)
-            self.src.extractall()
-            self.save()
-        else:
-            raise io.UnsupportedOperation('not readable')
+        return super().extract()
 
     def save(self):
-        """保存"""
-        self.src.close()
+        """保存 | save"""
+        return super().save()
+
+
+class SevenZip(_NormalCompressedPackage):
+    def __init__(self, path, mode='r'):
+        """
+        7z协议初始化
+
+        7z protocol initialization.
+
+        :param path: 压缩包路径 | The package path is compressed.
+        :param mode: 工作模式 | Working mode ('read' or 'write')
+        """
+        super().__init__(py7zr, path, mode)
+
+    def add_file(self, path):
+        """
+        向压缩包添加文件（工作在'w'模式下）
+
+        Add files to the compressed package (works in 'write' mode)
+
+        :param path: 文件路径
+        :return: None
+        """
+        return super().add_file(path)
+
+    def extract(self):
+        """
+        解压缩
+
+        extract
+
+        :return: None
+        """
+        return super().extract()
+
+    def save(self):
+        """保存 | save"""
+        return super().save()

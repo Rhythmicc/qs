@@ -1,11 +1,23 @@
 # coding=utf-8
+"""
+qs的网络工具库
+
+The network tool library of QS
+"""
 import socket
 import requests
 from requests.exceptions import RequestException
-from QuickStart_Rhy import headers
+from .. import headers
 
 
 def is_ipv4(ip: str) -> bool:
+    """
+    判断ip是否为可连接的ipv4
+
+    Determine whether the IP is a connectable IPv4
+    :param ip: like 8.8.8.8 etc.
+    :return: bool
+    """
     try:
         socket.inet_pton(socket.AF_INET, ip)
     except AttributeError:  # no inet_pton here, sorry
@@ -20,6 +32,13 @@ def is_ipv4(ip: str) -> bool:
 
 
 def is_ipv6(ip: str) -> bool:
+    """
+    判断ip是否为可连接的ipv6
+
+    Determine whether the IP is a connectable IPv6
+    :param ip: like fe80::1862:5a79:a8a0:aae5 etc.
+    :return: bool
+    """
     try:
         socket.inet_pton(socket.AF_INET6, ip)
     except socket.error:  # not a valid ip
@@ -28,6 +47,13 @@ def is_ipv6(ip: str) -> bool:
 
 
 def is_ip(ip: str) -> bool:
+    """
+    判断ip是否为可连接的
+
+    Determine whether the IP is a connectable
+    :param ip: like fe80::1862:5a79:a8a0:aae5, 8.8.8.8 etc.
+    :return: bool
+    """
     if ip == 'localhost':
         return True
     return is_ipv4(ip) or is_ipv6(ip)
@@ -158,7 +184,7 @@ def get_ip_info() -> dict:
         return {}
 
 
-def get_fileinfo(url: str, proxy: str = ''):
+def get_fileinfo(url: str, proxy: str = '') -> (str, str, requests.Response):
     """
     获取待下载的文件信息
 
@@ -166,7 +192,7 @@ def get_fileinfo(url: str, proxy: str = ''):
 
     :param url: 文件url
     :param proxy: 代理
-    :return: 真实url，文件名，http头部信息
+    :return: 真实url，文件名，http头部信息 (headers中键值均为小写)
     """
     import re
     import os
@@ -176,14 +202,15 @@ def get_fileinfo(url: str, proxy: str = ''):
     } if proxy else {}
     try:
         res = requests.head(url, headers=headers, proxies=proxies)
-    except Exception as e:
-        return False, False, False
+    except:
+        return '', '', None
     while res.status_code == 302 or res.status_code == 301:
-        url = res.headers['Location']
+        url = {i[0]: i[1] for i in res.headers.lower_items()}['location']
         res = requests.head(url, headers=headers, proxies=proxies)
-    if 'Content-Disposition' in res.headers:
+    res.headers = {i[0]: i[1] for i in res.headers.lower_items()}
+    if 'content-disposition' in res.headers:
         try:
-            filename = re.findall('filename=(.*?);', res.headers['Content-Disposition'])[0]
+            filename = re.findall('filename=(.*?);', res.headers['content-disposition'])[0]
         except IndexError:
             from urllib.parse import urlparse
             filename = os.path.basename(urlparse(url).path.strip('/'))

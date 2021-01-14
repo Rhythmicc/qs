@@ -1,4 +1,9 @@
 # coding=utf-8
+"""
+修改图像颜色工具
+
+Modify image color tool
+"""
 from PIL import Image
 
 

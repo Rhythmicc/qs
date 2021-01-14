@@ -1,4 +1,9 @@
 # coding=utf-8
+"""
+调用各种网络工具
+
+Call various network tools
+"""
 import sys
 
 
@@ -20,7 +25,7 @@ def upload_pypi():
     Upload Pypi Library
     """
     import os
-    from QuickStart_Rhy import remove, dir_char
+    from . import remove, dir_char
     remove('dist')
     if os.system('python3 setup.py sdist'):
         os.system('python setup.py sdist')
@@ -33,7 +38,7 @@ def m3u8_dl(url):
 
     Download *.m3u8
     """
-    from QuickStart_Rhy.NetTools.M3u8DL import M3U8DL
+    from .NetTools.M3u8DL import M3U8DL
     M3U8DL(url, url.split('.')[-2].split('/')[-1]).download()
 
 
@@ -44,7 +49,7 @@ def download():
     Qs download engine, use --video or -v use the default video download engine download
     """
     if any([i in sys.argv for i in ['-h', '-help', '--help']]):
-        from QuickStart_Rhy import user_lang
+        from . import user_lang
         print('Usage: qs -dl [url...]\n'
               '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
               '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc'
@@ -65,8 +70,8 @@ def download():
     if urls:
         if ytb_flag:
             from youtube_dl import _real_main
-        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
-        from QuickStart_Rhy import qs_config
+        from .NetTools.NormalDL import normal_dl
+        from . import qs_config
         for url in urls:
             if url.endswith('.m3u8'):
                 m3u8_dl(url)
@@ -94,18 +99,18 @@ def http():
         if '-bind' in sys.argv:
             try:
                 url = sys.argv[sys.argv.index('-bind') + 1]
-                from QuickStart_Rhy.NetTools import formatUrl
+                from .NetTools import formatUrl
                 url = formatUrl(url)
             except IndexError:
                 print('Usage: qs -ftp ip:port -bind url')
                 exit(0)
     else:
-        from QuickStart_Rhy.NetTools import get_ip
+        from .NetTools import get_ip
         ip = get_ip()
         port = 8000
     if not ip:
         exit('get ip failed!')
-    from QuickStart_Rhy.NetTools.HttpServer import HttpServers
+    from .NetTools.HttpServer import HttpServers
     HttpServers(ip, port, url).start()
 
 
@@ -119,11 +124,13 @@ def netinfo():
     import pyperclip
     import prettytable
     import urllib.parse
-    from QuickStart_Rhy import user_lang
-    from QuickStart_Rhy.API.alapi import ip_info
+    from . import user_lang
+    from .API.alapi import ip_info
 
     def print_ip_info(info_ls):
-        table = prettytable.PrettyTable(['ip', '运营商', '地址', '经纬'])
+        table = prettytable.PrettyTable(
+            ['ip', '运营商', '地址', '经纬'] if user_lang == 'zh' else ['ip', 'isp', 'pos', 'location']
+        )
         for info in info_ls:
             table.add_row([info['ip'],
                            info['isp'].strip() if 'isp' in info else '未知', info['pos'],
@@ -166,12 +173,12 @@ def wifi():
 
     :return:
     """
-    from QuickStart_Rhy import system, user_lang
+    from . import system, user_lang
     from prettytable import PrettyTable
     if system.lower() != 'darwin':
-        from QuickStart_Rhy.NetTools.WiFi import WiFi
+        from .NetTools.WiFi import WiFi
     else:
-        from QuickStart_Rhy.NetTools.WiFiDarwin import WiFi
+        from .NetTools.WiFiDarwin import WiFi
     _wifi = WiFi()
     table = PrettyTable(['id', 'ssid', 'signal', 'lock'] if user_lang != 'zh' else ['序号', '名称', '信号', '加密'])
     connectable_wifi = _wifi.scan()

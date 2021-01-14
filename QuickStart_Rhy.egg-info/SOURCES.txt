@@ -19,10 +19,10 @@ QuickStart_Rhy.egg-info/top_level.txt
 QuickStart_Rhy.egg-info/zip-safe
 QuickStart_Rhy/API/AliCloud.py
 QuickStart_Rhy/API/BaiduCloud.py
+QuickStart_Rhy/API/CommonClipboard.py
 QuickStart_Rhy/API/IPinfo.py
 QuickStart_Rhy/API/IpInfo.py
 QuickStart_Rhy/API/QiniuOSS.py
-QuickStart_Rhy/API/Seafile.py
 QuickStart_Rhy/API/SimpleAPI.py
 QuickStart_Rhy/API/TencentCloud.py
 QuickStart_Rhy/API/__init__.py
@@ -39,6 +39,7 @@ QuickStart_Rhy/NetTools/WiFiDarwin.py
 QuickStart_Rhy/NetTools/__init__.py
 QuickStart_Rhy/SystemTools/Compress.py
 QuickStart_Rhy/SystemTools/FileHash.py
+QuickStart_Rhy/SystemTools/Monitor.py
 QuickStart_Rhy/SystemTools/__init__.py
 QuickStart_Rhy/ThreadTools/__init__.py
 QuickStart_Rhy/TuiTools/Bar.py

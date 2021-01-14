@@ -1,4 +1,9 @@
 # coding=utf-8
+"""
+qs的http服务
+
+HTTP service of QS
+"""
 from socketserver import ThreadingMixIn
 from http.server import SimpleHTTPRequestHandler
 from http.server import HTTPServer

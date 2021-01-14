@@ -1,4 +1,9 @@
 # coding=utf-8
+"""
+线程工具
+
+Threading tools
+"""
 import threading
 from concurrent.futures import ThreadPoolExecutor, wait
 

@@ -1,6 +1,11 @@
 # coding=utf-8
+"""
+视频处理库, 你需要额外安装moviepy库
+
+Video processing library, you need to install additional moviepy library
+"""
 import os
-from QuickStart_Rhy import dir_char
+from .. import dir_char
 
 
 def VideoWrapper(func):

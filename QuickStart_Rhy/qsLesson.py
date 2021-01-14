@@ -1,5 +1,10 @@
 # coding=utf-8
-from QuickStart_Rhy import user_lang
+"""
+命令交互，查看qs的各种菜单和文档
+
+Command interaction, view various menus and documents of QS
+"""
+from . import user_lang
 from PyInquirer import prompt
 
 
@@ -16,13 +21,13 @@ def onlineDocuments():
     })['onlineSource']
     import webbrowser as wb
     wb.open({
-        '1': 'https://rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
-        if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
-        '2': 'https://rhythmicc.github.io/' + ('2020/02/14/QuickStart-Rhy/'
-        if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
-        '3': 'https://blog.rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
-        if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/')
-    }[res[0]])
+                '1': 'https://rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
+                                                 if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
+                '2': 'https://rhythmicc.github.io/' + ('2020/02/14/QuickStart-Rhy/'
+                                                       if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
+                '3': 'https://blog.rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
+                                                      if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/')
+            }[res[0]])
 
 
 def lesson():
@@ -44,7 +49,7 @@ def lesson():
     if res[0] == '6':
         return onlineDocuments()
 
-    from QuickStart_Rhy.func_list import menu_table
+    from .func_list import menu_table
     {
         '1': menu_table['-basic'],
         '2': menu_table['-system'],

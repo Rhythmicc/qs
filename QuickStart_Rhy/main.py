@@ -1,6 +1,11 @@
 # coding=utf-8
+"""
+命令入口
+
+Command entry
+"""
 import sys
-from QuickStart_Rhy.func_list import *
+from .func_list import *
 
 
 def qs_help(rep=''):

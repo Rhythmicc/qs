@@ -1,5 +1,10 @@
 # coding=utf-8
-from QuickStart_Rhy import *
+"""
+qs的API模块, 使用前确保配置文件~/.qsrc中已经配置相关的KEY值
+
+Before using the API module of QS, make sure that the relevant key value has been configured in the configuration file ~/.qsrc
+"""
+from .. import qs_config, user_lang, user_root, dir_char, system, headers
 
 
 def pre_check(funcName: str, ext: bool = True) -> str:

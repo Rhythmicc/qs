@@ -1,10 +1,15 @@
 # coding=utf-8
+"""
+第一次运行qs
+
+Running QS for the first time
+"""
 import json
 import colorama
 from colorama import Fore, Style
 from PyInquirer import prompt
-from QuickStart_Rhy import user_root, system
-from QuickStart_Rhy.NetTools import is_ip
+from . import user_root, system
+from .NetTools import is_ip
 from prompt_toolkit.validation import Validator, ValidationError
 
 
@@ -93,7 +98,7 @@ def main(rt_dir: str) -> dict:
     "AipNlpAPP_ID" : "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpAPP_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
-    "seafile_communicate_path": "GET: /Path/to/file",
+    "commonClipboardFilePath": "GET: /Path/to/file",
     "alapi_token": "GET: https://user.alapi.cn/"
   }
 }
@@ -118,7 +123,7 @@ def main(rt_dir: str) -> dict:
   the Mac system, whether to open the iTerm official website?
   qs推荐您在Mac系统中使用iTerm作为终端程序, 是否打开iTerm官网?""",
             'default': True})['use_iTerm']:
-        from QuickStart_Rhy.NetTools import open_url
+        from .NetTools import open_url
         open_url('https://www.iterm2.com/')
 
     return config

@@ -1,3 +1,8 @@
+"""
+计算各种文件哈希值
+
+Calculate the hash value of various files
+"""
 import hashlib
 import os
 

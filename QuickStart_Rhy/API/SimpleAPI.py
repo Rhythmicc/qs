@@ -1,5 +1,10 @@
 # coding=utf-8
-from QuickStart_Rhy.API import *
+"""
+一些可以轻易实现的API
+
+Some APIs that can be easily implemented
+"""
+from . import *
 import requests
 
 
@@ -176,18 +181,28 @@ def imgs_in_url(url: str):
     :param url:
     :return:
     """
-    from QuickStart_Rhy import headers
+    from .. import headers
     html = requests.get(url, headers=headers)
     if html.status_code != requests.codes.ok:
         print('Failed')
         return
     import re
-    from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+    from ..ImageTools.ImagePreview import image_preview
 
     imgs = re.findall('<img.*?src="(.*?)".*?>', html.text)
+    a_ls = re.findall('<a.*?href="(.*?)".*?>', html.text)
+    for i in a_ls:
+        aim = i.lower()
+        for j in ['.png', '.jpg', 'jpeg']:
+            if j in aim:
+                imgs.append(i)
+                break
     for url in imgs:
-        if not url.startswith('http'):
+        if not url.startswith('http') or url.endswith('svg'):
             continue
         print('[Link]' if user_lang != 'zh' else '[链接]', url[:100] + ('' if len(url) <= 100 else '...'))
         if system == 'darwin':
-            image_preview(url, True)
+            try:
+                image_preview(url, True)
+            except Exception as e:
+                print('[Error]' if user_lang != 'zh' else '[错误]', repr(e))

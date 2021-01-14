@@ -1,5 +1,11 @@
 # coding=utf-8
-from QuickStart_Rhy.API import *
+"""
+百度云相关API
+
+Baidu cloud API
+"""
+import os
+from . import pre_check, user_lang
 try:
     import aip
 except ImportError:

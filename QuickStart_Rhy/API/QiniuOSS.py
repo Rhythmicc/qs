@@ -1,5 +1,10 @@
 # coding=utf-8
-from QuickStart_Rhy.API import *
+"""
+七牛云对象存储API
+
+Qiniu cloud OSS API
+"""
+from . import pre_check, dir_char, user_lang
 
 
 class QiniuOSS:
@@ -92,7 +97,7 @@ class QiniuOSS:
         import requests
         bucket = bucket if bucket else self.df_bucket
         url = 'http://api.qiniu.com/v6/domain/list?tbl=%s' % bucket
-        res = requests.get(url, headers= {
+        res = requests.get(url, headers={
             "Content-Type": "application/x-www-form-urlencoded",
             "Authorization": "QBox %s" % self.auth.token_of_request(url)
         })
@@ -118,7 +123,7 @@ class QiniuOSS:
             exit(0)
         root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
         ret = ret[0]['items']
-        from QuickStart_Rhy.NetTools.NormalDL import size_format
+        from ..NetTools.NormalDL import size_format
         tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
         for i in ret:
             tb.add_row([i['key'], size_format(i['fsize'], True)])
@@ -135,7 +140,7 @@ class QiniuOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+        from ..NetTools.NormalDL import normal_dl
         bucket = bucket if bucket else self.df_bucket
         root_url = self.get_bucket_url(bucket)[0]
         if root_url:

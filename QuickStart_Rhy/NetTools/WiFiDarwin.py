@@ -1,3 +1,9 @@
+"""
+qs的WIFI模块, 协助连接WIFI, 但不支持机构WIFI自动登录 | 仅在Mac OS下工作
+
+The WiFi module of QS helps to connect WiFi, but does not support the automatic login of institutional WiFi |
+(Works only on Mac OS)
+"""
 import os
 import re
 

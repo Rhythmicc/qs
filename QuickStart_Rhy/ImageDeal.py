@@ -1,11 +1,16 @@
 # coding=utf-8
+"""
+调用各种图像处理工具
+
+Call various image processing tools
+"""
 import sys
 import os
 
 
 def set_img_background():
     """替换图片颜色 | Replace color in image"""
-    from QuickStart_Rhy.ImageTools.ColorTools import transport_back, get_color_from_str
+    from .ImageTools.ColorTools import transport_back, get_color_from_str
 
     try:
         img = sys.argv[2]
@@ -32,7 +37,7 @@ def set_img_background():
 
 def v2gif():
     """视频转gif | video to gif"""
-    from QuickStart_Rhy.ImageTools.VideoTools import video_2_gif
+    from .ImageTools.VideoTools import video_2_gif
 
     try:
         video = sys.argv[2]
@@ -57,7 +62,7 @@ def v2gif():
 
 def remove_audio():
     """删除视频的音频 | remove audio in mp4"""
-    from QuickStart_Rhy.ImageTools.VideoTools import rm_audio
+    from .ImageTools.VideoTools import rm_audio
     try:
         video = sys.argv[2]
     except IndexError:
@@ -68,7 +73,7 @@ def remove_audio():
 
 def v2mp4():
     """视频转mp4 | transfer video to mp4"""
-    from QuickStart_Rhy.ImageTools.VideoTools import tomp4
+    from .ImageTools.VideoTools import tomp4
     try:
         video = sys.argv[2]
     except IndexError:
@@ -79,7 +84,7 @@ def v2mp4():
 
 def v2mp3():
     """提取视频音频为mp3 | Extract the audio from the video and save it in MP3 format"""
-    from QuickStart_Rhy.ImageTools.VideoTools import video_2_mp3
+    from .ImageTools.VideoTools import video_2_mp3
     try:
         video = sys.argv[2]
     except IndexError:
@@ -99,5 +104,5 @@ def icat():
     except:
         exit('Usage: qs -icat <img path/url> [-u if is url]')
     else:
-        from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+        from .ImageTools.ImagePreview import image_preview
         image_preview(open(path)) if not is_url else image_preview(path, is_url)

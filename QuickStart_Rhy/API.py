@@ -1,6 +1,11 @@
 # coding=utf-8
+"""
+调用各种qs的API
+
+Call various QS API
+"""
 import sys
-from QuickStart_Rhy import user_lang, system
+from . import user_lang, system
 
 
 def remove_bg():
@@ -17,7 +22,7 @@ def remove_bg():
         if path == '-help':
             print('%s: qs -rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
             return
-        from QuickStart_Rhy.API.SimpleAPI import rmbg
+        from .API.SimpleAPI import rmbg
         rmbg(path)
 
 
@@ -35,7 +40,7 @@ def smms():
         if path == '-help':
             print('%s: qs -smms <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
             return
-        from QuickStart_Rhy.API.SimpleAPI import smms
+        from .API.SimpleAPI import smms
         smms(path)
 
 
@@ -50,7 +55,7 @@ def up_img():
     except IndexError:
         exit('%s: qs -upimg <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
     else:
-        from QuickStart_Rhy.API.alapi import upload_image
+        from .API.alapi import upload_image
         import random
         spt_type = {'ali': '阿里云', 'sogou': '搜狗', 'alapi': 'Alapi',
                     'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米'}
@@ -72,7 +77,7 @@ def up_img():
         if argv_len_3:
             sys.argv[3] = sys.argv[3].lower()
         upload_image(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
-            upload_image(path, random.choice(spt_type_keys)),
+            upload_image(path),
             print(('No such platform: %s' if user_lang != 'zh' else '没有这个平台: %s') % sys.argv[3]) if argv_len_3 else 1
         )
 
@@ -106,7 +111,7 @@ def ali_oss():
                   '    -ls [桶]       : 获取桶文件信息')
         exit(0)
     else:
-        from QuickStart_Rhy.API.AliCloud import AliyunOSS
+        from .API.AliCloud import AliyunOSS
         ali_api = AliyunOSS()
         func_table = ali_api.get_func_table()
         if not file:
@@ -146,7 +151,7 @@ def qiniu():
                   '    -ls [桶]       : 获取桶文件信息')
         exit(0)
     else:
-        from QuickStart_Rhy.API.QiniuOSS import QiniuOSS
+        from .API.QiniuOSS import QiniuOSS
         qiniu_api = QiniuOSS()
         func_table = qiniu_api.get_func_table()
         if not file:
@@ -184,7 +189,7 @@ def txcos():
                   '    -ls [桶]       : 获取桶文件信息')
         exit(0)
     else:
-        from QuickStart_Rhy.API.TencentCloud import TxCOS
+        from .API.TencentCloud import TxCOS
         tx_api = TxCOS()
         func_table = tx_api.get_func_table()
         if not file:
@@ -200,12 +205,12 @@ def translate():
     Qs default Translation engine
     """
     global Translate, translate
-    from QuickStart_Rhy import trans_engine
+    from . import trans_engine
     import pyperclip
     if trans_engine != 'default':
-        from QuickStart_Rhy.API.TencentCloud import translate
+        from .API.TencentCloud import translate
     else:
-        from QuickStart_Rhy.API.alapi import translate
+        from .API.alapi import translate
 
     content = ' '.join(sys.argv[2:])
     if not content:
@@ -226,8 +231,8 @@ def translate():
 
 def weather():
     """查天气 | Check weather"""
-    from QuickStart_Rhy import headers, dir_char
-    from QuickStart_Rhy.ThreadTools import ThreadFunctionWrapper
+    from . import headers, dir_char
+    from .ThreadTools import ThreadFunctionWrapper
     import requests
 
     def get_data(url):
@@ -261,7 +266,7 @@ def weather():
     if simple:
         if not loc:
             if user_lang == 'zh':
-                from QuickStart_Rhy.API.alapi import translate
+                from .API.alapi import translate
                 trans_loaction = translate(simple[0].split('：')[-1])
                 print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
             else:
@@ -292,7 +297,7 @@ def ipinfo(ip: str = None):
 
     Check IP via IPInfo (incorrect location)
     """
-    from QuickStart_Rhy.API.IpInfo import get_ip_info
+    from .API.IpInfo import get_ip_info
     return get_ip_info(ip)
 
 
@@ -307,14 +312,14 @@ def largeImage():
     except IndexError:
         exit('%s: qs -LG img' % 'Usage' if user_lang != 'zh' else '用法')
     else:
-        from QuickStart_Rhy.API.BaiduCloud import ImageDeal
+        from .API.BaiduCloud import ImageDeal
         aip_cli = ImageDeal()
         aip_cli.largeImage(path)
 
 
 def AipNLP():
     """百度NLP | Baidu NLP"""
-    from QuickStart_Rhy.API.BaiduCloud import AipNLP
+    from .API.BaiduCloud import AipNLP
     import pyperclip
     ct = sys.argv[2:]
     if not ct:
@@ -336,16 +341,16 @@ def AipNLP():
         pass
 
 
-def Seafile_Communicate():
-    """Seafile做共享粘贴板"""
-    from QuickStart_Rhy.API.Seafile import Seafile
+def CommonClipboard():
+    """共享粘贴板"""
+    from .API.CommonClipboard import CommonClipboard
     try:
         method = sys.argv[2]
         if method == 'get':
-            Seafile().get_msg()
+            CommonClipboard().get_msg()
         elif method == 'post':
             msg = ' '.join(sys.argv[3:]) if len(sys.argv) > 3 else None
-            Seafile().post_msg(msg) if msg else Seafile().post_msg()
+            CommonClipboard().post_msg(msg) if msg else CommonClipboard().post_msg()
     except IndexError:
         print("Usage:\n  1. qs -sea get\n  2. qs -sea post [msg]"
               if user_lang != 'zh' else
@@ -355,7 +360,7 @@ def Seafile_Communicate():
 
 def Pasteme():
     """Pasteme信息传递"""
-    from QuickStart_Rhy.API.SimpleAPI import pasteme
+    from .API.SimpleAPI import pasteme
     try:
         method = sys.argv[2]
         key = sys.argv[3]
@@ -370,7 +375,7 @@ def Pasteme():
 
 def bili_cover():
     """下载Bilibili视频、直播的封面图片（视频链接、视频号均可识别）"""
-    from QuickStart_Rhy.API.alapi import bili_cover as bc
+    from .API.alapi import bili_cover as bc
     import pyperclip
 
     try:
@@ -392,7 +397,7 @@ def bili_cover():
 
 def gbc():
     """查询中国垃圾分类（且仅支持中文查询）"""
-    from QuickStart_Rhy.API.alapi import garbage_classification
+    from .API.alapi import garbage_classification
     try:
         print(garbage_classification(sys.argv[2:]))
     except:
@@ -407,8 +412,8 @@ def short_video_info(son_call=False):
 
     :return:
     """
-    from QuickStart_Rhy.API.alapi import short_video_info
-    from QuickStart_Rhy.NetTools import get_fileinfo, size_format
+    from .API.alapi import short_video_info
+    from .NetTools import get_fileinfo, size_format
     import pyperclip
     import re
     try:
@@ -440,7 +445,7 @@ def short_video_info(son_call=False):
     sz = int(get_fileinfo(res['cover_url'])[-1].headers['Content-Length'])
     print('\n[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
     if system == 'darwin':
-        from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+        from .ImageTools.ImagePreview import image_preview
         image_preview(res['cover_url'], True)
     if 'source' in res and res['source']:
         print('\n[{}] {}'.format(output_prefix['source'], res['source']))
@@ -455,9 +460,9 @@ def short_video_dl():
 
     :return:
     """
-    from QuickStart_Rhy.NetTools.NormalDL import normal_dl
-    from QuickStart_Rhy.ImageTools.VideoTools import tomp4
-    from QuickStart_Rhy import remove
+    from .NetTools.NormalDL import normal_dl
+    from .ImageTools.VideoTools import tomp4
+    from . import remove
     res = short_video_info(son_call=True)
 
     print()
@@ -477,7 +482,7 @@ def acg():
 
     :return:
     """
-    from QuickStart_Rhy.API.alapi import acg
+    from .API.alapi import acg
 
     status, acg_link, width, height = acg()
     print("[%s] %s" % ('链接' if status else '错误', acg_link)) \
@@ -486,10 +491,10 @@ def acg():
     if status:
         print('[尺寸]' if user_lang == 'zh' else '[SIZE]', width, '×', height)
         if 'save' in sys.argv[2:]:
-            from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+            from .NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
         if system == 'darwin':  # Only support iTerm for Mac OS X
-            from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+            from .ImageTools.ImagePreview import image_preview
             image_preview(open(acg_link.split('/')[-1]) if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
 
 
@@ -501,7 +506,7 @@ def bingImg():
 
     :return:
     """
-    from QuickStart_Rhy.API.alapi import bingImg
+    from .API.alapi import bingImg
 
     status, acg_link, cprt = bingImg()
     print("[%s] %s" % ('链接' if status else '错误', acg_link)) \
@@ -510,10 +515,10 @@ def bingImg():
     if status:
         print('[版权]' if user_lang == 'zh' else '[CPRT]', cprt)
         if 'save' in sys.argv[2:]:
-            from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+            from .NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
         if system == 'darwin':  # Only support iTerm for Mac OS X
-            from QuickStart_Rhy.ImageTools.ImagePreview import image_preview
+            from .ImageTools.ImagePreview import image_preview
             image_preview(open(acg_link.split('/')[-1]) if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
 
 
@@ -525,6 +530,30 @@ def preview_html_images():
 
     :return:
     """
-    from QuickStart_Rhy.API.SimpleAPI import imgs_in_url
+    from .API.SimpleAPI import imgs_in_url
     for url in sys.argv[2:]:
         imgs_in_url(url)
+
+
+def kdCheck():
+    from .API.alapi import kdCheck
+
+    status, code, msg = kdCheck(sys.argv[2])
+    if not status:
+        print(msg)
+        return
+
+    from rich.console import Console
+    from rich.table import Table
+    from rich.text import Text
+    from rich import box
+
+    console = Console()
+    tb = Table(show_edge=False, show_header=True, expand=False, row_styles=["none", "dim"], box=box.SIMPLE)
+    tb.add_column("Time" if user_lang != 'zh' else '时间', no_wrap=True, justify="center", style="bold cyan")
+    tb.add_column("Description" if user_lang != 'zh' else '描述', justify="center")
+    tb.title = 'Result: ' + ['Unknown', 'Not Send', 'In transit', 'Signed receipt'][code] \
+        if user_lang != 'zh' else '快递查询结果: ' + ['未知', '未发出', '运输中', '已签收'][code]
+    for info in msg:
+        tb.add_row(info['time'], Text(info['content'], justify='left'))
+    console.print(tb)

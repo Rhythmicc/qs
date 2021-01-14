@@ -12,3 +12,5 @@ youtube_dl
 pywifi
 PyInquirer
 bpytop
+rich
+py7zr

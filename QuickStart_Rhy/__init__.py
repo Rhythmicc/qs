@@ -1,4 +1,10 @@
 # coding=utf-8
+"""
+Docs:
+    中文: https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/
+
+    English: https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/
+"""
 import os
 import sys
 import json
@@ -90,7 +96,7 @@ def u():
     :return: None
     """
     import webbrowser as wb
-    from QuickStart_Rhy.NetTools import formatUrl
+    from .NetTools import formatUrl
     if sys.argv[2:]:
         for url in sys.argv[2:]:
             url = formatUrl(url)

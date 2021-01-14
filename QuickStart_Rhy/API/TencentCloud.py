@@ -1,12 +1,18 @@
 # coding=utf-8
-from QuickStart_Rhy.API import *
+"""
+腾讯云相关API
+
+Tencent cloud API
+"""
+import json
+from . import pre_check, user_lang, dir_char
 
 
 class TxCOS:
     try:
         import qcloud_cos
     except ImportError:
-        exit('You need to install "cos-python-sdk-v5"')
+        exit('You need to install "cos-python-sdk-v5", "tencentcloud-sdk-python"')
 
     def __init__(self):
         """
@@ -65,7 +71,7 @@ class TxCOS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+        from ..NetTools.NormalDL import normal_dl
         bucket = bucket if bucket else self.df_bucket
 
         url = self.cdn_url + filename \
@@ -95,7 +101,7 @@ class TxCOS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.NormalDL import size_format
+        from ..NetTools.NormalDL import size_format
         from prettytable import PrettyTable
         bucket = bucket if bucket else self.df_bucket
         ls = self.client.list_objects(Bucket=bucket)['Contents']
@@ -134,7 +140,8 @@ class Translate:
         clientProfile.httpProfile = http_profile
         self.client = Translate.tmt_client.TmtClient(cred, region, clientProfile)
 
-    def langdetect(self, text: str) -> str:
+    @staticmethod
+    def langdetect(text: str) -> str:
         """
         获取文本的语言类型
 

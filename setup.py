@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-VERSION = '0.4.1'
+VERSION = '0.4.2'
 
 setup(
     name='QuickStart_Rhy',
@@ -24,7 +24,7 @@ setup(
     zip_safe=True,
     install_requires=['pyperclip', 'requests', 'psutil', 'urllib3', 'colorama', 'langdetect',
                       'prettytable', 'diagram', 'qrcode_terminal', 'rarfile', 'youtube_dl', 'pywifi',
-                      'PyInquirer', 'bpytop'],
+                      'PyInquirer', 'bpytop', 'rich', 'py7zr'],
     entry_points={
         'console_scripts': [
             'qs = QuickStart_Rhy.main:main'

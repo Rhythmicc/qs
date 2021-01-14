@@ -1,5 +1,10 @@
 # coding=utf-8
-from QuickStart_Rhy.API import *
+"""
+阿里云相关API
+
+Alibaba cloud API
+"""
+from . import pre_check, user_lang, dir_char
 try:
     import oss2
 except ImportError:
@@ -91,7 +96,7 @@ class AliyunOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from QuickStart_Rhy.NetTools.NormalDL import size_format
+        from ..NetTools.NormalDL import size_format
         from prettytable import PrettyTable
         bucket = bucket if bucket else self.df_bucket
         ls = oss2.Bucket(self.auth, self.bucket_url, bucket)

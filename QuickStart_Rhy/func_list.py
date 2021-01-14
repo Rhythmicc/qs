@@ -1,6 +1,11 @@
 # coding=utf-8
-from QuickStart_Rhy import user_lang
-from QuickStart_Rhy.qsLesson import lesson
+"""
+功能映射与菜单提示
+
+Function mapping and menu prompt
+"""
+from . import user_lang
+from .qsLesson import lesson
 import colorama
 from colorama import Fore, Style
 colorama.init()
@@ -49,10 +54,12 @@ def system_menu():
     qs -top                   :-> cpu and memory monitor
     qs -clear                 :-> free memory
     qs -mktar <path...>       :-> create gzipped archive for path
-    qs -untar <path...>       :-> extract path.tar.*
+    qs -untar <path...>       :-> extract *.tar.*
     qs -mkzip <path...>       :-> make a zip for path
     qs -unzip <path...>       :-> extract *.zip file
     qs -unrar <path...>       :-> extract *.rar file
+    qs -mk7z  <path...>       :-> make a 7z archive for path
+    qs -un7z  <path...>       :-> extract *.7z file
     qs -md5   <path...>       :-> calculate md5 of files
     qs -sha1  <path...>       :-> calculate SHA1 of files
     qs -sha256 <path...>      :-> calculate SHA256 of files
@@ -102,7 +109,7 @@ def api_menu():
     qs -weather [address]     :-> check weather (of address)
     qs -LG <image>            :-> make image larger(with AI)
     qs -nlp [words]           :-> Text(or in clipboard) error correction
-    qs -sea <method> [msg]    :-> Get Or Post msg by Seafile.
+    qs -cb <method> [msg]     :-> Get Or Post msg by using network disk
     qs -pasteme <method> [*]  :-> get with key, [password] or post clipboard content
     qs -bcv <url/video code>  :-> get Bilibili video cover image with <url>
     qs -gbc <garbage...>      :-> check Chinese garbage classification
@@ -110,7 +117,8 @@ def api_menu():
     qs -svd <url>             :-> download short video info as mp4
     qs -acg  [save]           :-> get an acg image link (or save)
     qs -bing [save]           :-> get an bing image link (or save)
-    qs -phi <url>             :-> get <image url> in url (preview on Mac)"""))\
+    qs -phi <url>             :-> get <image url> in url (preview on Mac)
+    qs -kd <courier number>   :-> Query China express"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs -trans [content]       :-> 翻译命令参数或剪切板中的内容
     qs -rmbg <img>            :-> 移除图片背景
@@ -122,7 +130,7 @@ def api_menu():
     qs -weather [address]     :-> 获取当地天气（或指定地址天气）
     qs -LG <image>            :-> 通过百度图像效果增强放大图片
     qs -nlp [words]           :-> 通过百度NLP进行文本纠错
-    qs -sea <method> [msg]    :-> 通过Seafile get或post信息
+    qs -cb <method> [msg]     :-> 通过网络硬盘的本地文件系统get或post信息
     qs -pasteme <method> [*]  :-> 通过pasteme get或post信息
     qs -bcv <url/video code>  :-> 获取B站视频、直播封面图片
     qs -gbc <garbage...>      :-> 查询垃圾分类
@@ -130,7 +138,8 @@ def api_menu():
     qs -svd <url>             :-> 下载多平台短视频为mp4
     qs -acg  [save]           :-> 获取一张acg图片链接（或保存）
     qs -bing [save]           :-> 获取一张bing图片链接（或保存）
-    qs -phi <url>             :-> 获取url里的图片链接 (Mac上iTerm可预览)"""))
+    qs -phi <url>             :-> 获取url里的图片链接 (Mac上iTerm可预览)
+    qs -kd <courier number>   :-> 查询国内快递"""))
 
 
 def image_menu():
@@ -179,6 +188,8 @@ system_funcs = {
     '-mkzip': 'mkzip',
     '-unzip': 'unzip',
     '-unrar': 'unrar',
+    '-mk7z': 'mk7z',
+    '-un7z': 'un7z',
     '-md5': 'md5',
     '-sha1': 'sha1',
     '-sha256': 'sha256',
@@ -207,7 +218,7 @@ api_funcs = {
     '-LG': 'largeImage',
     '-weather': 'weather',
     '-nlp': 'AipNLP',
-    '-sea': 'Seafile_Communicate',
+    '-cb': 'CommonClipboard',
     '-pasteme': 'Pasteme',
     '-bcv': 'bili_cover',
     '-gbc': 'gbc',
@@ -215,7 +226,8 @@ api_funcs = {
     '-svd': 'short_video_dl',
     '-acg': 'acg',
     '-bing': 'bingImg',
-    '-phi': 'preview_html_images'
+    '-phi': 'preview_html_images',
+    '-kd': 'kdCheck'
 }
 
 image_funcs = {

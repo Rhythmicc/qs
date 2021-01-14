@@ -1,12 +1,18 @@
+"""
+在终端预览图片 | 目前仅有MacOS下的iTerm可用, 你需要自行安装imgcat库
+
+preview image on terminal | At present, only iTerm under MacOS is available,
+you need to install imgcat library by yourself
+"""
 from imgcat import imgcat
-from QuickStart_Rhy import headers
+from .. import headers
 
 
 def image_preview(img, is_url=False):
     """
-    在终端预览图片
+    在终端预览图片 | 目前仅有MacOS下的iTerm可用
 
-    preview image on terminal
+    preview image on terminal | At present, only iTerm under MacOS is available
 
     :param is_url:
     :param img: opened file, numpy array, PIL.Image, matplotlib fig

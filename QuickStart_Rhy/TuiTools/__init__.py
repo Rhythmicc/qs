@@ -1,4 +1,9 @@
 # coding=utf-8
+"""
+qs的原生文本窗口交互库
+
+Native text window interaction Library Based on QS
+"""
 import os
 import sys
 

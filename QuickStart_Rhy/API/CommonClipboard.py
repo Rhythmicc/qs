@@ -1,14 +1,19 @@
 # coding=utf-8
-from QuickStart_Rhy.API import pre_check
+"""
+通过网络硬盘的本地文件系统实现的共享剪切板
+
+Shared cutting board realized by local file system of network hard disk
+"""
+from . import pre_check
 import pyperclip
 
 
-class Seafile:
-    def __init__(self, path: str = pre_check('seafile_communicate_path')):
+class CommonClipboard:
+    def __init__(self, path: str = pre_check('commonClipboardFilePath')):
         """
-        利用Seafile实现的共享剪切板
+        通过网络硬盘的本地文件系统实现的共享剪切板
 
-        The sharing clipboard realized by Seafile
+        Shared cutting board realized by local file system of network hard disk
 
         :param path: 用于设备间沟通的共享文件路径
         """
@@ -26,7 +31,7 @@ class Seafile:
             try:
                 pyperclip.copy(f.read().decode('utf-8'))
             except pyperclip.PyperclipException:
-                from QuickStart_Rhy import open_file
+                from .. import open_file
                 open_file([self.path])
 
     def post_msg(self, msg: str = pyperclip.paste()):

@@ -1,9 +1,15 @@
 # coding=utf-8
+"""
+m3u8文件的下载器
+
+The downloader of m3u8 file
+"""
 import urllib3
 from concurrent.futures import ThreadPoolExecutor, wait
 import requests
 import os
-from QuickStart_Rhy import dir_char, remove, headers
+import queue
+from .. import dir_char, remove, headers, user_lang
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -27,6 +33,13 @@ def merge_file(path, ts_ls, name):
 
 
 class M3U8DL:
+    from rich.console import Console
+    from rich.progress import Progress, TimeRemainingColumn, TextColumn, BarColumn
+
+    info_string = '[bold cyan][INFO]' if user_lang != 'zh' else '[bold cyan][信息]'
+    warn_string = '[bold yellow][WARNING]' if user_lang != 'zh' else '[bold yellow][警告]'
+    erro_string = '[bold red][ERROR]' if user_lang != 'zh' else '[bold red][错误]'
+    console = Console()
     proxies = {}
 
     def __init__(self, target, name, proxy: str = ''):
@@ -43,11 +56,21 @@ class M3U8DL:
         self._all = 0
         self.target = target
         self.name = name
+        self.job_queue = queue.Queue()
         if proxy:
             M3U8DL.proxies = {
                 'http': 'http://'+proxy,
                 'https': 'https://'+proxy
             }
+        self.main_progress = M3U8DL.Progress(
+            M3U8DL.TextColumn("[bold blue]{task.fields[taskName]}", justify="right"),
+            M3U8DL.BarColumn(bar_width=None),
+            "[progress.percentage]{task.percentage:>3.1f}%",
+            "•",
+            M3U8DL.TimeRemainingColumn(),
+            console=M3U8DL.console
+        )
+        self.dl_id = self.main_progress.add_task("Download", taskName='Downloading' if user_lang != 'zh' else '下载中')
 
     def _dl_one(self, job):
         """
@@ -58,20 +81,19 @@ class M3U8DL:
         :param job: 任务信息
         :return: None
         """
-        if job[-1]:
-            pd_url = job[0]
-            c_fule_name = job[1]
-            if not os.path.exists(os.path.join(self.path, c_fule_name)):
-                res = requests.get(pd_url, verify=False, proxies=M3U8DL.proxies)
-                with open(os.path.join(self.path, c_fule_name), 'ab') as f:
-                    f.write(res.content)
-                    f.flush()
-        self._cur += 1
-        perc = self._cur / self._all
-        leng = int(perc * 40)
-        perc *= 100
-        print('[%s] %.2f%%' % ('#' * leng + ' ' * (40 - leng), perc),
-              end='\n' if self._cur == self._all else '\r')
+        try:
+            if job[-1]:
+                pd_url = job[0]
+                c_fule_name = job[1]
+                if not os.path.exists(os.path.join(self.path, c_fule_name)):
+                    res = requests.get(pd_url, verify=False, proxies=M3U8DL.proxies)
+                    with open(os.path.join(self.path, c_fule_name), 'ab') as f:
+                        f.write(res.content)
+                        f.flush()
+            self.main_progress.advance(self.dl_id, 1)
+        except Exception as e:
+            M3U8DL.console.log(M3U8DL.erro_string, repr(e))
+            self.job_queue.put(job)
 
     def download(self):
         """
@@ -84,9 +106,13 @@ class M3U8DL:
         self.path = download_path
         if not os.path.exists(download_path):
             os.mkdir(download_path)
-        all_content = requests.get(target, verify=False, headers=headers, proxies=M3U8DL.proxies).text
+        try:
+            all_content = requests.get(target, verify=False, headers=headers, proxies=M3U8DL.proxies).text
+        except Exception as e:
+            M3U8DL.console.log(M3U8DL.erro_string, repr(e))
+            return
         if "#EXTM3U" not in all_content:
-            raise BaseException("非M3U8的链接")
+            raise BaseException("Not M3U8 Link" if user_lang != 'zh' else "非M3U8的链接")
         if "EXT-X-STREAM-INF" in all_content:
             file_line = all_content.split("\n")
             for line in file_line:
@@ -104,9 +130,21 @@ class M3U8DL:
         file_line = tmp[::-1]
         self._all = len(file_line)
         tmp = [jb[1] for jb in file_line]
+
+        self.main_progress.update(self.dl_id, total=len(file_line))
+        for i in file_line:
+            self.job_queue.put(i)
         pool = ThreadPoolExecutor(16)
-        work = [pool.submit(self._dl_one, job) for job in file_line]
-        wait(work)
-        print("Download completed!")
+        self.main_progress.start()
+        self.main_progress.start_task(self.dl_id)
+        while not self.job_queue.empty():
+            cur_work = []
+            while not self.job_queue.empty():
+                cur_work.append(pool.submit(self._dl_one, self.job_queue.get()))
+            wait(cur_work)
+        self.main_progress.stop()
+
+        M3U8DL.console.log(M3U8DL.info_string, "Download completed! Start merge.."
+                           if user_lang != 'zh' else '下载完成! 开始合并..')
         merge_file(download_path, tmp, self.name)
         remove(download_path)

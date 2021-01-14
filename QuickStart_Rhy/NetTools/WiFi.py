@@ -1,7 +1,12 @@
 # coding=utf-8
+"""
+qs的WIFI模块, 协助连接WIFI, 但不支持机构WIFI自动登录
+
+The WiFi module of QS helps to connect WiFi, but does not support the automatic login of institutional WiFi
+"""
 import time
 from pywifi import const, PyWiFi
-from QuickStart_Rhy import user_lang
+from .. import user_lang
 
 
 class WiFi:
