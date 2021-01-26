@@ -95,7 +95,7 @@ def mkzip():
 @_wrapper.unCompressPackageWrap
 def _unzip(filePath: str = ''):
     from .SystemTools.Compress import Zip
-    return Zip(filePath, 'w')
+    return Zip(filePath, 'r')
 
 
 def unzip():
