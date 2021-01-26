@@ -91,6 +91,7 @@ def unCompressPackageWrap(func):
         file_names = sys.argv[2:]
         if not file_names:
             exit("No enough parameters")
+        from .. import qs_default_console, qs_error_string
         from ..NetTools.NormalDL import core_num
         from ..ThreadTools import ThreadPoolExecutor, wait
         pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
@@ -102,9 +103,9 @@ def unCompressPackageWrap(func):
                     cur_tar = func(path)
                     cur_tar.extract()
                 except Exception as e:
-                    print('[ERROR] %s' % repr(e))
+                    qs_default_console.log(qs_error_string, repr(e))
             else:
-                print("No such file or dictionary:%s" % path)
+                qs_default_console.log(qs_error_string, "No such file or dictionary: %s" % path)
 
         for file_name in file_names:
             job_q.append(pool.submit(run, file_name))
@@ -121,18 +122,19 @@ def HashWrapper(algorithm: str):
     """
     def Wrapper(func):
         def _wrapper():
-            import sys
+            import sys, os
+            from .. import qs_default_console, qs_info_string, user_lang
 
             ls = sys.argv[2:]
             if not ls:
-                print('Usage: qs -%s file1 file2 ...' % algorithm)
+                qs_default_console.print(qs_info_string, 'Usage: qs %s file1 file2 ...' % algorithm)
                 return
-            from prettytable import PrettyTable
-            from .. import user_lang
+
             exec('from QuickStart_Rhy.SystemTools.FileHash import %s' % algorithm)
-            resTable = PrettyTable(['文件' if user_lang == 'zh' else 'File', algorithm.upper()])
             for file in ls:
-                exec('resTable.add_row([file, %s(file)])' % algorithm)
-            print(resTable)
+                qs_default_console.print(
+                    qs_info_string, 'Calculate:' if user_lang != 'zh' else '计算:', os.path.basename(file)
+                )
+                exec(f'qs_default_console.print(qs_info_string, "{algorithm}" + ":", {algorithm}("{file}"))')
         return _wrapper
     return Wrapper

@@ -5,7 +5,7 @@
 Video processing library, you need to install additional moviepy library
 """
 import os
-from .. import dir_char
+from .. import dir_char, user_lang, qs_default_console, qs_error_string
 
 
 def VideoWrapper(func):
@@ -20,14 +20,15 @@ def VideoWrapper(func):
     def wrapper(path, *args, **kwargs):
         try:
             import moviepy
-        except ImportError as e:
-            e = repr(e)
-            exit(e)
+        except ImportError:
+            qs_default_console.log(
+                qs_error_string, 'You need install "moviepy" first' if user_lang != 'zh' else '你需要先安装"moviepy"')
         else:
             if not os.path.exists(path):
-                exit('No such file: %s' % path)
+                qs_default_console.log(qs_error_string, f'{"No such file" if user_lang != "zh" else "文件不存在"}: {path}')
+                return
             if not os.path.isfile(path):
-                exit('%s not a file!' % path)
+                qs_default_console.log(qs_error_string, f'{"No a file" if user_lang != "zh" else "不是文件"}: {path}')
             func(path, *args, **kwargs)
 
     return wrapper

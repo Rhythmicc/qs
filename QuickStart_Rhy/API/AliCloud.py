@@ -96,17 +96,27 @@ class AliyunOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
+        from .. import qs_default_console, qs_info_string
         from ..NetTools.NormalDL import size_format
-        from prettytable import PrettyTable
+        from rich.table import Table, Column
+        from rich.text import Text
+        from rich.box import SIMPLE
         bucket = bucket if bucket else self.df_bucket
         ls = oss2.Bucket(self.auth, self.bucket_url, bucket)
-        tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
+        tb = Table(
+            *([Column('File', justify="center"), Column('Size', justify="center")]
+              if user_lang != 'zh' else
+              [Column('文件', justify="center"), Column('体积', justify="center")])
+            , show_edge=False, row_styles=['none', 'dim'], box=SIMPLE, title='[bold underline]Aliyun OSS'
+        )
         prefix = dict()
         for obj in oss2.ObjectIterator(ls):
             if '/' in obj.key:
-
                 prefix[obj.key[obj.key[:obj.key.index('/')]]] = 0
-
-            tb.add_row([obj.key, size_format(obj.size, True)])
-        print('Bucket Url:' if user_lang != 'zh' else '桶链接:', 'https://' + bucket + '.' + self.bucket_url + '/')
-        print(tb)
+            tb.add_row(Text(obj.key, justify='left'), Text(size_format(obj.size, True), justify='right'))
+        qs_default_console.print(
+            qs_info_string,
+            'Bucket Url:' if user_lang != 'zh' else '桶链接:',
+            'https://' + bucket + '.' + self.bucket_url + '/'
+        )
+        qs_default_console.print(tb, justify="center")

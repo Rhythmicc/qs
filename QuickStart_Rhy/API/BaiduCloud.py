@@ -9,7 +9,8 @@ from . import pre_check, user_lang
 try:
     import aip
 except ImportError:
-    exit('You need to install: baidu-aip')
+    from .. import qs_default_console, qs_error_string
+    qs_default_console.log(qs_error_string, 'You need to install:' if user_lang != 'zh' else '你需要安装:', 'baidu-aip')
 
 
 class ImageDeal:
@@ -44,7 +45,8 @@ class ImageDeal:
         :return: None
         """
         if not os.path.exists(path) or not os.path.isfile(path):
-            print(('No file named: %s' if user_lang != 'zh' else '没有文件: %s') % path)
+            from .. import qs_default_console, qs_error_string
+            qs_default_console.log(qs_error_string, ('No file named: %s' if user_lang != 'zh' else '没有文件: %s') % path)
             return
         img_name = os.path.basename(path)
         img_name = img_name[:img_name.index('.')] + '_LG.' + '.'.join(img_name.split('.')[1:])
@@ -93,6 +95,7 @@ class AipNLP:
         try:
             res = self.client.ecnet(words)['item']['correct_query']
         except Exception as e:
-            exit(repr(e))
+            from .. import qs_default_console, qs_error_string
+            qs_default_console.log(qs_error_string, repr(e))
         else:
             return res

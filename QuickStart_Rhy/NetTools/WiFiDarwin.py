@@ -6,6 +6,7 @@ The WiFi module of QS helps to connect WiFi, but does not support the automatic 
 """
 import os
 import re
+from .. import qs_default_console, qs_warning_string
 
 
 class WiFi:
@@ -36,7 +37,7 @@ class WiFi:
         with os.popen('networksetup -getairportnetwork %s' % self.iface[0]) as pipe:
             res = pipe.read().strip()
             res = re.sub('.*?:', '', res).strip()
-        print("%s连接" % ('已' if res else '未'), res if res else '')
+        qs_default_console.print(f"{'已' if res else '未'}连接", res if res else '')
         return res
 
     @staticmethod
@@ -63,7 +64,7 @@ class WiFi:
                     else:
                         mac_index += 1
                 if mac_index >= len(i):
-                    print("Failed to get info with:", i)
+                    qs_default_console.log(qs_warning_string, "Failed to get info with:", i)
                     continue
                 ssid = ' '.join(i[:mac_index])
                 if i[0] not in has_add:

@@ -6,6 +6,7 @@ Call various image processing tools
 """
 import sys
 import os
+from . import qs_default_console, qs_error_string, qs_info_string
 
 
 def set_img_background():
@@ -17,15 +18,16 @@ def set_img_background():
         if img == '-help':
             raise IndexError
         if not os.path.exists(img):
-            exit('[ERROR] No Such File: %s' % img)
+            qs_default_console.log(qs_error_string, 'No Such File: %s' % img)
+            return
         to = sys.argv[3]
         try:
             frm = sys.argv[4]
         except IndexError:
             frm = '0,0,0,0'
     except IndexError:
-        print('Usage: qs -stbg picture to_color [from_color: default transparency]')
-        exit(0)
+        qs_default_console.log(qs_error_string, 'Usage: qs stbg <picture> <to_color> [from_color: default transparency]')
+        return
     else:
         to = get_color_from_str(to)
         frm = get_color_from_str(frm)
@@ -53,8 +55,8 @@ def v2gif():
                     raise IndexError
         sz = tuple([int(i) for i in sys.argv[3].split(',')]) if len(sys.argv) > 3 and ',' in sys.argv[3] else None
     except IndexError:
-        print('Usage: qs -v2gif *.mp4 width,height fps')
-        exit(0)
+        qs_default_console.log(qs_error_string, 'Usage: qs v2gif <*.mp4> [width,height] [fps]')
+        return
     else:
         video_2_gif(video, sz, fps) if sz and fps else video_2_gif(video, sz) \
             if sz else video_2_gif(video, fps=fps) if fps else video_2_gif(video)
@@ -66,7 +68,7 @@ def remove_audio():
     try:
         video = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -rmaudio *.mp4')
+        qs_default_console.log(qs_error_string, 'Usage: qs rmaudio <*.mp4>')
     else:
         rm_audio(video)
 
@@ -77,7 +79,7 @@ def v2mp4():
     try:
         video = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -v2mp4 <video>')
+        qs_default_console.log(qs_error_string, 'Usage: qs v2mp4 <video>')
     else:
         tomp4(video)
 
@@ -88,7 +90,7 @@ def v2mp3():
     try:
         video = sys.argv[2]
     except IndexError:
-        exit('Usage: qs -v2mp3 <video>')
+        qs_default_console.log(qs_error_string, 'Usage: qs v2mp3 <video>')
     else:
         video_2_mp3(video)
 
@@ -99,10 +101,10 @@ def icat():
         path = sys.argv[2]
         is_url = '-u' in sys.argv
         if not os.path.exists(path) and not is_url:
-            print('No such file:', path)
+            qs_default_console.log(qs_error_string, 'No such file:', path)
             raise FileNotFoundError
     except:
-        exit('Usage: qs -icat <img path/url> [-u if is url]')
+        qs_default_console.log(qs_error_string, 'Usage: qs icat <img path/url> [-u if is url]')
     else:
         from .ImageTools.ImagePreview import image_preview
         image_preview(open(path)) if not is_url else image_preview(path, is_url)

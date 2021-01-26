@@ -7,6 +7,7 @@ HTTP service of QS
 from socketserver import ThreadingMixIn
 from http.server import SimpleHTTPRequestHandler
 from http.server import HTTPServer
+from .. import qs_default_console, qs_info_string
 
 
 class HttpServers:
@@ -43,21 +44,19 @@ class HttpServers:
         self.httpd = HttpServers.Server((self.web_address, self.web_port), SimpleHTTPRequestHandler)
         if not self.bind_url:
             self.bind_url = 'http://' + self.web_address + ':' + str(self.web_port)
-        print(self.bind_url)  # * 展示待访问的url
+        qs_default_console.print(qs_info_string, self.bind_url)  # * 展示待访问的url
         HttpServers.qrcode_terminal.draw(self.bind_url)  # * 为待访问的url绘制二维码
         try:
             self.httpd.serve_forever()
-        except KeyboardInterrupt:
-            self.shutdown(0, 0)
+        except TypeError:
+            self.shutdown()
 
-    def shutdown(self, a, b):
+    def shutdown(self):
         """
         Ctrl C
-
-        :param a: signum
-        :param b: frame
         :return: None
         """
-        self.httpd.server_close()
-        print('HTTP Server: Closed.')
-        exit(0)
+        import os
+        self.httpd.shutdown()
+        qs_default_console.print(qs_info_string, 'HTTP Server: Closed.')
+        os._exit(0)

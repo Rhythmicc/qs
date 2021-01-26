@@ -5,6 +5,8 @@
 Some APIs that can be easily implemented
 """
 from . import *
+from .. import qs_default_console, qs_error_string, qs_info_string, qs_warning_string
+import json
 import requests
 
 
@@ -33,7 +35,7 @@ def rmbg(filePath: str):
         with open(img_root + img_name + '_rmbg.png', 'wb') as imgfile:
             imgfile.write(res.content)
     else:
-        print('ERROR:' if user_lang != 'zh' else '错误:', res.status_code, res.text)
+        qs_default_console.log(qs_error_string, res.status_code, res.text)
 
 
 def smms(filePath: str):
@@ -45,13 +47,11 @@ def smms(filePath: str):
     :param filePath: 图片或Markdown文件的路径
     :return: None
     """
+    import os
     from prettytable import PrettyTable
     api_key = pre_check('smms')
 
     def post_img(path: str) -> dict:
-        headers = {
-            'Authorization': api_key,
-        }
         try:
             data = {
                 'smfile': (path.split('/')[-1], open(path, 'rb')),
@@ -59,7 +59,7 @@ def smms(filePath: str):
             }
         except:
             return {}
-        res_json = requests.post('https://sm.ms/api/v2/upload', headers=headers, files=data).text
+        res_json = requests.post('https://sm.ms/api/v2/upload', headers={'Authorization': api_key}, files=data).text
         return json.loads(res_json)
 
     def get_path(rt, rel):
@@ -96,7 +96,7 @@ def smms(filePath: str):
                 ct = ct.replace(raw_path, img_set[aim])
         with open(path, 'w') as fp:
             fp.write(ct)
-        print(res_tb)
+        qs_default_console.print(res_tb)
 
     try:
         is_md = filePath.endswith('.md')
@@ -113,7 +113,7 @@ def smms(filePath: str):
             else:
                 tb.add_row(
                     [filePath.split(dir_char)[-1], res['success'], '' if not res['success'] else res['data']['url']])
-            print(tb)
+            qs_default_console.print(tb)
 
 
 def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
@@ -140,21 +140,25 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
                 try:
                     pyperclip.copy(js['content'])
                 except:
-                    print('Sorry, but your system may not be suppported by `pyperclip`'
-                          if user_lang != 'zh' else
-                          '抱歉，但是“pyperclip”不支持你的系统')
+                    qs_default_console.log(
+                        qs_error_string, 'Sorry, but your system may not be suppported by `pyperclip`'
+                        if user_lang != 'zh' else
+                        '抱歉，但是“pyperclip”不支持你的系统')
                 with open("%s.%s" % (key, js['lang']), 'w') as file:
                     file.write(js['content'])
             else:
-                print(Fore.RED, 'Wrong Password' if password else 'Password is required', Style.RESET_ALL)
+                qs_default_console.log(qs_error_string,
+                                       'Wrong Password' if password else 'Password is required')
         else:
-            print(Fore.RED, 'Unknown error' if user_lang != 'zh' else '未知错误', Style.RESET_ALL)
+            qs_default_console.log(qs_error_string, 'Unknown error' if user_lang != 'zh' else '未知错误')
     else:
         try:
             ss = pyperclip.paste()
         except :
-            path = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
-                         if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
+            from .. import qs_default_input
+            path = qs_default_input.ask(
+                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
             with open(path, 'r') as file:
                 ss = file.read()
         js = {
@@ -167,9 +171,9 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
                           headers={'Content-Type': 'application/json'},
                           json=js)
         if r.status_code == 201:
-            print(json.loads(r.content))
+            qs_default_console.print(json.loads(r.content))
         else:
-            print('post failed' if user_lang != 'zh' else '发送失败')
+            qs_default_console.log(qs_error_string, 'post failed' if user_lang != 'zh' else '发送失败')
 
 
 def imgs_in_url(url: str):
@@ -184,7 +188,7 @@ def imgs_in_url(url: str):
     from .. import headers
     html = requests.get(url, headers=headers)
     if html.status_code != requests.codes.ok:
-        print('Failed')
+        qs_default_console.log(qs_error_string, 'Network Error' if user_lang != 'zh' else '网络错误')
         return
     import re
     from ..ImageTools.ImagePreview import image_preview
@@ -200,9 +204,10 @@ def imgs_in_url(url: str):
     for url in imgs:
         if not url.startswith('http') or url.endswith('svg'):
             continue
-        print('[Link]' if user_lang != 'zh' else '[链接]', url[:100] + ('' if len(url) <= 100 else '...'))
+        qs_default_console.log(
+            qs_info_string, 'Link:' if user_lang != 'zh' else '链接:', url[:100] + ('' if len(url) <= 100 else '...'))
         if system == 'darwin':
             try:
                 image_preview(url, True)
             except Exception as e:
-                print('[Error]' if user_lang != 'zh' else '[错误]', repr(e))
+                qs_default_console.log(qs_error_string, repr(e))

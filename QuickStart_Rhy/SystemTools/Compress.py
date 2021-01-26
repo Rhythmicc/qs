@@ -129,7 +129,7 @@ class _NormalCompressedPackage:
         :return: None
         """
         if self.mode:
-            if self._protocol in [tarfile, rarfile, py7zr]:
+            if self._protocol in [tarfile, rarfile, py7zr, zipfile]:
                 self.src.extractall()
             elif self._protocol in [zipfile]:
                 from pathlib import Path

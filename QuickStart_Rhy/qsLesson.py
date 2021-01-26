@@ -51,9 +51,9 @@ def lesson():
 
     from .func_list import menu_table
     {
-        '1': menu_table['-basic'],
-        '2': menu_table['-system'],
-        '3': menu_table['-net'],
-        '4': menu_table['-api'],
-        '5': menu_table['-image']
+        '1': menu_table['basic'],
+        '2': menu_table['system'],
+        '3': menu_table['net'],
+        '4': menu_table['api'],
+        '5': menu_table['image']
     }[res[0]]()

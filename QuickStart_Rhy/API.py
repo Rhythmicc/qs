@@ -5,7 +5,7 @@
 Call various QS API
 """
 import sys
-from . import user_lang, system
+from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string
 
 
 def remove_bg():
@@ -17,10 +17,14 @@ def remove_bg():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('%s: qs -rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
+        qs_default_console.log(qs_error_string,
+                               '%s: qs rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
+        return
     else:
         if path == '-help':
-            print('%s: qs -rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
+            qs_default_console.print(qs_info_string,
+                                     '%s: qs rmbg <%s>' % (('Usage', 'picture')
+                                                            if user_lang != 'zh' else ('用法', '图像')))
             return
         from .API.SimpleAPI import rmbg
         rmbg(path)
@@ -35,10 +39,19 @@ def smms():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('%s: qs -smms <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
+        qs_default_console.log(
+            qs_error_string,
+            '%s: qs smms <%s>' % (('Usage', 'picture | *.md')
+                                  if user_lang != 'zh' else ('用法', '图像 | *.md'))
+        )
+        return
     else:
         if path == '-help':
-            print('%s: qs -smms <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
+            qs_default_console.print(
+                qs_info_string,
+                '%s: qs smms <%s>' % (('Usage', 'picture | *.md')
+                                      if user_lang != 'zh' else ('用法', '图像 | *.md'))
+            )
             return
         from .API.SimpleAPI import smms
         smms(path)
@@ -53,7 +66,9 @@ def up_img():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('%s: qs -upimg <%s>' % (('Usage', 'picture | *.md') if user_lang != 'zh' else ('用法', '图像 | *.md')))
+        qs_default_console.log(qs_error_string, '%s: qs -upimg <%s>' % (('Usage', 'picture | *.md')
+                                                                        if user_lang != 'zh' else ('用法', '图像 | *.md')))
+        return
     else:
         from .API.alapi import upload_image
         import random
@@ -61,14 +76,17 @@ def up_img():
                     'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米'}
         spt_type_keys = list(spt_type.keys())
         if path == '-help' or path == '-h':
-            print('Usage: qs -upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'
-                  if user_lang != 'zh' else
-                  '用法: qs -upimg <图像 | *.md> [平台]\n\n支持 ([可选平台]: 描述):')
-            print(''.join(['%14s' % '%s: %s%s' % (
+            qs_default_console.print(
+                qs_info_string,
+                'Usage: qs upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'
+                if user_lang != 'zh' else '用法: qs -upimg <图像 | *.md> [平台]\n\n支持 ([可选平台]: 描述):')
+            qs_default_console.print(''.join(['%14s' % '%s: %s%s' % (
                 spt_type_keys[i], spt_type[spt_type_keys[i]], '\t' if (i + 1) % 3 else '\n'
             ) for i in range(len(spt_type_keys))]))
-            print('\n[NOTE] If you do not set platform, qs will randomly choose one.' if user_lang != 'zh' else
-                  '\n[提示] 如果你没有设置平台，qs将随机抽取一个可用平台')
+            qs_default_console.print(
+                qs_info_string,
+                'If you do not set platform, qs will randomly choose one.' if user_lang != 'zh' else
+                '如果你没有设置平台，qs将随机抽取一个可用平台')
             return
         type_map = {}
         for i in spt_type:
@@ -78,7 +96,8 @@ def up_img():
             sys.argv[3] = sys.argv[3].lower()
         upload_image(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
             upload_image(path),
-            print(('No such platform: %s' if user_lang != 'zh' else '没有这个平台: %s') % sys.argv[3]) if argv_len_3 else 1
+            qs_default_console.print(
+                ('No such platform: %s' if user_lang != 'zh' else '没有这个平台: %s') % sys.argv[3]) if argv_len_3 else 1
         )
 
 
@@ -98,18 +117,22 @@ def ali_oss():
         except IndexError:
             bucket = None
     except IndexError:
-        print('qs -alioss:\n'
-              '    -up <file> [bucket]: upload file to bucket\n'
-              '    -dl <file> [bucket]: download file from bucket\n'
-              '    -rm <file> [bucket]: remove file in bucket\n'
-              '    -ls [bucket]       : get file info of bucket') \
-            if user_lang != 'zh' else \
-            print('qs -alioss:\n'
-                  '    -up <文件> [桶]: 上传文件至桶\n'
-                  '    -dl <文件> [桶]: 从桶下载文件\n'
-                  '    -rm <文件> [桶]: 从桶删除文件\n'
-                  '    -ls [桶]       : 获取桶文件信息')
-        exit(0)
+        qs_default_console.print(
+            qs_info_string,
+            'qs alioss:\n'
+            '    -up <file> [bucket]: upload file to bucket\n'
+            '    -dl <file> [bucket]: download file from bucket\n'
+            '    -rm <file> [bucket]: remove file in bucket\n'
+            '    -ls [bucket]       : get file info of bucket'
+        ) if user_lang != 'zh' else qs_default_console.print(
+            qs_info_string,
+            'qs alioss:\n'
+            '    -up <文件> [桶]: 上传文件至桶\n'
+            '    -dl <文件> [桶]: 从桶下载文件\n'
+            '    -rm <文件> [桶]: 从桶删除文件\n'
+            '    -ls [桶]       : 获取桶文件信息'
+        )
+        return
     else:
         from .API.AliCloud import AliyunOSS
         ali_api = AliyunOSS()
@@ -136,20 +159,24 @@ def qiniu():
         except IndexError:
             bucket = None
     except IndexError:
-        print('qs -qiniu:\n'
-              '    -up <file> [bucket]: upload file to bucket\n'
-              '    -dl <file> [bucket]: download file from bucket\n'
-              '    -cp <url > [bucket]: copy file from url\n'
-              '    -rm <file> [bucket]: remove file in bucket\n'
-              '    -ls [bucket]       : get file info of bucket') \
-            if user_lang != 'zh' else \
-            print('qs -qiniu:\n'
-                  '    -up <文件> [桶]: 上传文件至桶\n'
-                  '    -dl <文件> [桶]: 从桶下载文件\n'
-                  '    -cp <链接> [桶]: 从链接下载文件到桶\n'
-                  '    -rm <文件> [桶]: 从桶删除文件\n'
-                  '    -ls [桶]       : 获取桶文件信息')
-        exit(0)
+        qs_default_console.print(
+            qs_info_string,
+            'qs qiniu:\n'
+            '    -up <file> [bucket]: upload file to bucket\n'
+            '    -dl <file> [bucket]: download file from bucket\n'
+            '    -cp <url > [bucket]: copy file from url\n'
+            '    -rm <file> [bucket]: remove file in bucket\n'
+            '    -ls [bucket]       : get file info of bucket'
+        ) if user_lang != 'zh' else qs_default_console.print(
+            qs_info_string,
+            'qs qiniu:\n'
+            '    -up <文件> [桶]: 上传文件至桶\n'
+            '    -dl <文件> [桶]: 从桶下载文件\n'
+            '    -cp <链接> [桶]: 从链接下载文件到桶\n'
+            '    -rm <文件> [桶]: 从桶删除文件\n'
+            '    -ls [桶]       : 获取桶文件信息'
+        )
+        return
     else:
         from .API.QiniuOSS import QiniuOSS
         qiniu_api = QiniuOSS()
@@ -176,18 +203,22 @@ def txcos():
         except IndexError:
             bucket = None
     except IndexError:
-        print('qs -txcos:\n'
-              '    -up <file> [bucket]: upload file to bucket\n'
-              '    -dl <file> [bucket]: download file from bucket\n'
-              '    -rm <file> [bucket]: remove file in bucket\n'
-              '    -ls [bucket]       : get file info of bucket') \
-            if user_lang != 'zh' else \
-            print('qs -txcos:\n'
-                  '    -up <文件> [桶]: 上传文件至桶\n'
-                  '    -dl <文件> [桶]: 从桶下载文件\n'
-                  '    -rm <文件> [桶]: 从桶删除文件\n'
-                  '    -ls [桶]       : 获取桶文件信息')
-        exit(0)
+        qs_default_console.print(
+            qs_info_string,
+            'qs alioss:\n'
+            '    -up <file> [bucket]: upload file to bucket\n'
+            '    -dl <file> [bucket]: download file from bucket\n'
+            '    -rm <file> [bucket]: remove file in bucket\n'
+            '    -ls [bucket]       : get file info of bucket'
+        ) if user_lang != 'zh' else qs_default_console.print(
+            qs_info_string,
+            'qs alioss:\n'
+            '    -up <文件> [桶]: 上传文件至桶\n'
+            '    -dl <文件> [桶]: 从桶下载文件\n'
+            '    -rm <文件> [桶]: 从桶删除文件\n'
+            '    -ls [桶]       : 获取桶文件信息'
+        )
+        return
     else:
         from .API.TencentCloud import TxCOS
         tx_api = TxCOS()
@@ -217,16 +248,19 @@ def translate():
         try:
             content = pyperclip.paste()
         except:
-            content = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content '
-                            'manually: '
-                            if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
+            from . import qs_default_input
+            content = qs_default_input.ask(
+                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
     if content:
         ret = translate(content.replace('\n', ' '))
-        print(ret if ret else 'Translate Failed!')
+        qs_default_console.print(ret) if ret else qs_default_console.log(qs_error_string, 'Translate Failed!')
     else:
-        print("No content in your clipboard or command parameters!"
-              if user_lang != 'zh' else
-              '剪贴板或命令参数没有内容!')
+        qs_default_console.log(
+            qs_warning_string,
+            "No content in your clipboard or command parameters!"
+            if user_lang != 'zh' else
+            '剪贴板或命令参数没有内容!')
 
 
 def weather():
@@ -268,21 +302,22 @@ def weather():
             if user_lang == 'zh':
                 from .API.alapi import translate
                 trans_loaction = translate(simple[0].split('：')[-1])
-                print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
+                qs_default_console.print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
             else:
-                print('Location' + simple[0][simple[0].index(':'):])
+                qs_default_console.print('Location' + simple[0][simple[0].index(':'):])
         simple = simple[2:7]
         print('\n'.join(simple))
     else:
-        print('Error: Get data failed.' if user_lang != 'zh' else '错误: 获取数据失败')
+        qs_default_console.log(qs_error_string, 'Get data failed.' if user_lang != 'zh' else '错误: 获取数据失败')
     if table:
-        print(table[3][:-1])
+        qs_default_console.print(table[3][:-1])
         bottom_line = 7
         try:
             while '╂' not in table[bottom_line]:
                 bottom_line += 1
         except IndexError:
-            exit('Get Weather Data failed!' if user_lang != 'zh' else '获取天气数据失败')
+            qs_default_console.log(qs_error_string, 'Get Weather Data failed!' if user_lang != 'zh' else '获取天气数据失败')
+            return
         for i in table[7:bottom_line + 2]:
             print(i[:-1])
         print('└────────────────────────────────────────────────────────────────────────')
@@ -310,7 +345,8 @@ def largeImage():
     try:
         path = sys.argv[2]
     except IndexError:
-        exit('%s: qs -LG img' % 'Usage' if user_lang != 'zh' else '用法')
+        qs_default_console.log(qs_error_string, '%s: qs LG <img>' % 'Usage' if user_lang != 'zh' else '用法')
+        return
     else:
         from .API.BaiduCloud import ImageDeal
         aip_cli = ImageDeal()
@@ -326,15 +362,17 @@ def AipNLP():
         try:
             ct = [pyperclip.paste()]
         except:
-            ct = [input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
-                        if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')]
+            from . import qs_default_input
+            ct = [qs_default_input.ask(
+                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')]
     NLP = AipNLP()
     for _id, line in enumerate(ct):
         ct[_id] = NLP.get_res(line)
         if _id == 9:
-            print('...')
+            qs_default_console.print('...')
         elif _id < 9:
-            print(ct[_id])
+            qs_default_console.print(ct[_id])
     try:
         pyperclip.copy('\n'.join(ct))
     except:
@@ -352,10 +390,10 @@ def CommonClipboard():
             msg = ' '.join(sys.argv[3:]) if len(sys.argv) > 3 else None
             CommonClipboard().post_msg(msg) if msg else CommonClipboard().post_msg()
     except IndexError:
-        print("Usage:\n  1. qs -sea get\n  2. qs -sea post [msg]"
-              if user_lang != 'zh' else
-              '用法:\n  1. qs -sea get\n  2. qs -sea post [消息]')
-        exit(0)
+        qs_default_console.log(
+            qs_error_string, "Usage:\n  1. qs cb <get>\n  2. qs cb <post> [msg]"
+            if user_lang != 'zh' else '用法:\n  1. qs cb <get>\n  2. qs cb <post> [消息]')
+        return
 
 
 def Pasteme():
@@ -367,10 +405,10 @@ def Pasteme():
         password = sys.argv[4] if len(sys.argv) > 4 else ''
         pasteme(key, password, method)
     except IndexError:
-        print("Usage:\n  1. qs -pasteme get  key [password]\n  2. qs -pasteme post lang [password]"
-              if user_lang != 'zh' else
-              "用法:\n  1. qs -pasteme get  键值 [密码]\n  2. qs -pasteme post 语言 [密码]")
-        exit(0)
+        qs_default_console.log(
+            qs_error_string, "Usage:\n  1. qs pasteme <get> <key> [password]\n  2. qs pasteme <post> <lang> [password]"
+            if user_lang != 'zh' else "用法:\n  1. qs pasteme <get> <键值> [密码]\n  2. qs pasteme <post> <语言> [密码]")
+        return
 
 
 def bili_cover():
@@ -384,14 +422,15 @@ def bili_cover():
         try:
             url = pyperclip.paste()
         except:
-            print('Sorry, but your system may not be suppported by `pyperclip`'
-                  if user_lang != 'zh' else
-                  '抱歉，但是“pyperclip”不支持你的系统')
+            qs_default_console.log(
+                qs_error_string, 'Sorry, but your system may not be suppported by `pyperclip`'
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统')
             return
     if not url:
-        exit('Usage: qs -bcv <url/video code>'
-             if user_lang != 'zh' else
-             '用法: qs -bcv <链接/视频码>')
+        qs_default_console.log(
+            qs_error_string, 'Usage: qs bcv <url | video code>'
+            if user_lang != 'zh' else '用法: qs bcv <链接 | 视频码>')
+        return
     bc(url)
 
 
@@ -399,11 +438,10 @@ def gbc():
     """查询中国垃圾分类（且仅支持中文查询）"""
     from .API.alapi import garbage_classification
     try:
-        print(garbage_classification(sys.argv[2:]))
+        qs_default_console.print(garbage_classification(sys.argv[2:]), justify='center')
     except:
-        exit('Usage: qs -gbc <garbage...>'
-             if user_lang != 'zh' else
-             '用法: qs -gbc <垃圾...>')
+        qs_default_console.print(qs_error_string, 'Usage: qs gbc <garbage...>'
+                                 if user_lang != 'zh' else '用法: qs gbc <垃圾...>')
 
 
 def short_video_info(son_call=False):
@@ -423,12 +461,14 @@ def short_video_info(son_call=False):
             url = pyperclip.paste()
             url = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2})|[/])+', url)[0]
         except:
-            print('Sorry, but your system may not be suppported by `pyperclip`'
-                  if user_lang != 'zh' else
-                  '抱歉，但是“pyperclip”不支持你的系统')
+            qs_default_console.print(
+                qs_error_string, 'Sorry, but your system may not be suppported by `pyperclip`'
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统')
             return
     if not url:
-        exit('Usage: qs -svi <url/video code>' if not son_call else 'Usage: qs -svd <url/video code>')
+        qs_default_console.print(
+            qs_error_string, 'Usage: qs svi <url/video code>' if not son_call else 'Usage: qs svd <url/video code>')
+        return
     output_prefix = {
         'title': 'Title ' if user_lang != 'zh' else '标题',
         'video': 'Video ' if user_lang != 'zh' else '视频',
@@ -437,18 +477,18 @@ def short_video_info(son_call=False):
     }
     status, res = short_video_info(url.strip('/'))
     if not status:
-        print(res['title'] + ':' + res['source'])
+        qs_default_console.print(qs_info_string, res['title'] + ':' + res['source'])
         return status
-    print('[{}] {}'.format(output_prefix['title'], res['title']))
-    sz = int(get_fileinfo(res['video_url'])[-1].headers['Content-Length']) if not son_call else -1
-    print('[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--', res['video_url']))
-    sz = int(get_fileinfo(res['cover_url'])[-1].headers['Content-Length'])
-    print('\n[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
+    qs_default_console.print(qs_info_string, '[{}] {}'.format(output_prefix['title'], res['title']))
+    sz = int(get_fileinfo(res['video_url'])[-1].headers['content-length']) if not son_call else -1
+    qs_default_console.print(qs_info_string, '[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--', res['video_url']))
+    sz = int(get_fileinfo(res['cover_url'])[-1].headers['content-length'])
+    qs_default_console.print(qs_info_string, '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
     if system == 'darwin':
         from .ImageTools.ImagePreview import image_preview
         image_preview(res['cover_url'], True)
     if 'source' in res and res['source']:
-        print('\n[{}] {}'.format(output_prefix['source'], res['source']))
+        qs_default_console.print(qs_info_string, '[{}] {}'.format(output_prefix['source'], res['source']))
     return res
 
 
@@ -465,9 +505,8 @@ def short_video_dl():
     from . import remove
     res = short_video_info(son_call=True)
 
-    print()
     if not res:
-        print('Download failed' if user_lang != 'zh' else '下载失败')
+        qs_default_console.print(qs_error_string, 'Download failed' if user_lang != 'zh' else '下载失败')
         return
     normal_dl(res['video_url'], set_name=res['title'])
     tomp4(res['title'])
@@ -485,11 +524,10 @@ def acg():
     from .API.alapi import acg
 
     status, acg_link, width, height = acg()
-    print("[%s] %s" % ('链接' if status else '错误', acg_link)) \
-        if user_lang == 'zh' else \
-        print("[%s] %s" % ('LINK' if status else 'ERROR', acg_link))
+    qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
+        if status else qs_default_console.log(qs_error_string, acg_link)
     if status:
-        print('[尺寸]' if user_lang == 'zh' else '[SIZE]', width, '×', height)
+        qs_default_console.print(qs_info_string, '尺寸:' if user_lang == 'zh' else 'SIZE:', width, '×', height)
         if 'save' in sys.argv[2:]:
             from .NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
@@ -509,11 +547,10 @@ def bingImg():
     from .API.alapi import bingImg
 
     status, acg_link, cprt = bingImg()
-    print("[%s] %s" % ('链接' if status else '错误', acg_link)) \
-        if user_lang == 'zh' else \
-        print("[%s] %s" % ('LINK' if status else 'ERROR', acg_link))
+    qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
+        if status else qs_default_console.log(qs_error_string, acg_link)
     if status:
-        print('[版权]' if user_lang == 'zh' else '[CPRT]', cprt)
+        qs_default_console.print(qs_info_string, '版权:' if user_lang == 'zh' else 'CPRT:', cprt)
         if 'save' in sys.argv[2:]:
             from .NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
@@ -540,20 +577,34 @@ def kdCheck():
 
     status, code, msg = kdCheck(sys.argv[2])
     if not status:
-        print(msg)
+        qs_default_console.log(qs_error_string, msg)
         return
 
-    from rich.console import Console
+    from . import table_cell
     from rich.table import Table
     from rich.text import Text
     from rich import box
 
-    console = Console()
-    tb = Table(show_edge=False, show_header=True, expand=False, row_styles=["none", "dim"], box=box.SIMPLE)
-    tb.add_column("Time" if user_lang != 'zh' else '时间', no_wrap=True, justify="center", style="bold cyan")
-    tb.add_column("Description" if user_lang != 'zh' else '描述', justify="center")
-    tb.title = 'Result: ' + ['Unknown', 'Not Send', 'In transit', 'Signed receipt'][code] \
-        if user_lang != 'zh' else '快递查询结果: ' + ['未知', '未发出', '运输中', '已签收'][code]
-    for info in msg:
-        tb.add_row(info['time'], Text(info['content'], justify='left'))
-    console.print(tb)
+    width = qs_default_console.width // 2 - 4
+    tb = Table(show_edge=False, show_header=True, expand=False, row_styles=["none", "dim"], box=box.SIMPLE_HEAVY)
+    tb.add_column("Time" if user_lang != 'zh' else '时间', justify="center", style="bold cyan")
+    tb.add_column("Description" if user_lang != 'zh' else '描述', justify="center", no_wrap=False)
+    tb.add_column("Status" if user_lang != 'zh' else '状态', justify="center")
+    tb.title = [
+        '[bold underline red]Unknown:heavy_exclamation_mark:', '[bold underline yellow]In transit:airplane:',
+        '[bold underline green]In delivery:delivery_truck:', '[bold underline bold green]Signed receipt:hearts:'
+    ][code] if user_lang != 'zh' else [
+        '[bold underline red]未知:heavy_exclamation_mark:', '[bold underline yellow]运输中:airplane:',
+        '[bold underline green]派送中:delivery_truck:', '[bold underline magenta]已签收:hearts:'
+    ][code]
+    for info in msg[:-1] if code != 3 else msg:
+        tb.add_row(
+            info['time'], Text(' '.join(table_cell(info['content'], width)), justify='left')
+            , '[green]:heavy_check_mark:'
+        )
+    if code != 3:
+        tb.add_row(
+            msg[-1]['time'], Text(' '.join(table_cell(msg[-1]['content'], width)), justify='left')
+            , '[bold yellow]:arrow_left:'
+        )
+    qs_default_console.print(tb, justify="center")

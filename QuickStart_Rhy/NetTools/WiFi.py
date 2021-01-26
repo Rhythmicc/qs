@@ -6,7 +6,7 @@ The WiFi module of QS helps to connect WiFi, but does not support the automatic 
 """
 import time
 from pywifi import const, PyWiFi
-from .. import user_lang
+from .. import user_lang, qs_default_console, qs_error_string
 
 
 class WiFi:
@@ -56,14 +56,16 @@ class WiFi:
         """
         num = len(self.ifaces)
         if num <= 0:
-            print("There is no recognizable network card interface" if user_lang != 'zh' else '没有可识别的网卡接口')
+            qs_default_console.log(
+                qs_error_string, "There is no recognizable network card interface"
+                if user_lang != 'zh' else '没有可识别的网卡接口')
             return
         elif num != 1:
-            from prettytable import PrettyTable
-            table = PrettyTable(['id', 'interface'] if user_lang != 'zh' else ['序号', '网卡'])
+            from rich.table import Table
+            table = Table(*(['id', 'interface'] if user_lang != 'zh' else ['序号', '网卡']))
             for i, w in enumerate(self.ifaces):
-                table.add_row([i, w.name()])
-            print(table)
+                table.add_row(str(i), w.name())
+            qs_default_console.print(table)
             while True:
                 iface_no = input('请选择网卡接口序号: ' if user_lang != 'zh' else 'Select interface by id: ')
                 try:
@@ -74,7 +76,7 @@ class WiFi:
                 except:
                     continue
         else:
-            print('{}: {}'.format('Only one' if user_lang != 'zh' else '仅有可用', self.iface.name()))
+            qs_default_console.print(f"{'Only one' if user_lang != 'zh' else '仅有可用'}: {self.iface.name()}")
 
     def conn(self, ssid, password):
         """

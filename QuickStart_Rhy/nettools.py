@@ -49,14 +49,15 @@ def download():
     Qs download engine, use --video or -v use the default video download engine download
     """
     if any([i in sys.argv for i in ['-h', '-help', '--help']]):
-        from . import user_lang
-        print('Usage: qs -dl [url...]\n'
-              '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
-              '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc'
-              if user_lang != 'zh' else
-              '使用: qs -dl [链接...]\n'
-              '  [--video] | [-v]  :-> 使用youtube-dl下载视频\n'
-              '  [--proxy] | ]-px] :-> 使用配置表中的默认代理下载')
+        from . import user_lang, qs_default_console, qs_error_string
+        qs_default_console.print(
+            qs_error_string, 'Usage: qs dl [url...]\n'
+            '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
+            '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc'
+            if user_lang != 'zh' else
+            '使用: qs -dl [链接...]\n'
+            '  [--video] | [-v]  :-> 使用youtube-dl下载视频\n'
+            '  [--proxy] | [-px] :-> 使用配置表中的默认代理下载')
         return
     global _real_main
     ytb_flag = '--video' in sys.argv or '-v' in sys.argv
@@ -83,7 +84,8 @@ def download():
                 else:
                     normal_dl(url) if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'])
     else:
-        print("No url found!")
+        from . import user_lang, qs_default_console, qs_error_string
+        qs_default_console.log(qs_error_string, "No url found!" if user_lang != 'zh' else '无链接输入')
 
 
 def http():
@@ -102,7 +104,7 @@ def http():
                 from .NetTools import formatUrl
                 url = formatUrl(url)
             except IndexError:
-                print('Usage: qs -ftp ip:port -bind url')
+                print('Usage: qs ftp ip:port -bind url')
                 exit(0)
     else:
         from .NetTools import get_ip
@@ -122,29 +124,38 @@ def netinfo():
     """
     import socket
     import pyperclip
-    import prettytable
     import urllib.parse
-    from . import user_lang
+    from . import user_lang, qs_default_console, qs_error_string
     from .API.alapi import ip_info
 
     def print_ip_info(info_ls):
-        table = prettytable.PrettyTable(
-            ['ip', '运营商', '地址', '经纬'] if user_lang == 'zh' else ['ip', 'isp', 'pos', 'location']
+        from rich.table import Table, Column
+        from rich import box
+
+        table = Table(
+            *([
+                  Column('ip', justify='center', style='bold magenta'), Column('运营商', justify='center'),
+                  Column('地址', justify='center'), Column('经纬', justify='center')]
+              if user_lang == 'zh' else [
+                  Column('ip', justify='center', style='bold magenta'), Column('isp', justify='center'),
+                  Column('pos', justify='center'), Column('location', justify='center')
+            ]), row_styles=['none', 'dim'], show_edge=False, box=box.SIMPLE
         )
         for info in info_ls:
-            table.add_row([info['ip'],
-                           info['isp'].strip() if 'isp' in info else '未知', info['pos'],
-                           str(info['location'])[1:-1].replace("'", '')])
-        print(table)
+            table.add_row(info['ip'],
+                          info['isp'].strip() if 'isp' in info else '未知', info['pos'],
+                          str(info['location'])[1:-1].replace("'", ''))
+        qs_default_console.print(table, justify="center")
 
     urls = sys.argv[2:] if len(sys.argv) > 2 else []
     if not urls:
         try:
             urls += pyperclip.paste().strip().split() if not urls else []
         except :
-            urls = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
-                         if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')\
-                .strip().split()
+            urls = qs_default_console.ask(
+                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:'
+            ).strip().split()
     if not urls:
         urls.append('me')
     res_ls = []
@@ -160,7 +171,7 @@ def netinfo():
                     addr = socket.getaddrinfo(addr if addr else i, 'http')[0][-1][0]
             res_ls.append(ip_info(addr))
         except:
-            print('[ERROR] Get domain failed:', i)
+            qs_default_console.print(qs_error_string, 'Get domain failed:', i)
             continue
     print_ip_info(res_ls)
 

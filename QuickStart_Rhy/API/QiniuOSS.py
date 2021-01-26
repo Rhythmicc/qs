@@ -115,7 +115,10 @@ class QiniuOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        from prettytable import PrettyTable
+        from .. import qs_default_console, qs_info_string
+        from rich.table import Table, Column
+        from rich.text import Text
+        from rich.box import SIMPLE
         bk = QiniuOSS.qiniu.BucketManager(self.auth)
         ret = bk.list(bucket if bucket else self.df_bucket)
         if not ret[1]:
@@ -124,11 +127,16 @@ class QiniuOSS:
         root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
         ret = ret[0]['items']
         from ..NetTools.NormalDL import size_format
-        tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
+        tb = Table(
+            *([Column('File', justify="center"), Column('Size', justify="center")]
+              if user_lang != 'zh' else
+              [Column('文件', justify="center"), Column('体积', justify="center")])
+            , show_edge=False, row_styles=['none', 'dim'], box=SIMPLE, title='[bold underline]七牛 OSS'
+        )
         for i in ret:
-            tb.add_row([i['key'], size_format(i['fsize'], True)])
-        print("Bucket url:" if user_lang != 'zh' else '桶链接:', root_url)
-        print(tb)
+            tb.add_row(Text(i['key'], justify="left"), Text(size_format(i['fsize'], True), justify='right'))
+        qs_default_console.print(qs_info_string, "Bucket url:" if user_lang != 'zh' else '桶链接:', root_url)
+        qs_default_console.print(tb, justify="center")
 
     def download(self, filePath: str, bucket: str = None):
         """

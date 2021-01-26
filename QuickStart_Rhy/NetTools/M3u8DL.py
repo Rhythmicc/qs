@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, wait
 import requests
 import os
 import queue
-from .. import dir_char, remove, headers, user_lang
+from .. import dir_char, remove, headers, user_lang, qs_default_console, qs_error_string, qs_info_string
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -33,13 +33,8 @@ def merge_file(path, ts_ls, name):
 
 
 class M3U8DL:
-    from rich.console import Console
     from rich.progress import Progress, TimeRemainingColumn, TextColumn, BarColumn
 
-    info_string = '[bold cyan][INFO]' if user_lang != 'zh' else '[bold cyan][信息]'
-    warn_string = '[bold yellow][WARNING]' if user_lang != 'zh' else '[bold yellow][警告]'
-    erro_string = '[bold red][ERROR]' if user_lang != 'zh' else '[bold red][错误]'
-    console = Console()
     proxies = {}
 
     def __init__(self, target, name, proxy: str = ''):
@@ -68,7 +63,7 @@ class M3U8DL:
             "[progress.percentage]{task.percentage:>3.1f}%",
             "•",
             M3U8DL.TimeRemainingColumn(),
-            console=M3U8DL.console
+            console=qs_default_console
         )
         self.dl_id = self.main_progress.add_task("Download", taskName='Downloading' if user_lang != 'zh' else '下载中')
 
@@ -92,7 +87,7 @@ class M3U8DL:
                         f.flush()
             self.main_progress.advance(self.dl_id, 1)
         except Exception as e:
-            M3U8DL.console.log(M3U8DL.erro_string, repr(e))
+            qs_default_console.log(qs_error_string, repr(e))
             self.job_queue.put(job)
 
     def download(self):
@@ -109,7 +104,7 @@ class M3U8DL:
         try:
             all_content = requests.get(target, verify=False, headers=headers, proxies=M3U8DL.proxies).text
         except Exception as e:
-            M3U8DL.console.log(M3U8DL.erro_string, repr(e))
+            qs_default_console.log(qs_error_string, repr(e))
             return
         if "#EXTM3U" not in all_content:
             raise BaseException("Not M3U8 Link" if user_lang != 'zh' else "非M3U8的链接")
@@ -144,7 +139,7 @@ class M3U8DL:
             wait(cur_work)
         self.main_progress.stop()
 
-        M3U8DL.console.log(M3U8DL.info_string, "Download completed! Start merge.."
-                           if user_lang != 'zh' else '下载完成! 开始合并..')
+        qs_default_console.print(qs_info_string, "Download completed! Start merge.."
+                                 if user_lang != 'zh' else '下载完成! 开始合并..')
         merge_file(download_path, tmp, self.name)
         remove(download_path)

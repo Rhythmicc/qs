@@ -101,17 +101,25 @@ class TxCOS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
+        from .. import qs_default_console, qs_info_string
         from ..NetTools.NormalDL import size_format
-        from prettytable import PrettyTable
+        from rich.table import Table, Column
+        from rich.box import SIMPLE
+        from rich.text import Text
         bucket = bucket if bucket else self.df_bucket
         ls = self.client.list_objects(Bucket=bucket)['Contents']
-        tb = PrettyTable(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'])
+        tb = Table(
+            *([Column('File', justify="center"), Column('Size', justify="center")]
+              if user_lang != 'zh' else
+              [Column('文件', justify="center"), Column('体积', justify="center")])
+            , show_edge=False, row_styles=['none', 'dim'], box=SIMPLE, title='[bold underline]Tencnet COS'
+        )
         for obj in ls:
-            tb.add_row([obj['Key'], size_format(int(obj['Size']), align=True)])
-        print('Bucket Url:' if user_lang != 'zh' else '桶链接:',
-              self.cdn_url if bucket == self.df_bucket and self.cdn_url else
-              'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/')
-        print(tb)
+            tb.add_row(Text(obj['Key'], justify='left'), Text(size_format(int(obj['Size']), align=True), justify='right'))
+        qs_default_console.print(qs_info_string, 'Bucket Url:' if user_lang != 'zh' else '桶链接:',
+                                 self.cdn_url if bucket == self.df_bucket and self.cdn_url else
+                                 'https://' + bucket + '.cos.' + self.region + '.myqcloud.com/')
+        qs_default_console.print(tb, justify="center")
 
 
 class Translate:

@@ -8,7 +8,8 @@ Docs:
 import os
 import sys
 import json
-
+from rich.console import Console
+from rich.prompt import Prompt as qs_default_input
 
 name = 'QuickStart_Rhy'
 headers = {
@@ -31,6 +32,27 @@ else:
 user_lang = qs_config['basic_settings']['default_language']
 trans_engine = qs_config['basic_settings']['default_translate_engine']['support']
 trans_engine = trans_engine[qs_config['basic_settings']['default_translate_engine']['index']]
+qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
+qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
+qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
+qs_default_console = Console()
+
+
+def cut_string(string: str, length: int) -> list:
+    """
+    每隔l个字符切分字符串
+
+    :param string: 字符串
+    :param length: 切分长度
+    :return: 切分后产生的list
+    """
+    return [string[i: i + length] for i in range(0, len(string), length)]
+
+
+def table_cell(string: str, length: int) -> list:
+    if ' ' not in string and '\n' not in string:
+        return cut_string(string, length)
+    return [string]
 
 
 def deal_ctrl_c(signum, frame):
@@ -84,7 +106,7 @@ def cur_time():
     import time
     tm = time.strftime('%Y年%m月%d日 %A %H:%M:%S', time.localtime(time.time())).split()
     tm[1] = week[tm[1]]
-    print(' '.join(tm))
+    qs_default_console.print(qs_info_string, ' '.join(tm))
 
 
 def u():
@@ -106,8 +128,10 @@ def u():
         try:
             url = pyperclip.paste()
         except :
-            url = input('Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
-                        if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
+            url = qs_default_input.ask(
+                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
+                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:'
+                , console=qs_default_console)
         wb.open_new_tab(formatUrl(url))
 
 
@@ -122,7 +146,7 @@ def open_app():
     if system == 'darwin':
         os.system('open -a ' + ' '.join(sys.argv[2:]))
     else:
-        print('"-a" is only support Mac OS X')
+        qs_default_console.print(qs_error_string, '"-a" is only support Mac OS X')
 
 
 def open_file(argv=None):
@@ -164,6 +188,7 @@ def calculate():
     """
     try:
         exp = ' '.join(sys.argv[2:])
-        print('%s = %s' % (exp, eval(exp)))
+        qs_default_console.print('%s = %s' % (exp, eval(exp)))
     except Exception as e:
-        exit('[ERROR] %s' % repr(e))
+        qs_default_console.log(qs_error_string, repr(e))
+        exit(repr(e))
