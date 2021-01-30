@@ -99,7 +99,7 @@ def cur_time():
         'Tuesday': '周二',
         'Wednesday': '周三',
         'Thursday': '周四',
-        'Friday': '`周五',
+        'Friday': '周五',
         'Saturday': '周六',
         'Sunday': '周日'
     }
@@ -189,6 +189,5 @@ def calculate():
     try:
         exp = ' '.join(sys.argv[2:])
         qs_default_console.print('%s = %s' % (exp, eval(exp)))
-    except Exception as e:
-        qs_default_console.log(qs_error_string, repr(e))
-        exit(repr(e))
+    except:
+        qs_default_console.log(qs_error_string, 'Usage: qs cal <exp like "1+1">')

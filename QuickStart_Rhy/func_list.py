@@ -115,10 +115,11 @@ def api_menu():
     qs gbc <garbage...>      :-> check Chinese garbage classification
     qs svi <url>             :-> get short video info
     qs svd <url>             :-> download short video info as mp4
-    qs acg  [save]           :-> get an acg image link (or save)
-    qs bing [save]           :-> get an bing image link (or save)
+    qs acg  [-save]          :-> get an acg image link (or save)
+    qs bing [-save]          :-> get an bing image link (or save)
     qs phi <url>             :-> get <image url> in url (preview on Mac)
-    qs kd <courier number>   :-> Query China express"""))\
+    qs kd <courier number>   :-> Query China express
+    qs loli [-save] [-p]     :-> get and loli image link [or save (use default proxy)]"""))\
         if user_lang != 'zh' else print(color_rep("""API工具:
     qs trans [content]       :-> 翻译命令参数或剪切板中的内容
     qs rmbg <img>            :-> 移除图片背景
@@ -136,10 +137,11 @@ def api_menu():
     qs gbc <garbage...>      :-> 查询垃圾分类
     qs svi <url>             :-> 获取多平台短视频信息
     qs svd <url>             :-> 下载多平台短视频为mp4
-    qs acg  [save]           :-> 获取一张acg图片链接（或保存）
-    qs bing [save]           :-> 获取一张bing图片链接（或保存）
+    qs acg  [-save]          :-> 获取一张acg图片链接 (或保存)
+    qs bing [-save]          :-> 获取一张bing图片链接 (或保存)
     qs phi <url>             :-> 获取url里的图片链接 (Mac上iTerm可预览)
-    qs kd <courier number>   :-> 查询国内快递"""))
+    qs kd <courier number>   :-> 查询国内快递
+    qs loli [-save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]"""))
 
 
 def image_menu():
@@ -227,7 +229,8 @@ api_funcs = {
     'acg': 'acg',
     'bing': 'bingImg',
     'phi': 'preview_html_images',
-    'kd': 'kdCheck'
+    'kd': 'kdCheck',
+    'loli': 'loli'
 }
 
 image_funcs = {

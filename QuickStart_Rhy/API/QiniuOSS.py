@@ -56,8 +56,9 @@ class QiniuOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
-        tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath.split(dir_char)[-1])
-        QiniuOSS.qiniu.put_file(tk, filePath.split(dir_char)[-1], filePath)
+        filePath = filePath.strip()
+        tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath)
+        QiniuOSS.qiniu.put_file(tk, filePath.replace(dir_char, '/'), filePath)
 
     def remove(self, filePath: str, bucket: str = None):
         """

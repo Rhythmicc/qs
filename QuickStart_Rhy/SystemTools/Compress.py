@@ -129,7 +129,7 @@ class _NormalCompressedPackage:
         :return: None
         """
         if self.mode:
-            if self._protocol in [tarfile, rarfile, py7zr, zipfile]:
+            if self._protocol in [tarfile, rarfile, py7zr]:
                 self.src.extractall()
             elif self._protocol in [zipfile]:
                 from pathlib import Path
@@ -175,6 +175,7 @@ class Tar(_NormalCompressedPackage):
         :param path: 文件路径
         :return: None
         """
+        return super().add_file(path)
 
     def extract(self):
         """
@@ -184,9 +185,11 @@ class Tar(_NormalCompressedPackage):
 
         :return: None
         """
+        return super().extract()
 
     def save(self):
         """保存 | save"""
+        return super().save()
 
 
 class Zip(_NormalCompressedPackage):

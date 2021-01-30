@@ -99,7 +99,8 @@ def main(rt_dir: str) -> dict:
     "AipNlpAPP_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "commonClipboardFilePath": "GET: /Path/to/file",
-    "alapi_token": "GET: https://user.alapi.cn/"
+    "alapi_token": "GET: https://user.alapi.cn/",
+    "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey"
   }
 }
 """)

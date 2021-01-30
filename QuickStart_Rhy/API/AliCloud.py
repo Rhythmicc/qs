@@ -57,7 +57,8 @@ class AliyunOSS:
         """
         bucket = bucket if bucket else self.df_bucket
         bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
-        oss2.resumable_upload(bucket, filePath.split(dir_char)[-1], filePath, num_threads=4)
+        filePath = filePath.strip()
+        oss2.resumable_upload(bucket, filePath.replace(dir_char, '/'), filePath, num_threads=4)
 
     def download(self, filename: str, bucket: str = None):
         """

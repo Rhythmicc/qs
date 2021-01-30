@@ -48,8 +48,12 @@ def smms(filePath: str):
     :return: None
     """
     import os
-    from prettytable import PrettyTable
+    from rich.table import Table, Column
+    from rich.text import Text
+    from rich.box import SIMPLE
+
     api_key = pre_check('smms')
+    res_tb = Table(*(['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']))
 
     def post_img(path: str) -> dict:
         try:
@@ -69,8 +73,6 @@ def smms(filePath: str):
         import re
         _user_path = os.path.expanduser('~')
         rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
-        res_tb = PrettyTable()
-        res_tb.field_names = ['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']
         img_set = {}
         with open(path, 'r') as fp:
             ct = fp.read()
@@ -82,12 +84,12 @@ def smms(filePath: str):
             if aim not in img_set:
                 res_dict = post_img(aim)
                 if not res_dict:
-                    res_tb.add_row([aim.split(dir_char)[-1], 'No File', ''])
+                    res_tb.add_row(aim.split(dir_char)[-1], 'No File', '')
                     img_set[aim] = False
                 else:
                     res_tb.add_row(
-                        [aim.split(dir_char)[-1], res_dict['success'],
-                         res_dict['message'] if not res_dict['success'] else res_dict['data']['url']]
+                        aim.split(dir_char)[-1], res_dict['success'],
+                        res_dict['message'] if not res_dict['success'] else res_dict['data']['url']
                     )
                     if not res_dict['success'] and res_dict['code'] == 'unauthorized':
                         break
@@ -96,7 +98,7 @@ def smms(filePath: str):
                 ct = ct.replace(raw_path, img_set[aim])
         with open(path, 'w') as fp:
             fp.write(ct)
-        qs_default_console.print(res_tb)
+        qs_default_console.print(res_tb, justify="center")
 
     try:
         is_md = filePath.endswith('.md')
@@ -107,13 +109,12 @@ def smms(filePath: str):
             format_markdown(filePath)
         else:
             res = post_img(filePath)
-            tb = PrettyTable(['File', 'Status', 'url'])
             if not res:
-                tb.add_row([filePath.split(dir_char)[-1], 'No File', ''])
+                res_tb.add_row(filePath.split(dir_char)[-1], 'No File', '')
             else:
-                tb.add_row(
-                    [filePath.split(dir_char)[-1], res['success'], '' if not res['success'] else res['data']['url']])
-            qs_default_console.print(tb)
+                res_tb.add_row(
+                    filePath.split(dir_char)[-1], res['success'], '' if not res['success'] else res['data']['url'])
+            qs_default_console.print(res_tb, justify="center")
 
 
 def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
@@ -128,12 +129,11 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
     :return: None
     """
     import pyperclip
-    from colorama import Fore, Style
     if mode == 'get':
         if password:
-            r = requests.get('https://api.pasteme.cn/%s,%s' % (key, password), params={'json': True})
+            r = requests.get(f'https://api.pasteme.cn/{key},{password}', params={'json': True})
         else:
-            r = requests.get('https://api.pasteme.cn/%s' % key, params={'json': True})
+            r = requests.get(f'https://api.pasteme.cn/{key}', params={'json': True})
         if r.status_code == requests.codes.ok:
             js = json.loads(r.content)
             if js['status'] == 200:
@@ -173,7 +173,7 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
         if r.status_code == 201:
             qs_default_console.print(json.loads(r.content))
         else:
-            qs_default_console.log(qs_error_string, 'post failed' if user_lang != 'zh' else '发送失败')
+            qs_default_console.print(qs_error_string, 'post failed' if user_lang != 'zh' else '发送失败')
 
 
 def imgs_in_url(url: str):

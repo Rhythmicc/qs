@@ -528,12 +528,12 @@ def acg():
         if status else qs_default_console.log(qs_error_string, acg_link)
     if status:
         qs_default_console.print(qs_info_string, '尺寸:' if user_lang == 'zh' else 'SIZE:', width, '×', height)
-        if 'save' in sys.argv[2:]:
+        if '-save' in sys.argv[2:]:
             from .NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
         if system == 'darwin':  # Only support iTerm for Mac OS X
             from .ImageTools.ImagePreview import image_preview
-            image_preview(open(acg_link.split('/')[-1]) if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
+            image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link, '-save' not in sys.argv[2:])
 
 
 def bingImg():
@@ -551,12 +551,12 @@ def bingImg():
         if status else qs_default_console.log(qs_error_string, acg_link)
     if status:
         qs_default_console.print(qs_info_string, '版权:' if user_lang == 'zh' else 'CPRT:', cprt)
-        if 'save' in sys.argv[2:]:
+        if '-save' in sys.argv[2:]:
             from .NetTools.NormalDL import normal_dl
             normal_dl(acg_link)
         if system == 'darwin':  # Only support iTerm for Mac OS X
             from .ImageTools.ImagePreview import image_preview
-            image_preview(open(acg_link.split('/')[-1]) if 'save' in sys.argv[2:] else acg_link, 'save' not in sys.argv[2:])
+            image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link, '-save' not in sys.argv[2:])
 
 
 def preview_html_images():
@@ -573,6 +573,13 @@ def preview_html_images():
 
 
 def kdCheck():
+    """
+    查国内快递
+
+    Check domestic express
+
+    :return:
+    """
     from .API.alapi import kdCheck
 
     status, code, msg = kdCheck(sys.argv[2])
@@ -608,3 +615,41 @@ def kdCheck():
             , '[bold yellow]:arrow_left:'
         )
     qs_default_console.print(tb, justify="center")
+
+
+def loli():
+    """
+    获取一张"可爱"萝莉图的URL，Mac+iTerm2下可在终端预览
+
+    Get the URL of a "cute" Lori map, which can be previewed on the terminal under MAC + iterm2
+
+    :return:
+    """
+    from .API.Lolicon import loli_img
+    from .ImageTools import ImagePreview
+    from .NetTools import NormalDL
+
+    status, msg, data = loli_img()
+    if not status:
+        qs_default_console.print(qs_error_string, msg)
+        return
+
+    save_flag = '-save' in sys.argv
+    proxy = ''
+
+    if '-p' in sys.argv:
+        from . import qs_config
+        proxy = qs_config['basic_settings']['default_proxy']
+
+    for img in data:
+        qs_default_console.print(f'[bold underline]{img["title"]} [dim]{img["author"]}', justify="center")
+        qs_default_console.print(qs_info_string, '[bold]link' if user_lang != 'zh' else '[bold]链接', img['url'])
+        qs_default_console.print(qs_info_string, '[bold]size' if user_lang != 'zh' else '[bold]尺寸',
+                                 img['width'], 'x', img['height'])
+        if save_flag:
+            NormalDL.normal_dl(img['url'], set_proxy=proxy, set_referer='https://i.pximg.net')
+        if system == 'darwin':
+            ImagePreview.image_preview(img['url'].split('/')[-1] if save_flag else img['url'], not save_flag
+                                       , set_proxy=proxy, set_referer='https://i.pximg.net')
+
+        qs_default_console.print('-' * (qs_default_console.width // 4 * 3), justify='center')

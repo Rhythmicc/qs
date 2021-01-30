@@ -58,8 +58,8 @@ class TxCOS:
         :return: None
         """
         bucket = bucket if bucket else self.df_bucket
-        filename = filePath.split(dir_char)[-1]
-        self.client.upload_file(Bucket=bucket, LocalFilePath=filePath, Key=filename)
+        filename = filePath.strip()
+        self.client.upload_file(Bucket=bucket, LocalFilePath=filename, Key=filename.replace(dir_char, '/'))
 
     def download(self, filename: str, bucket: str = None):
         """

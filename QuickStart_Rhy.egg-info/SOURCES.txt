@@ -22,6 +22,7 @@ QuickStart_Rhy/API/BaiduCloud.py
 QuickStart_Rhy/API/CommonClipboard.py
 QuickStart_Rhy/API/IPinfo.py
 QuickStart_Rhy/API/IpInfo.py
+QuickStart_Rhy/API/Lolicon.py
 QuickStart_Rhy/API/QiniuOSS.py
 QuickStart_Rhy/API/SimpleAPI.py
 QuickStart_Rhy/API/TencentCloud.py

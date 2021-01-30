@@ -10,7 +10,7 @@ Author: RhythmLian (https://rhythmlian.cn)
 from . import size_format, get_fileinfo
 from concurrent.futures import ThreadPoolExecutor, wait
 from ..ThreadTools import FileWriters
-from .. import user_lang, qs_default_console, qs_error_string, qs_info_string, qs_warning_string
+from .. import user_lang, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, headers
 from threading import Lock
 from requests import get
 import psutil
@@ -50,9 +50,9 @@ class Downloader:
         TimeRemainingColumn,
         Progress,
     )
-    proxies = {}
 
-    def __init__(self, url: str, num: int, set_name: str = '', proxy: str = '', output_error: bool = False):
+    def __init__(self, url: str, num: int, name: str = '', proxy: str = '',
+                 referer: str = '', output_error: bool = False):
         """
         qs普通文件下载引擎
 
@@ -62,28 +62,32 @@ class Downloader:
         :param num: 线程数量
         """
         signal.signal(signal.SIGINT, self._kill_self)
-        self.has_ctrl = False
-        self.url = url
-        self.num = num
-        self.fileLock = Lock()
-        self.url, self.name, r = get_fileinfo(url, proxy)
+        info_flag = True
+        self.url, self.num, self.fileLock, self.output_error, self.proxies = url, num, Lock(), output_error, {}
+        self.url, self.name, r = get_fileinfo(url, proxy, referer)
         if not (self.url and self.name and r):
+            info_flag = False
             qs_default_console.print(qs_warning_string, 'Get File information failed, please check network!'
                                      if user_lang != 'zh' else '获取文件信息失败，请检查网络!')
         if self.name and '.' not in self.name:
             self.name = self.name = os.path.basename(url)
-        if set_name:
-            self.name = set_name
+        if name:
+            self.name = name
         if proxy:
-            Downloader.proxies = {
+            self.proxies = {
                 'http': 'http://'+proxy,
                 'https': 'https://'+proxy
             }
-        self.output_error = output_error
+        self.headers = headers
+        if referer:
+            self.headers['Referer'] = referer
         if not self.url:
-            qs_default_console.print(qs_error_string, 'Connection Error!' if user_lang != 'zh' else '连接失败!')
+            qs_default_console.print(qs_error_string, self.name)
             raise Exception('Connection Error!' if user_lang != 'zh' else '连接失败!')
+
         try:
+            if not info_flag:
+                raise KeyError
             self.size = int(r.headers['content-length'])
             self.main_progress = Downloader.Progress(
                 Downloader.TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
@@ -166,8 +170,9 @@ class Downloader:
         """
         try:
             _sz = min(start + self.fileBlock, self.size - 1)
-            headers = {'Range': 'bytes={}-{}'.format(start, _sz)}
-            r = get(self.url, headers=headers, timeout=50, proxies=Downloader.proxies)
+            _headers = self.headers.copy()
+            _headers['Range'] = 'bytes={}-{}'.format(start, _sz)
+            r = get(self.url, headers=_headers, timeout=50, proxies=self.proxies)
             self.writers.new_job(r.content, start)
         except Exception as e:
             msg = repr(e)
@@ -189,7 +194,7 @@ class Downloader:
 
         :return: None
         """
-        r = get(self.url, stream=True, proxies=Downloader.proxies)
+        r = get(self.url, stream=True, proxies=self.proxies, headers=self.headers)
         flag = self.size != -1
 
         if flag:
@@ -235,7 +240,7 @@ class Downloader:
                 wait(self.futures)
                 if not self.job_queue.empty() and retry_cnt > 2:
                     qs_default_console.print(qs_warning_string, 'Exists File Block Lost, Retrying after 0.5 sec'
-                                           if user_lang != 'zh' else '存在文件块丢失，0.5秒后重试')
+                                             if user_lang != 'zh' else '存在文件块丢失，0.5秒后重试')
                     time.sleep(0.5)
                 retry_cnt += 1
             self.writers.wait()
@@ -247,7 +252,7 @@ class Downloader:
         qs_default_console.print(qs_info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!')
 
 
-def normal_dl(url, set_name: str = '', set_proxy: str = '', output_error: bool = False):
+def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '', output_error: bool = False):
     """
     自动规划下载线程数量并开始并行下载
 
@@ -256,10 +261,11 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', output_error: bool =
     :param url: 文件url
     :param set_name: 设置文件名（默认采用url所指向的资源名）
     :param set_proxy: 设置代理（默认无代理）
+    :param set_referer: 设置referer
     :param output_error: 输出报错信息
     :return: None
     """
-    Downloader(url, min(16, core_num * 4), set_name, set_proxy, output_error).run()
+    Downloader(url, min(16, core_num * 4), set_name, set_proxy, set_referer, output_error).run()
 
 
 if __name__ == '__main__':

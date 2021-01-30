@@ -184,7 +184,7 @@ def get_ip_info() -> dict:
         return {}
 
 
-def get_fileinfo(url: str, proxy: str = '') -> (str, str, requests.Response):
+def get_fileinfo(url: str, proxy: str = '', referer: str = '') -> (str, str, requests.Response):
     """
     获取待下载的文件信息
 
@@ -192,6 +192,7 @@ def get_fileinfo(url: str, proxy: str = '') -> (str, str, requests.Response):
 
     :param url: 文件url
     :param proxy: 代理
+    :param referer: 绕反爬
     :return: 真实url，文件名，http头部信息 (headers中键值均为小写)
     """
     import re
@@ -200,10 +201,12 @@ def get_fileinfo(url: str, proxy: str = '') -> (str, str, requests.Response):
         'http': 'http://'+proxy,
         'https': 'https://'+proxy
     } if proxy else {}
+    if referer:
+        headers['referer'] = referer
     try:
         res = requests.head(url, headers=headers, proxies=proxies)
-    except:
-        return '', '', None
+    except Exception as e:
+        return '', repr(e), None
     while res.status_code == 302 or res.status_code == 301:
         url = {i[0]: i[1] for i in res.headers.lower_items()}['location']
         res = requests.head(url, headers=headers, proxies=proxies)

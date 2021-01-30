@@ -184,17 +184,25 @@ def wifi():
 
     :return:
     """
-    from . import system, user_lang
-    from prettytable import PrettyTable
+    from . import system, user_lang, qs_default_console, qs_error_string, qs_info_string
+    from rich.table import Table, Column
+    from rich.box import SIMPLE
     if system.lower() != 'darwin':
         from .NetTools.WiFi import WiFi
     else:
         from .NetTools.WiFiDarwin import WiFi
     _wifi = WiFi()
-    table = PrettyTable(['id', 'ssid', 'signal', 'lock'] if user_lang != 'zh' else ['序号', '名称', '信号', '加密'])
+    table = Table(*(
+        [Column('id', justify='center'), Column('ssid', justify='center'),
+         Column('signal', justify='center'), Column('lock', justify='center')]
+        if user_lang != 'zh' else
+        [Column('序号', justify='center'), Column('名称', justify='center'),
+         Column('信号', justify='center'), Column('加密', justify='center')])
+        , row_styles=['none', 'dim'], show_edge=False, box=SIMPLE, title='[bold underline] Wi-Fi'
+    )
     connectable_wifi = _wifi.scan()
     if not connectable_wifi:
-        print("No available wifi" if user_lang != 'zh' else '没有可用的wifi')
+        qs_default_console.print(qs_error_string, "No available wifi" if user_lang != 'zh' else '没有可用的wifi')
         return
 
     from PyInquirer import prompt
@@ -222,13 +230,14 @@ def wifi():
     }]
 
     for i, l in enumerate(connectable_wifi):
-        table.add_row([i] + l)
-    print(table)
+        table.add_row(*([str(i)] + [str(j) for j in l]))
+    qs_default_console.print(table, justify="center")
 
     res = prompt(questions)
     if not res:
         return
     ssid = connectable_wifi[int(res['ssid'])]
     password = res['password']
-    print('Connect succeed' if user_lang != 'zh' else '连接成功') \
-        if _wifi.conn(ssid, password) else print('Connect failed' if user_lang != 'zh' else '连接失败')
+    qs_default_console.print(qs_info_string, 'Connect succeed' if user_lang != 'zh' else '连接成功') \
+        if _wifi.conn(ssid, password) else \
+        qs_default_console.print(qs_error_string, 'Connect failed' if user_lang != 'zh' else '连接失败')
