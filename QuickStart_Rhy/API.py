@@ -649,7 +649,7 @@ def loli():
         if save_flag:
             NormalDL.normal_dl(img['url'], set_proxy=proxy, set_referer='https://i.pximg.net')
         if system == 'darwin':
-            ImagePreview.image_preview(img['url'].split('/')[-1] if save_flag else img['url'], not save_flag
+            ImagePreview.image_preview(open(img['url'].split('/')[-1]) if save_flag else img['url'], not save_flag
                                        , set_proxy=proxy, set_referer='https://i.pximg.net')
 
         qs_default_console.print('-' * (qs_default_console.width // 4 * 3), justify='center')

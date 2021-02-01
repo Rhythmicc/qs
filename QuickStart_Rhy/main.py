@@ -6,7 +6,6 @@ Command entry
 """
 import sys
 from .func_list import *
-from . import qs_default_console
 
 
 def qs_help(rep=''):
@@ -24,6 +23,7 @@ def qs_help(rep=''):
             print('Docs:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
             print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
             print('  · 3: ' + Fore.CYAN + 'https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
+            print('TG Group:\n    ' + Fore.CYAN + 'https://t.me/joinchat/G2mpk7-S85eM7sb7' + Style.RESET_ALL)
         else:
             print("帮助:")
             print(color_rep("""
@@ -36,6 +36,7 @@ def qs_help(rep=''):
             print('文档:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
             print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
             print('  · 3: ' + Fore.CYAN + 'https://blog.rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
+            print('TG群:\n    ' + Fore.CYAN + 'https://t.me/joinchat/G2mpk7-S85eM7sb7' + Style.RESET_ALL)
     else:
         menu_table[rep]()
 
@@ -78,6 +79,7 @@ def main():
                     exec('from QuickStart_Rhy.%s import %s' % (file_name, func_name))
                 eval('%s()' % func_name)
         except Exception as e:
+            from . import qs_default_console
             if debug_flag:
                 qs_default_console.print_exception()
             else:

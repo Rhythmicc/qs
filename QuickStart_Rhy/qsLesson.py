@@ -4,7 +4,7 @@
 
 Command interaction, view various menus and documents of QS
 """
-from . import user_lang
+from . import user_lang, u
 from PyInquirer import prompt
 
 
@@ -41,19 +41,21 @@ def lesson():
             '3. network tools' if user_lang != 'zh' else '3. 网路工具',
             '4. api tools' if user_lang != 'zh' else '4. 扩展工具',
             '5. image tools' if user_lang != 'zh' else '5. 图像工具',
-            '6. online Docs' if user_lang != 'zh' else '6. 在线文档'
+            '6. online Docs' if user_lang != 'zh' else '6. 在线文档',
+            '7. join TG group' if user_lang != 'zh' else '7. 加入TG群'
         ]
     }
     res = prompt(mainMenu)['action']
 
-    if res[0] == '6':
-        return onlineDocuments()
-
-    from .func_list import menu_table
-    {
-        '1': menu_table['basic'],
-        '2': menu_table['system'],
-        '3': menu_table['net'],
-        '4': menu_table['api'],
-        '5': menu_table['image']
-    }[res[0]]()
+    if res[0] == '7':
+        return u(['https://t.me/joinchat/G2mpk7-S85eM7sb7'])
+    else:
+        from .func_list import menu_table
+        {
+            '1': menu_table['basic'],
+            '2': menu_table['system'],
+            '3': menu_table['net'],
+            '4': menu_table['api'],
+            '5': menu_table['image'],
+            '6': onlineDocuments,
+        }[res[0]]()

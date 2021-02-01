@@ -109,7 +109,7 @@ def cur_time():
     qs_default_console.print(qs_info_string, ' '.join(tm))
 
 
-def u():
+def u(argv: list = None):
     """
     打开命令行参数中的链接
 
@@ -119,8 +119,10 @@ def u():
     """
     import webbrowser as wb
     from .NetTools import formatUrl
-    if sys.argv[2:]:
-        for url in sys.argv[2:]:
+    if not argv:
+        argv = sys.argv[2:]
+    if argv:
+        for url in argv:
             url = formatUrl(url)
             wb.open_new_tab(url)
     else:
