@@ -8,7 +8,7 @@ from imgcat import imgcat
 from .. import headers
 
 
-def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = ''):
+def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '', qs_console_status = None):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用
 
@@ -18,18 +18,32 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '')
     :param img: opened file, numpy array, PIL.Image, matplotlib fig
     :param set_proxy: set proxy
     :param set_referer: set refer
+    :param qs_console_status:
     :return:
     """
-    if is_url:
-        from PIL import Image
-        from io import BytesIO
-        import requests
-        if set_referer:
-            headers['referer'] = set_referer
-        proxies = {
-            'http': 'http://' + set_proxy,
-            'https': 'https://' + set_proxy
-        } if set_proxy else {}
-        res = requests.get(img, headers=headers, proxies=proxies).content
-        img = Image.open(BytesIO(res))
-    imgcat(img)
+    try:
+        if not is_url and isinstance(img, str):
+            is_url = img.startswith('http')
+        if is_url:
+            from PIL import Image
+            from io import BytesIO
+            import requests
+            if set_referer:
+                headers['referer'] = set_referer
+            proxies = {
+                'http': 'http://' + set_proxy,
+                'https': 'https://' + set_proxy
+            } if set_proxy else {}
+            res = requests.get(img, headers=headers, proxies=proxies).content
+            if qs_console_status:
+                qs_console_status.update(status='Opening')
+            img = Image.open(BytesIO(res))
+        if qs_console_status:
+            qs_console_status.stop()
+        imgcat(img)
+    except Exception as e:
+        if qs_console_status:
+            from .. import qs_default_console, qs_error_string
+            qs_default_console.print(qs_error_string, repr(e))
+            qs_console_status.stop()
+        return

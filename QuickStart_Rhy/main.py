@@ -5,38 +5,42 @@
 Command entry
 """
 import sys
-from .func_list import *
+from .funcList import *
 
 
 def qs_help(rep=''):
     """输出菜单 | Output menu"""
     if not rep or rep not in menu_table:
         if user_lang != 'zh':
-            print('help:')
-            print(color_rep("""
-    qs basic   :-> basic   tools help | u, a, f, cal, time
-    qs system  :-> system  tools help | top, [mk/un][zip/tar]...
-    qs net     :-> network tools help | http, dl, up[load/grade]
-    qs api     :-> api     tools help | trans, smms, rmbg...
-    qs image   :-> image   tools help | stbg, v2gif, v2mp4..."""))
-            print('Tutorial:\n   ' + Fore.LIGHTMAGENTA_EX + 'qs -lesson' + Style.RESET_ALL)
-            print('Docs:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
-            print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
-            print('  · 3: ' + Fore.CYAN + 'https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/' + Style.RESET_ALL)
-            print('TG Group:\n    ' + Fore.CYAN + 'https://t.me/joinchat/G2mpk7-S85eM7sb7' + Style.RESET_ALL)
+            color_rep("""
+    qs basic   :-> basic   tools help | u, a, f, cal, time, pcat..
+    qs system  :-> system  tools help | top, \[mk/un]\[zip/tar/7z]..
+    qs net     :-> network tools help | http, dl, netinfo, wifi...
+    qs api     :-> api     tools help | trans, smms, rmbg, loli...
+    qs image   :-> image   tools help | stbg, v2gif, v2mp3, v2mp4.""", True)
+            qs_default_console.print('\n[underline]Tutorial[/underline]\n', justify='center')
+            qs_default_console.print('[bold magenta]qs lesson[/bold magenta]', justify='center')
+            qs_default_console.print('\n[underline]Docs\n', justify='center')
+            qs_default_console.print('C D N : https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/ _ _ _', justify='center')
+            qs_default_console.print('Github: https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/', justify='center')
+            qs_default_console.print('Coding: https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/ ', justify='center')
+            qs_default_console.print('\n[underline]TG Group:\n', justify='center')
+            qs_default_console.print('https://t.me/joinchat/G2mpk7-S85eM7sb7', justify='center')
         else:
-            print("帮助:")
-            print(color_rep("""
-    qs basic   :-> 基础工具帮助 | u, a, f, cal, time
-    qs system  :-> 系统工具帮助 | top, [mk/un][zip/tar]...
-    qs net     :-> 网络工具帮助 | http, dl, up[load/grade]
-    qs api     :-> 扩展工具帮助 | trans, smms, rmbg...
-    qs image   :-> 图像工具帮助 | stbg, v2gif, v2mp4..."""))
-            print('引导:\n    ' + Fore.LIGHTMAGENTA_EX + 'qs lesson' + Style.RESET_ALL)
-            print('文档:\n  · 1: ' + Fore.CYAN + 'https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
-            print('  · 2: ' + Fore.CYAN + 'https://rhythmicc.github.io/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
-            print('  · 3: ' + Fore.CYAN + 'https://blog.rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/' + Style.RESET_ALL)
-            print('TG群:\n    ' + Fore.CYAN + 'https://t.me/joinchat/G2mpk7-S85eM7sb7' + Style.RESET_ALL)
+            color_rep("""
+    qs basic   :-> 基础工具帮助 | u, a, f, cal, time, pcat..
+    qs system  :-> 系统工具帮助 | top, \[mk/un]\[zip/tar/7z]..
+    qs net     :-> 网络工具帮助 | http, dl, netinfo, wifi...
+    qs api     :-> 扩展工具帮助 | trans, smms, rmbg, loli...
+    qs image   :-> 图像工具帮助 | stbg, v2gif, v2mp3, v2mp4.""", True)
+            qs_default_console.print('\n[underline]引导[/underline]\n', justify='center')
+            qs_default_console.print('[bold magenta]qs lesson[/bold magenta]', justify='center')
+            qs_default_console.print('\n[underline]文档[/underline]\n', justify='center')
+            qs_default_console.print('C D N : https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/ _ _ _', justify='center')
+            qs_default_console.print('Github: https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/', justify='center')
+            qs_default_console.print('Coding: https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/ ', justify='center')
+            qs_default_console.print('\n[underline]TG群[/underline]\n', justify='center')
+            qs_default_console.print('https://t.me/joinchat/G2mpk7-S85eM7sb7', justify='center')
     else:
         menu_table[rep]()
 

@@ -7,7 +7,11 @@ The network tool library of QS
 import socket
 import requests
 from requests.exceptions import RequestException
-from .. import headers
+
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
+                  'Version/11.0.2 Safari/604.4.7'}
 
 
 def is_ipv4(ip: str) -> bool:
@@ -207,7 +211,7 @@ def get_fileinfo(url: str, proxy: str = '', referer: str = '') -> (str, str, req
         res = requests.head(url, headers=headers, proxies=proxies)
     except Exception as e:
         return '', repr(e), None
-    while res.status_code == 302 or res.status_code == 301:
+    while res.status_code in [301, 302]:
         url = {i[0]: i[1] for i in res.headers.lower_items()}['location']
         res = requests.head(url, headers=headers, proxies=proxies)
     res.headers = {i[0]: i[1] for i in res.headers.lower_items()}

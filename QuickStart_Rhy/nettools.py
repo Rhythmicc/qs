@@ -78,8 +78,8 @@ def download():
                 m3u8_dl(url)
             else:
                 if use_proxy:
-                    normal_dl(url, set_proxy=qs_config['basic_settings']['default_proxy']) \
-                        if not ytb_flag else _real_main([url, '--proxy', qs_config['basic_settings']['default_proxy'],
+                    normal_dl(url, set_proxy=qs_config.basicSelect('default_proxy')) \
+                        if not ytb_flag else _real_main([url, '--proxy', qs_config.basicSelect('default_proxy'),
                                                          '--merge-output-format', 'mp4'])
                 else:
                     normal_dl(url) if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'])
@@ -152,7 +152,8 @@ def netinfo():
         try:
             urls += pyperclip.paste().strip().split() if not urls else []
         except :
-            urls = qs_default_console.ask(
+            from rich.prompt import Prompt
+            urls = Prompt.ask(
                 'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
                 if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:'
             ).strip().split()
@@ -185,21 +186,15 @@ def wifi():
     :return:
     """
     from . import system, user_lang, qs_default_console, qs_error_string, qs_info_string
-    from rich.table import Table, Column
-    from rich.box import SIMPLE
+    from .TuiTools.Table import qs_default_table
     if system.lower() != 'darwin':
         from .NetTools.WiFi import WiFi
     else:
         from .NetTools.WiFiDarwin import WiFi
     _wifi = WiFi()
-    table = Table(*(
-        [Column('id', justify='center'), Column('ssid', justify='center'),
-         Column('signal', justify='center'), Column('lock', justify='center')]
-        if user_lang != 'zh' else
-        [Column('序号', justify='center'), Column('名称', justify='center'),
-         Column('信号', justify='center'), Column('加密', justify='center')])
-        , row_styles=['none', 'dim'], show_edge=False, box=SIMPLE, title='[bold underline] Wi-Fi'
-    )
+    table = qs_default_table(
+        ['id', 'ssid', 'signal', 'lock'] if user_lang != 'zh' else ['序号', '名称', '信号', '加密'],
+        title='Wi-Fi')
     connectable_wifi = _wifi.scan()
     if not connectable_wifi:
         qs_default_console.print(qs_error_string, "No available wifi" if user_lang != 'zh' else '没有可用的wifi')

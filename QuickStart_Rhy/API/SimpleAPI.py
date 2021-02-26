@@ -48,9 +48,7 @@ def smms(filePath: str):
     :return: None
     """
     import os
-    from rich.table import Table, Column
-    from rich.text import Text
-    from rich.box import SIMPLE
+    from rich.table import Table
 
     api_key = pre_check('smms')
     res_tb = Table(*(['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']))
@@ -211,3 +209,24 @@ def imgs_in_url(url: str):
                 image_preview(url, True)
             except Exception as e:
                 qs_default_console.log(qs_error_string, repr(e))
+
+
+def acg2():
+    try:
+        res = requests.get('https://yingserver.cn/open/acgimg/acgurl.php?return=json')
+    except Exception as e:
+        return False, repr(e), None, None
+    else:
+        import json
+        res = json.loads(res.text)
+        return res['code'] == '200', (res['acgurl'] if res['code'] == '200' else 'Error'), res['width'], res['height']
+
+
+def photo():
+    try:
+        from ..NetTools import get_fileinfo
+        url, name, res = get_fileinfo('http://img-api.kococ.cn')
+    except Exception as e:
+        return False, repr(e), None, None
+    else:
+        return res.status_code == requests.codes.ok, url, name

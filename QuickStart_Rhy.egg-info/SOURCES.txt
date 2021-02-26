@@ -1,12 +1,14 @@
 README.md
 setup.cfg
 setup.py
+QuickStart_Rhy/__config__.py
 QuickStart_Rhy/__init__.py
 QuickStart_Rhy/api.py
-QuickStart_Rhy/firstRun.py
-QuickStart_Rhy/func_list.py
+QuickStart_Rhy/funcList.py
+QuickStart_Rhy/imageDeal.py
 QuickStart_Rhy/imagedeal.py
 QuickStart_Rhy/main.py
+QuickStart_Rhy/netTools.py
 QuickStart_Rhy/nettools.py
 QuickStart_Rhy/qsLesson.py
 QuickStart_Rhy/system.py
@@ -45,5 +47,6 @@ QuickStart_Rhy/SystemTools/__init__.py
 QuickStart_Rhy/ThreadTools/__init__.py
 QuickStart_Rhy/TuiTools/Bar.py
 QuickStart_Rhy/TuiTools/Line.py
+QuickStart_Rhy/TuiTools/Table.py
 QuickStart_Rhy/TuiTools/__init__.py
 QuickStart_Rhy/Wrapper/__init__.py

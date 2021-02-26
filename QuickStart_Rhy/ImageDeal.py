@@ -6,7 +6,7 @@ Call various image processing tools
 """
 import sys
 import os
-from . import qs_default_console, qs_error_string, qs_info_string
+from . import qs_default_console, qs_error_string
 
 
 def set_img_background():
@@ -99,7 +99,8 @@ def icat():
     """Mac::iTerm下预览图片 | Preview the picture under Mac::iTerm"""
     try:
         path = sys.argv[2]
-        is_url = '-u' in sys.argv
+        is_url = '-u' in sys.argv or \
+                 (not os.path.exists(path) and (path.startswith('http://') or path.startswith('https://')))
         if not os.path.exists(path) and not is_url:
             qs_default_console.log(qs_error_string, 'No such file:', path)
             raise FileNotFoundError

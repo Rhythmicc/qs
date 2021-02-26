@@ -1,26 +1,27 @@
 # coding=utf-8
 """
-qs的普通文件下载器！除了迅雷比不过，俺自信比其他的下载器快得多，并且支持设置代理，好看的命令行交互，啥j8文件都能下；(仅支持http[s]协议)
+qs的普通文件下载器！干翻迅雷，并且支持设置代理，设置referer，好看的命令行交互，啥j8文件都能下；(仅支持http[s]协议)
 
-QS ordinary file downloader! Except Xunlei, I'm confident that it's much faster than other downloaders,
-and supports setting proxy, nice command line interaction, and it can download fuck any files; (only supports HTTP[S])
+QS ordinary file downloader! Dry out Thunder, and support to set the proxy, set the Referer,
+good-looking command line interaction, and it can download fuck any files; (only supports HTTP[S])
 
 Author: RhythmLian (https://rhythmlian.cn)
 """
 from . import size_format, get_fileinfo
 from concurrent.futures import ThreadPoolExecutor, wait
 from ..ThreadTools import FileWriters
+from ..SystemTools import get_core_num
 from .. import user_lang, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, headers
 from threading import Lock
 from requests import get
-import psutil
 import signal
 import queue
 import time
+import sys
 import os
 
-core_num = psutil.cpu_count()
-maxBlockSize = int(1.5e6)
+core_num = get_core_num()
+maxBlockSize = int(5e6)
 minBlockSize = int(5e5)
 
 
@@ -42,14 +43,7 @@ def GetBlockSize(sz):
 
 
 class Downloader:
-    from rich.progress import (
-        BarColumn,
-        DownloadColumn,
-        TextColumn,
-        TransferSpeedColumn,
-        TimeRemainingColumn,
-        Progress,
-    )
+    from ..TuiTools.Bar import DataTransformBar
 
     def __init__(self, url: str, num: int, name: str = '', proxy: str = '',
                  referer: str = '', output_error: bool = False):
@@ -63,8 +57,9 @@ class Downloader:
         """
         signal.signal(signal.SIGINT, self._kill_self)
         info_flag = True
-        self.url, self.num, self.fileLock, self.output_error, self.proxies = url, num, Lock(), output_error, {}
-        self.url, self.name, r = get_fileinfo(url, proxy, referer)
+        self.url, self.num, self.output_error, self.proxies = url, num, output_error, {}
+        with qs_default_console.status('Getting file info..' if user_lang != 'zh' else '获取文件信息中..'):
+            self.url, self.name, r = get_fileinfo(url, proxy, referer)
         if not (self.url and self.name and r):
             info_flag = False
             qs_default_console.print(qs_warning_string, 'Get File information failed, please check network!'
@@ -84,23 +79,11 @@ class Downloader:
         if not self.url:
             qs_default_console.print(qs_error_string, self.name)
             raise Exception('Connection Error!' if user_lang != 'zh' else '连接失败!')
-
         try:
             if not info_flag:
                 raise KeyError
             self.size = int(r.headers['content-length'])
-            self.main_progress = Downloader.Progress(
-                Downloader.TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
-                Downloader.BarColumn(bar_width=None),
-                "[progress.percentage]{task.percentage:>3.1f}%",
-                "•",
-                Downloader.DownloadColumn(),
-                "•",
-                Downloader.TransferSpeedColumn(),
-                "•",
-                Downloader.TimeRemainingColumn(),
-                console=qs_default_console
-            )
+            self.main_progress = Downloader.DataTransformBar()
             self.dl_id = self.main_progress.add_task('Download', filename=self.name, start=False)
             self.main_progress.update(self.dl_id, total=self.size)
             if self.size < 5e6:
@@ -111,20 +94,11 @@ class Downloader:
                 self.fileBlock = GetBlockSize(self.size)
         except KeyError:
             self.size = -1
-            self.main_progress = Downloader.Progress(
-                Downloader.TextColumn(
-                    "[bold blue]{task.fields[filename]} [red]" +
-                    ('Unknow size' if user_lang != 'zh' else '未知大小'),
-                    justify="right"
-                ),
-                Downloader.BarColumn(bar_width=None),
-                Downloader.DownloadColumn(),
-                console=qs_default_console
-            )
+            self.main_progress = Downloader.DataTransformBar(False)
             self.dl_id = self.main_progress.add_task('Download', filename=self.name, start=False)
         if self.size > 0:
             self.pool = ThreadPoolExecutor(max_workers=self.num)
-            self.futures = []
+            self.futures, self.fileLock = [], Lock()
             self.job_queue = queue.Queue()
             if os.path.exists(self.name + '.qs_dl'):
                 self.ctn_file = open(self.name + '.qs_dl', 'r+')
@@ -133,10 +107,10 @@ class Downloader:
                 self.ctn_file = open(self.name + '.qs_dl', 'w')
                 self.ctn = []
             self.writers = FileWriters(self.name, max(2, int(core_num / 2)), "rb+" if self.ctn else "wb")
-            qs_default_console.print(qs_info_string, 'FILE SIZE' if user_lang != 'zh' else '文件大小'
+            qs_default_console.print(qs_info_string, 'FILE  SIZE' if user_lang != 'zh' else '文件大小'
                                      , size_format(self.size, align=True))
-            qs_default_console.print(qs_info_string, 'BLOCK SIZE' if user_lang != 'zh' else '块大小'
-                                     , size_format(self.fileBlock, align=True))
+            qs_default_console.print(qs_info_string, 'THRAED NUM' if user_lang != 'zh' else '线程数量'
+                                     , '%7d' % num)
 
     def _kill_self(self, signum, frame):
         """
@@ -172,19 +146,20 @@ class Downloader:
             _sz = min(start + self.fileBlock, self.size - 1)
             _headers = self.headers.copy()
             _headers['Range'] = 'bytes={}-{}'.format(start, _sz)
-            r = get(self.url, headers=_headers, timeout=50, proxies=self.proxies)
-            self.writers.new_job(r.content, start)
+            _content = b''
+            for chunk in get(self.url, headers=_headers, timeout=50, proxies=self.proxies).iter_content(65536):
+                _content += chunk
+                self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
+            self.writers.new_job(_content, start)
         except Exception as e:
-            msg = repr(e)
             if self.output_error:
-                qs_default_console.print(qs_error_string, msg[:msg.index('(')])
+                qs_default_console.print(qs_error_string, repr(e))
             self.job_queue.put(start)
         else:
             self.fileLock.acquire()
             self.ctn.append(start)
             self.ctn_file.write('%d\n' % start)
             self.fileLock.release()
-            self.main_progress.advance(self.dl_id, _sz - start)
 
     def _single_dl(self):
         """
@@ -204,7 +179,7 @@ class Downloader:
         with open(self.name, 'wb') as f:
             for chunk in r.iter_content(32768):
                 f.write(chunk)
-                self.main_progress.advance(self.dl_id, 32768)
+                self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
 
     def run(self):
         """
@@ -252,7 +227,8 @@ class Downloader:
         qs_default_console.print(qs_info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!')
 
 
-def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '', output_error: bool = False):
+def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
+              thread_num: int = max(16, core_num * 4), output_error: bool = False):
     """
     自动规划下载线程数量并开始并行下载
 
@@ -262,12 +238,8 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     :param set_name: 设置文件名（默认采用url所指向的资源名）
     :param set_proxy: 设置代理（默认无代理）
     :param set_referer: 设置referer
+    :param thread_num: 线程数
     :param output_error: 输出报错信息
     :return: None
     """
-    Downloader(url, min(16, core_num * 4), set_name, set_proxy, set_referer, output_error).run()
-
-
-if __name__ == '__main__':
-    import sys
-    normal_dl(sys.argv[1])
+    Downloader(url, thread_num, set_name, set_proxy, set_referer, output_error).run()

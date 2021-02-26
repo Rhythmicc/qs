@@ -50,7 +50,7 @@ def lesson():
     if res[0] == '7':
         return u(['https://t.me/joinchat/G2mpk7-S85eM7sb7'])
     else:
-        from .func_list import menu_table
+        from .funcList import menu_table
         {
             '1': menu_table['basic'],
             '2': menu_table['system'],

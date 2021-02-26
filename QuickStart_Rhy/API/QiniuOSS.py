@@ -29,6 +29,7 @@ class QiniuOSS:
         self.sc_key = sc_key
         self.auth = QiniuOSS.qiniu.Auth(self.ac_key, self.sc_key)
         self.df_bucket = df_bucket
+        self.bar, self.tid = None, None
 
     def get_func_table(self):
         """
@@ -56,9 +57,22 @@ class QiniuOSS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
+        import os
+        filename = os.path.basename(filePath)
+
+        def progress(cur, total):
+            if not self.bar:
+                from ..TuiTools.Bar import DataTransformBar
+                self.bar = DataTransformBar()
+                self.tid = self.bar.add_task('Transform' if user_lang != 'zh' else '传输', filename=filename, total=total)
+                self.bar.start()
+                self.bar.start_task(self.tid)
+            self.bar.update(self.tid, completed=cur)
+
         filePath = filePath.strip()
         tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath)
-        QiniuOSS.qiniu.put_file(tk, filePath.replace(dir_char, '/'), filePath)
+        QiniuOSS.qiniu.put_file(tk, filePath.replace(dir_char, '/'), filePath, progress_handler=progress)
+        self.bar.stop()
 
     def remove(self, filePath: str, bucket: str = None):
         """
@@ -117,9 +131,8 @@ class QiniuOSS:
         :return: None
         """
         from .. import qs_default_console, qs_info_string
-        from rich.table import Table, Column
+        from ..TuiTools.Table import qs_default_table
         from rich.text import Text
-        from rich.box import SIMPLE
         bk = QiniuOSS.qiniu.BucketManager(self.auth)
         ret = bk.list(bucket if bucket else self.df_bucket)
         if not ret[1]:
@@ -128,12 +141,7 @@ class QiniuOSS:
         root_url = 'http://' + self.get_bucket_url(bucket)[0] + '/'
         ret = ret[0]['items']
         from ..NetTools.NormalDL import size_format
-        tb = Table(
-            *([Column('File', justify="center"), Column('Size', justify="center")]
-              if user_lang != 'zh' else
-              [Column('文件', justify="center"), Column('体积', justify="center")])
-            , show_edge=False, row_styles=['none', 'dim'], box=SIMPLE, title='[bold underline]七牛 OSS'
-        )
+        tb = qs_default_table(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'], title='七牛 OSS')
         for i in ret:
             tb.add_row(Text(i['key'], justify="left"), Text(size_format(i['fsize'], True), justify='right'))
         qs_default_console.print(qs_info_string, "Bucket url:" if user_lang != 'zh' else '桶链接:', root_url)

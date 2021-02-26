@@ -19,7 +19,7 @@ def pre_check(funcName: str, ext: bool = True) -> str:
     :return: 找到的API KEY | API KEY found.
     """
     try:
-        api_key = qs_config['API_settings'][funcName]
+        api_key = qs_config.apiSelect(funcName)
         if api_key.startswith("GET:"):
             raise KeyError
     except KeyError:

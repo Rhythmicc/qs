@@ -25,3 +25,8 @@ def clear_mem():
         else:
             os.system('sync')
             os.system("echo 3 > /proc/sys/vm/drop_caches")
+
+
+def get_core_num():
+    import psutil
+    return psutil.cpu_count()

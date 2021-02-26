@@ -7,31 +7,21 @@ Docs:
 """
 import os
 import sys
-import json
+from .__config__ import QsConfig, dir_char, system
+from .NetTools import headers
 from rich.console import Console
 from rich.prompt import Prompt as qs_default_input
 
 name = 'QuickStart_Rhy'
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
-                  'Version/11.0.2 Safari/604.4.7'}
-system = sys.platform
-if system.startswith('win'):
-    dir_char = '\\'
-else:
-    dir_char = '/'
 
 user_root = os.path.expanduser('~') + dir_char
-if os.path.exists(user_root + '.qsrc'):
-    with open(user_root + '.qsrc', 'r', encoding='utf8') as f:
-        qs_config = json.loads(f.read(), encoding='utf8')
-else:
-    import QuickStart_Rhy.firstRun as Init
-    qs_config = Init.main(user_root)
+qs_config = QsConfig(user_root + '.qsrc', os.path.exists(user_root + '.qsrc'))
 
-user_lang = qs_config['basic_settings']['default_language']
-trans_engine = qs_config['basic_settings']['default_translate_engine']['support']
-trans_engine = trans_engine[qs_config['basic_settings']['default_translate_engine']['index']]
+user_lang = qs_config.basicSelect('default_language')
+user_currency = qs_config.basicSelect('default_currency')
+trans_engine = qs_config.basicSelect('default_translate_engine')['support']\
+[qs_config.basicSelect('default_translate_engine')['index']]
+
 qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
 qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
@@ -46,13 +36,22 @@ def cut_string(string: str, length: int) -> list:
     :param length: 切分长度
     :return: 切分后产生的list
     """
-    return [string[i: i + length] for i in range(0, len(string), length)]
+    string = string.strip().replace('\n', ' ')
+    res, cur, cnt = [], '', 0
+    for i in string:
+        cnt += 2 if ord(i) > 255 else 1
+        if cnt <= length:
+            cur += i
+        else:
+            res.append(cur)
+            cur, cnt = i, 2 if ord(i) > 255 else 1
+    if cur:
+        res.append(cur)
+    return res
 
 
-def table_cell(string: str, length: int) -> list:
-    if ' ' not in string and '\n' not in string:
-        return cut_string(string, length)
-    return [string]
+def table_cell(string: str, length: int) -> str:
+    return ' '.join(cut_string(string, length))
 
 
 def deal_ctrl_c(signum, frame):
@@ -193,3 +192,14 @@ def calculate():
         qs_default_console.print('%s = %s' % (exp, eval(exp)))
     except:
         qs_default_console.log(qs_error_string, 'Usage: qs cal <exp like "1+1">')
+
+
+def pcat():
+    """
+    输出粘贴板中内容
+
+    Output the contents of the clipboard
+    :return: None
+    """
+    from pyperclip import paste
+    print(paste())
