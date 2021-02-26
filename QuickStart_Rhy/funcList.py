@@ -35,16 +35,16 @@ def color_rep(ss):
 def base_menu():
     """基础类菜单 | Basic menu"""
     print(color_rep("""Basic Tools help:
-    qs u  <url...>           :-> open urls using default browser
-    qs a  <app> [file..]     :-> open app or open file by app(for Mac OS)
-    qs f  <file...>          :-> open file by default app
-    qs cal exp               :-> calculate exp
+    qs u   <url...>          :-> open urls using default browser
+    qs a   <app> [file..]    :-> open app or open file by app(for Mac OS)
+    qs f   <file...>         :-> open file by default app
+    qs cal <exp>             :-> calculate exp
     qs time                  :-> view current time""")) \
         if user_lang != 'zh' else print(color_rep("""基础工具:
-    qs u  <url...>           :-> 使用默认浏览器打开多个链接
-    qs a  <app> [file..]     :-> 打开应用或使用应用打开文件（仅支持Mac OS）
-    qs f  <file...>          :-> 使用合适的应用打开文件
-    qs cal exp               :-> 计算算术表达式
+    qs u   <url...>          :-> 使用默认浏览器打开多个链接
+    qs a   <app> [file..]    :-> 打开应用或使用应用打开文件（仅支持Mac OS）
+    qs f   <file...>         :-> 使用合适的应用打开文件
+    qs cal <exp>             :-> 计算算术表达式
     qs time                  :-> 查看当前时间"""))
 
 
@@ -53,27 +53,27 @@ def system_menu():
     print(color_rep("""System Tools help:
     qs top                   :-> cpu and memory monitor
     qs clear                 :-> free memory
-    qs mktar <path...>       :-> create gzipped archive for path
-    qs untar <path...>       :-> extract *.tar.*
-    qs mkzip <path...>       :-> make a zip for path
-    qs unzip <path...>       :-> extract *.zip file
-    qs unrar <path...>       :-> extract *.rar file
-    qs mk7z  <path...>       :-> make a 7z archive for path
-    qs un7z  <path...>       :-> extract *.7z file
-    qs md5   <path...>       :-> calculate md5 of files
-    qs sha1  <path...>       :-> calculate SHA1 of files
+    qs mktar  <path...>      :-> create gzipped archive for path
+    qs untar  <path...>      :-> extract *.tar.*
+    qs mkzip  <path...>      :-> make a zip for path
+    qs unzip  <path...>      :-> extract *.zip file
+    qs unrar  <path...>      :-> extract *.rar file
+    qs mk7z   <path...>      :-> make a 7z archive for path
+    qs un7z   <path...>      :-> extract *.7z file
+    qs md5    <path...>      :-> calculate md5 of files
+    qs sha1   <path...>      :-> calculate SHA1 of files
     qs sha256 <path...>      :-> calculate SHA256 of files
     qs sha512 <path...>      :-> calculate SHA512 of files""")) \
         if user_lang != 'zh' else print(color_rep("""系统工具:
     qs top                   :-> CPU和内存监控器
     qs clear                 :-> 清理本机内存
-    qs mktar <path...>       :-> 使用多个文件或文件夹创建tar压缩包
-    qs untar <path...>       :-> 解压各种格式的tar包
-    qs mkzip <path...>       :-> 使用多个文件或文件夹创建zip压缩包
-    qs unzip <path...>       :-> 解压zip压缩包
-    qs unrar <path...>       :-> 解压rar压缩包
-    qs md5   <path...>       :-> 计算文件的md5值
-    qs sha1 <path...>        :-> 计算文件sha1值
+    qs mktar  <path...>      :-> 使用多个文件或文件夹创建tar压缩包
+    qs untar  <path...>      :-> 解压各种格式的tar包
+    qs mkzip  <path...>      :-> 使用多个文件或文件夹创建zip压缩包
+    qs unzip  <path...>      :-> 解压zip压缩包
+    qs unrar  <path...>      :-> 解压rar压缩包
+    qs md5    <path...>      :-> 计算文件的md5值
+    qs sha1   <path...>      :-> 计算文件sha1值
     qs sha256 <path...>      :-> 计算文件sha256值
     qs sha512 <path...>      :-> 计算文件sha512值"""))
 
@@ -115,8 +115,8 @@ def api_menu():
     qs gbc <garbage...>      :-> check Chinese garbage classification
     qs svi <url>             :-> get short video info
     qs svd <url>             :-> download short video info as mp4
-    qs acg  [-save]          :-> get an acg image link (or save)
-    qs bing [-save]          :-> get an bing image link (or save)
+    qs acg[2] [-save]        :-> get an acg image link (or save)
+    qs bing   [-save]        :-> get an bing image link (or save)
     qs phi <url>             :-> get <image url> in url (preview on Mac)
     qs kd <courier number>   :-> Query China express
     qs loli [-save] [-p]     :-> get and loli image link [or save (use default proxy)]"""))\
@@ -137,8 +137,8 @@ def api_menu():
     qs gbc <garbage...>      :-> 查询垃圾分类
     qs svi <url>             :-> 获取多平台短视频信息
     qs svd <url>             :-> 下载多平台短视频为mp4
-    qs acg  [-save]          :-> 获取一张acg图片链接 (或保存)
-    qs bing [-save]          :-> 获取一张bing图片链接 (或保存)
+    qs acg[2] [-save]        :-> 获取一张acg图片链接 (或保存)
+    qs bing   [-save]        :-> 获取一张bing图片链接 (或保存)
     qs phi <url>             :-> 获取url里的图片链接 (Mac上iTerm可预览)
     qs kd <courier number>   :-> 查询国内快递
     qs loli [-save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]"""))
@@ -227,6 +227,7 @@ api_funcs = {
     'svi': 'short_video_info',
     'svd': 'short_video_dl',
     'acg': 'acg',
+    'acg2': 'acg2',
     'bing': 'bingImg',
     'phi': 'preview_html_images',
     'kd': 'kdCheck',
