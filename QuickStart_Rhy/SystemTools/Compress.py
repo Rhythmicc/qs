@@ -52,13 +52,13 @@ def checkIsProtocolFile(protocol, path):
     """
     if os.path.exists(path):
         if protocol == tarfile and not tarfile.is_tarfile(path):
-            raise TypeError("%s " + ('Not recognized by tar protocol' if user_lang != 'zh' else '无法被tar协议识别'))
+            raise TypeError(f"{path} " + ('Not recognized by tar protocol' if user_lang != 'zh' else '无法被tar协议识别'))
         elif protocol == zipfile and not zipfile.is_zipfile(path):
-            raise TypeError("%s" + ('Not recognized by zip protocol' if user_lang != 'zh' else '无法被zip协议识别'))
+            raise TypeError(f"{path} " + ('Not recognized by zip protocol' if user_lang != 'zh' else '无法被zip协议识别'))
         elif protocol == rarfile and not rarfile.is_rarfile(path):
-            raise TypeError("%s" + ('Not recognized by rar protocol' if user_lang != 'zh' else '无法被rar协议识别'))
+            raise TypeError(f"{path} " + ('Not recognized by rar protocol' if user_lang != 'zh' else '无法被rar协议识别'))
         elif protocol == py7zr and not py7zr.is_7zfile(path):
-            raise TypeError("%s" + ('Not recognized by 7z protocol' if user_lang != 'zh' else '无法被7z协议识别'))
+            raise TypeError(f"{path} " + ('Not recognized by 7z protocol' if user_lang != 'zh' else '无法被7z协议识别'))
     else:
         raise FileNotFoundError
 
@@ -87,6 +87,8 @@ class _NormalCompressedPackage:
             checkIsProtocolFile(_protocol, path)
             if _protocol == zipfile:
                 self.src = zipfile.ZipFile(path, 'r')
+            elif _protocol == rarfile:
+                self.src = rarfile.RarFile(path)
             elif _protocol == py7zr:
                 self.src = py7zr.SevenZipFile(path, 'r')
             else:

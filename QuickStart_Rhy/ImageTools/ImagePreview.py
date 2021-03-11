@@ -8,7 +8,7 @@ from imgcat import imgcat
 from .. import headers
 
 
-def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '', qs_console_status = None):
+def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '', qs_console_status=None):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用
 

@@ -228,7 +228,7 @@ class Downloader:
 
 
 def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
-              thread_num: int = max(16, core_num * 4), output_error: bool = False):
+              thread_num: int = min(16, core_num * 4), output_error: bool = False):
     """
     自动规划下载线程数量并开始并行下载
 

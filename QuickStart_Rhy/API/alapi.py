@@ -11,6 +11,13 @@ v1_url = "https://v1.alapi.cn/api/"
 v2_url = "https://v2.alapi.cn/api/"
 
 
+def _upimg_get_avaliable_platform():
+    json_string = requests.get(
+        (v1_url if not alapi_token else v2_url) + 'image/type',
+        headers={'token': alapi_token} if alapi_token else {}).text
+    return json.loads(json_string)['data']
+
+
 def upload_image(file_path: str, plt_type: str = '', set_url: str = v1_url):
     """
     上传图片或Markdown中所有的图片到多平台（免API KEY，但不保证数据安全）
@@ -25,6 +32,7 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v1_url):
     from .. import qs_default_console, qs_error_string, qs_info_string, qs_warning_string
     from rich.table import Table
 
+    set_url = v1_url if not alapi_token else set_url
     res_table = Table(row_styles=["none", "dim"])
     res_table.add_column("File" if user_lang != 'zh' else '文件', no_wrap=True, justify="center", style="bold cyan")
     res_table.add_column("Status" if user_lang != 'zh' else '状态', no_wrap=True, justify='center')

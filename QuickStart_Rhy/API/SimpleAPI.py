@@ -213,7 +213,7 @@ def imgs_in_url(url: str):
 
 def acg2():
     try:
-        res = requests.get('https://yingserver.cn/open/acgimg/acgurl.php?return=json')
+        res = requests.get('https://api.luvying.com/acgimg?return=json')
     except Exception as e:
         return False, repr(e), None, None
     else:

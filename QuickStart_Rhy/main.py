@@ -36,9 +36,9 @@ def qs_help(rep=''):
             qs_default_console.print('\n[underline]引导[/underline]\n', justify='center')
             qs_default_console.print('[bold magenta]qs lesson[/bold magenta]', justify='center')
             qs_default_console.print('\n[underline]文档[/underline]\n', justify='center')
-            qs_default_console.print('C D N : https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/ _ _ _', justify='center')
-            qs_default_console.print('Github: https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/', justify='center')
-            qs_default_console.print('Coding: https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/ ', justify='center')
+            qs_default_console.print('C D N : https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/ _ _ _', justify='center')
+            qs_default_console.print('Github: https://rhythmicc.github.io/2020/08/09/QuickStart-Rhy-zh/', justify='center')
+            qs_default_console.print('Coding: https://blog.rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/ ', justify='center')
             qs_default_console.print('\n[underline]TG群[/underline]\n', justify='center')
             qs_default_console.print('https://t.me/joinchat/G2mpk7-S85eM7sb7', justify='center')
     else:
