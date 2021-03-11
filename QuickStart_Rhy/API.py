@@ -74,35 +74,55 @@ def up_img():
                                                                         if user_lang != 'zh' else ('用法', '图像 | *.md')))
         return
     else:
-        from .API.alapi import upload_image
+        from .API.alapi import upload_image, _upimg_get_avaliable_platform
         import random
-        spt_type = {'ali': '阿里云', 'sogou': '搜狗', 'alapi': 'Alapi',
-                    'qihoo': '360奇虎', 'toutiao': '头条', 'xiaomi': '小米'}
-        spt_type_keys = list(spt_type.keys())
-        if path == '-help' or path == '-h':
+
+        need_ask_platform = '-h' in sys.argv or '-help' in sys.argv or len(sys.argv) > 3
+        if need_ask_platform:
+            spt_type = _upimg_get_avaliable_platform()
+            spt_type_keys = list(spt_type.keys())
+        if '-h' in sys.argv or '-help' in sys.argv:
             qs_default_console.print(
                 qs_info_string,
                 'Usage: qs upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'
                 if user_lang != 'zh' else '用法: qs -upimg <图像 | *.md> [平台]\n\n支持 ([可选平台]: 描述):')
-            qs_default_console.print(''.join(['%14s' % '%s: %s%s' % (
-                spt_type_keys[i], spt_type[spt_type_keys[i]], '\t' if (i + 1) % 3 else '\n'
-            ) for i in range(len(spt_type_keys))]))
+
+            from rich.table import Table, Column
+            from rich.box import SIMPLE
+
+            tb = Table('1', '2', '3', show_header=False, show_edge=False, box=SIMPLE)
+            for indx in range(0, len(spt_type_keys), 3):
+                row = []
+                for i in range(indx, indx + 3):
+                    if i < len(spt_type_keys):
+                        row.append(f'{spt_type_keys[i]}: {spt_type[spt_type_keys[i]]}')
+                    else:
+                        break
+                tb.add_row(*row)
+            qs_default_console.print(tb, justify="center")
+
             qs_default_console.print(
                 qs_info_string,
                 'If you do not set platform, qs will randomly choose one.' if user_lang != 'zh' else
                 '如果你没有设置平台，qs将随机抽取一个可用平台')
             return
-        type_map = {}
-        for i in spt_type:
-            type_map[i.lower()] = i
         argv_len_3 = len(sys.argv) > 3
         if argv_len_3:
             sys.argv[3] = sys.argv[3].lower()
-        upload_image(path, type_map[sys.argv[3]]) if argv_len_3 and sys.argv[3] in type_map else (
-            upload_image(path),
-            qs_default_console.print(
-                ('No such platform: %s' if user_lang != 'zh' else '没有这个平台: %s') % sys.argv[3]) if argv_len_3 else 1
-        )
+            type_map = {}
+            for i in spt_type:
+                type_map[i.lower()] = i
+
+            upload_image(path, type_map[sys.argv[3]]) \
+                if argv_len_3 and sys.argv[3] in type_map else (
+                qs_default_console.print(
+                    qs_warning_string,
+                    ('No such platform: %s' if user_lang != 'zh' else '不支持设定的平台: %s') % sys.argv[3]),
+                qs_default_console.print(qs_error_string, 'Upload Failed' if user_lang != 'zh' else '上传失败!')
+            )
+
+        else:
+            upload_image(path)
 
 
 def ali_oss():
