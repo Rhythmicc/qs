@@ -164,7 +164,7 @@ def open_file(argv=None):
         os.system('open "' + '" "'.join(argv) + '"')
     elif system == 'linux':
         from subprocess import run
-        run(['xdg-open'] + ['"' + i + '"' for i in argv])
+        run(['xdg-open'] + [i for i in argv])
     else:
         import webbrowser as wb
 

@@ -67,6 +67,25 @@ def up_img():
 
     Upload images or Markdown images to multiple platforms (data security is not guaranteed)
     """
+    def showSptPlatform(dt, ls):
+        from rich.table import Table
+        from rich.box import SIMPLE
+
+        tb = Table('1', '2', '3', show_header=False, show_edge=False, box=SIMPLE)
+        for indx in range(0, len(ls), 3):
+            row = []
+            for i in range(indx, indx + 3):
+                if i < len(ls):
+                    row.append(f'{ls[i]}: {dt[ls[i]]}')
+                else:
+                    break
+            tb.add_row(*row)
+        qs_default_console.print(
+            qs_info_string,
+            'Usage: qs upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'
+            if user_lang != 'zh' else '用法: qs -upimg <图像 | *.md> [平台]\n\n支持 ([可选平台]: 描述):')
+        qs_default_console.print(tb, justify="center")
+
     try:
         path = sys.argv[2]
     except IndexError:
@@ -77,30 +96,10 @@ def up_img():
         from .API.alapi import upload_image, _upimg_get_avaliable_platform
         import random
 
-        need_ask_platform = '-h' in sys.argv or '-help' in sys.argv or len(sys.argv) > 3
-        if need_ask_platform:
-            spt_type = _upimg_get_avaliable_platform()
-            spt_type_keys = list(spt_type.keys())
+        spt_type = _upimg_get_avaliable_platform()
+        spt_type_keys = list(spt_type.keys())
         if '-h' in sys.argv or '-help' in sys.argv:
-            qs_default_console.print(
-                qs_info_string,
-                'Usage: qs upimg <picture | *.md> [platform]\n\nSupport ([platform]: description):'
-                if user_lang != 'zh' else '用法: qs -upimg <图像 | *.md> [平台]\n\n支持 ([可选平台]: 描述):')
-
-            from rich.table import Table, Column
-            from rich.box import SIMPLE
-
-            tb = Table('1', '2', '3', show_header=False, show_edge=False, box=SIMPLE)
-            for indx in range(0, len(spt_type_keys), 3):
-                row = []
-                for i in range(indx, indx + 3):
-                    if i < len(spt_type_keys):
-                        row.append(f'{spt_type_keys[i]}: {spt_type[spt_type_keys[i]]}')
-                    else:
-                        break
-                tb.add_row(*row)
-            qs_default_console.print(tb, justify="center")
-
+            showSptPlatform(spt_type, spt_type_keys)
             qs_default_console.print(
                 qs_info_string,
                 'If you do not set platform, qs will randomly choose one.' if user_lang != 'zh' else
@@ -118,11 +117,12 @@ def up_img():
                 qs_default_console.print(
                     qs_warning_string,
                     ('No such platform: %s' if user_lang != 'zh' else '不支持设定的平台: %s') % sys.argv[3]),
+                showSptPlatform(spt_type, spt_type_keys),
                 qs_default_console.print(qs_error_string, 'Upload Failed' if user_lang != 'zh' else '上传失败!')
             )
 
         else:
-            upload_image(path)
+            upload_image(path, plt_type=random.choice(spt_type_keys))
 
 
 def ali_oss():

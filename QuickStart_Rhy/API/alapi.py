@@ -18,7 +18,7 @@ def _upimg_get_avaliable_platform():
     return json.loads(json_string)['data']
 
 
-def upload_image(file_path: str, plt_type: str = '', set_url: str = v1_url):
+def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
     """
     上传图片或Markdown中所有的图片到多平台（免API KEY，但不保证数据安全）
 
@@ -93,19 +93,29 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v1_url):
                     img_dict[aim] = False
                 else:
                     try:
-                        res_plt = list(res_dict['data']['url'].keys())[0]
+                        if set_url == v1_url:
+                            res_plt = list(res_dict['data']['url'].keys())[0]
+                            res_table.add_row(
+                                aim.split(dir_char)[-1], str(res_dict['code']),
+                                res_dict['msg'] if res_dict['code'] != 200 else (
+                                    res_dict['data']['url'][res_plt]
+                                    if res_dict['data']['url'][res_plt]
+                                    else res_plt + ' failed')
+                            )
+                            img_dict[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] == 200 else False
+                        else:
+                            res_table.add_row(
+                                aim.split(dir_char)[-1], str(res_dict['code']),
+                                res_dict['msg'] if res_dict['code'] != 200 else (
+                                    res_dict['data']['url']
+                                    if res_dict['data']['url'] else plt_type + ' failed')
+                            )
+                            img_dict[aim] = res_dict['data']['url'] if res_dict['code'] == 200 else False
                     except Exception:
                         qs_default_console.print(qs_error_string, res_dict)
                         res_table.add_row(aim.split(dir_char)[-1], str(res_dict['code']), res_dict['msg'])
                         img_dict[aim] = False
-                    else:
-                        # qs_default_console.log(qs_info_string, res_dict)
-                        res_table.add_row(aim.split(dir_char)[-1], str(res_dict['code']),
-                                          res_dict['msg'] if res_dict['code'] != 200 else (
-                                              res_dict['data']['url'][res_plt]
-                                              if res_dict['data']['url'][res_plt]
-                                              else res_plt + ' failed'))
-                        img_dict[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] == 200 else False
+
                 if img_dict[aim]:
                     qs_default_console.print(qs_info_string, 'replacing img:' if user_lang != 'zh' else '替换路径',
                                              f'"{raw_path}" with "{img_dict[aim]}"')
@@ -128,19 +138,24 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v1_url):
         else:
             res = post_img(file_path)
             if not res:
-                res_table.add_row(file_path.split(dir_char)[-1], 'No File', '')
+                res_table.add_row(os.path.basename(file_path), 'No File', '')
             else:
                 try:
-                    plt_type = list(res['data']['url'].keys())[0]
-                except Exception:
-                    res_table.add_row(file_path.split(dir_char)[-1], str(res['code']), res['msg'])
-                else:
-                    res_table.add_row(
-                        file_path.split(dir_char)[-1], str(res['code']), res['msg'] if res['code'] != 200 else (
-                            res['data']['url'][plt_type] if res['data']['url'][plt_type]
-                            else plt_type + ' failed'
+                    if set_url == v1_url:
+                        plt_type = list(res['data']['url'].keys())[0]
+                        res_table.add_row(
+                            os.path.basename(file_path), str(res['code']), res['msg'] if res['code'] != 200 else (
+                                res['data']['url'][plt_type] if res['data']['url'][plt_type]
+                                else plt_type + ' failed'
+                            )
                         )
-                    )
+                    else:
+                        res_table.add_row(
+                            os.path.basename(file_path), str(res['code']),
+                            res['msg'] if res['code'] != 200 else res['data']['url']
+                        )
+                except Exception:
+                    res_table.add_row(os.path.basename(file_path), str(res['code']), res['msg'])
             qs_default_console.print(res_table, justify="center")
 
 
