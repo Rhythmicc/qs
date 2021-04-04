@@ -5,8 +5,11 @@ qs的WIFI模块, 协助连接WIFI, 但不支持机构WIFI自动登录
 The WiFi module of QS helps to connect WiFi, but does not support the automatic login of institutional WiFi
 """
 import time
-from pywifi import const, PyWiFi
-from .. import user_lang, qs_default_console, qs_error_string
+# from pywifi import const, PyWiFi
+from .. import user_lang, qs_default_console, qs_error_string, requirePackage
+
+const = requirePackage('pywifi', 'const')
+PyWiFi = requirePackage('pywifi', 'PyWiFi')
 
 
 class WiFi:
@@ -88,7 +91,8 @@ class WiFi:
         :param password: 密码
         :return: status
         """
-        from pywifi import Profile
+        # from pywifi import Profile
+        Profile = requirePackage('pywifi', 'Profile')
         self.iface.disconnect()
         time.sleep(1)
         pinfo = Profile()

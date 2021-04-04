@@ -28,6 +28,34 @@ qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_default_console = Console()
 
 
+def requirePackage(pname: str, module: str = ""):
+    """
+    获取本机上的python第三方库
+
+    :param pname: 库名
+    :param module: 待引入的模块名，可缺省
+    :return: 库或模块的地址
+    """
+    try:
+        exec(f'from {pname} import {module}' if module else f"import {pname}")
+    except:
+        from PyInquirer import prompt
+
+        confirm = prompt({
+            'type': 'confirm',
+            'name': 'install',
+            'message': f"""Qs require {name + (' -> ' + module if module else '')}, confirm to install?  
+  Qs 依赖 {name + (' -> ' + module if module else '')}, 是否确认安装?""",
+            'default': True})['install']
+        if confirm:
+            os.system(f'pip3 install {pname}')
+            exec(f'from {pname} import {module}' if module else f"import {pname}")
+        else:
+            exit(-1)
+    finally:
+        return eval(f'{module if module else pname}')
+
+
 def cut_string(string: str, length: int) -> list:
     """
     每隔l个字符切分字符串
@@ -125,7 +153,7 @@ def u(argv: list = None):
             url = formatUrl(url)
             wb.open_new_tab(url)
     else:
-        import pyperclip
+        pyperclip = requirePackage('pyperclip')
         try:
             url = pyperclip.paste()
         except :
@@ -201,5 +229,4 @@ def pcat():
     Output the contents of the clipboard
     :return: None
     """
-    from pyperclip import paste
-    print(paste())
+    print(requirePackage('pyperclip', 'paste')())

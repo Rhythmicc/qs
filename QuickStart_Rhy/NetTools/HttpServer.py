@@ -7,11 +7,11 @@ HTTP service of QS
 from socketserver import ThreadingMixIn
 from http.server import SimpleHTTPRequestHandler
 from http.server import HTTPServer
-from .. import qs_default_console, qs_info_string
+from .. import qs_default_console, qs_info_string, requirePackage
 
 
 class HttpServers:
-    import qrcode_terminal
+    qrcode_terminal = requirePackage('qrcode_terminal')
     import signal
 
     def __init__(self, ip='localhost', port=8000, url=''):

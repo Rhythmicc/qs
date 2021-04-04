@@ -15,13 +15,13 @@ def top():
     """
     import time
     import math
-    import psutil
     import colorama
-    from prettytable import PrettyTable
     from colorama import Style, ansi, Cursor
-    from .. import cur_time, dir_char
+    from .. import cur_time, dir_char, requirePackage
     from ..TuiTools import Bar
     from ..NetTools.NormalDL import size_format
+    psutil = requirePackage('psutil')
+    PrettyTable = requirePackage('prettytable', 'PrettyTable')
 
     def deal():
         print(ansi.clear_screen() + Cursor.POS(0, 0) + Style.RESET_ALL, end='')

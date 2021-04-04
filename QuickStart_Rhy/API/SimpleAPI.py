@@ -126,7 +126,8 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
     :param mode: 'get' 或 'post'，get时将信息写入key.*文件中，post将剪切板内容上传至pasteme
     :return: None
     """
-    import pyperclip
+    from .. import requirePackage
+    pyperclip = requirePackage('pyperclip')
     if mode == 'get':
         if password:
             r = requests.get(f'https://api.pasteme.cn/{key},{password}', params={'json': True})

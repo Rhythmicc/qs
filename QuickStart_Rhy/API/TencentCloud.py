@@ -117,7 +117,10 @@ class TxCOS:
 
 
 class Translate:
-    from langdetect import detect, DetectorFactory
+    from .. import requirePackage
+    detect = requirePackage('langdetect', 'detect')
+    DetectorFactory = requirePackage('langdetect', 'DetectorFactory')
+
     from tencentcloud.common import credential
     from tencentcloud.common.profile.client_profile import ClientProfile
     from tencentcloud.common.profile.http_profile import HttpProfile

@@ -5,7 +5,8 @@
 Shared cutting board realized by local file system of network hard disk
 """
 from . import pre_check
-import pyperclip
+from .. import requirePackage
+pyperclip = requirePackage('pyperclip')
 
 
 class CommonClipboard:

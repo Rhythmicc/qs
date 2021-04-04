@@ -4,8 +4,10 @@
 
 Line Graph
 """
-import diagram
 import io
+from .. import requirePackage
+
+diagram = requirePackage('diagram')
 
 
 class Line:

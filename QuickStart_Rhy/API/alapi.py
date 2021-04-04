@@ -240,6 +240,7 @@ def ip_info(ip: str, set_url: str = v2_url):
     :return: data dict {ip, isp, pos | ERROR MESSAGE, location | ERROR code}
     """
     try:
+        set_url = set_url if ip else v1_url
         res = requests.post(set_url + 'ip', data="ip=%s&format=json" % ip,
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                             if ip and alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'}
