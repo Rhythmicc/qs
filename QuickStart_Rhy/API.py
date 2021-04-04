@@ -5,7 +5,7 @@
 Call various QS API
 """
 import sys
-from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string
+from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, requirePackage
 
 
 def remove_bg():
@@ -261,7 +261,7 @@ def translate():
     """
     global Translate, translate
     from . import trans_engine
-    import pyperclip
+    pyperclip = requirePackage('pyperclip')
     if trans_engine != 'default':
         from .API.TencentCloud import translate
     else:
@@ -384,7 +384,7 @@ def largeImage():
 def AipNLP():
     """百度NLP | Baidu NLP"""
     from .API.BaiduCloud import AipNLP
-    import pyperclip
+    pyperclip = requirePackage('pyperclip')
     ct = sys.argv[2:]
     if not ct:
         try:
@@ -442,7 +442,7 @@ def Pasteme():
 def bili_cover():
     """下载Bilibili视频、直播的封面图片（视频链接、视频号均可识别）"""
     from .API.alapi import bili_cover as bc
-    import pyperclip
+    pyperclip = requirePackage('pyperclip')
 
     try:
         url = sys.argv[2]
@@ -484,7 +484,7 @@ def short_video_info(son_call=False):
     """
     from .API.alapi import short_video_info
     from .NetTools import get_fileinfo, size_format
-    import pyperclip
+    pyperclip = requirePackage('pyperclip')
     import re
     try:
         url = sys.argv[2]
@@ -722,7 +722,7 @@ def pinyin():
     content = ' '.join(sys.argv[2:])
     if not content:
         try:
-            import pyperclip
+            pyperclip = requirePackage('pyperclip')
             content = pyperclip.paste()
         except:
             from . import qs_default_input

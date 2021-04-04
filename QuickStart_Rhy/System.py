@@ -25,8 +25,8 @@ def top():
         import sys
         sys.argv = ['bpytop'] + sys.argv[2:]
 
-        from bpytop import main
-        main()
+        from . import requirePackage
+        requirePackage('bpytop', 'main')()
 
 
 def clear_mem():

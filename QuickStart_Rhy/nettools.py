@@ -66,11 +66,13 @@ def download():
         [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px']]
     urls = sys.argv[2:]
     if not urls:
-        import pyperclip
+        from . import requirePackage
+        pyperclip = requirePackage('pyperclip')
         urls = pyperclip.paste().split()
     if urls:
         if ytb_flag:
-            from youtube_dl import _real_main
+            from . import requirePackage
+            _real_main = requirePackage('youtube_dl', '_real_main')
         from .NetTools.NormalDL import normal_dl
         from . import qs_config
         for url in urls:
@@ -123,9 +125,9 @@ def netinfo():
     Query ip information via domain name or ip.
     """
     import socket
-    import pyperclip
     import urllib.parse
-    from . import user_lang, qs_default_console, qs_error_string
+    from . import user_lang, qs_default_console, qs_error_string, requirePackage
+    pyperclip = requirePackage('pyperclip')
     from .API.alapi import ip_info
 
     def print_ip_info(info_ls):
