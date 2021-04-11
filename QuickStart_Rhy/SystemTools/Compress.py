@@ -11,7 +11,7 @@ import tarfile
 import zipfile
 import rarfile
 import py7zr
-from .. import dir_char, user_lang
+from .. import dir_char, user_lang, qs_default_console, qs_warning_string
 
 
 def get_compress_package_name():
@@ -140,7 +140,11 @@ class _NormalCompressedPackage:
                     try:
                         path.rename(fn.encode('cp437').decode('utf-8'))
                     except:
-                        path.rename(fn.encode('cp437').decode('gbk'))
+                        try:
+                            path.rename(fn.encode('cp437').decode('gbk'))
+                        except Exception as e:
+                            qs_default_console.log(qs_warning_string, repr(e))
+
             else:
                 raise NotImplementedError
             self.save()

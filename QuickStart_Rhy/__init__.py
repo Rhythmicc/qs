@@ -44,7 +44,7 @@ def requirePackage(pname: str, module: str = ""):
         confirm = prompt({
             'type': 'confirm',
             'name': 'install',
-            'message': f"""Qs require {name + (' -> ' + module if module else '')}, confirm to install?  
+            'message': f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?  
   Qs 依赖 {name + (' -> ' + module if module else '')}, 是否确认安装?""",
             'default': True})['install']
         if confirm:
