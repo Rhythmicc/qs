@@ -133,7 +133,9 @@ def api_menu():
     qs loli  [-save] [-p]    :-> get and loli image link [or save (use default proxy)]
     qs photo [-save]         :-> get a photo link (or save)
     qs setu  [-save] [-p]    :-> randomly call acg, acg2, loli
-    qs exc  <num> <to> \[fr]  :-> Query <number> <fr> corresponding <number?> <to>""")\
+    qs exc  <num> <to> \[fr]  :-> Query <number> <fr> corresponding <number?> <to>
+    qs zhihu                 :-> Get zhihu.com Daily
+    qs wallhaven [-save]     :-> Get Wallhaven Toplist""")\
         if user_lang != 'zh' else color_rep("""API工具:
     qs trans  \[content]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[content]      :-> 获取中文内容的拼音
@@ -159,7 +161,9 @@ def api_menu():
     qs loli  [-save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]
     qs photo [-save]        :-> 获取一张写真 (或保存)
     qs setu  [-save] [-p]     :-> 随机调用acg, acg2, loli
-    qs exc <num> <to> \[fr]   :-> 汇率查询<number> <fr> 对应 多少 <to>""")
+    qs exc <num> <to> \[fr]   :-> 汇率查询<number> <fr> 对应 多少 <to>
+    qs zhihu                :-> 获取知乎日报
+    qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图""")
 
 
 def image_menu():
@@ -253,7 +257,9 @@ api_funcs = {
     'loli': 'loli',
     'photo': 'photo',
     'setu': 'setu',
-    'exc': 'exchange'
+    'exc': 'exchange',
+    'zhihu': 'zhihuDaily',
+    'wallhaven': 'wallhaven'
 }
 
 image_funcs = {

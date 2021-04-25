@@ -46,7 +46,7 @@ class Downloader:
     from ..TuiTools.Bar import DataTransformBar
 
     def __init__(self, url: str, num: int, name: str = '', proxy: str = '',
-                 referer: str = '', output_error: bool = False):
+                 referer: str = '', output_error: bool = False, failed2exit: bool = False):
         """
         qs普通文件下载引擎
 
@@ -58,12 +58,17 @@ class Downloader:
         signal.signal(signal.SIGINT, self._kill_self)
         info_flag = True
         self.url, self.num, self.output_error, self.proxies = url, num, output_error, {}
+        self.enabled = True
         with qs_default_console.status('Getting file info..' if user_lang != 'zh' else '获取文件信息中..'):
             self.url, self.name, r = get_fileinfo(url, proxy, referer)
         if not (self.url and self.name and r):
             info_flag = False
-            qs_default_console.print(qs_warning_string, 'Get File information failed, please check network!'
+            qs_default_console.print(qs_error_string if failed2exit else qs_warning_string,
+                                     'Get File information failed, please check network!'
                                      if user_lang != 'zh' else '获取文件信息失败，请检查网络!')
+            if failed2exit:
+                self.enabled = False
+                return
         if self.name and '.' not in self.name:
             self.name = self.name = os.path.basename(url)
         if name:
@@ -193,6 +198,8 @@ class Downloader:
 
         :return: None
         """
+        if not self.enabled:
+            return
         self.main_progress.start()
         if self.size > 0:
             self.main_progress.start_task(self.dl_id)
@@ -228,7 +235,7 @@ class Downloader:
 
 
 def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
-              thread_num: int = min(16, core_num * 4), output_error: bool = False):
+              thread_num: int = min(16, core_num * 4), output_error: bool = False, failed2exit: bool = False):
     """
     自动规划下载线程数量并开始并行下载
 
@@ -240,6 +247,10 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     :param set_referer: 设置referer
     :param thread_num: 线程数
     :param output_error: 输出报错信息
+    :param failed2exit: 获取文件信息失败则不下载，否则qs将继续尝试下载
     :return: None
     """
-    Downloader(url, thread_num, set_name, set_proxy, set_referer, output_error).run()
+    Downloader(
+        url=url, num=thread_num, name=set_name, proxy=set_proxy,
+        referer=set_referer, output_error=output_error, failed2exit=failed2exit
+    ).run()

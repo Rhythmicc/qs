@@ -49,21 +49,26 @@ def download():
     Qs download engine, use --video or -v use the default video download engine download
     """
     if any([i in sys.argv for i in ['-h', '-help', '--help']]):
-        from . import user_lang, qs_default_console, qs_error_string
+        from . import user_lang, qs_default_console, qs_info_string
         qs_default_console.print(
-            qs_error_string, 'Usage: qs dl [url...]\n'
+            qs_info_string, 'Usage: "qs dl [url...]"\n'
             '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
-            '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc'
+            '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc\n'
+            '  [--name fileName] :-> Set File Name'
             if user_lang != 'zh' else
-            '使用: qs -dl [链接...]\n'
+            '使用: "qs dl [链接...]"\n'
             '  [--video] | [-v]  :-> 使用youtube-dl下载视频\n'
-            '  [--proxy] | [-px] :-> 使用配置表中的默认代理下载')
+            '  [--proxy] | [-px] :-> 使用配置表中的默认代理下载\n'
+            '  [--name fileName] :-> 设置文件名')
         return
     global _real_main
     ytb_flag = '--video' in sys.argv or '-v' in sys.argv
     use_proxy = '--proxy' in sys.argv or '-px' in sys.argv
-    if ytb_flag or use_proxy:
-        [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px']]
+    set_name = None
+    if '--name' in sys.argv:
+        set_name = sys.argv[sys.argv.index('--name') + 1]
+    if ytb_flag or use_proxy or set_name:
+        [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px', '--name', set_name]]
     urls = sys.argv[2:]
     if not urls:
         from . import requirePackage
@@ -80,11 +85,12 @@ def download():
                 m3u8_dl(url)
             else:
                 if use_proxy:
-                    normal_dl(url, set_proxy=qs_config.basicSelect('default_proxy')) \
+                    normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy')) \
                         if not ytb_flag else _real_main([url, '--proxy', qs_config.basicSelect('default_proxy'),
                                                          '--merge-output-format', 'mp4'])
                 else:
-                    normal_dl(url) if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'])
+                    normal_dl(url, set_name=set_name) \
+                        if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'])
     else:
         from . import user_lang, qs_default_console, qs_error_string
         qs_default_console.log(qs_error_string, "No url found!" if user_lang != 'zh' else '无链接输入')
@@ -131,18 +137,15 @@ def netinfo():
     from .API.alapi import ip_info
 
     def print_ip_info(info_ls):
-        from rich.table import Table, Column
-        from rich import box
+        from .TuiTools.Table import qs_default_table
 
-        table = Table(
-            *([
-                  Column('ip', justify='center', style='bold magenta'), Column('运营商', justify='center'),
-                  Column('地址', justify='center'), Column('经纬', justify='center')]
-              if user_lang == 'zh' else [
-                  Column('ip', justify='center', style='bold magenta'), Column('isp', justify='center'),
-                  Column('pos', justify='center'), Column('location', justify='center')
-            ]), row_styles=['none', 'dim'], show_edge=False, box=box.SIMPLE
-        )
+        table = qs_default_table([
+            {'header': 'ip', 'justify': 'center', 'style': 'bold magenta'}, {'header': '运营商', 'justify': 'center'},
+            {'header': '地址', 'justify': 'center'}, {'header': '经纬', 'justify': 'center'},
+        ] if user_lang == 'zh' else [
+            {'header': 'ip', 'justify': 'center', 'style': 'bold magenta'}, {'header': 'isp', 'justify': 'center'},
+            {'header': 'pos', 'justify': 'center'}, {'header': 'location', 'justify': 'center'},
+        ], 'NetInfo Results\n')
         for info in info_ls:
             table.add_row(info['ip'],
                           info['isp'].strip() if 'isp' in info else '未知', info['pos'],

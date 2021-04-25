@@ -30,13 +30,14 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
     :return: None
     """
     from .. import qs_default_console, qs_error_string, qs_info_string, qs_warning_string
-    from rich.table import Table
+    from ..TuiTools.Table import qs_default_table
 
     set_url = v1_url if not alapi_token else set_url
-    res_table = Table(row_styles=["none", "dim"])
-    res_table.add_column("File" if user_lang != 'zh' else '文件', no_wrap=True, justify="center", style="bold cyan")
-    res_table.add_column("Status" if user_lang != 'zh' else '状态', no_wrap=True, justify='center')
-    res_table.add_column("Url" if user_lang != 'zh' else '链接', justify="center")
+    res_table = qs_default_table([
+        {'header': "File" if user_lang != 'zh' else '文件', 'no_wrap': True, 'justify': "center", 'style': "bold cyan"},
+        {'header': "Status" if user_lang != 'zh' else '状态', 'no_wrap': True, 'justify': "center"},
+        {'header': "Url" if user_lang != 'zh' else '链接', 'no_wrap': True, 'justify': "center"},
+    ])
 
     def post_img(path):
         if not os.path.exists(path):
@@ -270,14 +271,16 @@ def garbage_classification(query_ls: list, set_url: str = v2_url):
     def fmt_string(string, pre_num):
         return '\n' * pre_num + ' '.join(cut_string(string, width))
 
-    from rich.table import Table, Column
+    from ..TuiTools.Table import qs_default_table
     from rich.text import Text
-    from rich import box
     import math
-    table = Table(*[
-        Column('名称', justify="center", style='bold cyan'), Column('分类', justify="center"),
-        Column('解释', justify="center"), Column('提示', justify="center"),
-    ], row_styles=['none', 'dim'], show_edge=False, box=box.SIMPLE, title='[bold underline] 查询结果\n')
+
+    table = qs_default_table([
+        {'header': '名称', 'justify': 'center', 'style': 'bold cyan'},
+        {'header': '分类', 'justify': 'center'},
+        {'header': '解释', 'justify': 'center'},
+        {'header': '提示', 'justify': 'center'},
+    ], '[bold underline] 查询结果\n')
     first_flag = True
     for query_el in query_ls:
         if first_flag:
@@ -442,6 +445,27 @@ def exchange(fr, number, to=user_currency, set_url: str = v2_url):
         res = requests.get(set_url + 'exchange',
                            params={'money': number, 'from': fr, 'to': to},
                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, res['msg']
+        return True, res['data']
+    except Exception as e:
+        return False, repr(e)
+
+
+def zhihuDaily(set_url: str = v1_url):
+    """
+    获取知乎日报
+
+    Get Zhihu Daily
+
+    :param set_url: {v1_url} or {v2_url} 默认 v1
+    :return:
+    """
+    try:
+        res = requests.get(set_url + 'zhihu/latest',
+                           headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token} \
+                           if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
         res = json.loads(res.text)
         if res['code'] != 200:
             return False, res['msg']

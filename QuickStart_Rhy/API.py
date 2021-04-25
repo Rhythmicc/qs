@@ -647,23 +647,24 @@ def kdCheck():
             qs_default_console.print(qs_error_string, msg)
             return
 
+    from .TuiTools.Table import qs_default_table
     from . import table_cell
-    from rich.table import Table
     from rich.text import Text
-    from rich import box
 
     width = qs_default_console.width // 4 * 3
-    tb = Table(show_edge=False, show_header=True, expand=False, row_styles=["none", "dim"], box=box.SIMPLE_HEAVY)
-    tb.add_column("Time" if user_lang != 'zh' else '时间', justify="center", style="bold cyan")
-    tb.add_column("Description" if user_lang != 'zh' else '描述', justify="center", no_wrap=False)
-    tb.add_column("Status" if user_lang != 'zh' else '状态', justify="center")
-    tb.title = [
-        '[bold underline red]Unknown:heavy_exclamation_mark:', '[bold underline yellow]In transit:airplane:',
-        '[bold underline green]In delivery:delivery_truck:', '[bold underline bold green]Signed receipt:hearts:'
-    ][code] if user_lang != 'zh' else [
-        '[bold underline red]未知:heavy_exclamation_mark:', '[bold underline yellow]运输中:airplane:',
-        '[bold underline green]派送中:delivery_truck:', '[bold underline magenta]已签收:hearts:'
-    ][code]
+    tb = qs_default_table(
+        [
+            {'header': "Time" if user_lang != 'zh' else '时间', 'justify': "center", 'style': "bold cyan"},
+            {'header': "Description" if user_lang != 'zh' else '描述', 'justify': "center", 'no_wrap': False},
+            {'header': "Status" if user_lang != 'zh' else '状态', 'justify': "center"},
+        ], ([
+             '[bold underline red]Unknown:heavy_exclamation_mark:', '[bold underline yellow]In transit:airplane:',
+             '[bold underline green]In delivery:delivery_truck:', '[bold underline bold green]Signed receipt:hearts:'
+         ][code] if user_lang != 'zh' else [
+            '[bold underline red]未知:heavy_exclamation_mark:', '[bold underline yellow]运输中:airplane:',
+            '[bold underline green]派送中:delivery_truck:', '[bold underline magenta]已签收:hearts:'
+        ][code]) + '\n'
+    )
     for info in msg[:-1] if code != 3 else msg:
         tb.add_row(
             info['time'], Text(table_cell(info['content'], width), justify='full')
@@ -784,3 +785,56 @@ def exchange():
         qs_default_console.print(qs_error_string, repr(e))
     finally:
         st.stop()
+
+
+def zhihuDaily():
+    from .API.alapi import zhihuDaily
+    from rich.panel import Panel
+
+    st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
+    st.start()
+    try:
+        status, data = zhihuDaily()
+        st.stop()
+        if not status:
+            qs_default_console.log(qs_error_string, data)
+            return
+        data = data['stories'] + data['top_stories']
+        for item in data:
+            res = '[bold cyan]' + ('Author: ' if user_lang != 'zh' else '作者: ')
+            res += '[bold white]' + item['hint'] + '[/bold white]\n'
+            res += '[bold cyan]' + ('Link:' if user_lang != 'zh' else '链接: ')
+            res += '[bold blue]' + item['url'] + '[/bold blue]\n'
+            res += '[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
+            if 'images' in item:
+                res += '[bold blue]  ' + '\n  '.join(item['images'])
+            elif 'image' in item:
+                res += '[bold blue]  ' + item['image']
+            qs_default_console.print(Panel(res, title='[b]' + item['title']), justify="center", end='/n/n')
+    except Exception as e:
+        qs_default_console.print(qs_error_string, repr(e))
+    finally:
+        st.stop()
+
+
+def wallhaven():
+    from .API.SimpleAPI import wallhaven
+
+    res = wallhaven()
+    if not res:
+        return
+
+    if '-save' in sys.argv:
+        from .NetTools.NormalDL import normal_dl
+        for i in res:
+            normal_dl(i, failed2exit=True)
+    else:
+        from .TuiTools.Table import qs_default_table
+
+        tb = qs_default_table([
+            {'header': "ID" if user_lang != 'zh' else '编号', 'justify': "center", 'style': "bold"},
+            {'header': 'URL', 'justify': "center", 'style': "bold cyan"},
+        ], 'Wallhaven Anime TopList\n')
+        for iid, item in enumerate(res):
+            tb.add_row(str(iid), item)
+        qs_default_console.print(tb, justify="center")

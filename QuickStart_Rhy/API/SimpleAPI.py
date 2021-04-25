@@ -48,10 +48,10 @@ def smms(filePath: str):
     :return: None
     """
     import os
-    from rich.table import Table
+    from ..TuiTools.Table import qs_default_table
 
     api_key = pre_check('smms')
-    res_tb = Table(*(['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接']))
+    res_tb = qs_default_table(['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接'])
 
     def post_img(path: str) -> dict:
         try:
@@ -231,3 +231,20 @@ def photo():
         return False, repr(e), None, None
     else:
         return res.status_code == requests.codes.ok, url, name
+
+
+def wallhaven():
+    from .. import qs_default_console, qs_error_string
+    from . import headers
+    import requests
+    import re
+
+    url = 'https://wallhaven.cc/search?categories=010&purity=011&topRange=1M&sorting=toplist&order=desc'
+    urlTemplate = 'https://w.wallhaven.cc/full/{}/wallhaven-{}'
+    html = requests.get(url, headers=headers)
+    if html.status_code != requests.codes.ok:
+        qs_default_console.print(qs_error_string, f'Http Status: {html.status_code}')
+        return None
+    html = re.findall('<section.*?>(.*?)</section', html.text, re.S)[0]
+    lis = [i.split('/')[-2:] for i in re.findall('<img.*?data-src="(.*?)"', html, re.S)]
+    return [urlTemplate.format(*i) for i in lis]

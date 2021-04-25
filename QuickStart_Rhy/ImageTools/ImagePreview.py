@@ -4,8 +4,8 @@
 preview image on terminal | At present, only iTerm under MacOS is available,
 you need to install imgcat library by yourself
 """
-from imgcat import imgcat
-from .. import headers
+from .. import headers, requirePackage
+imgcat = requirePackage('imgcat', 'imgcat')
 
 
 def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '', qs_console_status=None):

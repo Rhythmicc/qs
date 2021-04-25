@@ -5,7 +5,6 @@ qs的WIFI模块, 协助连接WIFI, 但不支持机构WIFI自动登录
 The WiFi module of QS helps to connect WiFi, but does not support the automatic login of institutional WiFi
 """
 import time
-# from pywifi import const, PyWiFi
 from .. import user_lang, qs_default_console, qs_error_string, requirePackage
 
 const = requirePackage('pywifi', 'const')
@@ -64,8 +63,8 @@ class WiFi:
                 if user_lang != 'zh' else '没有可识别的网卡接口')
             return
         elif num != 1:
-            from rich.table import Table
-            table = Table(*(['id', 'interface'] if user_lang != 'zh' else ['序号', '网卡']))
+            from ..TuiTools.Table import qs_default_table
+            table = qs_default_table(['id', 'interface'] if user_lang != 'zh' else ['序号', '网卡'])
             for i, w in enumerate(self.ifaces):
                 table.add_row(str(i), w.name())
             qs_default_console.print(table)
