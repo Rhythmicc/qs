@@ -223,28 +223,37 @@ def acg2():
         return res['code'] == '200', (res['acgurl'] if res['code'] == '200' else 'Error'), res['width'], res['height']
 
 
-def photo():
-    try:
-        from ..NetTools import get_fileinfo
-        url, name, res = get_fileinfo('http://img-api.kococ.cn')
-    except Exception as e:
-        return False, repr(e), None, None
-    else:
-        return res.status_code == requests.codes.ok, url, name
+# def photo():
+#     try:
+#         from ..NetTools import get_fileinfo
+#         url, name, res = get_fileinfo('http://img-api.kococ.cn')
+#     except Exception as e:
+#         return False, repr(e), None, None
+#     else:
+#         return res.status_code == requests.codes.ok, url, name
 
 
-def wallhaven():
+def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False)):
     from .. import qs_default_console, qs_error_string
     from . import headers
     import requests
     import re
 
-    url = 'https://wallhaven.cc/search?categories=010&purity=011&topRange=1M&sorting=toplist&order=desc'
+    if not set_search_url:
+        set_search_url = 'https://wallhaven.cc/search?categories=010&purity=011&topRange=1M&sorting=toplist&order=desc'
+
     urlTemplate = 'https://w.wallhaven.cc/full/{}/wallhaven-{}'
-    html = requests.get(url, headers=headers)
+    html = requests.get(set_search_url, headers=headers)
     if html.status_code != requests.codes.ok:
         qs_default_console.print(qs_error_string, f'Http Status: {html.status_code}')
         return None
     html = re.findall('<section.*?>(.*?)</section', html.text, re.S)[0]
-    lis = [i.split('/')[-2:] for i in re.findall('<img.*?data-src="(.*?)"', html, re.S)]
-    return [urlTemplate.format(*i) for i in lis]
+    lis = re.findall('<li>(.*?)</li', html, re.S)
+    res = []
+    for i in lis:
+        url, size = re.findall('<img.*?data-src="(.*?)".*?<span.*?class="wall-res".*?>(.*?)<', i, re.S)[0]
+        url = url.split('/')[-2:]
+        if '<span class="png">' in i:
+            url[-1] = url[-1].replace('.jpg', '.png')
+        res.append({'url': urlTemplate.format(*url), 'size': [int(i) for i in re.findall('\d+\.?\d*', size)]})
+    return res

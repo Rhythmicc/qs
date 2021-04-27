@@ -737,37 +737,38 @@ def pinyin():
     qs_default_console.print(qs_info_string if status else qs_error_string, res)
 
 
-def photo():
-    from .API.SimpleAPI import photo
-
-    st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
-    st.start()
-
-    try:
-        status, acg_link, name = photo()
-        qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
-            if status else qs_default_console.log(qs_error_string, acg_link)
-        if status:
-            if '-save' in sys.argv[2:]:
-                from .NetTools.NormalDL import normal_dl
-                st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
-                normal_dl(acg_link)
-            if system == 'darwin':  # Only support iTerm for Mac OS X
-                from .ImageTools.ImagePreview import image_preview
-                st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-                image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
-                              '-save' not in sys.argv[2:], qs_console_status=st)
-                return
-            st.update(status='Done')
-    except Exception as e:
-        qs_default_console.print(qs_error_string, repr(e))
-    finally:
-        st.stop()
+# def photo():
+#     from .API.SimpleAPI import photo
+#
+#     st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
+#     st.start()
+#
+#     try:
+#         status, acg_link, name = photo()
+#         qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
+#             if status else qs_default_console.log(qs_error_string, acg_link)
+#         if status:
+#             if '-save' in sys.argv[2:]:
+#                 from .NetTools.NormalDL import normal_dl
+#                 st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
+#                 normal_dl(acg_link)
+#             if system == 'darwin':  # Only support iTerm for Mac OS X
+#                 from .ImageTools.ImagePreview import image_preview
+#                 st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
+#                 image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
+#                               '-save' not in sys.argv[2:], qs_console_status=st)
+#                 return
+#             st.update(status='Done')
+#     except Exception as e:
+#         qs_default_console.print(qs_error_string, repr(e))
+#     finally:
+#         st.stop()
 
 
 def setu():
     import random
-    random.choice([acg, loli, photo])()
+    # random.choice([acg, loli, photo])()
+    random.choice([acg, loli])()
 
 
 def exchange():
@@ -820,21 +821,37 @@ def zhihuDaily():
 def wallhaven():
     from .API.SimpleAPI import wallhaven
 
-    res = wallhaven()
+    url = ''
+    if '-h' in sys.argv:
+        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [-u <url>] [-save]")
+
+    if '-u' in sys.argv:
+        url = sys.argv[sys.argv.index('-u') + 1]
+
+    res = wallhaven() if not url else wallhaven(url)
     if not res:
         return
 
     if '-save' in sys.argv:
         from .NetTools.NormalDL import normal_dl
+        import os
         for i in res:
-            normal_dl(i, failed2exit=True)
+            name = i['url'].split('/')[-1]
+            if os.path.exists(name):
+                qs_default_console.print(qs_warning_string, f'{name} is exists!' if user_lang != 'zh' else f'{name} 已存在!')
+                continue
+            qs_default_console.print(qs_info_string, f"Deal:\t{name}")
+            qs_default_console.print(qs_info_string, f'Size:\t{" × ".join([str(j) for j in i["size"]])}')
+            normal_dl(i['url'], failed2exit=True, output_error=True)
+            qs_default_console.print('-' * qs_default_console.width)
     else:
         from .TuiTools.Table import qs_default_table
 
         tb = qs_default_table([
             {'header': "ID" if user_lang != 'zh' else '编号', 'justify': "center", 'style': "bold"},
             {'header': 'URL', 'justify': "center", 'style': "bold cyan"},
+            {'header': 'Size' if user_lang != 'zh' else '尺寸', 'justify': "center"}
         ], 'Wallhaven Anime TopList\n')
         for iid, item in enumerate(res):
-            tb.add_row(str(iid), item)
+            tb.add_row(str(iid), item['url'], ' × '.join([str(i) for i in item['size']]))
         qs_default_console.print(tb, justify="center")

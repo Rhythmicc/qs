@@ -131,7 +131,6 @@ def api_menu():
     qs phi   <url>            :-> get <image url> in url (preview on Mac)
     qs kd    <courier number> :-> Query China express
     qs loli  [-save] [-p]    :-> get and loli image link [or save (use default proxy)]
-    qs photo [-save]         :-> get a photo link (or save)
     qs setu  [-save] [-p]    :-> randomly call acg, acg2, loli
     qs exc  <num> <to> \[fr]  :-> Query <number> <fr> corresponding <number?> <to>
     qs zhihu                 :-> Get zhihu.com Daily
@@ -159,7 +158,6 @@ def api_menu():
     qs phi   <url>            :-> 获取url里的图片链接 (Mac上iTerm可预览)
     qs kd    <courier number> :-> 查询国内快递
     qs loli  [-save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]
-    qs photo [-save]        :-> 获取一张写真 (或保存)
     qs setu  [-save] [-p]     :-> 随机调用acg, acg2, loli
     qs exc <num> <to> \[fr]   :-> 汇率查询<number> <fr> 对应 多少 <to>
     qs zhihu                :-> 获取知乎日报
@@ -255,7 +253,6 @@ api_funcs = {
     'phi': 'preview_html_images',
     'kd': 'kdCheck',
     'loli': 'loli',
-    'photo': 'photo',
     'setu': 'setu',
     'exc': 'exchange',
     'zhihu': 'zhihuDaily',
