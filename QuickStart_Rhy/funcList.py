@@ -71,7 +71,8 @@ def system_menu():
     qs md5    <path...>      :-> calculate md5 of files
     qs sha1   <path...>      :-> calculate SHA1 of files
     qs sha256 <path...>      :-> calculate SHA256 of files
-    qs sha512 <path...>      :-> calculate SHA512 of files""") \
+    qs sha512 <path...>      :-> calculate SHA512 of files
+    qs diff <dir1> <dir2>    :-> diff two directories""") \
         if user_lang != 'zh' else color_rep("""系统工具:
     qs top                   :-> CPU和内存监控器
     qs clear                 :-> 清理本机内存
@@ -85,7 +86,8 @@ def system_menu():
     qs md5    <path...>      :-> 计算文件的md5值
     qs sha1   <path...>      :-> 计算文件sha1值
     qs sha256 <path...>      :-> 计算文件sha256值
-    qs sha512 <path...>      :-> 计算文件sha512值""")
+    qs sha512 <path...>      :-> 计算文件sha512值
+    qs diff <dir1> <dir2>    :-> 对比两个文件夹差异""")
 
 
 def net_menu():
@@ -134,7 +136,8 @@ def api_menu():
     qs setu  [-save] [-p]    :-> randomly call acg, acg2, loli
     qs exc  <num> <to> \[fr]  :-> Query <number> <fr> corresponding <number?> <to>
     qs zhihu                 :-> Get zhihu.com Daily
-    qs wallhaven [-save]     :-> Get Wallhaven Toplist""")\
+    qs wallhaven [-save]     :-> Get Wallhaven Toplist
+    qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords""")\
         if user_lang != 'zh' else color_rep("""API工具:
     qs trans  \[content]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[content]      :-> 获取中文内容的拼音
@@ -161,7 +164,8 @@ def api_menu():
     qs setu  [-save] [-p]     :-> 随机调用acg, acg2, loli
     qs exc <num> <to> \[fr]   :-> 汇率查询<number> <fr> 对应 多少 <to>
     qs zhihu                :-> 获取知乎日报
-    qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图""")
+    qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图
+    qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接""")
 
 
 def image_menu():
@@ -216,7 +220,8 @@ system_funcs = {
     'md5': 'md5',
     'sha1': 'sha1',
     'sha256': 'sha256',
-    'sha512': 'sha512'
+    'sha512': 'sha512',
+    'diff': 'diffDir'
 }
 
 net_funcs = {
@@ -256,7 +261,8 @@ api_funcs = {
     'setu': 'setu',
     'exc': 'exchange',
     'zhihu': 'zhihuDaily',
-    'wallhaven': 'wallhaven'
+    'wallhaven': 'wallhaven',
+    'lmgtfy': 'lmgtfy'
 }
 
 image_funcs = {

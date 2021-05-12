@@ -186,3 +186,11 @@ class QsConfig:
         if key not in self.config['API_settings']:
             raise KeyError
         return self.config['API_settings'][key]
+
+    def basicUpdate(self, key: str, value: str):
+        self.config['basic_settings'][key] = value
+        return self.update()
+
+    def apiUpdate(self, key: str, value: str):
+        self.config['API_settings'][key] = value
+        return self.update()

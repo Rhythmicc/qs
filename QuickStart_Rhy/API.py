@@ -327,8 +327,9 @@ def weather():
         if not loc:
             if user_lang == 'zh':
                 from .API.alapi import translate
-                trans_loaction = translate(simple[0].split('：')[-1])
-                qs_default_console.print('地区：' + trans_loaction if trans_loaction else simple[0].split('：')[-1])
+                enLocation = simple[0].split('：')[-1].strip()
+                trans_loaction = translate(enLocation)
+                qs_default_console.print('地区：' + trans_loaction if trans_loaction else enLocation)
             else:
                 qs_default_console.print('Location' + simple[0][simple[0].index(':'):])
         simple = simple[2:7]
@@ -821,14 +822,18 @@ def zhihuDaily():
 def wallhaven():
     from .API.SimpleAPI import wallhaven
 
-    url = ''
+    url, oneFlag = '', False
     if '-h' in sys.argv:
-        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [-u <url>] [-save]")
+        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [-u <url>] [-one] [-save]")
 
     if '-u' in sys.argv:
         url = sys.argv[sys.argv.index('-u') + 1]
+        sys.argv.remove('-u')
+        sys.argv.remove(url)
 
-    res = wallhaven() if not url else wallhaven(url)
+    oneFlag = '-one' in sys.argv
+
+    res = wallhaven(randomOne=oneFlag) if not url else wallhaven(url, randomOne=oneFlag)
     if not res:
         return
 
@@ -845,13 +850,45 @@ def wallhaven():
             normal_dl(i['url'], failed2exit=True, output_error=True)
             qs_default_console.print('-' * qs_default_console.width)
     else:
-        from .TuiTools.Table import qs_default_table
+        if oneFlag:
+            res = res[0]
+            qs_default_console.print(qs_info_string, 'URL:\t', res['url'])
+            qs_default_console.print(qs_info_string, 'SIZE:\t', ' × '.join([str(i) for i in res['size']]))
+            from .ImageTools.ImagePreview import image_preview
 
-        tb = qs_default_table([
-            {'header': "ID" if user_lang != 'zh' else '编号', 'justify': "center", 'style': "bold"},
-            {'header': 'URL', 'justify': "center", 'style': "bold cyan"},
-            {'header': 'Size' if user_lang != 'zh' else '尺寸', 'justify': "center"}
-        ], 'Wallhaven Anime TopList\n')
-        for iid, item in enumerate(res):
-            tb.add_row(str(iid), item['url'], ' × '.join([str(i) for i in item['size']]))
-        qs_default_console.print(tb, justify="center")
+            with qs_default_console.status('Getting..' if user_lang != 'zh' else '获取图片中..') as st:
+                image_preview(res['url'], True, qs_console_status=st)
+        else:
+            from .TuiTools.Table import qs_default_table
+
+            tb = qs_default_table([
+                {'header': "ID" if user_lang != 'zh' else '编号', 'justify': "center", 'style': "bold"},
+                {'header': 'URL', 'justify': "center", 'style': "bold cyan"},
+                {'header': 'Size' if user_lang != 'zh' else '尺寸', 'justify': "center"}
+            ], 'Wallhaven Anime TopList\n')
+            for iid, item in enumerate(res):
+                tb.add_row(str(iid), item['url'], ' × '.join([str(i) for i in item['size']]))
+            qs_default_console.print(tb, justify="center")
+
+
+def lmgtfy():
+    from .API.SimpleAPI import lmgtfy
+    pyperclip = requirePackage('pyperclip')
+
+    keyword = ' '.join(sys.argv[2:])
+    res = lmgtfy(keyword)
+    try:
+        pyperclip.copy(res)
+        qs_default_console.print(
+            qs_info_string,
+            'The generated link has been copied for you, and teach your friends how to use Google! (Can also Copy '
+            'Following link'
+            if user_lang != 'zh' else '已经为您复制生成的链接，快教朋友如何使用Google吧! (也可以复制下面的链接)'
+        )
+    except:
+        qs_default_console.print(
+            qs_warning_string,
+            'Failed to use clipboard, you can copy the flowing link:'
+            if user_lang != 'zh' else '调用剪切板失败，你可以复制下面的链接:'
+        )
+    qs_default_console.print(qs_info_string, res)

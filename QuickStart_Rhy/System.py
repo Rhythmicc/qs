@@ -190,3 +190,29 @@ def sha512():
     获取文件sha512值
     :return:
     """
+
+
+def diffDir():
+    """
+    对比两个文件夹差异，并生成相应html对比结果
+    :return:
+    """
+    from . import user_lang, qs_default_console, qs_info_string
+    from .SystemTools.Diff import DictionaryFiles
+    import sys
+
+    if '-h' in sys.argv:
+        qs_default_console.print(qs_info_string, 'Usage: qs diff <dir1> <dir2> [-x <name or regex pattern>]')
+
+    d1, d2 = sys.argv[2:4]
+    applyIgnore = sys.argv[sys.argv.index('-x') + 1:] if '-x' in sys.argv else None
+    d1 = DictionaryFiles(d1, applyIgnore)
+    d2 = DictionaryFiles(d2, applyIgnore)
+
+    if not (d1.available and d2.available):
+        return
+
+    with qs_default_console.status('Generating diff result..' if user_lang != 'zh' else '生成对比结果中..') as st:
+        from .SystemTools.Diff import DiffFilesToStructHtml
+
+        DiffFilesToStructHtml(d1, d2).generate()

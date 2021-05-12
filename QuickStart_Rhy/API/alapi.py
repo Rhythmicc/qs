@@ -7,6 +7,32 @@ from urllib.parse import quote
 import requests
 
 alapi_token = pre_check('alapi_token', False)
+if not alapi_token:
+    from .. import qs_default_console, qs_error_string
+    from PyInquirer import prompt
+
+    qs_default_console.print(qs_error_string, 'This function require alapi token!\n这个功能需要alapi token\n')
+    if prompt({
+        'type': 'confirm',
+        'name': 'confirm',
+        'message': """To get alapi token?
+是否前往获取alapi token?""",
+        'default': True})['confirm']:
+        from .. import u
+        from .. import qs_config
+
+        try:
+            u(['https://www.alapi.cn/'])
+        except Exception as e:
+            qs_default_console.print(qs_error_string, 'Failed to open browser, try url: https://www.alapi.cn/')
+        finally:
+            alapi_token = prompt({
+                'type': 'input',
+                'name': 'token',
+                'message': 'Input alapi token | 输入alapi token:',
+            })['token']
+            qs_config.apiUpdate('alapi_token', alapi_token)
+
 v1_url = "https://v1.alapi.cn/api/"
 v2_url = "https://v2.alapi.cn/api/"
 
@@ -160,7 +186,7 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
             qs_default_console.print(res_table, justify="center")
 
 
-def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang, set_url: str = v1_url):
+def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang, set_url: str = v2_url):
     """
     获取翻译结果
 
@@ -172,6 +198,7 @@ def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang, set_
     :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: 翻译的文本 | Translated text
     """
+    global alapi_token
     try:
         request_info = 'q={}&from={}&to={}'.format(quote(text, 'utf-8'), from_lang, to_lang) if from_lang \
             else 'q={}&to={}'.format(quote(text, 'utf-8'), to_lang)
@@ -465,7 +492,7 @@ def zhihuDaily(set_url: str = v1_url):
     try:
         res = requests.get(set_url + 'zhihu/latest',
                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token} \
-                           if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
+                               if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
         res = json.loads(res.text)
         if res['code'] != 200:
             return False, res['msg']

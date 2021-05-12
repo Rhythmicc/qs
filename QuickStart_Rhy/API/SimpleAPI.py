@@ -4,6 +4,8 @@
 
 Some APIs that can be easily implemented
 """
+import base64
+
 from . import *
 from .. import qs_default_console, qs_error_string, qs_info_string, qs_warning_string
 import json
@@ -233,7 +235,7 @@ def acg2():
 #         return res.status_code == requests.codes.ok, url, name
 
 
-def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False)):
+def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False), randomOne: bool = False):
     from .. import qs_default_console, qs_error_string
     from . import headers
     import requests
@@ -256,4 +258,16 @@ def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False)):
         if '<span class="png">' in i:
             url[-1] = url[-1].replace('.jpg', '.png')
         res.append({'url': urlTemplate.format(*url), 'size': [int(i) for i in re.findall('\d+\.?\d*', size)]})
+    if randomOne:
+        import random
+        return [random.choice(res)]
     return res
+
+
+def lmgtfy(keyword: str):
+    import random
+    import base64
+    supportLs = [
+        'https://moedog.org/tools/google/?q='
+    ]
+    return random.choice(supportLs) + base64.b64encode(bytes(keyword, 'utf-8')).decode('utf-8')
