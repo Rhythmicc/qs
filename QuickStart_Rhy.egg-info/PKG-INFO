@@ -1,15 +1,30 @@
 Metadata-Version: 2.1
 Name: QuickStart-Rhy
-Version: 0.5.4
+Version: 0.5.5
 Summary: Simplify the operation in terminal!
 Home-page: https://github.com/Rhythmicc/QuickStart
 Author: RhythmLian
 License: MIT
-Description: ## Docs
+Description: - [ QuickStart_Rhy ](#quickstart_rhy)
+          - [Install](#install)
+          - [Docs](#docs)
+        
+        <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+        
+        <h1 style="text-align: center"> QuickStart_Rhy </h1>
+        
+        ## Install
+        ```shell
+        pip3 install quickstart-rhy
+        ```
+        **Env: ^Python 3.7**
+        
+        ## Docs
         | |Url|
         |:---:|:---:|
         |1|https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/      |
         |2|https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/|
+        
         
 Keywords: Simplify the operation in terminal!
 Platform: UNKNOWN

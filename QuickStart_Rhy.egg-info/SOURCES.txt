@@ -41,6 +41,7 @@ QuickStart_Rhy/NetTools/WiFi.py
 QuickStart_Rhy/NetTools/WiFiDarwin.py
 QuickStart_Rhy/NetTools/__init__.py
 QuickStart_Rhy/SystemTools/Compress.py
+QuickStart_Rhy/SystemTools/Diff.py
 QuickStart_Rhy/SystemTools/FileHash.py
 QuickStart_Rhy/SystemTools/Monitor.py
 QuickStart_Rhy/SystemTools/__init__.py

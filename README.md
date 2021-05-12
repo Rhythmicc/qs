@@ -1,6 +1,10 @@
-<center><h1> QuickStart_Rhy </h1></center>
+- [ QuickStart_Rhy ](#quickstart_rhy)
+  - [Install](#install)
+  - [Docs](#docs)
 
-[toc]
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 style="text-align: center"> QuickStart_Rhy </h1>
 
 ## Install
 ```shell
