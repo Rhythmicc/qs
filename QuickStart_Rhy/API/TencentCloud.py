@@ -5,14 +5,12 @@
 Tencent cloud API
 """
 import json
+from .. import requirePackage
 from . import pre_check, user_lang, dir_char
 
 
 class TxCOS:
-    try:
-        import qcloud_cos
-    except ImportError:
-        exit('You need to install "cos-python-sdk-v5", "tencentcloud-sdk-python"')
+    qcloud_cos = requirePackage('qcloud_cos', real_name='cos-python-sdk-v5')
 
     def __init__(self):
         """
@@ -117,7 +115,7 @@ class TxCOS:
 
 
 class Translate:
-    from .. import requirePackage
+    requirePackage('tencentcloud', real_name='tencentcloud-sdk-python')
     detect = requirePackage('langdetect', 'detect')
     DetectorFactory = requirePackage('langdetect', 'DetectorFactory')
 

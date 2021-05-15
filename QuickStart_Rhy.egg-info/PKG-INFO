@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: QuickStart-Rhy
-Version: 0.5.5
+Version: 0.5.6
 Summary: Simplify the operation in terminal!
 Home-page: https://github.com/Rhythmicc/QuickStart
 Author: RhythmLian
@@ -8,8 +8,7 @@ License: MIT
 Description: - [ QuickStart_Rhy ](#quickstart_rhy)
           - [Install](#install)
           - [Docs](#docs)
-        
-        <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+          
         
         <h1 style="text-align: center"> QuickStart_Rhy </h1>
         

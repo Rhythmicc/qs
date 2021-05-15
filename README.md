@@ -1,8 +1,7 @@
 - [ QuickStart_Rhy ](#quickstart_rhy)
   - [Install](#install)
   - [Docs](#docs)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+  
 
 <h1 style="text-align: center"> QuickStart_Rhy </h1>
 
