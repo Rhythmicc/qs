@@ -28,12 +28,14 @@ qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_default_console = Console()
 
 
-def requirePackage(pname: str, module: str = ""):
+def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True):
     """
     获取本机上的python第三方库
 
     :param pname: 库名
     :param module: 待引入的模块名，可缺省
+    :param real_name: 用于 pip3 install 的名字
+    :param not_exit: 是否为真实包名
     :return: 库或模块的地址
     """
     try:
@@ -45,11 +47,15 @@ def requirePackage(pname: str, module: str = ""):
             'type': 'confirm',
             'name': 'install',
             'message': f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?  
-  Qs 依赖 {name + (' -> ' + module if module else '')}, 是否确认安装?""",
+  Qs 依赖 {pname + (' -> ' + module if module else '')}, 是否确认安装?""",
             'default': True})['install']
         if confirm:
-            os.system(f'pip3 install {pname}')
-            exec(f'from {pname} import {module}' if module else f"import {pname}")
+            os.system(f'pip3 install {pname if not real_name else real_name}')
+            qs_default_console.print(qs_info_string, f'just run again: "{" ".join(sys.argv)}"')
+            if not_exit:
+                exec(f'from {pname} import {module}' if module else f"import {pname}")
+            else:
+                exit(0)
         else:
             exit(-1)
     finally:
