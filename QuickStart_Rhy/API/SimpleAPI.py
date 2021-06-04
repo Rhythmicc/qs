@@ -4,10 +4,8 @@
 
 Some APIs that can be easily implemented
 """
-import base64
-
 from . import *
-from .. import qs_default_console, qs_error_string, qs_info_string, qs_warning_string
+from .. import qs_default_console, qs_error_string, qs_info_string
 import json
 import requests
 
@@ -155,7 +153,7 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
     else:
         try:
             ss = pyperclip.paste()
-        except :
+        except:
             from .. import qs_default_input
             path = qs_default_input.ask(
                 'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
@@ -215,6 +213,13 @@ def imgs_in_url(url: str):
 
 
 def acg2():
+    """
+    随机获取一张acg图片链接
+
+    Get a random link to an ACG image
+
+    :return: 请求状态, 链接或报错, 宽度, 高度 | status, url or error, width, height
+    """
     try:
         res = requests.get('https://api.luvying.com/acgimg?return=json')
     except Exception as e:
@@ -225,17 +230,33 @@ def acg2():
         return res['code'] == '200', (res['acgurl'] if res['code'] == '200' else 'Error'), res['width'], res['height']
 
 
-# def photo():
-#     try:
-#         from ..NetTools import get_fileinfo
-#         url, name, res = get_fileinfo('http://img-api.kococ.cn')
-#     except Exception as e:
-#         return False, repr(e), None, None
-#     else:
-#         return res.status_code == requests.codes.ok, url, name
+def photo():
+    """
+    随机返回一张写真
+
+    Randomly return a photo
+
+    :return: 请求状态, 图片链接(报错), 文件名 | status, url, file name
+    """
+    try:
+        from ..NetTools import get_fileinfo
+        url, name, res = get_fileinfo('https://www.onexiaolaji.cn/RandomPicture/api')
+    except Exception as e:
+        return False, repr(e), None
+    else:
+        return res.status_code == requests.codes.ok, url, name
 
 
 def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False), randomOne: bool = False):
+    """
+    获取wallhaven toplist或指定图片列表
+
+    Get wallhaven toplist or specified picture list
+
+    :param set_search_url: 用于搜索的URL
+    :param randomOne: 随机抽一张返回
+    :return: 包含链接的列表 | [link1, link2, ...]
+    """
     from .. import qs_default_console, qs_error_string
     from . import headers
     import requests
@@ -265,6 +286,14 @@ def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False), rando
 
 
 def lmgtfy(keyword: str):
+    """
+    让我帮你Google一下
+
+    Let me google that for you
+
+    :param keyword: 关键词
+    :return: 目标链接 | http link
+    """
     import random
     import base64
     supportLs = [

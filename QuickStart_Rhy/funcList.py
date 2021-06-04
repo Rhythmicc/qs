@@ -61,6 +61,7 @@ def system_menu():
     color_rep("""System Tools help:
     qs top                   :-> cpu and memory monitor
     qs clear                 :-> free memory
+    qs go2git                :-> go to the webpage of the git config
     qs mktar  <path...>      :-> create gzipped archive for path
     qs untar  <path...>      :-> extract *.tar.*
     qs mkzip  <path...>      :-> make a zip for path
@@ -76,6 +77,7 @@ def system_menu():
         if user_lang != 'zh' else color_rep("""系统工具:
     qs top                   :-> CPU和内存监控器
     qs clear                 :-> 清理本机内存
+    qs go2git                :-> 自动前往git目录托管仓库的网页
     qs mktar  <path...>      :-> 使用多个文件或文件夹创建tar压缩包
     qs untar  <path...>      :-> 解压各种格式的tar包
     qs mkzip  <path...>      :-> 使用多个文件或文件夹创建zip压缩包
@@ -129,6 +131,7 @@ def api_menu():
     qs svi   <url>            :-> get short video info
     qs svd   <url>            :-> download short video info as mp4
     qs acg   [-save]          :-> get an acg image link (or save)
+    qs photo [-save]          :-> get an porn photo link (or save)
     qs bing  [-save]          :-> get an bing image link (or save)
     qs phi   <url>            :-> get <image url> in url (preview on Mac)
     qs kd    <courier number> :-> Query China express
@@ -157,6 +160,7 @@ def api_menu():
     qs svi   <url>            :-> 获取多平台短视频信息
     qs svd   <url>            :-> 下载多平台短视频为mp4
     qs acg   [-save]          :-> 获取一张acg图片链接 (或保存)
+    qs photo [-save]          :-> 获取一张涩图链接 (或保存)
     qs bing  [-save]          :-> 获取一张bing图片链接 (或保存)
     qs phi   <url>            :-> 获取url里的图片链接 (Mac上iTerm可预览)
     qs kd    <courier number> :-> 查询国内快递
@@ -210,6 +214,7 @@ system_funcs = {
     'self': 'system',
     'top': 'top',
     'clear': 'clear_mem',
+    'go2git': 'go_github',
     'mktar': 'mktar',
     'untar': 'untar',
     'mkzip': 'mkzip',
@@ -221,7 +226,7 @@ system_funcs = {
     'sha1': 'sha1',
     'sha256': 'sha256',
     'sha512': 'sha512',
-    'diff': 'diffDir'
+    'diff': 'diff_dir'
 }
 
 net_funcs = {
@@ -258,6 +263,7 @@ api_funcs = {
     'phi': 'preview_html_images',
     'kd': 'kdCheck',
     'loli': 'loli',
+    'photo': 'photo',
     'setu': 'setu',
     'exc': 'exchange',
     'zhihu': 'zhihuDaily',

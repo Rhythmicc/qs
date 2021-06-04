@@ -6,12 +6,8 @@ Baidu cloud API
 """
 import os
 from . import pre_check, user_lang
-from .. import qs_default_console, qs_error_string, qs_info_string
-try:
-    import aip
-except ImportError:
-    qs_default_console.log(qs_error_string, 'You need to install:' if user_lang != 'zh' else '你需要安装:', 'baidu-aip')
-    exit(0)
+from .. import qs_default_console, qs_error_string, qs_info_string, requirePackage
+aip = requirePackage('aip', real_name='baidu-aip')
 
 
 class ImageDeal:
@@ -36,12 +32,13 @@ class ImageDeal:
         """
         self.client = aip.AipImageProcess(app_id, app_key, secret_key)
 
-    def largeImage(self, path: str):
+    def largeImage(self, path: str, st: qs_default_console.status = None):
         """
         放大图片 (图像效果增强)
 
         Enlarge image (Image Enhancement)
 
+        :param st: console状态
         :param path: 图片路径
         :return: None
         """
@@ -51,7 +48,7 @@ class ImageDeal:
         img_name = os.path.basename(path)
         img_name = img_name[:img_name.index('.')] + '_LG.' + '.'.join(img_name.split('.')[1:])
 
-        with qs_default_console.status(f'{qs_info_string} [bold white]{"Reading Image" if user_lang != "zh" else "读取图片"}: {path}') as status:
+        with qs_default_console.status(f'{"Reading Image" if user_lang != "zh" else "读取图片"}: {path}') if not st else st as status:
             with open(path, 'rb') as f:
                 img = f.read()
             status.update(status=f'{qs_info_string} {"Dealing..." if user_lang != "zh" else "处理中..."}')
@@ -61,7 +58,7 @@ class ImageDeal:
                 img = ImageDeal.base64.b64decode(img['image'])
                 with open(img_name, 'wb') as f:
                     f.write(img)
-            except :
+            except:
                 qs_default_console.print(qs_error_string, img)
         qs_default_console.print(qs_info_string, "Deal Done!" if user_lang != "zh" else "处理完成!")
 

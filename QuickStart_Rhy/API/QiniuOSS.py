@@ -5,13 +5,11 @@
 Qiniu cloud OSS API
 """
 from . import pre_check, dir_char, user_lang
+from .. import requirePackage
 
 
 class QiniuOSS:
-    try:
-        import qiniu
-    except ImportError:
-        exit('You need to install "qiniu"')
+    qiniu = requirePackage('qiniu')
 
     def __init__(self, ac_key: str = pre_check('qiniu_ac_key'),
                  sc_key: str = pre_check('qiniu_sc_key'),

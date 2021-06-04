@@ -9,6 +9,22 @@ import QuickStart_Rhy.Wrapper as _wrapper
 miss_file = ['.DS_Store']
 
 
+def __latest_filename(name):
+    import os
+    from . import dir_char
+
+    cur = os.getcwd()
+    rec = cur
+    while cur != dir_char:
+        if os.path.exists(name):
+            os.chdir(rec)
+            return cur + dir_char + name
+        os.chdir('..')
+        cur = os.getcwd()
+    os.chdir(rec)
+    return ''
+
+
 def top():
     """
     CPU和内存监测
@@ -41,10 +57,32 @@ def clear_mem():
     clear_mem()
 
 
+def go_github():
+    """
+    自动识别当前文件夹.git/config中的地址，并通过浏览器打开
+
+    Automatically recognize the address in the current folder .git/config and open it through a browser
+    """
+    import os
+    from . import qs_default_console, qs_error_string, user_lang, u, requirePackage
+
+    config_path = __latest_filename('.git/config')
+    if not os.path.exists(config_path):
+        qs_default_console.print(qs_error_string, 'No a git dictionary' if user_lang != 'zh' else '不是 git 文件夹')
+        return
+    config = requirePackage('configparser', 'ConfigParser')()
+    config.read(filenames=config_path)
+    url_ls = []
+    for section in config.sections():
+        if section.startswith('remote'):
+            url_ls.append(config[section]['url'].replace('.git', ''))
+    u(url_ls)
+
+
 @_wrapper.mkCompressPackageWrap
-def _mktar(filePath: str = ''):
+def _mktar(file_path: str = ''):
     from .SystemTools.Compress import Tar
-    return Tar(filePath + '.tar.gz', 'w')
+    return Tar(file_path + '.tar.gz', 'w')
 
 
 def mktar():
@@ -59,9 +97,9 @@ def mktar():
 
 
 @_wrapper.unCompressPackageWrap
-def _untar(filePath: str = ''):
+def _untar(file_path: str = ''):
     from .SystemTools.Compress import Tar
-    return Tar(filePath)
+    return Tar(file_path)
 
 
 def untar():
@@ -76,9 +114,9 @@ def untar():
 
 
 @_wrapper.mkCompressPackageWrap
-def _mkzip(filePath: str = ''):
+def _mkzip(file_path: str = ''):
     from .SystemTools.Compress import Zip
-    return Zip(filePath + '.zip', 'w')
+    return Zip(file_path + '.zip', 'w')
 
 
 def mkzip():
@@ -93,9 +131,9 @@ def mkzip():
 
 
 @_wrapper.unCompressPackageWrap
-def _unzip(filePath: str = ''):
+def _unzip(file_path: str = ''):
     from .SystemTools.Compress import Zip
-    return Zip(filePath, 'r')
+    return Zip(file_path, 'r')
 
 
 def unzip():
@@ -110,9 +148,9 @@ def unzip():
 
 
 @_wrapper.unCompressPackageWrap
-def _unrar(filePath: str = ''):
+def _unrar(file_path: str = ''):
     from .SystemTools.Compress import Rar
-    return Rar(filePath)
+    return Rar(file_path)
 
 
 def unrar():
@@ -127,9 +165,9 @@ def unrar():
 
 
 @_wrapper.mkCompressPackageWrap
-def _mk7z(filePath: str = ''):
+def _mk7z(file_path: str = ''):
     from .SystemTools.Compress import SevenZip
-    return SevenZip(filePath + '.7z', 'w')
+    return SevenZip(file_path + '.7z', 'w')
 
 
 def mk7z():
@@ -144,9 +182,9 @@ def mk7z():
 
 
 @_wrapper.unCompressPackageWrap
-def _un7z(filePath: str = ''):
+def _un7z(file_path: str = ''):
     from .SystemTools.Compress import SevenZip
-    return SevenZip(filePath)
+    return SevenZip(file_path)
 
 
 def un7z():
@@ -192,7 +230,7 @@ def sha512():
     """
 
 
-def diffDir():
+def diff_dir():
     """
     对比两个文件夹差异，并生成相应html对比结果
     :return:
@@ -205,14 +243,14 @@ def diffDir():
         qs_default_console.print(qs_info_string, 'Usage: qs diff <dir1> <dir2> [-x <name or regex pattern>]')
 
     d1, d2 = sys.argv[2:4]
-    applyIgnore = sys.argv[sys.argv.index('-x') + 1:] if '-x' in sys.argv else None
-    d1 = DictionaryFiles(d1, applyIgnore)
-    d2 = DictionaryFiles(d2, applyIgnore)
+    apply_ignore = sys.argv[sys.argv.index('-x') + 1:] if '-x' in sys.argv else None
+    d1 = DictionaryFiles(d1, apply_ignore)
+    d2 = DictionaryFiles(d2, apply_ignore)
 
     if not (d1.available and d2.available):
         return
 
-    with qs_default_console.status('Generating diff result..' if user_lang != 'zh' else '生成对比结果中..') as st:
+    with qs_default_console.status('Generating diff result..' if user_lang != 'zh' else '生成对比结果中..'):
         from .SystemTools.Diff import DiffFilesToStructHtml
 
         DiffFilesToStructHtml(d1, d2).generate()

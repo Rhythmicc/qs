@@ -6,18 +6,19 @@ import json
 from urllib.parse import quote
 import requests
 
+__common_token__ = 'hUxPTdnybk1XLUEFtzkj'
 alapi_token = pre_check('alapi_token', False)
 if not alapi_token:
-    from .. import qs_default_console, qs_error_string
+    from .. import qs_default_console, qs_error_string, qs_warning_string
     from PyInquirer import prompt
 
     qs_default_console.print(qs_error_string, 'This function require alapi token!\n这个功能需要alapi token\n')
     if prompt({
         'type': 'confirm',
         'name': 'confirm',
-        'message': """To get alapi token?
-是否前往获取alapi token?""",
-        'default': True})['confirm']:
+        'message': 'To get alapi token?\n是否前往获取alapi token?',
+        'default': True
+    })['confirm']:
         from .. import u
         from .. import qs_config
 
@@ -32,19 +33,40 @@ if not alapi_token:
                 'message': 'Input alapi token | 输入alapi token:',
             })['token']
             qs_config.apiUpdate('alapi_token', alapi_token)
+    elif prompt({
+        'type': 'confirm',
+        'name': 'confirm',
+        'message': 'Use common but limited token?\n是否愿意使用公共但是受限的token?',
+        'default': True
+    })['confirm']:
+        alapi_token = __common_token__
+        qs_config.apiUpdate('alapi_token', alapi_token)
+        qs_default_console.print(
+            qs_warning_string,
+            'Tokens with restricted applications may not be able to use the functions provided by alapi normally, '
+            'and you can try again multiple times.'
+            if user_lang != 'zh' else '应用受限的token可能无法正常使用alapi提供的功能，可多次重新尝试。')
+    else:
+        exit()
 
-v1_url = "https://v1.alapi.cn/api/"
+if not pre_check('__ban_warning', False) and alapi_token == __common_token__:
+    from .. import qs_default_console, qs_warning_string
+    qs_default_console.print(
+        qs_warning_string, 'Using common but limited token.' if user_lang != 'zh' else '正在使用公共但受限的token')
+    qs_default_console.print(
+        qs_warning_string,
+        'If you do not want this, try to apply one:' if user_lang != 'zh' else '如果您不想这样, 可以来申请一个自己的:',
+        'https://www.alapi.cn/')
+
 v2_url = "https://v2.alapi.cn/api/"
 
 
 def _upimg_get_avaliable_platform():
-    json_string = requests.get(
-        (v1_url if not alapi_token else v2_url) + 'image/type',
-        headers={'token': alapi_token} if alapi_token else {}).text
+    json_string = requests.get(v2_url + 'image/type', headers={'token': alapi_token}).text
     return json.loads(json_string)['data']
 
 
-def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
+def upload_image(file_path: str, plt_type: str = ''):
     """
     上传图片或Markdown中所有的图片到多平台（免API KEY，但不保证数据安全）
 
@@ -58,7 +80,7 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
     from .. import qs_default_console, qs_error_string, qs_info_string, qs_warning_string
     from ..TuiTools.Table import qs_default_table
 
-    set_url = v1_url if not alapi_token else set_url
+    set_url = v2_url
     res_table = qs_default_table([
         {'header': "File" if user_lang != 'zh' else '文件', 'no_wrap': True, 'justify': "center", 'style': "bold cyan"},
         {'header': "Status" if user_lang != 'zh' else '状态', 'no_wrap': True, 'justify': "center"},
@@ -93,7 +115,7 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
     def format_markdown(path):
         import re
         from rich.progress import Progress
-        _user_path = os.path.expanduser('~')
+        from .. import user_root
         rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
         img_dict = {}
         with open(path, 'r') as fp:
@@ -110,7 +132,7 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
                 progress.advance(pid, 1)
                 continue
             raw_path = aim
-            aim = aim.replace('~', _user_path)
+            aim = aim.replace('~', user_root)
             aim = aim if aim.startswith(dir_char) else get_path(rt_path, aim)
             if aim not in img_dict:
                 qs_default_console.print(qs_info_string, 'Start uploading:' if user_lang != 'zh' else '正在上传:', aim)
@@ -120,24 +142,13 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
                     img_dict[aim] = False
                 else:
                     try:
-                        if set_url == v1_url:
-                            res_plt = list(res_dict['data']['url'].keys())[0]
-                            res_table.add_row(
-                                aim.split(dir_char)[-1], str(res_dict['code']),
-                                res_dict['msg'] if res_dict['code'] != 200 else (
-                                    res_dict['data']['url'][res_plt]
-                                    if res_dict['data']['url'][res_plt]
-                                    else res_plt + ' failed')
-                            )
-                            img_dict[aim] = res_dict['data']['url'][res_plt] if res_dict['code'] == 200 else False
-                        else:
-                            res_table.add_row(
-                                aim.split(dir_char)[-1], str(res_dict['code']),
-                                res_dict['msg'] if res_dict['code'] != 200 else (
-                                    res_dict['data']['url']
-                                    if res_dict['data']['url'] else plt_type + ' failed')
-                            )
-                            img_dict[aim] = res_dict['data']['url'] if res_dict['code'] == 200 else False
+                        res_table.add_row(
+                            aim.split(dir_char)[-1], str(res_dict['code']),
+                            res_dict['msg'] if res_dict['code'] != 200 else (
+                                res_dict['data']['url']
+                                if res_dict['data']['url'] else plt_type + ' failed')
+                        )
+                        img_dict[aim] = res_dict['data']['url'] if res_dict['code'] == 200 else False
                     except Exception:
                         qs_default_console.print(qs_error_string, res_dict)
                         res_table.add_row(aim.split(dir_char)[-1], str(res_dict['code']), res_dict['msg'])
@@ -168,25 +179,16 @@ def upload_image(file_path: str, plt_type: str = '', set_url: str = v2_url):
                 res_table.add_row(os.path.basename(file_path), 'No File', '')
             else:
                 try:
-                    if set_url == v1_url:
-                        plt_type = list(res['data']['url'].keys())[0]
-                        res_table.add_row(
-                            os.path.basename(file_path), str(res['code']), res['msg'] if res['code'] != 200 else (
-                                res['data']['url'][plt_type] if res['data']['url'][plt_type]
-                                else plt_type + ' failed'
-                            )
-                        )
-                    else:
-                        res_table.add_row(
-                            os.path.basename(file_path), str(res['code']),
-                            res['msg'] if res['code'] != 200 else res['data']['url']
-                        )
+                    res_table.add_row(
+                        os.path.basename(file_path), str(res['code']),
+                        res['msg'] if res['code'] != 200 else res['data']['url']
+                    )
                 except Exception:
                     res_table.add_row(os.path.basename(file_path), str(res['code']), res['msg'])
             qs_default_console.print(res_table, justify="center")
 
 
-def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang, set_url: str = v2_url):
+def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang):
     """
     获取翻译结果
 
@@ -195,43 +197,40 @@ def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang, set_
     :param text: 待翻译内容 | Content to be translated.
     :param from_lang: 语种来源 | Source language
     :param to_lang: 翻译成的语种 | Translated into the language
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: 翻译的文本 | Translated text
     """
     global alapi_token
     try:
         request_info = 'q={}&from={}&to={}'.format(quote(text, 'utf-8'), from_lang, to_lang) if from_lang \
             else 'q={}&to={}'.format(quote(text, 'utf-8'), to_lang)
-        res = requests.post(set_url + 'fanyi', data=request_info,
+        res = requests.post(v2_url + 'fanyi', data=request_info,
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                             if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
         if res.status_code == requests.codes.ok:
             res = json.loads(res.text)
             if res['code'] != 200:
                 return "[ERROR] {}".format(res['msg'])
-            return res['data']['trans_result'][0]['dst'] if set_url == v1_url else res['data']['dst']
+            return res['data']['dst']
         return "[ERROR] 未知错误 | Unknown Error"
     except Exception as e:
         return f"[ERROR] {repr(e)}"
 
 
-def bili_cover(url: str, set_url: str = v2_url):
+def bili_cover(url: str):
     """
     获取BiliBili视频封面
 
     Get the BiliBili video cover
 
     :param url: BiliBili视频链接或视频号 | BiliBili video link or video number
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return:
     """
     import re
     from ..NetTools.NormalDL import normal_dl
     from .. import qs_default_console, qs_error_string, qs_info_string
     try:
-        res = requests.post(set_url + ('bbcover' if set_url == v1_url else 'bilibili/cover'), data='c=' + url,
-                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token}
-                            if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
+        res = requests.post(v2_url + 'bilibili/cover', data='c=' + url,
+                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
     except Exception as e:
         return qs_default_console.print(qs_error_string, repr(e))
     if res.status_code == requests.codes.ok:
@@ -257,22 +256,19 @@ def bili_cover(url: str, set_url: str = v2_url):
                                f"Get cover with: {url} failed" if user_lang != 'zh' else f'下载封面: {url} 失败')
 
 
-def ip_info(ip: str, set_url: str = v2_url):
+def ip_info(ip: str):
     """
     获取ip的运营商、地理位置等数据
 
     Get IP operator, geographic location and other data
 
     :param ip: ipv4, ipv6, empty means current machine
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: data dict {ip, isp, pos | ERROR MESSAGE, location | ERROR code}
     """
     try:
-        set_url = set_url if ip else v1_url
-        res = requests.post(set_url + 'ip', data="ip=%s&format=json" % ip,
+        res = requests.post(v2_url + 'ip', data="ip=%s&format=json" % ip,
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
-                            if ip and alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'}
-                            if ip else headers.update({'token': alapi_token} if alapi_token else headers))
+                            if ip else headers.update({'token': alapi_token}))
         res = json.loads(res.text)
         if res['code'] != 200:
             return {'ip': ip, 'isp': '', 'pos': res['msg'], 'location': '{code, %s}' % res['code']}
@@ -282,14 +278,13 @@ def ip_info(ip: str, set_url: str = v2_url):
         if user_lang != 'zh' else '网络错误', 'location': '{code, %s}' % repr(e)}
 
 
-def garbage_classification(query_ls: list, set_url: str = v2_url):
+def garbage_classification(query_ls: list):
     """
     查询中国垃圾分类
 
     Search Chinese garbage classification
 
     :param query_ls: 待查询的垃圾列表 | garbage list
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: 查询结果的字符串表格 | string table
     """
     from .. import qs_default_console, cut_string
@@ -314,7 +309,7 @@ def garbage_classification(query_ls: list, set_url: str = v2_url):
             first_flag = False
         else:
             table.add_row(Text('-', style='none'), Text('-', style='none'), '-', '-')
-        res = requests.post(set_url + ("lajifenlei" if set_url == v1_url else 'garbage'),
+        res = requests.post(v2_url + 'garbage',
                             data="name={}".format(quote(query_el, 'utf-8')),
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                             if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
@@ -347,18 +342,17 @@ def garbage_classification(query_ls: list, set_url: str = v2_url):
     return table
 
 
-def short_video_info(url: str, set_url: str = v2_url):
+def short_video_info(url: str):
     """
     解析多平台短视频，并返回视频信息与下载直链
 
     Parse multi - platform short video and return video information with download straight link
 
     :param url: 短视频分享链接 | Short video sharing link
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return:
     """
     try:
-        res = requests.post(set_url + "video/url", data="url={}".format(quote(url, 'utf-8')),
+        res = requests.post(v2_url + "video/url", data="url={}".format(quote(url, 'utf-8')),
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                             if alapi_token else {'Content-Type': "application/x-www-form-urlencoded"})
         res = json.loads(res.text)
@@ -370,17 +364,16 @@ def short_video_info(url: str, set_url: str = v2_url):
                        'cover_url': 'None', 'video_url': 'None', 'source': 'Unknown'}
 
 
-def acg(set_url: str = v2_url):
+def acg():
     """
     随机获取一张acg图片链接
 
     Get a random link to an ACG image
 
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: acg image link
     """
     try:
-        res = requests.post(set_url + 'acg', data='format=json',
+        res = requests.post(v2_url + 'acg', data='format=json',
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                             if alapi_token else {'Content-Type': "application/x-www-form-urlencoded"})
         res = json.loads(res.text)
@@ -391,17 +384,16 @@ def acg(set_url: str = v2_url):
         return False, repr(e), 0, 0
 
 
-def bingImg(set_url: str = v2_url):
+def bingImg():
     """
     随机获取一张bing图片链接
 
     Get a link to a bing picture at random
 
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: image link
     """
     try:
-        res = requests.post(set_url + 'bing', data='format=json',
+        res = requests.post(v2_url + 'bing', data='format=json',
                             headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
                             if alapi_token else {'Content-Type': "application/x-www-form-urlencoded"})
         res = json.loads(res.text)
@@ -412,18 +404,17 @@ def bingImg(set_url: str = v2_url):
         return False, repr(e), ''
 
 
-def kdCheck(kd_number: str, set_url: str = v1_url):
+def kdCheck(kd_number: str):
     """
     查询中国快递
 
     Inquire about China Express
 
     :param kd_number: 快递单号 | courier number
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return: bool, list
     """
     try:
-        res = requests.post(set_url + 'kd', data="number=%s" % kd_number,
+        res = requests.post(v2_url + 'kd', data="number=%s" % kd_number,
                             headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
         res = json.loads(res.text)
         if res['code'] != 200:
@@ -434,18 +425,17 @@ def kdCheck(kd_number: str, set_url: str = v1_url):
         return False, 0, repr(e)
 
 
-def pinyin(zh_str: str, set_url: str = v2_url):
+def pinyin(zh_str: str):
     """
     查询中文的拼音
 
     Query Chinese pinyin
 
     :param zh_str: Chinese | 中文
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return:
     """
     try:
-        res = requests.post(set_url + 'pinyin', data=f'word={quote(zh_str, "utf-8")}&tone=1&abbr=0',
+        res = requests.post(v2_url + 'pinyin', data=f'word={quote(zh_str, "utf-8")}&tone=1&abbr=0',
                             headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
         res = json.loads(res.text)
         if res['code'] != 200:
@@ -455,7 +445,7 @@ def pinyin(zh_str: str, set_url: str = v2_url):
         return False, repr(e)
 
 
-def exchange(fr, number, to=user_currency, set_url: str = v2_url):
+def exchange(fr, number, to=user_currency):
     """
     查询<number> <fr> 对应 多少 <to>
 
@@ -464,12 +454,11 @@ def exchange(fr, number, to=user_currency, set_url: str = v2_url):
     :param to: 待查询的币种
     :param number: 待查询的货币数量
     :param fr: 目标币种
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return:
     """
 
     try:
-        res = requests.get(set_url + 'exchange',
+        res = requests.get(v2_url + 'exchange',
                            params={'money': number, 'from': fr, 'to': to},
                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
         res = json.loads(res.text)
@@ -480,19 +469,17 @@ def exchange(fr, number, to=user_currency, set_url: str = v2_url):
         return False, repr(e)
 
 
-def zhihuDaily(set_url: str = v1_url):
+def zhihuDaily():
     """
     获取知乎日报
 
     Get Zhihu Daily
 
-    :param set_url: {v1_url} or {v2_url} 默认 v1
     :return:
     """
     try:
-        res = requests.get(set_url + 'zhihu/latest',
-                           headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token} \
-                               if alapi_token else {'Content-Type': 'application/x-www-form-urlencoded'})
+        res = requests.get(v2_url + 'zhihu/latest',
+                           headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
         res = json.loads(res.text)
         if res['code'] != 200:
             return False, res['msg']

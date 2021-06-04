@@ -5,10 +5,8 @@
 Alibaba cloud API
 """
 from . import pre_check, user_lang, dir_char
-try:
-    import oss2
-except ImportError:
-    exit('You need to install "oss2"')
+from .. import requirePackage
+oss2 = requirePackage('oss2')
 
 
 class AliyunOSS:

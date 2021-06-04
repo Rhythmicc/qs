@@ -21,10 +21,10 @@ def remove_bg():
                                '%s: qs rmbg <%s>' % (('Usage', 'picture') if user_lang != 'zh' else ('用法', '图像')))
         return
     else:
-        if path == '-help':
+        if path == '-helpF':
             qs_default_console.print(qs_info_string,
                                      '%s: qs rmbg <%s>' % (('Usage', 'picture')
-                                                            if user_lang != 'zh' else ('用法', '图像')))
+                                                           if user_lang != 'zh' else ('用法', '图像')))
             return
         from .API.SimpleAPI import rmbg
         with qs_default_console.status('Dealing..' if user_lang != 'zh' else '处理中..') as st:
@@ -67,6 +67,7 @@ def up_img():
 
     Upload images or Markdown images to multiple platforms (data security is not guaranteed)
     """
+
     def showSptPlatform(dt, ls):
         from rich.table import Table
         from rich.box import SIMPLE
@@ -90,7 +91,7 @@ def up_img():
         path = sys.argv[2]
     except IndexError:
         qs_default_console.log(qs_error_string, '%s: qs upimg <%s>' % (('Usage', 'picture | *.md')
-                                                                        if user_lang != 'zh' else ('用法', '图像 | *.md')))
+                                                                       if user_lang != 'zh' else ('用法', '图像 | *.md')))
         return
     else:
         from .API.alapi import upload_image, _upimg_get_avaliable_platform
@@ -259,7 +260,6 @@ def translate():
 
     Qs default Translation engine
     """
-    global Translate, translate
     from . import trans_engine
     pyperclip = requirePackage('pyperclip')
     if trans_engine != 'default':
@@ -378,7 +378,7 @@ def largeImage():
         from .API.BaiduCloud import ImageDeal
         aip_cli = ImageDeal()
         with qs_default_console.status('Dealing..' if user_lang != 'zh' else '处理中..') as st:
-            aip_cli.largeImage(path)
+            aip_cli.largeImage(path, st)
             st.update(status='Done')
 
 
@@ -473,8 +473,9 @@ def gbc():
         qs_default_console.print(res, justify='center')
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
-        qs_default_console.print(qs_error_string, 'Usage: qs gbc <garbage...>'
-                                 if user_lang != 'zh' else '用法: qs gbc <垃圾...>')
+        qs_default_console.print(
+            qs_error_string,
+            'Usage: qs gbc <garbage...>' if user_lang != 'zh' else '用法: qs gbc <垃圾...>')
 
 
 def short_video_info(son_call=False):
@@ -492,7 +493,7 @@ def short_video_info(son_call=False):
     except IndexError:
         try:
             url = pyperclip.paste()
-            url = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2})|[/])+', url)[0]
+            url = re.findall('https?://(?:[-\w.]|%[\da-fA-F]{2}|[/])+', url)[0]
         except:
             qs_default_console.print(
                 qs_error_string, 'Sorry, but your system may not be suppported by `pyperclip`'
@@ -514,9 +515,12 @@ def short_video_info(son_call=False):
         return status
     qs_default_console.print(qs_info_string, '[{}] {}'.format(output_prefix['title'], res['title']))
     sz = int(get_fileinfo(res['video_url'])[-1].headers['content-length']) if not son_call else -1
-    qs_default_console.print(qs_info_string, '[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--', res['video_url']))
+    qs_default_console.print(qs_info_string,
+                             '[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--',
+                                                  res['video_url']))
     sz = int(get_fileinfo(res['cover_url'])[-1].headers['content-length'])
-    qs_default_console.print(qs_info_string, '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
+    qs_default_console.print(qs_info_string,
+                             '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
     if system == 'darwin':
         from .ImageTools.ImagePreview import image_preview
         image_preview(res['cover_url'], True)
@@ -567,9 +571,10 @@ def acg():
         if status:
             qs_default_console.print(qs_info_string, '尺寸:' if user_lang == 'zh' else 'SIZE:', width, '×', height)
             if '-save' in sys.argv[2:]:
+                from . import dir_char
                 from .NetTools.NormalDL import normal_dl
                 st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
-                normal_dl(acg_link)
+                normal_dl(acg_link, disableStatus=dir_char != '/')  # disable download status for Windows
             if system == 'darwin':  # Only support iTerm for Mac OS X
                 from .ImageTools.ImagePreview import image_preview
                 st.update(status='Loading image...\n' if user_lang != 'zh' else '加载图片中..\n')
@@ -642,7 +647,7 @@ def kdCheck():
     """
     from .API.alapi import kdCheck
 
-    with qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..') as st:
+    with qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..'):
         status, code, msg = kdCheck(sys.argv[2])
         if not status:
             qs_default_console.print(qs_error_string, msg)
@@ -659,9 +664,9 @@ def kdCheck():
             {'header': "Description" if user_lang != 'zh' else '描述', 'justify': "center", 'no_wrap': False},
             {'header': "Status" if user_lang != 'zh' else '状态', 'justify': "center"},
         ], ([
-             '[bold underline red]Unknown:heavy_exclamation_mark:', '[bold underline yellow]In transit:airplane:',
-             '[bold underline green]In delivery:delivery_truck:', '[bold underline bold green]Signed receipt:hearts:'
-         ][code] if user_lang != 'zh' else [
+                '[bold underline red]Unknown:heavy_exclamation_mark:', '[bold underline yellow]In transit:airplane:',
+                '[bold underline green]In delivery:delivery_truck:', '[bold underline bold green]Signed receipt:hearts:'
+            ][code] if user_lang != 'zh' else [
             '[bold underline red]未知:heavy_exclamation_mark:', '[bold underline yellow]运输中:airplane:',
             '[bold underline green]派送中:delivery_truck:', '[bold underline magenta]已签收:hearts:'
         ][code]) + '\n'
@@ -738,38 +743,37 @@ def pinyin():
     qs_default_console.print(qs_info_string if status else qs_error_string, res)
 
 
-# def photo():
-#     from .API.SimpleAPI import photo
-#
-#     st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
-#     st.start()
-#
-#     try:
-#         status, acg_link, name = photo()
-#         qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
-#             if status else qs_default_console.log(qs_error_string, acg_link)
-#         if status:
-#             if '-save' in sys.argv[2:]:
-#                 from .NetTools.NormalDL import normal_dl
-#                 st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
-#                 normal_dl(acg_link)
-#             if system == 'darwin':  # Only support iTerm for Mac OS X
-#                 from .ImageTools.ImagePreview import image_preview
-#                 st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-#                 image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
-#                               '-save' not in sys.argv[2:], qs_console_status=st)
-#                 return
-#             st.update(status='Done')
-#     except Exception as e:
-#         qs_default_console.print(qs_error_string, repr(e))
-#     finally:
-#         st.stop()
+def photo():
+    from .API.SimpleAPI import photo
+
+    st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
+    st.start()
+
+    try:
+        status, acg_link, name = photo()
+        qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
+            if status else qs_default_console.log(qs_error_string, acg_link)
+        if status:
+            if '-save' in sys.argv[2:]:
+                from .NetTools.NormalDL import normal_dl
+                st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
+                normal_dl(acg_link)
+            if system == 'darwin':  # Only support iTerm for Mac OS X
+                from .ImageTools.ImagePreview import image_preview
+                st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
+                image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
+                              '-save' not in sys.argv[2:], qs_console_status=st)
+                return
+            st.update(status='Done')
+    except Exception as e:
+        qs_default_console.print(qs_error_string, repr(e))
+    finally:
+        st.stop()
 
 
 def setu():
     import random
-    # random.choice([acg, loli, photo])()
-    random.choice([acg, loli])()
+    random.choice([acg, loli, photo])()
 
 
 def exchange():
@@ -781,7 +785,8 @@ def exchange():
         status, data = exchange(sys.argv[3], float(sys.argv[2]))
         qs_default_console.print(f"{sys.argv[2]} {sys.argv[3]} ==> {data['exchange']} × {sys.argv[2]} = "
                                  f"{data['exchange_round']} {data['currency_to']}\n"
-                                 f"{'Update' if user_lang != 'zh' else '更新时间'}: {data['update_time']}", justify="center") \
+                                 f"{'Update' if user_lang != 'zh' else '更新时间'}: {data['update_time']}",
+                                 justify="center") \
             if status else qs_default_console.log(qs_error_string, data)
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
@@ -843,11 +848,12 @@ def wallhaven():
         for i in res:
             name = i['url'].split('/')[-1]
             if os.path.exists(name):
-                qs_default_console.print(qs_warning_string, f'{name} is exists!' if user_lang != 'zh' else f'{name} 已存在!')
+                qs_default_console.print(qs_warning_string,
+                                         f'{name} is exists!' if user_lang != 'zh' else f'{name} 已存在!')
                 continue
             qs_default_console.print(qs_info_string, f"Deal:\t{name}")
             qs_default_console.print(qs_info_string, f'Size:\t{" × ".join([str(j) for j in i["size"]])}')
-            normal_dl(i['url'], failed2exit=True, output_error=True)
+            normal_dl(i['url'], output_error=True, failed2exit=True)
             qs_default_console.print('-' * qs_default_console.width)
     else:
         if oneFlag:

@@ -46,7 +46,7 @@ class Downloader:
     from ..TuiTools.Bar import DataTransformBar
 
     def __init__(self, url: str, num: int, name: str = '', proxy: str = '',
-                 referer: str = '', output_error: bool = False, failed2exit: bool = False):
+                 referer: str = '', output_error: bool = False, failed2exit: bool = False, disableStatus: bool = False):
         """
         qs普通文件下载引擎
 
@@ -59,7 +59,10 @@ class Downloader:
         info_flag = True
         self.url, self.num, self.output_error, self.proxies = url, num, output_error, {}
         self.enabled = True
-        with qs_default_console.status('Getting file info..' if user_lang != 'zh' else '获取文件信息中..'):
+        if not disableStatus:
+            with qs_default_console.status('Getting file info..' if user_lang != 'zh' else '获取文件信息中..'):
+                self.url, self.name, r = get_fileinfo(url, proxy, referer)
+        else:
             self.url, self.name, r = get_fileinfo(url, proxy, referer)
         if not (self.url and self.name and r):
             info_flag = False
@@ -235,12 +238,14 @@ class Downloader:
 
 
 def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
-              thread_num: int = min(16, core_num * 4), output_error: bool = False, failed2exit: bool = False):
+              thread_num: int = min(16, core_num * 4), output_error: bool = False, failed2exit: bool = False,
+              disableStatus: bool = False):
     """
     自动规划下载线程数量并开始并行下载
 
     Automatically schedule the number of download threads and begin parallel downloads
 
+    :param disableStatus:
     :param url: 文件url
     :param set_name: 设置文件名（默认采用url所指向的资源名）
     :param set_proxy: 设置代理（默认无代理）
@@ -252,5 +257,5 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     """
     Downloader(
         url=url, num=thread_num, name=set_name, proxy=set_proxy,
-        referer=set_referer, output_error=output_error, failed2exit=failed2exit
+        referer=set_referer, output_error=output_error, failed2exit=failed2exit, disableStatus=disableStatus
     ).run()

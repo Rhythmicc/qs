@@ -35,7 +35,7 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
     :param pname: 库名
     :param module: 待引入的模块名，可缺省
     :param real_name: 用于 pip3 install 的名字
-    :param not_exit: 是否为真实包名
+    :param not_exit: 安装后不退出
     :return: 库或模块的地址
     """
     try:

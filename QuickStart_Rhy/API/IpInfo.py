@@ -6,15 +6,13 @@ Use IPInfo to query IP information (need to apply API KEY, but the positioning e
 but Product manager's confidence
 """
 from . import pre_check
-try:
-    import ipinfo
-except ImportError:
-    exit('You need to install "ipinfo"')
+from .. import requirePackage
+ipinfo = requirePackage('ipinfo')
 
 
 def get_ip_info(ip: str = None):
     """
-    利用ipinfo查询ip信息 (需申请API KEY，但定位效果并不好), 但PR迷之自信
+    利用ipinfo查询ip信息 (需申请API KEY，定位效果并不好, 但PR迷之自信)
 
     Use IPInfo to query IP information (need to apply API KEY, but the positioning effect is not good),
     but Product manager's confidence
