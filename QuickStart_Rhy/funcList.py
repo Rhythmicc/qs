@@ -140,7 +140,8 @@ def api_menu():
     qs exc  <num> <to> \[fr]  :-> Query <number> <fr> corresponding <number?> <to>
     qs zhihu                 :-> Get zhihu.com Daily
     qs wallhaven [-save]     :-> Get Wallhaven Toplist
-    qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords""")\
+    qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords
+    qs d60                   :-> Get the daily 60-second morning report""")\
         if user_lang != 'zh' else color_rep("""API工具:
     qs trans  \[content]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[content]      :-> 获取中文内容的拼音
@@ -169,7 +170,8 @@ def api_menu():
     qs exc <num> <to> \[fr]   :-> 汇率查询<number> <fr> 对应 多少 <to>
     qs zhihu                :-> 获取知乎日报
     qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图
-    qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接""")
+    qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接
+    qs d60                   :-> 获取每日60秒早报""")
 
 
 def image_menu():
@@ -268,7 +270,8 @@ api_funcs = {
     'exc': 'exchange',
     'zhihu': 'zhihuDaily',
     'wallhaven': 'wallhaven',
-    'lmgtfy': 'lmgtfy'
+    'lmgtfy': 'lmgtfy',
+    'd60': 'daily60s'
 }
 
 image_funcs = {

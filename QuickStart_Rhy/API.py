@@ -573,15 +573,14 @@ def acg():
             if '-save' in sys.argv[2:]:
                 from . import dir_char
                 from .NetTools.NormalDL import normal_dl
-                st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
-                normal_dl(acg_link, disableStatus=dir_char != '/')  # disable download status for Windows
+                st.stop()
+                acg_link = normal_dl(acg_link)  # disable download status for Windows
             if system == 'darwin':  # Only support iTerm for Mac OS X
                 from .ImageTools.ImagePreview import image_preview
                 st.update(status='Loading image...\n' if user_lang != 'zh' else '加载图片中..\n')
-                image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
+                image_preview(open(acg_link) if '-save' in sys.argv[2:] else acg_link,
                               '-save' not in sys.argv[2:], qs_console_status=st)
                 return
-            st.update(status='Done')
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -609,15 +608,13 @@ def bingImg():
             qs_default_console.print(qs_info_string, '版权:' if user_lang == 'zh' else 'CPRT:', cprt)
             if '-save' in sys.argv[2:]:
                 from .NetTools.NormalDL import normal_dl
-                st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
-                normal_dl(acg_link)
+                st.stop()
+                acg_link = normal_dl(acg_link)
             if system == 'darwin':  # Only support iTerm for Mac OS X
                 from .ImageTools.ImagePreview import image_preview
                 st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-                image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
+                image_preview(open(acg_link) if '-save' in sys.argv[2:] else acg_link,
                               '-save' not in sys.argv[2:], qs_console_status=st)
-                return
-            st.update(status='Done')
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -633,8 +630,11 @@ def preview_html_images():
     :return:
     """
     from .API.SimpleAPI import imgs_in_url
+    save_flag = '-save' in sys.argv
+    if save_flag:
+        sys.argv.remove('-save')
     for url in sys.argv[2:]:
-        imgs_in_url(url)
+        imgs_in_url(url, save_flag)
 
 
 def kdCheck():
@@ -715,9 +715,9 @@ def loli():
         qs_default_console.print(qs_info_string, '[bold]size' if user_lang != 'zh' else '[bold]尺寸',
                                  img['width'], 'x', img['height'])
         if save_flag:
-            NormalDL.normal_dl(img['url'], set_proxy=proxy, set_referer='https://i.pximg.net')
+            img['url'] = NormalDL.normal_dl(img['url'], set_proxy=proxy, set_referer='https://i.pximg.net')
         if system == 'darwin':
-            ImagePreview.image_preview(open(img['url'].split('/')[-1]) if save_flag else img['url'], not save_flag
+            ImagePreview.image_preview(open(img['url']) if save_flag else img['url'], not save_flag
                                        , set_proxy=proxy, set_referer='https://i.pximg.net')
 
         qs_default_console.print('-' * (qs_default_console.width // 4 * 3), justify='center')
@@ -756,15 +756,13 @@ def photo():
         if status:
             if '-save' in sys.argv[2:]:
                 from .NetTools.NormalDL import normal_dl
-                st.update(status='Downloading image...' if user_lang != 'zh' else '下载图片中..')
-                normal_dl(acg_link)
+                st.stop()
+                acg_link = normal_dl(acg_link)
             if system == 'darwin':  # Only support iTerm for Mac OS X
                 from .ImageTools.ImagePreview import image_preview
                 st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-                image_preview(open(acg_link.split('/')[-1]) if '-save' in sys.argv[2:] else acg_link,
+                image_preview(open(acg_link) if '-save' in sys.argv[2:] else acg_link,
                               '-save' not in sys.argv[2:], qs_console_status=st)
-                return
-            st.update(status='Done')
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -898,3 +896,56 @@ def lmgtfy():
             if user_lang != 'zh' else '调用剪切板失败，你可以复制下面的链接:'
         )
     qs_default_console.print(qs_info_string, res)
+
+
+def daily60s():
+    from .API.alapi import daily60s
+
+    status, res = daily60s()
+    if not status:
+        return qs_default_console.print(qs_error_string, res)
+
+    from rich.padding import Padding
+    import signal
+    import time
+
+    cur_index = 0
+
+    with qs_default_console.status('showing' if user_lang != 'zh' else '展示中') as st:
+        def dealSignal(*argv):
+            for index in range(cur_index + 1, len(res['news'])):
+                qs_default_console.print(Padding(res['news'][index], (0, int(0.2 * qs_default_console.width))))
+                qs_default_console.print()
+            qs_default_console.print('-' * qs_default_console.width)
+            qs_default_console.print(res['weiyu'] + '\n', justify='center')
+
+            if '-save' in sys.argv:
+                import os
+                from .NetTools.NormalDL import normal_dl
+
+                st.stop()
+                name = normal_dl(res['image'], set_name='news.png')
+                st.start()
+                if system == 'darwin':
+                    qs_default_console.print('Preview' if user_lang != 'zh' else '预览', justify='center')
+                    from .ImageTools.ImagePreview import image_preview
+
+                    st.update(status='loading image..' if user_lang != 'zh' else '加载图片中..')
+                    image_preview(open(name), qs_console_status=st)
+            exit(0)
+
+        signal.signal(signal.SIGINT, dealSignal)
+        qs_default_console.print('[bold magenta underline]每天60秒读懂世界[/bold magenta underline]', justify='center')
+        qs_default_console.print(res['date'], justify='center')
+        qs_default_console.print('-' * qs_default_console.width)
+        len_ls = [len(i) for i in res['news']]
+        total_len = sum(len_ls)
+        len_ls = [i / total_len * 60 for i in len_ls]
+        len_ls[-1] = 0
+
+        for index, item in enumerate(res['news']):
+            qs_default_console.print(Padding(item, (0, int(0.2 * qs_default_console.width))))
+            qs_default_console.print()
+            cur_index = index
+            time.sleep(len_ls[index])
+    dealSignal()

@@ -175,13 +175,14 @@ def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
             qs_default_console.print(qs_error_string, 'post failed' if user_lang != 'zh' else '发送失败')
 
 
-def imgs_in_url(url: str):
+def imgs_in_url(url: str, save: bool = False):
     """
     提取url中的img标签链接
 
     Extract img tag links from url
 
     :param url:
+    :param save:
     :return:
     """
     from .. import headers
@@ -191,6 +192,9 @@ def imgs_in_url(url: str):
         return
     import re
     from ..ImageTools.ImagePreview import image_preview
+    normal_dl = None
+    if save:
+        from ..NetTools.NormalDL import normal_dl
 
     imgs = re.findall('<img.*?src="(.*?)".*?>', html.text)
     a_ls = re.findall('<a.*?href="(.*?)".*?>', html.text)
@@ -203,8 +207,11 @@ def imgs_in_url(url: str):
     for url in imgs:
         if not url.startswith('http') or url.endswith('svg'):
             continue
+        url = url.replace('&#46;', '.')
         qs_default_console.log(
             qs_info_string, 'Link:' if user_lang != 'zh' else '链接:', url[:100] + ('' if len(url) <= 100 else '...'))
+        if save:
+            normal_dl(url)
         if system == 'darwin':
             try:
                 image_preview(url, True)

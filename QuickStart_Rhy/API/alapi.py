@@ -237,7 +237,7 @@ def bili_cover(url: str):
         res = json.loads(res.text)
         if res['code'] != 200 or res['msg'] != 'success':
             qs_default_console.log(
-                qs_error_string, ("Get cover with: %s failed" if user_lang != 'zh' else '下载封面: %s 失败') % url)
+                qs_error_string, ("Get cover with: %s failed:" if user_lang != 'zh' else '下载封面: %s 失败: ') % url)
             return
         res = res['data']
         res['description'] = res['description'].replace('<br />', '\n\t')
@@ -266,16 +266,14 @@ def ip_info(ip: str):
     :return: data dict {ip, isp, pos | ERROR MESSAGE, location | ERROR code}
     """
     try:
-        res = requests.post(v2_url + 'ip', data="ip=%s&format=json" % ip,
-                            headers={'Content-Type': "application/x-www-form-urlencoded", 'token': alapi_token}
-                            if ip else headers.update({'token': alapi_token}))
+        res = requests.get(v2_url + ('ip?ip=%s&format=json' % ip if ip else 'ip') , headers={'token': alapi_token})
         res = json.loads(res.text)
         if res['code'] != 200:
             return {'ip': ip, 'isp': '', 'pos': res['msg'], 'location': '{code, %s}' % res['code']}
         return res['data']
     except Exception as e:
         return {'ip': ip, 'isp': '', 'pos': 'Network Error'
-        if user_lang != 'zh' else '网络错误', 'location': '{code, %s}' % repr(e)}
+                if user_lang != 'zh' else '网络错误', 'location': '{code, %s}' % repr(e)}
 
 
 def garbage_classification(query_ls: list):
@@ -478,9 +476,28 @@ def zhihuDaily():
     :return:
     """
     try:
-        res = requests.get(v2_url + 'zhihu/latest',
+        res = requests.get(v2_url + 'zhihu',
                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
         res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, res['msg']
+        return True, res['data']
+    except Exception as e:
+        return False, repr(e)
+
+
+def daily60s():
+    """
+    获取每日60秒早报
+
+    Get the daily 60-second morning report
+
+    :return:
+    """
+    try:
+        res = requests.get(v2_url + 'zaobao?format=json', headers={'token': alapi_token})
+        res = json.loads(res.text)
+
         if res['code'] != 200:
             return False, res['msg']
         return True, res['data']

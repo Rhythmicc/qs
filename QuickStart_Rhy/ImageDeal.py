@@ -66,33 +66,36 @@ def remove_audio():
     """删除视频的音频 | remove audio in mp4"""
     from .ImageTools.VideoTools import rm_audio
     try:
-        video = sys.argv[2]
+        videos = sys.argv[2:]
     except IndexError:
-        qs_default_console.log(qs_error_string, 'Usage: qs rmaudio <*.mp4>')
+        qs_default_console.log(qs_error_string, 'Usage: qs rmaudio <video...>')
     else:
-        rm_audio(video)
+        for video in videos:
+            rm_audio(video)
 
 
 def v2mp4():
     """视频转mp4 | transfer video to mp4"""
     from .ImageTools.VideoTools import tomp4
     try:
-        video = sys.argv[2]
+        videos = sys.argv[2:]
     except IndexError:
-        qs_default_console.log(qs_error_string, 'Usage: qs v2mp4 <video>')
+        qs_default_console.log(qs_error_string, 'Usage: qs v2mp4 <video...>')
     else:
-        tomp4(video)
+        for video in videos:
+            tomp4(video)
 
 
 def v2mp3():
     """提取视频音频为mp3 | Extract the audio from the video and save it in MP3 format"""
     from .ImageTools.VideoTools import video_2_mp3
     try:
-        video = sys.argv[2]
+        videos = sys.argv[2:]
     except IndexError:
-        qs_default_console.log(qs_error_string, 'Usage: qs v2mp3 <video>')
+        qs_default_console.log(qs_error_string, 'Usage: qs v2mp3 <video...>')
     else:
-        video_2_mp3(video)
+        for video in videos:
+            video_2_mp3(video)
 
 
 def icat():

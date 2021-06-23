@@ -107,7 +107,7 @@ class M3U8DL:
             qs_default_console.log(qs_error_string, repr(e))
             return
         if "#EXTM3U" not in all_content:
-            raise BaseException("Not M3U8 Link" if user_lang != 'zh' else "非M3U8的链接")
+            raise Exception("Not M3U8 Link" if user_lang != 'zh' else "非M3U8的链接")
         if "EXT-X-STREAM-INF" in all_content:
             file_line = all_content.split("\n")
             for line in file_line:

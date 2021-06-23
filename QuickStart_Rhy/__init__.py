@@ -224,8 +224,9 @@ def calculate():
     try:
         exp = ' '.join(sys.argv[2:])
         qs_default_console.print('%s = %s' % (exp, eval(exp)))
-    except:
-        qs_default_console.log(qs_error_string, 'Usage: qs cal <exp like "1+1">')
+    except Exception as e:
+        qs_default_console.print(qs_info_string, 'Usage: qs cal <exp like "1+1">')
+        qs_default_console.print(qs_error_string, repr(e))
 
 
 def pcat():

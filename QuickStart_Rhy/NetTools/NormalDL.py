@@ -235,6 +235,7 @@ class Downloader:
             self._single_dl()
         self.main_progress.stop()
         qs_default_console.print(qs_info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!')
+        return self.name
 
 
 def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
@@ -253,9 +254,9 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     :param thread_num: 线程数
     :param output_error: 输出报错信息
     :param failed2exit: 获取文件信息失败则不下载，否则qs将继续尝试下载
-    :return: None
+    :return: file name
     """
-    Downloader(
+    return Downloader(
         url=url, num=thread_num, name=set_name, proxy=set_proxy,
         referer=set_referer, output_error=output_error, failed2exit=failed2exit, disableStatus=disableStatus
     ).run()

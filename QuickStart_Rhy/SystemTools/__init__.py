@@ -28,5 +28,10 @@ def clear_mem():
 
 
 def get_core_num():
+    """
+    获取核数量
+
+    :return: core num
+    """
     from .. import requirePackage
     return requirePackage('psutil').cpu_count()
