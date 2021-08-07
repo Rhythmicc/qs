@@ -34,6 +34,30 @@ def transport_back(src: str, to_color: tuple, from_color: tuple = (0, 0, 0, 0)) 
     return src
 
 
+def formatOneColor(src: str, to_color: tuple, except_color=None) -> Image.Image:
+    """
+    格式化图片颜色
+
+    Format image color
+
+    :param src: 图片路径
+    :param to_color: RGBA四元组 -> 转换至目标颜色
+    :param except_color: RGBA四元组 -> 忽略的颜色
+    :return:
+    """
+    if except_color is None:
+        except_color = [(0, 0, 0, 0)]
+    src = Image.open(src)
+    src = src.convert('RGBA')
+    L, H = src.size
+    for h_indx in range(H):
+        for l_indx in range(L):
+            color_1 = src.getpixel(dot := (l_indx, h_indx))
+            if color_1 not in except_color:
+                src.putpixel(dot, to_color)
+    return src
+
+
 def get_color_from_str(str_color: str) -> tuple:
     """
     解析字符串为RGBA四元组

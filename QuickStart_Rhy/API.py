@@ -513,14 +513,24 @@ def short_video_info(son_call=False):
     if not status:
         qs_default_console.print(qs_info_string, res['title'] + ':' + res['source'])
         return status
+    showStatus = '-url' in sys.argv
     qs_default_console.print(qs_info_string, '[{}] {}'.format(output_prefix['title'], res['title']))
-    sz = int(get_fileinfo(res['video_url'])[-1].headers['content-length']) if not son_call else -1
-    qs_default_console.print(qs_info_string,
-                             '[{}] {}\n{}'.format(output_prefix['video'], size_format(sz, True) if sz > 0 else '--',
-                                                  res['video_url']))
-    sz = int(get_fileinfo(res['cover_url'])[-1].headers['content-length'])
-    qs_default_console.print(qs_info_string,
-                             '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url']))
+    if res['video_url']:
+        sz = int(get_fileinfo(res['video_url'])[-1].headers['content-length']) if not son_call else -1
+        qs_default_console.print(
+            qs_info_string,
+            '[{}] {}\n{}'.format(
+                output_prefix['video'],
+                size_format(sz, True) if sz > 0 else '--',
+                res['video_url'] if showStatus else ''
+            )
+        )
+    if showStatus:
+        sz = int(get_fileinfo(res['cover_url'])[-1].headers['content-length'])
+        qs_default_console.print(
+            qs_info_string,
+            '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url'] if showStatus else '')
+        )
     if system == 'darwin':
         from .ImageTools.ImagePreview import image_preview
         image_preview(res['cover_url'], True)
@@ -545,9 +555,18 @@ def short_video_dl():
     if not res:
         qs_default_console.print(qs_error_string, 'Download failed' if user_lang != 'zh' else '下载失败')
         return
-    normal_dl(res['video_url'], set_name=res['title'] if res['title'] else 'UnknownTitle')
-    tomp4(res['title'] if res['title'] else 'UnknownTitle')
-    remove(res['title'] if res['title'] else 'UnknownTitle')
+
+    fileName = res['title'] if res['title'] else 'UnknownTitle'
+    if res['video_url']:
+        normal_dl(res['video_url'], set_name=fileName)
+        tomp4(fileName)
+        remove(fileName)
+    elif 'pics' in res:
+        from .ImageTools.ImageTools import topng
+        for index, url in enumerate(res['pics']):
+            normal_dl(url, set_name=fileName + str(index + 1))
+            topng(fileName + str(index + 1))
+            remove(fileName + str(index + 1))
 
 
 def acg():

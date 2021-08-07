@@ -237,3 +237,16 @@ def pcat():
     :return: None
     """
     print(requirePackage('pyperclip', 'paste')())
+
+
+def fcopy():
+    """
+    获取文件内容并复制进粘贴板
+
+    Get the content of the file and copy it into the pasteboard
+    :return:
+    """
+    if not os.path.exists(sys.argv[2]):
+        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
+    with open(sys.argv[2], 'r') as f:
+        requirePackage('pyperclip').copy(f.read())

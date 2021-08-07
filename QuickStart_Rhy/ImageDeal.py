@@ -37,6 +37,34 @@ def set_img_background():
         img.save(iname)
 
 
+def fmt_img_color():
+    from .ImageTools.ColorTools import formatOneColor, get_color_from_str
+
+    try:
+        img = sys.argv[2]
+        if img == '-help':
+            raise IndexError
+        if not os.path.exists(img):
+            qs_default_console.log(qs_error_string, 'No Such File: %s' % img)
+            return
+        to = sys.argv[3]
+        try:
+            exp = sys.argv[4:]
+        except IndexError:
+            exp = '0,0,0,0'
+    except IndexError:
+        qs_default_console.log(qs_error_string,
+                               'Usage: qs fmti <picture> <to_color> [except_color: default transparency]')
+        return
+    else:
+        to = get_color_from_str(to)
+        exp = [get_color_from_str(i) for i in exp]
+        img = formatOneColor(img, to, exp)
+        iname = sys.argv[2].split('.')
+        iname = iname[0] + '_fmt.' + ''.join(iname[1:])
+        img.save(iname)
+
+
 def v2gif():
     """视频转gif | video to gif"""
     from .ImageTools.VideoTools import video_2_gif
@@ -112,3 +140,25 @@ def icat():
     else:
         from .ImageTools.ImagePreview import image_preview
         image_preview(open(path)) if not is_url else image_preview(path, is_url)
+
+
+def i2png():
+    try:
+        imgs = sys.argv[2:]
+    except IndexError:
+        qs_default_console.log(qs_error_string, 'Usage: qs i2png <imgs...>')
+    else:
+        from .ImageTools.ImageTools import topng
+        for imgPath in imgs:
+            topng(imgPath)
+
+
+def i2jpg():
+    try:
+        imgs = sys.argv[2:]
+    except IndexError:
+        qs_default_console.log(qs_error_string, 'Usage: qs i2jpg <imgs...>')
+    else:
+        from .ImageTools.ImageTools import tojpg
+        for imgPath in imgs:
+            tojpg(imgPath)
