@@ -846,11 +846,11 @@ def wallhaven():
 
     url, oneFlag = '', False
     if '-h' in sys.argv:
-        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [-u <url>] [-one] [-save]")
+        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [-open_url <url>] [-one] [-save]")
 
-    if '-u' in sys.argv:
-        url = sys.argv[sys.argv.index('-u') + 1]
-        sys.argv.remove('-u')
+    if '-open_url' in sys.argv:
+        url = sys.argv[sys.argv.index('-open_url') + 1]
+        sys.argv.remove('-open_url')
         sys.argv.remove(url)
 
     oneFlag = '-one' in sys.argv

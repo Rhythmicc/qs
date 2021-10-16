@@ -211,7 +211,7 @@ menu_table = {
 
 basic_funcs = {
     'self': 'basic',
-    'u': 'u',
+    'u': 'open_url',
     'a': 'open_app',
     'f': 'open_file',
     'i': 'init',

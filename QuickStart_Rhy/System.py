@@ -64,7 +64,7 @@ def go_github():
     Automatically recognize the address in the current folder .git/config and open it through a browser
     """
     import os
-    from . import qs_default_console, qs_error_string, user_lang, u, requirePackage
+    from . import qs_default_console, qs_error_string, user_lang, open_url, requirePackage
 
     config_path = __latest_filename('.git/config')
     if not os.path.exists(config_path):
@@ -76,7 +76,7 @@ def go_github():
     for section in config.sections():
         if section.startswith('remote'):
             url_ls.append(config[section]['url'].replace('.git', ''))
-    u(url_ls)
+    open_url(url_ls)
 
 
 @_wrapper.mkCompressPackageWrap

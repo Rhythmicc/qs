@@ -19,11 +19,11 @@ if not alapi_token:
         'message': 'To get alapi token?\n是否前往获取alapi token?',
         'default': True
     })['confirm']:
-        from .. import u
+        from .. import open_url
         from .. import qs_config
 
         try:
-            u(['https://www.alapi.cn/'])
+            open_url(['https://www.alapi.cn/'])
         except Exception as e:
             qs_default_console.print(qs_error_string, 'Failed to open browser, try url: https://www.alapi.cn/')
         finally:
@@ -357,7 +357,7 @@ def short_video_info(url: str):
         if res['code'] != 200:
             return False, {'title': res['msg'], 'cover_url': 'None', 'video_url': 'None', 'source': str(res['code'])}
         return True, res['data']
-    except:
+    except Exception as e:
         return False, {'title': '网络错误' if user_lang == 'zh' else 'Network Error',
                        'cover_url': 'None', 'video_url': 'None', 'source': 'Unknown'}
 

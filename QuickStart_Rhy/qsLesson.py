@@ -4,7 +4,7 @@
 
 Command interaction, view various menus and documents of QS
 """
-from . import user_lang, u
+from . import user_lang, open_url
 from PyInquirer import prompt
 
 
@@ -48,7 +48,7 @@ def lesson():
     res = prompt(mainMenu)['action']
 
     if res[0] == '7':
-        return u(['https://t.me/joinchat/G2mpk7-S85eM7sb7'])
+        return open_url(['https://t.me/joinchat/G2mpk7-S85eM7sb7'])
     else:
         from .funcList import menu_table
         {

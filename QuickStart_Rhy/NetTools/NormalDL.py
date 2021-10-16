@@ -254,6 +254,7 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     :param thread_num: 线程数
     :param output_error: 输出报错信息
     :param failed2exit: 获取文件信息失败则不下载，否则qs将继续尝试下载
+    :param disableStatus: 是否显示当前任务状态
     :return: file name
     """
     return Downloader(

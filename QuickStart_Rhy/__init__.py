@@ -142,7 +142,7 @@ def cur_time():
     qs_default_console.print(qs_info_string, ' '.join(tm))
 
 
-def u(argv: list = None):
+def open_url(argv: list = None):
     """
     打开命令行参数中的链接
 

@@ -130,13 +130,13 @@ def icat():
     """Mac::iTerm下预览图片 | Preview the picture under Mac::iTerm"""
     try:
         path = sys.argv[2]
-        is_url = '-u' in sys.argv or \
+        is_url = '-open_url' in sys.argv or \
                  (not os.path.exists(path) and (path.startswith('http://') or path.startswith('https://')))
         if not os.path.exists(path) and not is_url:
             qs_default_console.log(qs_error_string, 'No such file:', path)
             raise FileNotFoundError
     except:
-        qs_default_console.log(qs_error_string, 'Usage: qs icat <img path/url> [-u if is url]')
+        qs_default_console.log(qs_error_string, 'Usage: qs icat <img path/url> [-open_url if is url]')
     else:
         from .ImageTools.ImagePreview import image_preview
         image_preview(open(path)) if not is_url else image_preview(path, is_url)
