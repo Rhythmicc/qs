@@ -212,8 +212,8 @@ def translate(text: str, from_lang: str = 'auto', to_lang: str = user_lang):
                 return "[ERROR] {}".format(res['msg'])
             return res['data']['dst']
         return "[ERROR] 未知错误 | Unknown Error"
-    except Exception as e:
-        return f"[ERROR] {repr(e)}"
+    except Exception as unknown_error:
+        return f"[ERROR] {repr(unknown_error)}"
 
 
 def bili_cover(url: str):

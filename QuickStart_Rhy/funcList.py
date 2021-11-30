@@ -47,7 +47,8 @@ def base_menu():
     qs cal <exp>             :-> calculate exp
     qs time                  :-> view current time
     qs pact                  :-> output string in clipboard
-    qs fcopy <file>          :-> copy file content to clipboard""") \
+    qs fcopy <file>          :-> copy file content to clipboard
+    qs user_lang             :-> Get User Language in .qsrc""") \
         if user_lang != 'zh' else color_rep("""基础工具:
     qs u   <url...>          :-> 使用默认浏览器打开多个链接
     qs a   <app> \[file..]    :-> 打开应用或使用应用打开文件 (仅支持Mac OS)
@@ -55,7 +56,8 @@ def base_menu():
     qs cal <exp>             :-> 计算算术表达式
     qs time                  :-> 查看当前时间
     qs pcat                  :-> 输出粘贴板内容
-    qs fcopy <file>          :-> 拷贝文件内容到粘贴板""")
+    qs fcopy <file>          :-> 拷贝文件内容到粘贴板
+    qs user_lang             :-> 获取用户的默认语言""")
 
 
 def system_menu():
@@ -187,7 +189,8 @@ def image_menu():
     qs rmaudio <video>       :-> remove audio in video (return mp4 only)
     qs i2png <imgs...>       :-> transform imgs to png
     qs i2jpg <imgs...>       :-> transform imgs to jpg
-    qs fmti <pic> <to> \[exp...] :-> format image to <to> color except \[exp...] color""") \
+    qs fmti <pic> <to> \[exp...] :-> format image to <to> color except \[exp...] color
+    qs vsta    <video> <audio> :-> set video's audio""") \
         if user_lang != 'zh' else color_rep("""图像处理:
     qs stbg    <pic> <to> \[from]    :-> 替换图片颜色 (from默认为透明)
     qs icat    <img>            :-> 在终端预览图片
@@ -197,7 +200,8 @@ def image_menu():
     qs rmaudio <video>       :-> 删除mp4文件音频
     qs i2png   <imgs...>       :-> 将图像转换为png
     qs i2jpg   <imgs...>       :-> 将图像转换为jpg
-    qs fmti    <pic> <to> \[exp...] :-> 格式化图片颜色为<to>，忽略\[exp...]颜色""")
+    qs fmti    <pic> <to> \[exp...] :-> 格式化图片颜色为<to>，忽略\[exp...]颜色
+    qs vsta    <video> <audio> :-> 设置视频的音频""")
 
 
 menu_table = {
@@ -218,7 +222,8 @@ basic_funcs = {
     'time': 'cur_time',
     'cal': 'calculate',
     'pcat': 'pcat',
-    'fcopy': 'fcopy'
+    'fcopy': 'fcopy',
+    'user_lang': 'get_user_lang'
 }
 
 system_funcs = {
@@ -293,5 +298,6 @@ image_funcs = {
     'v2mp3': 'v2mp3',
     'i2png': 'i2png',
     'i2jpg': 'i2jpg',
-    'fmti': 'fmt_img_color'
+    'fmti': 'fmt_img_color',
+    'vsta': 'vsta'
 }

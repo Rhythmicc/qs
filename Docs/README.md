@@ -1,1 +1,0 @@
-[QuickStart-Rhy](https://pypi.org/project/quickstart-rhy/) Docs

@@ -250,3 +250,8 @@ def fcopy():
         return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
     with open(sys.argv[2], 'r') as f:
         requirePackage('pyperclip').copy(f.read())
+
+
+def get_user_lang():
+    print(user_lang)
+

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: QuickStart-Rhy
-Version: 0.5.8
+Version: 0.6.0
 Summary: Simplify the operation in terminal!
 Home-page: https://github.com/Rhythmicc/QuickStart
 Author: RhythmLian
@@ -24,6 +24,10 @@ Description: - [ QuickStart_Rhy ](#quickstart_rhy)
         |1|https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/      |
         |2|https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/|
         
+        ## Tab Complete (zsh only)
+        ```shell
+        mv _qs /path/in/$fpath/
+        ```
         
 Keywords: Simplify the operation in terminal!
 Platform: UNKNOWN

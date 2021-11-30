@@ -162,3 +162,11 @@ def i2jpg():
         from .ImageTools.ImageTools import tojpg
         for imgPath in imgs:
             tojpg(imgPath)
+
+
+def vsta():
+    from .ImageTools.VideoTools import set_video_audio
+    try:
+        set_video_audio(*sys.argv[2:])
+    except Exception as e:
+        qs_default_console.log(qs_error_string, f'{repr(e)}\nUsage: qs vsta <video> <audio>')
