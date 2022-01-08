@@ -13,7 +13,7 @@ def qs_help(rep=''):
     if not rep or rep not in menu_table:
         if user_lang != 'zh':
             color_rep("""
-    qs basic   :-> basic   tools help | open_url, a, f, cal, time, pcat..
+    qs basic   :-> basic   tools help | u, a, f, cal, time, pcat..
     qs system  :-> system  tools help | top, \[mk/un]\[zip/tar/7z]..
     qs net     :-> network tools help | http, dl, netinfo, wifi...
     qs api     :-> api     tools help | trans, smms, rmbg, loli...
@@ -28,7 +28,7 @@ def qs_help(rep=''):
             qs_default_console.print('https://t.me/joinchat/G2mpk7-S85eM7sb7', justify='center')
         else:
             color_rep("""
-    qs basic   :-> 基础工具帮助 | open_url, a, f, cal, time, pcat..
+    qs basic   :-> 基础工具帮助 | u, a, f, cal, time, pcat..
     qs system  :-> 系统工具帮助 | top, \[mk/un]\[zip/tar/7z]..
     qs net     :-> 网络工具帮助 | http, dl, netinfo, wifi...
     qs api     :-> 扩展工具帮助 | trans, smms, rmbg, loli...

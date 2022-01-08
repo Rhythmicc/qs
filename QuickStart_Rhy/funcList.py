@@ -135,7 +135,6 @@ def api_menu():
     qs svi   <url> \[-url]     :-> get short video info (show url)
     qs svd   <url>            :-> download short video info as mp4
     qs acg   [-save]          :-> get an acg image link (or save)
-    qs photo [-save]          :-> get an porn photo link (or save)
     qs bing  [-save]          :-> get an bing image link (or save)
     qs phi   <url>            :-> get <image url> in url (preview on Mac)
     qs kd    <courier number> :-> Query China express
@@ -165,7 +164,6 @@ def api_menu():
     qs svi   <url> \[-url]     :-> 获取多平台短视频信息 (展示链接)
     qs svd   <url>            :-> 下载多平台短视频为mp4
     qs acg   [-save]          :-> 获取一张acg图片链接 (或保存)
-    qs photo [-save]          :-> 获取一张涩图链接 (或保存)
     qs bing  [-save]          :-> 获取一张bing图片链接 (或保存)
     qs phi   <url>            :-> 获取url里的图片链接 (Mac上iTerm可预览)
     qs kd    <courier number> :-> 查询国内快递

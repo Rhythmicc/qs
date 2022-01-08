@@ -77,6 +77,7 @@ def download():
     if urls:
         if ytb_flag:
             from . import requirePackage
+            from youtube_dl import _real_main
             _real_main = requirePackage('youtube_dl', '_real_main')
         from .NetTools.NormalDL import normal_dl
         from . import qs_config
@@ -87,10 +88,12 @@ def download():
                 if use_proxy:
                     normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy')) \
                         if not ytb_flag else _real_main([url, '--proxy', qs_config.basicSelect('default_proxy'),
-                                                         '--merge-output-format', 'mp4'])
+                                                         '--merge-output-format', 'mp4',
+                                                         '--external-downloader', 'aria2c'])
                 else:
                     normal_dl(url, set_name=set_name) \
-                        if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'])
+                        if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4',
+                                                         '--external-downloader', 'aria2c'])
     else:
         from . import user_lang, qs_default_console, qs_error_string
         qs_default_console.log(qs_error_string, "No url found!" if user_lang != 'zh' else '无链接输入')

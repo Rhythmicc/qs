@@ -40,7 +40,7 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
     """
     try:
         exec(f'from {pname} import {module}' if module else f"import {pname}")
-    except:
+    except Exception:
         from PyInquirer import prompt
 
         confirm = prompt({
@@ -51,10 +51,10 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
             'default': True})['install']
         if confirm:
             os.system(f'pip3 install {pname if not real_name else real_name}')
-            qs_default_console.print(qs_info_string, f'just run again: "{" ".join(sys.argv)}"')
             if not_exit:
                 exec(f'from {pname} import {module}' if module else f"import {pname}")
             else:
+                qs_default_console.print(qs_info_string, f'just run again: "{" ".join(sys.argv)}"')
                 exit(0)
         else:
             exit(-1)

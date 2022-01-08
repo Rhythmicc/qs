@@ -764,35 +764,9 @@ def pinyin():
     qs_default_console.print(qs_info_string if status else qs_error_string, res)
 
 
-def photo():
-    from .API.SimpleAPI import photo
-
-    st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
-    st.start()
-
-    try:
-        status, acg_link, name = photo()
-        qs_default_console.print(qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}") \
-            if status else qs_default_console.log(qs_error_string, acg_link)
-        if status:
-            if '-save' in sys.argv[2:]:
-                from .NetTools.NormalDL import normal_dl
-                st.stop()
-                acg_link = normal_dl(acg_link)
-            if system == 'darwin':  # Only support iTerm for Mac OS X
-                from .ImageTools.ImagePreview import image_preview
-                st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-                image_preview(open(acg_link) if '-save' in sys.argv[2:] else acg_link,
-                              '-save' not in sys.argv[2:], qs_console_status=st)
-    except Exception as e:
-        qs_default_console.print(qs_error_string, repr(e))
-    finally:
-        st.stop()
-
-
 def setu():
     import random
-    random.choice([acg, loli, photo])()
+    random.choice([acg, loli])()
 
 
 def exchange():

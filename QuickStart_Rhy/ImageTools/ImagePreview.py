@@ -274,9 +274,11 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
         if not is_url and isinstance(img, str):
             is_url = img.startswith('http')
         if is_url:
-            from PIL import Image
+            # from PIL import Image
+            from .. import requirePackage
             from io import BytesIO
             import requests
+            Image = requirePackage('PIL', 'Image', 'Pillow')
             if set_referer:
                 headers['referer'] = set_referer
             proxies = {

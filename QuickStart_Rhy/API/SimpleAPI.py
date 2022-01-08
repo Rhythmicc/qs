@@ -237,23 +237,6 @@ def acg2():
         return res['code'] == '200', (res['acgurl'] if res['code'] == '200' else 'Error'), res['width'], res['height']
 
 
-def photo():
-    """
-    随机返回一张写真
-
-    Randomly return a photo
-
-    :return: 请求状态, 图片链接(报错), 文件名 | status, url, file name
-    """
-    try:
-        from ..NetTools import get_fileinfo
-        url, name, res = get_fileinfo('https://www.onexiaolaji.cn/RandomPicture/api')
-    except Exception as e:
-        return False, repr(e), None
-    else:
-        return res.status_code == requests.codes.ok, url, name
-
-
 def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False), randomOne: bool = False):
     """
     获取wallhaven toplist或指定图片列表

@@ -130,7 +130,6 @@ _qs_main_en() {
         svi:'get short video info (show url)'
         svd:'download short video info as mp4'
         acg:'get an acg image link (or save)'
-        photo:'get an porn photo link (or save)'
         bing:'get an bing image link (or save)'
         phi:'get <image url> in url (preview on Mac)'
         kd:'Query China express'
@@ -211,7 +210,6 @@ _qs_main_zh() {
         svi:'获取多平台短视频信息 (展示链接)'
         svd:'下载多平台短视频为mp4'
         acg:'获取一张acg图片链接 (或保存)'
-        photo:'获取一张涩图链接 (或保存)'
         bing:'获取一张bing图片链接 (或保存)'
         phi:'获取url里的图片链接 (Mac上iTerm可预览)'
         kd:'查询国内快递'
@@ -237,7 +235,7 @@ _qs_main_zh() {
     _describe -t common-commands 'common commands' args && _ret=0
 }
 
-if (( ${#words} == 3 )); then
+if (( ${#words} >= 3 )); then
     if [[ ${lang} == 'zh' ]]; then
         _qs_args_comp_zh
     else
