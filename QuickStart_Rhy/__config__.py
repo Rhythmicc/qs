@@ -133,7 +133,6 @@ class QsConfig:
     "qiniu_sc_key": "GET: http://qiniu.com/",
     "qiniu_bk_name": "GET: [Qiniu Bucket Name]",
     "gitee": "GET: http://gitee.com/",
-    "ipinfo": "GET: https://ipinfo.io/",
     "AipImageAPP_ID": "GET: https://cloud.baidu.com/product/imageprocess",
     "AipImageAPP_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
     "AipImageSECRET_KEY": "GET: https://cloud.baidu.com/product/imageprocess",

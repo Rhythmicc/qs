@@ -353,16 +353,6 @@ def weather():
         print('Error: Get data failed.' if user_lang != 'zh' else '错误: 获取数据失败')
 
 
-def ipinfo(ip: str = None):
-    """
-    通过ipinfo查ip（定位不准）
-
-    Check IP via IPInfo (incorrect location)
-    """
-    from .API.IpInfo import get_ip_info
-    return get_ip_info(ip)
-
-
 def largeImage():
     """
     百度图片效果增强
@@ -944,3 +934,36 @@ def daily60s():
             cur_index = index
             time.sleep(len_ls[index])
     dealSignal()
+
+
+def m2t():
+    """
+    磁力链接转种子文件
+
+    Magnet link to Torrent file
+    :return:
+    """
+    import re
+
+    if '-f' in sys.argv:
+        file_path = sys.argv[sys.argv.index('-f') + 1]
+        with open(file_path, 'r') as f:
+            contents = f.read()
+    elif '-u' in sys.argv:
+        contents = sys.argv[sys.argv.index('-u') + 1]
+    else:
+        import pyperclip
+        contents = pyperclip.paste()
+    urls = re.findall('magnet:\?xt=urn:btih:(.*)', contents)
+    if len(urls) > 1:
+        from PyInquirer import prompt
+        url = prompt({
+            'type': 'list',
+            'name': 'hash',
+            'message': 'Select hash code | 选择哈希码:',
+            'choices': urls
+        })['hash']
+    else:
+        url = urls[0]
+    from .API.Lolicon import magnet2torrent
+    magnet2torrent(url)

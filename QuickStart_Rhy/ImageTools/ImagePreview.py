@@ -297,7 +297,7 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
         _real_height = real_height(buf)
         _real_width = math.ceil(width / height * _real_height) * 2 + 1
 
-        qs_default_console.print(' ' * int(max((qs_default_console.width - _real_width) / 2, 0)), end='')
+        qs_default_console.print(' ' * int(max((qs_default_console.width - _real_width) / 2 - 1, 0)), end='')
 
         imgcat(buf, height=real_height(buf))
     except Exception as e:
