@@ -70,9 +70,15 @@ def download():
         set_name = sys.argv[sys.argv.index('--name') + 1]
     if ytb_flag or use_proxy or set_name:
         [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px', '--name', set_name]]
+    nxt_flag = False
     for item in sys.argv[2:]:
-        if item.startswith('-'):
+        if item.startswith('-') or nxt_flag:
+            if nxt_flag:
+                nxt_flag = False
+            if item.startswith('--'):
+                nxt_flag = True
             other_args.append(item)
+
     [sys.argv.remove(item) for item in other_args]
     urls = sys.argv[2:]
     if not urls:
