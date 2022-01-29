@@ -64,11 +64,16 @@ def download():
     global _real_main
     ytb_flag = '--video' in sys.argv or '-v' in sys.argv
     use_proxy = '--proxy' in sys.argv or '-px' in sys.argv
+    other_args = []
     set_name = None
     if '--name' in sys.argv:
         set_name = sys.argv[sys.argv.index('--name') + 1]
     if ytb_flag or use_proxy or set_name:
         [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px', '--name', set_name]]
+    for item in sys.argv[2:]:
+        if item.startswith('-'):
+            other_args.append(item)
+    [sys.argv.remove(item) for item in other_args]
     urls = sys.argv[2:]
     if not urls:
         from . import requirePackage
@@ -88,12 +93,10 @@ def download():
                 if use_proxy:
                     normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy')) \
                         if not ytb_flag else _real_main([url, '--proxy', qs_config.basicSelect('default_proxy'),
-                                                         '--merge-output-format', 'mp4',
-                                                         '--external-downloader', 'aria2c'])
+                                                         '--merge-output-format', 'mp4'] + other_args)
                 else:
                     normal_dl(url, set_name=set_name) \
-                        if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4',
-                                                         '--external-downloader', 'aria2c'])
+                        if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'] + other_args)
     else:
         from . import user_lang, qs_default_console, qs_error_string
         qs_default_console.log(qs_error_string, "No url found!" if user_lang != 'zh' else '无链接输入')
