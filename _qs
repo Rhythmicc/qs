@@ -33,6 +33,11 @@ _qs_args_comp_en() {
             -save:'save image'
             -p:'use default proxy to download'
         )
+    elif [[ ${prev} == m2t ]]; then
+        opt_args=(
+            -f:'torrent file path'
+            -u:'magnet url'
+        )
     else
         _arguments -S -s '*:filename:_files'
         return
@@ -67,6 +72,11 @@ _qs_args_comp_zh() {
         opt_args=(
             -save:'保存图片'
             -p:'通过默认代理下载'
+        )
+    elif [[ ${prev} == m2t ]]; then
+        opt_args=(
+            -f:'种子文件路径'
+            -u:'磁力链接'
         )
     else
         _arguments -S -s '*:filename:_files'
