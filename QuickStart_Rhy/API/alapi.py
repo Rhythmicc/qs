@@ -503,3 +503,13 @@ def daily60s():
         return True, res['data']
     except Exception as e:
         return False, repr(e)
+
+
+def covidInfo():
+    """
+    获取两地疫情信息
+
+
+    :return:
+    """
+    pass

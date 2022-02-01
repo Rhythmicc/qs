@@ -7,7 +7,7 @@ Docs:
 """
 import os
 import sys
-from .__config__ import QsConfig, dir_char, system
+from .__config__ import QsConfig, QsCache, dir_char, system
 from .NetTools import headers
 from rich.console import Console
 from rich.prompt import Prompt as qs_default_input
@@ -16,6 +16,7 @@ name = 'QuickStart_Rhy'
 
 user_root = os.path.expanduser('~') + dir_char
 qs_config = QsConfig(user_root + '.qsrc', os.path.exists(user_root + '.qsrc'))
+qs_cache = QsCache(user_root + '.qs_cache')
 
 user_lang = qs_config.basicSelect('default_language')
 user_currency = qs_config.basicSelect('default_currency')

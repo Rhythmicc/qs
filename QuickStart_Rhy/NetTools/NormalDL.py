@@ -46,7 +46,8 @@ class Downloader:
     from ..TuiTools.Bar import DataTransformBar
 
     def __init__(self, url: str, num: int, name: str = '', proxy: str = '',
-                 referer: str = '', output_error: bool = False, failed2exit: bool = False, disableStatus: bool = False):
+                 referer: str = '', output_error: bool = False, failed2exit: bool = False,
+                 disableStatus: bool = False, disableParallel: bool = False):
         """
         qs普通文件下载引擎
 
@@ -94,7 +95,7 @@ class Downloader:
             self.main_progress = Downloader.DataTransformBar()
             self.dl_id = self.main_progress.add_task('Download', filename=self.name, start=False)
             self.main_progress.update(self.dl_id, total=self.size)
-            if self.size < 5e6:
+            if self.size < 5e6 or disableParallel:
                 qs_default_console.print(qs_info_string, 'FILE SIZE' if user_lang != 'zh' else '文件大小'
                                          , size_format(self.size))
                 self.size = -self.size
@@ -240,7 +241,7 @@ class Downloader:
 
 def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
               thread_num: int = min(16, core_num * 4), output_error: bool = False, failed2exit: bool = False,
-              disableStatus: bool = False):
+              disableStatus: bool = False, disableParallel: bool = False):
     """
     自动规划下载线程数量并开始并行下载
 
@@ -259,5 +260,6 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     """
     return Downloader(
         url=url, num=thread_num, name=set_name, proxy=set_proxy,
-        referer=set_referer, output_error=output_error, failed2exit=failed2exit, disableStatus=disableStatus
+        referer=set_referer, output_error=output_error, failed2exit=failed2exit,
+        disableStatus=disableStatus, disableParallel=disableParallel
     ).run()

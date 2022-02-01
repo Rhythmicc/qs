@@ -145,7 +145,7 @@ def api_menu():
     qs wallhaven [-save]     :-> Get Wallhaven Toplist
     qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords
     qs d60                   :-> Get the daily 60-second morning report
-    qs m2t < -f path | -u link | * > :-> transform magnet link to torrent file""")\
+    qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file""")\
         if user_lang != 'zh' else color_rep("""API工具:
     qs trans  \[content]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[content]      :-> 获取中文内容的拼音
@@ -175,7 +175,7 @@ def api_menu():
     qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图
     qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接
     qs d60                   :-> 获取每日60秒早报
-    qs m2t < -f path | -u link | * > :-> 转换磁力链接为种子文件""")
+    qs m2t <-f path | -u link | *> :-> 转换磁力链接为种子文件""")
 
 
 def image_menu():
