@@ -161,6 +161,7 @@ _qs_main_en() {
         i2jpg:'transform imgs to jpg'
         fmti:'format image to <to> color except [exp...] color'
         vsta:"set video's audio"
+        lesson:'lesson'
     )
 
     _describe -t common-commands 'common commands' args && _ret=0
@@ -242,6 +243,7 @@ _qs_main_zh() {
         i2jpg:'将图像转换为jpg'
         fmti:'格式化图片颜色为<to>，忽略[exp...]颜色'
         vsta:'设置视频的音频'
+        lesson:'引导'
     )
 
     _describe -t common-commands 'common commands' args && _ret=0
