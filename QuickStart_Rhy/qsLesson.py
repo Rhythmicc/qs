@@ -16,18 +16,17 @@ def onlineDocuments():
         'choices': [
             '1. CDN in China' if user_lang != 'zh' else '1. 国内CDN',
             '2. Github Page (non-Chinese users)' if user_lang != 'zh' else '2. Github Page (非中国用户)',
-            '3. Coding Page (Chinese users)' if user_lang != 'zh' else '3. Coding Page (中国用户)'
         ]
     })['onlineSource']
     import webbrowser as wb
-    wb.open({
-                '1': 'https://rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
-                                                 if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
-                '2': 'https://rhythmicc.github.io/' + ('2020/02/14/QuickStart-Rhy/'
-                                                       if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
-                '3': 'https://blog.rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
-                                                      if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/')
-            }[res[0]])
+    wb.open(
+        {
+            '1': 'https://rhythmlian.cn/' + ('2020/02/14/QuickStart-Rhy/'
+                                             if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
+            '2': 'https://rhythmicc.github.io/' + ('2020/02/14/QuickStart-Rhy/'
+                                                   if user_lang != 'zh' else '2020/08/09/QuickStart-Rhy-zh/'),
+        }[res[0]]
+    )
 
 
 def lesson():

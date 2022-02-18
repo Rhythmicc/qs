@@ -42,11 +42,22 @@ def GetBlockSize(sz):
         return max(sz >> 9, minBlockSize)
 
 
+def ask_overwrite(path: str):
+    from PyInquirer import prompt
+
+    return prompt({
+        'type': 'confirm',
+        'name': 'overwrite',
+        'message': f'"{path}" 已存在, 是否覆盖?' if user_lang == 'zh' else f'"{path}" already exists, overwrite?',
+        'default': False
+    })['overwrite']
+
+
 class Downloader:
     from ..TuiTools.Bar import DataTransformBar
 
     def __init__(self, url: str, num: int, name: str = '', proxy: str = '',
-                 referer: str = '', output_error: bool = False, failed2exit: bool = False,
+                 referer: str = '', output_error: bool = False, failed2exit: bool = False, exit_if_exist: bool = False,
                  disableStatus: bool = False, disableParallel: bool = False):
         """
         qs普通文件下载引擎
@@ -59,6 +70,7 @@ class Downloader:
         signal.signal(signal.SIGINT, self._kill_self)
         info_flag = True
         self.url, self.num, self.output_error, self.proxies = url, num, output_error, {}
+        self.exit_if_exist = exit_if_exist
         self.enabled = True
         if not disableStatus:
             with qs_default_console.status('Getting file info..' if user_lang != 'zh' else '获取文件信息中..'):
@@ -77,6 +89,11 @@ class Downloader:
             self.name = self.name = os.path.basename(url)
         if name:
             self.name = name
+
+        if os.path.exists(self.name) and self.exit_if_exist:
+            self.enabled = False
+            return
+
         if proxy:
             self.proxies = {
                 'http': 'http://'+proxy,
@@ -203,7 +220,7 @@ class Downloader:
         :return: None
         """
         if not self.enabled:
-            return
+            return self.name if self.exit_if_exist else ''
         self.main_progress.start()
         if self.size > 0:
             self.main_progress.start_task(self.dl_id)
@@ -240,7 +257,7 @@ class Downloader:
 
 
 def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '',
-              thread_num: int = min(16, core_num * 4), output_error: bool = False, failed2exit: bool = False,
+              thread_num: int = min(16, core_num * 4), output_error: bool = False, failed2exit: bool = False, exit_if_exist: bool = False,
               disableStatus: bool = False, disableParallel: bool = False):
     """
     自动规划下载线程数量并开始并行下载
@@ -258,8 +275,10 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     :param disableStatus: 是否显示当前任务状态
     :return: file name
     """
+    if set_name and os.path.exists(set_name) and not ask_overwrite(set_name):
+        return ''
     return Downloader(
         url=url, num=thread_num, name=set_name, proxy=set_proxy,
-        referer=set_referer, output_error=output_error, failed2exit=failed2exit,
+        referer=set_referer, output_error=output_error, failed2exit=failed2exit, exit_if_exist=exit_if_exist,
         disableStatus=disableStatus, disableParallel=disableParallel
     ).run()

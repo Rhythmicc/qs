@@ -6,6 +6,7 @@ Command entry
 """
 import sys
 from .funcList import *
+from . import requirePackage
 
 
 def qs_help(rep=''):
@@ -23,7 +24,6 @@ def qs_help(rep=''):
             qs_default_console.print('\n[underline]Docs\n', justify='center')
             qs_default_console.print('C D N : https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/ _ _ _', justify='center')
             qs_default_console.print('Github: https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/', justify='center')
-            qs_default_console.print('Coding: https://blog.rhythmlian.cn/2020/02/14/QuickStart-Rhy/ ', justify='center')
             qs_default_console.print('\n[underline]TG Group:\n', justify='center')
             qs_default_console.print('https://t.me/joinchat/G2mpk7-S85eM7sb7', justify='center')
         else:
@@ -38,29 +38,10 @@ def qs_help(rep=''):
             qs_default_console.print('\n[underline]文档[/underline]\n', justify='center')
             qs_default_console.print('C D N : https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/ _ _ _', justify='center')
             qs_default_console.print('Github: https://rhythmicc.github.io/2020/08/09/QuickStart-Rhy-zh/', justify='center')
-            qs_default_console.print('Coding: https://blog.rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/ ', justify='center')
             qs_default_console.print('\n[underline]TG群[/underline]\n', justify='center')
             qs_default_console.print('https://t.me/joinchat/G2mpk7-S85eM7sb7', justify='center')
     else:
         menu_table[rep]()
-
-
-cmd_config = {}
-for i in basic_funcs:
-    if i != 'self':
-        cmd_config[i] = basic_funcs
-for i in api_funcs:
-    if i != 'self':
-        cmd_config[i] = api_funcs
-for i in net_funcs:
-    if i != 'self':
-        cmd_config[i] = net_funcs
-for i in image_funcs:
-    if i != 'self':
-        cmd_config[i] = image_funcs
-for i in system_funcs:
-    if i != 'self':
-        cmd_config[i] = system_funcs
 
 
 def main():
@@ -71,17 +52,19 @@ def main():
     if len(sys.argv) >= 2:
         try:
             func_name = sys.argv[1]
+            cmd_config = {j: i for i in [basic_funcs, api_funcs, net_funcs, image_funcs, system_funcs] for j in i}
+            cmd_config.pop('self')
             if func_name not in cmd_config:
                 qs_help(func_name)
             else:
                 func_table = cmd_config[func_name]
                 file_name = func_table['self']
                 func_name = func_table[func_name]
-                if file_name == 'basic':
-                    exec('from QuickStart_Rhy import %s' % func_name)
-                else:
-                    exec('from QuickStart_Rhy.%s import %s' % (file_name, func_name))
-                eval('%s()' % func_name)
+                (
+                    requirePackage('QuickStart_Rhy', func_name)
+                    if file_name == 'basic' else
+                    requirePackage(f'QuickStart_Rhy.{file_name}', func_name)
+                )()
         except Exception as e:
             from . import qs_default_console
             if debug_flag:

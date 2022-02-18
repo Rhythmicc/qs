@@ -289,6 +289,9 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
             if qs_console_status:
                 qs_console_status.update(status='Opening')
             img = Image.open(BytesIO(res))
+        elif not is_url and isinstance(img, str) and os.path.exists(img):
+            from PIL import Image
+            img = Image.open(img)
         if qs_console_status:
             qs_console_status.stop()
 

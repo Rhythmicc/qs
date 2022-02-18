@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Docs:
+Docs for different language:
     中文: https://rhythmlian.cn/2020/08/09/QuickStart-Rhy-zh/
 
     English: https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/
@@ -180,7 +180,7 @@ def open_app():
     :return: None
     """
     if system == 'darwin':
-        os.system('open -a ' + ' '.join(sys.argv[2:]))
+        os.system('open -a ' + ' '.join([i.replace(' ', '\\ ') for i in sys.argv[2:]]))
     else:
         qs_default_console.print(qs_error_string, '"-a" is only support Mac OS X')
 
@@ -194,9 +194,9 @@ def open_file(argv=None):
     :return: None
     """
     if not argv:
-        argv = sys.argv[2:]
+        argv = [i.replace(' ', '\\ ') for i in sys.argv[2:]]
     if system == 'darwin':
-        os.system('open "' + '" "'.join(argv) + '"')
+        os.system('open ' + ' '.join(argv))
     elif system == 'linux':
         from subprocess import run
         run(['xdg-open'] + [i for i in argv])

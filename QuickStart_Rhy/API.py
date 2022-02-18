@@ -780,6 +780,7 @@ def exchange():
 def zhihuDaily():
     from .API.alapi import zhihuDaily
     from rich.panel import Panel
+    from .ImageTools.ImagePreview import image_preview
 
     st = qs_default_console.status('Requesting data..' if user_lang != 'zh' else '请求数据中..')
     st.start()
@@ -794,13 +795,20 @@ def zhihuDaily():
             res = '[bold cyan]' + ('Author: ' if user_lang != 'zh' else '作者: ')
             res += '[bold white]' + item['hint'] + '[/bold white]\n'
             res += '[bold cyan]' + ('Link:' if user_lang != 'zh' else '链接: ')
-            res += '[bold blue]' + item['url'] + '[/bold blue]\n'
-            res += '[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
+            res += '[bold blue]' + item['url'] + '[/bold blue]'
             if 'images' in item:
-                res += '[bold blue]  ' + '\n  '.join(item['images'])
+                if system == 'darwin':
+                    image_preview(item['images'][0], True)
+                else:
+                    res += '\n[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
+                    res += '[bold blue]  ' + '\n  '.join(item['images'])
             elif 'image' in item:
-                res += '[bold blue]  ' + item['image']
-            qs_default_console.print(Panel(res, title='[b]' + item['title']), justify="center", end='/n/n')
+                if system == 'darwin':
+                    image_preview(item['image'], True)
+                else:
+                    res += '\n[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
+                    res += '[bold blue]  ' + item['image']
+            qs_default_console.print(Panel(res, title='[b]' + item['title'], width=qs_default_console.width), justify="center", end='/n/n')
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
