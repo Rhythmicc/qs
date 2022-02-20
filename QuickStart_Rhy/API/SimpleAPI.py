@@ -115,66 +115,6 @@ def smms(filePath: str):
             qs_default_console.print(res_tb, justify="center")
 
 
-def pasteme(key: str = '100', password: str = '', mode: str = 'get'):
-    """
-    利用pasteme实现的信息收发
-
-    Use pasteme to send and receive messages
-
-    :param key: 信息编号
-    :param password: 获取信息可能需要的密码
-    :param mode: 'get' 或 'post'，get时将信息写入key.*文件中，post将剪切板内容上传至pasteme
-    :return: None
-    """
-    from .. import requirePackage
-    pyperclip = requirePackage('pyperclip')
-    if mode == 'get':
-        if password:
-            r = requests.get(f'https://api.pasteme.cn/{key},{password}', params={'json': True})
-        else:
-            r = requests.get(f'https://api.pasteme.cn/{key}', params={'json': True})
-        if r.status_code == requests.codes.ok:
-            js = json.loads(r.content)
-            if js['status'] == 200:
-                try:
-                    pyperclip.copy(js['content'])
-                except:
-                    qs_default_console.log(
-                        qs_error_string, 'Sorry, but your system may not be suppported by `pyperclip`'
-                        if user_lang != 'zh' else
-                        '抱歉，但是“pyperclip”不支持你的系统')
-                with open("%s.%s" % (key, js['lang']), 'w') as file:
-                    file.write(js['content'])
-            else:
-                qs_default_console.log(qs_error_string,
-                                       'Wrong Password' if password else 'Password is required')
-        else:
-            qs_default_console.log(qs_error_string, 'Unknown error' if user_lang != 'zh' else '未知错误')
-    else:
-        try:
-            ss = pyperclip.paste()
-        except:
-            from .. import qs_default_input
-            path = qs_default_input.ask(
-                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
-                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
-            with open(path, 'r') as file:
-                ss = file.read()
-        js = {
-            'lang': key if key else 'txt',
-            'content': ss
-        }
-        if password:
-            js['password'] = password
-        r = requests.post('https://api.pasteme.cn',
-                          headers={'Content-Type': 'application/json'},
-                          json=js)
-        if r.status_code == 201:
-            qs_default_console.print(json.loads(r.content))
-        else:
-            qs_default_console.print(qs_error_string, 'post failed' if user_lang != 'zh' else '发送失败')
-
-
 def imgs_in_url(url: str, save: bool = False):
     """
     提取url中的img标签链接
@@ -290,3 +230,39 @@ def lmgtfy(keyword: str):
         'https://moedog.org/tools/google/?q='
     ]
     return random.choice(supportLs) + base64.b64encode(bytes(keyword, 'utf-8')).decode('utf-8')
+
+
+class Designation2magnet:
+    import re
+
+    def __init__(self, description):
+        self.rt_url = 'https://3mag.net'
+        self.description = description
+
+    def search_designation(self):
+        """
+        番号搜索
+
+        :return:
+        """
+        infos = [
+            Designation2magnet.re.findall('<a.*?href="(.*?)".*?>(.*?)<.*?td-size.*?>(.*?)<', item, Designation2magnet.re.S) for item in
+            Designation2magnet.re.findall('<tr>(.*?)</tr>', requests.get(self.rt_url + '/search?q={}'.format(self.description)).text.replace('<b>', '').replace('</b>', ''), Designation2magnet.re.S)
+        ]
+        if [] in infos:
+            return [(i[0][0], i[0][1].strip(), i[0][2]) for i in infos[:infos.index([])]]
+        else:
+            return [(i[0][0], i[0][1].strip(), i[0][2]) for i in infos]
+
+    def get_magnet(self, info: str):
+        """
+        将选定的信息转为磁力链
+
+        :param info:
+        :return:
+        """
+        return 'magnet:?xt=urn:btih:' + Designation2magnet.re.findall(
+            '种子特征码.*?<dd>(.*?)<',
+            requests.get(self.rt_url + info).text,
+            Designation2magnet.re.S
+        )[0]

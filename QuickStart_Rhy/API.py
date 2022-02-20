@@ -415,21 +415,6 @@ def CommonClipboard():
         return
 
 
-def Pasteme():
-    """Pasteme信息传递"""
-    from .API.SimpleAPI import pasteme
-    try:
-        method = sys.argv[2]
-        key = sys.argv[3]
-        password = sys.argv[4] if len(sys.argv) > 4 else ''
-        pasteme(key, password, method)
-    except IndexError:
-        qs_default_console.log(
-            qs_error_string, "Usage:\n  1. qs pasteme <get> <key> [password]\n  2. qs pasteme <post> <lang> [password]"
-            if user_lang != 'zh' else "用法:\n  1. qs pasteme <get> <键值> [密码]\n  2. qs pasteme <post> <语言> [密码]")
-        return
-
-
 def bili_cover():
     """下载Bilibili视频、直播的封面图片（视频链接、视频号均可识别）"""
     from .API.alapi import bili_cover as bc
@@ -520,7 +505,8 @@ def short_video_info(son_call=False):
             sz = int(get_fileinfo(res['cover_url'])[-1].headers['content-length'])
             qs_default_console.print(
                 qs_info_string,
-                '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True), res['cover_url'] if showStatus else '')
+                '[{}] {}\n{}'.format(output_prefix['cover'], size_format(sz, True),
+                                     res['cover_url'] if showStatus else '')
             )
     if system == 'darwin':
         from .ImageTools.ImagePreview import image_preview
@@ -808,7 +794,8 @@ def zhihuDaily():
                 else:
                     res += '\n[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
                     res += '[bold blue]  ' + item['image']
-            qs_default_console.print(Panel(res, title='[b]' + item['title'], width=qs_default_console.width), justify="center", end='/n/n')
+            qs_default_console.print(Panel(res, title='[b]' + item['title'], width=qs_default_console.width),
+                                     justify="center", end='/n/n')
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -960,8 +947,7 @@ def m2t():
     elif '-u' in sys.argv:
         contents = sys.argv[sys.argv.index('-u') + 1]
     else:
-        import pyperclip
-        contents = pyperclip.paste()
+        contents = requirePackage('pyperclip', 'paste')()
     urls = re.findall('magnet:\?xt=urn:btih:(.*)', contents)
     if len(urls) > 1:
         from PyInquirer import prompt
@@ -975,3 +961,40 @@ def m2t():
         url = urls[0]
     from .API.Lolicon import magnet2torrent
     magnet2torrent(url)
+
+
+def d2m():
+    """
+    番号搜索并复制磁力链
+
+    :return:
+    """
+    try:
+        designation = sys.argv[2]
+    except:
+        return qs_default_console.print(qs_error_string, 'qs m2u <designation>')
+
+    from PyInquirer import prompt
+    from .API.SimpleAPI import Designation2magnet
+
+    copy = requirePackage('pyperclip', 'copy', not_ask=True)
+
+    searcher = Designation2magnet(designation)
+    infos = searcher.search_designation()
+    choices = [f'[{n + 1}] ' + i[1] + ': ' + i[-1] for n, i in enumerate(infos)]
+
+    (copy if copy is not None else qs_default_console.print)(
+        searcher.get_magnet(
+            infos[
+                choices.index(prompt({
+                    'type': 'list',
+                    'message': 'Select | 选择',
+                    'name': 'sub-url',
+                    'choices': choices
+                })['sub-url'])
+            ][0]
+        )
+    )
+
+    if copy is not None:
+        qs_default_console.print(qs_info_string, 'magnet url copied to clipboard' if user_lang != 'zh' else '磁力链接已拷贝至粘贴板')

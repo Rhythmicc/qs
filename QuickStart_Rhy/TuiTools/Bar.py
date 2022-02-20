@@ -2,7 +2,7 @@
 """
 柱状图
 
-histogram
+histogram & Bar
 """
 from colorama import Back, Style
 import math
@@ -45,7 +45,7 @@ class RollBar:
             res = ' ' * title_idx + self._title + '\n'
         else:
             res = ''
-        return res+'100%%%s' % ('_' * (self.width+1)) + '\n    │' + '\n    │'.join(
+        return res + '100%%%s' % ('_' * (self.width + 1)) + '\n    │' + '\n    │'.join(
             [''.join(i) for i in self.canvas[::-1]]) + '\n  0%╂' + '────┴' * math.ceil(self.width // 5)
 
     def show(self):
@@ -58,6 +58,13 @@ class RollBar:
         """
         print(self)
 
+    def _fresh(self, val):
+        cur = math.ceil(val / self.max_ * self.height)
+        for _i in range(cur):
+            self.canvas[_i].append(Back.GREEN + ' ' + Style.RESET_ALL)
+        for _i in range(cur, self.height):
+            self.canvas[_i].append(Style.RESET_ALL + ' ')
+
     def add(self, val: float):
         """
         扔掉第一个值，并在尾部添加val
@@ -69,11 +76,7 @@ class RollBar:
         """
         for _i in self.canvas:
             _i.pop(0)
-        cur = math.ceil(val / self.max_ * self.height)
-        for _i in range(cur):
-            self.canvas[_i].append(Back.GREEN + ' ' + Style.RESET_ALL)
-        for _i in range(cur, self.height):
-            self.canvas[_i].append(Style.RESET_ALL + ' ')
+        self._fresh(val)
 
     def title(self, _title: str):
         """
@@ -98,11 +101,7 @@ class RollBar:
         for i in self.canvas:
             i.clear()
         for val in vals:
-            cur = math.ceil(val / self.max_ * self.height)
-            for _i in range(cur):
-                self.canvas[_i].append(Back.GREEN + ' ' + Style.RESET_ALL)
-            for _i in range(cur, self.height):
-                self.canvas[_i].append(Style.RESET_ALL + ' ')
+            self._fresh(val)
 
 
 def DataTransformBar(has_size_info: bool = True):

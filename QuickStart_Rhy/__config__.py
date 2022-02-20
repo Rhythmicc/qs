@@ -154,6 +154,9 @@ class QsConfig:
             self.update()
             print(
                 '\nYour configuration table has been stored\n你的配置表被存储在: ' + Fore.LIGHTGREEN_EX + '%s' % configPath + Style.RESET_ALL)
+            print(
+                Fore.LIGHTRED_EX +
+                '\nqs will not use your configuration do anything!\nqs不会用您的配置表做任何事情!' + Style.RESET_ALL)
             prompt({
                 'type': 'confirm',
                 'message': 'Confirm | 确认',

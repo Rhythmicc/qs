@@ -27,9 +27,10 @@ qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
 qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_default_console = Console()
+qs_console_width = qs_default_console.width
 
 
-def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True):
+def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False):
     """
     获取本机上的python第三方库
 
@@ -41,7 +42,9 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
     """
     try:
         exec(f'from {pname} import {module}' if module else f"import {pname}")
-    except Exception:
+    except (ModuleNotFoundError, ImportError):
+        if not_ask:
+            return None
         from PyInquirer import prompt
 
         confirm = prompt({

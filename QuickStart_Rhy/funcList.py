@@ -129,7 +129,6 @@ def api_menu():
     qs LG  <image>            :-> make image larger(with AI)
     qs nlp \[words]           :-> Text(or in clipboard) error correction
     qs cb  <method> \[msg]     :-> Get Or Post msg by using network disk
-    qs pasteme <method> [*]  :-> get with key, [password] or post clipboard content
     qs bcv   <url/video code> :-> get Bilibili video cover image with <url>
     qs gbc   <garbage...>     :-> check Chinese garbage classification
     qs svi   <url*>      :-> get short video info (show url)
@@ -145,7 +144,8 @@ def api_menu():
     qs wallhaven [-save]     :-> Get Wallhaven Toplist
     qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords
     qs d60                   :-> Get the daily 60-second morning report
-    qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file""")\
+    qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file
+    qs d2m <designation> :-> search magnet url by designation""")\
         if user_lang != 'zh' else color_rep("""API工具:
     qs trans  \[content]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[content]      :-> 获取中文内容的拼音
@@ -159,7 +159,6 @@ def api_menu():
     qs LG  <image>            :-> 通过百度图像效果增强放大图片
     qs nlp \[words]           :-> 通过百度NLP进行文本纠错
     qs cb  <method> \[msg]     :-> 通过网络硬盘的本地文件系统get或post信息
-    qs pasteme <method> [*]  :-> 通过pasteme get或post信息
     qs bcv   <url/video code> :-> 获取B站视频、直播封面图片
     qs gbc   <garbage...>     :-> 查询垃圾分类
     qs svi   <url*>      :-> 获取多平台短视频信息 (展示链接)
@@ -175,7 +174,8 @@ def api_menu():
     qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图
     qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接
     qs d60                   :-> 获取每日60秒早报
-    qs m2t <-f path | -u link | *> :-> 转换磁力链接为种子文件""")
+    qs m2t <-f path | -u link | *> :-> 转换磁力链接为种子文件
+    qs d2m <designation> :-> 搜索番号的磁力链""")
 
 
 def image_menu():
@@ -269,7 +269,6 @@ api_funcs = {
     'weather': 'weather',
     'nlp': 'AipNLP',
     'cb': 'CommonClipboard',
-    'pasteme': 'Pasteme',
     'bcv': 'bili_cover',
     'gbc': 'gbc',
     'svi': 'short_video_info',
@@ -286,7 +285,8 @@ api_funcs = {
     'wallhaven': 'wallhaven',
     'lmgtfy': 'lmgtfy',
     'd60': 'daily60s',
-    'm2t': 'm2t'
+    'm2t': 'm2t',
+    'd2m': 'd2m'
 }
 
 image_funcs = {
