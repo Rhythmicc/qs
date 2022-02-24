@@ -99,7 +99,7 @@ def up_img():
 
         spt_type = _upimg_get_avaliable_platform()
         spt_type_keys = list(spt_type.keys())
-        if '-h' in sys.argv or '-help' in sys.argv:
+        if '-h' in sys.argv or '--help' in sys.argv:
             showSptPlatform(spt_type, spt_type_keys)
             qs_default_console.print(
                 qs_info_string,
@@ -398,23 +398,6 @@ def AipNLP():
         pass
 
 
-def CommonClipboard():
-    """共享粘贴板"""
-    from .API.CommonClipboard import CommonClipboard
-    try:
-        method = sys.argv[2]
-        if method == 'get':
-            CommonClipboard().get_msg()
-        elif method == 'post':
-            msg = ' '.join(sys.argv[3:]) if len(sys.argv) > 3 else None
-            CommonClipboard().post_msg(msg) if msg else CommonClipboard().post_msg()
-    except IndexError:
-        qs_default_console.log(
-            qs_error_string, "Usage:\n  1. qs cb <get>\n  2. qs cb <post> [msg]"
-            if user_lang != 'zh' else '用法:\n  1. qs cb <get>\n  2. qs cb <post> [消息]')
-        return
-
-
 def bili_cover():
     """下载Bilibili视频、直播的封面图片（视频链接、视频号均可识别）"""
     from .API.alapi import bili_cover as bc
@@ -567,7 +550,7 @@ def acg():
             if status else qs_default_console.log(qs_error_string, acg_link)
         if status:
             qs_default_console.print(qs_info_string, '尺寸:' if user_lang == 'zh' else 'SIZE:', width, '×', height)
-            if '-save' in sys.argv[2:]:
+            if '--save' in sys.argv[2:]:
                 from . import dir_char
                 from .NetTools.NormalDL import normal_dl
                 st.stop()
@@ -575,8 +558,8 @@ def acg():
             if system == 'darwin':  # Only support iTerm for Mac OS X
                 from .ImageTools.ImagePreview import image_preview
                 st.update(status='Loading image...\n' if user_lang != 'zh' else '加载图片中..\n')
-                image_preview(open(acg_link) if '-save' in sys.argv[2:] else acg_link,
-                              '-save' not in sys.argv[2:], qs_console_status=st)
+                image_preview(open(acg_link) if '--save' in sys.argv[2:] else acg_link,
+                              '--save' not in sys.argv[2:], qs_console_status=st)
                 return
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
@@ -603,15 +586,15 @@ def bingImg():
             if status else qs_default_console.log(qs_error_string, acg_link)
         if status:
             qs_default_console.print(qs_info_string, '版权:' if user_lang == 'zh' else 'CPRT:', cprt)
-            if '-save' in sys.argv[2:]:
+            if '--save' in sys.argv[2:]:
                 from .NetTools.NormalDL import normal_dl
                 st.stop()
                 acg_link = normal_dl(acg_link)
             if system == 'darwin':  # Only support iTerm for Mac OS X
                 from .ImageTools.ImagePreview import image_preview
                 st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-                image_preview(open(acg_link) if '-save' in sys.argv[2:] else acg_link,
-                              '-save' not in sys.argv[2:], qs_console_status=st)
+                image_preview(open(acg_link) if '--save' in sys.argv[2:] else acg_link,
+                              '--save' not in sys.argv[2:], qs_console_status=st)
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -627,9 +610,9 @@ def preview_html_images():
     :return:
     """
     from .API.SimpleAPI import imgs_in_url
-    save_flag = '-save' in sys.argv
+    save_flag = '--save' in sys.argv
     if save_flag:
-        sys.argv.remove('-save')
+        sys.argv.remove('--save')
     for url in sys.argv[2:]:
         imgs_in_url(url, save_flag)
 
@@ -699,7 +682,7 @@ def loli():
             qs_default_console.print(qs_error_string, msg)
             return
 
-    save_flag = '-save' in sys.argv
+    save_flag = '--save' in sys.argv
     proxy = ''
 
     if '-p' in sys.argv:
@@ -820,7 +803,7 @@ def wallhaven():
     if not res:
         return
 
-    if '-save' in sys.argv:
+    if '--save' in sys.argv:
         from .NetTools.NormalDL import normal_dl
         import os
         for i in res:
@@ -899,7 +882,7 @@ def daily60s():
             qs_default_console.print('-' * qs_default_console.width)
             qs_default_console.print(res['weiyu'] + '\n', justify='center')
 
-            if '-save' in sys.argv:
+            if '--save' in sys.argv:
                 import os
                 from .NetTools.NormalDL import normal_dl
 

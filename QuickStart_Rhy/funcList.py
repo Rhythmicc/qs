@@ -121,29 +121,28 @@ def api_menu():
     qs pinyin \[content]      :-> get the pinyin of Chinese content
     qs rmbg   <img>            :-> remove image background
     qs smms   <img/*.md>       :-> upload img or img in markdown to sm.ms
-    qs upimg  -help          :-> upload img or img in markdown to platform
-    qs alioss -help          :-> get aliyun oss api help menu
-    qs txcos  -help          :-> get tencent cos api help menu
-    qs qiniu  -help          :-> get qiniu oss api help menu
+    qs upimg  --help          :-> upload img or img in markdown to platform
+    qs alioss --help          :-> get aliyun oss api help menu
+    qs txcos  --help          :-> get tencent cos api help menu
+    qs qiniu  --help          :-> get qiniu oss api help menu
     qs weather \[address]     :-> check weather (of address)
     qs LG  <image>            :-> make image larger(with AI)
     qs nlp \[words]           :-> Text(or in clipboard) error correction
-    qs cb  <method> \[msg]     :-> Get Or Post msg by using network disk
     qs bcv   <url/video code> :-> get Bilibili video cover image with <url>
     qs gbc   <garbage...>     :-> check Chinese garbage classification
     qs svi   <url*>      :-> get short video info (show url)
     qs svd   <url*>            :-> download short video info as mp4
-    qs acg   [-save]          :-> get an acg image link (or save)
-    qs bing  [-save]          :-> get an bing image link (or save)
-    qs phi   <url>            :-> get <image url> in url (preview on Mac)
+    qs acg   [--save]          :-> get an acg image link (or save)
+    qs bing  [--save]          :-> get an bing image link (or save)
+    qs phi   <url> [--save]   :-> get <image url> in url (preview on Mac)
     qs kd    <courier number> :-> Query China express
-    qs loli  [-save] [-p]    :-> get and loli image link [or save (use default proxy)]
-    qs setu  [-save] [-p]    :-> randomly call acg, acg2, loli
-    qs exc  <num> <to> \[fr]  :-> Query <number> <fr> corresponding <number?> <to>
+    qs loli  [--save] [-p]    :-> get and loli image link [or save (use default proxy)]
+    qs setu  [--save] [-p]    :-> randomly call acg, acg2, loli
+    qs exc  <num> <to> \[fr]  :-> Query <number> <to> corresponding <number?> <fr>
     qs zhihu                 :-> Get zhihu.com Daily
-    qs wallhaven [-save]     :-> Get Wallhaven Toplist
+    qs wallhaven [--save]     :-> Get Wallhaven Toplist
     qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords
-    qs d60                   :-> Get the daily 60-second morning report
+    qs d60 [--save]          :-> Get the daily 60-second morning report
     qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file
     qs d2m <designation> :-> search magnet url by designation""")\
         if user_lang != 'zh' else color_rep("""API工具:
@@ -151,29 +150,28 @@ def api_menu():
     qs pinyin \[content]      :-> 获取中文内容的拼音
     qs rmbg   <img>            :-> 移除图片背景
     qs smms   <img/*.md>       :-> 将图片或Markdown中图片上传至sm.ms
-    qs upimg  -help          :-> 将图片或Markdown中图片上传至多平台（暂无需token）
-    qs alioss -help          :-> 获取阿里云对象存储的使用帮助
-    qs txcos  -help          :-> 获取腾讯云对象存储的使用帮助
-    qs qiniu  -help          :-> 获取七牛云对象存储的使用帮助
+    qs upimg  --help          :-> 将图片或Markdown中图片上传至多平台
+    qs alioss --help          :-> 获取阿里云对象存储的使用帮助
+    qs txcos  --help          :-> 获取腾讯云对象存储的使用帮助
+    qs qiniu  --help          :-> 获取七牛云对象存储的使用帮助
     qs weather \[address]     :-> 获取当地天气（或指定地址天气）
     qs LG  <image>            :-> 通过百度图像效果增强放大图片
     qs nlp \[words]           :-> 通过百度NLP进行文本纠错
-    qs cb  <method> \[msg]     :-> 通过网络硬盘的本地文件系统get或post信息
     qs bcv   <url/video code> :-> 获取B站视频、直播封面图片
     qs gbc   <garbage...>     :-> 查询垃圾分类
     qs svi   <url*>      :-> 获取多平台短视频信息 (展示链接)
     qs svd   <url*>            :-> 下载多平台短视频为mp4
-    qs acg   [-save]          :-> 获取一张acg图片链接 (或保存)
-    qs bing  [-save]          :-> 获取一张bing图片链接 (或保存)
-    qs phi   <url>            :-> 获取url里的图片链接 (Mac上iTerm可预览)
+    qs acg   [--save]          :-> 获取一张acg图片链接 (或保存)
+    qs bing  [--save]          :-> 获取一张bing图片链接 (或保存)
+    qs phi   <url> [--save]   :-> 获取url里的图片链接 (Mac上iTerm可预览)
     qs kd    <courier number> :-> 查询国内快递
-    qs loli  [-save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]
-    qs setu  [-save] [-p]     :-> 随机调用acg, acg2, loli
-    qs exc <num> <to> \[fr]   :-> 汇率查询<number> <fr> 对应 多少 <to>
+    qs loli  [--save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]
+    qs setu  [--save] [-p]     :-> 随机调用acg, acg2, loli
+    qs exc <num> <to> \[fr]   :-> 汇率查询<number> <to> 对应 多少 <fr>
     qs zhihu                :-> 获取知乎日报
-    qs wallhaven [-save]     :-> 获取Wallhaven Top动漫涩图
+    qs wallhaven [--save]     :-> 获取Wallhaven Top动漫涩图
     qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接
-    qs d60                   :-> 获取每日60秒早报
+    qs d60 [--save]           :-> 获取每日60秒早报
     qs m2t <-f path | -u link | *> :-> 转换磁力链接为种子文件
     qs d2m <designation> :-> 搜索番号的磁力链""")
 
