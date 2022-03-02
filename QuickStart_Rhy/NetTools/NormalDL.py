@@ -86,7 +86,7 @@ class Downloader:
                 self.enabled = False
                 return
         if self.name and '.' not in self.name:
-            self.name = self.name = os.path.basename(url)
+            self.name = os.path.basename(url)
         if name:
             self.name = name
 

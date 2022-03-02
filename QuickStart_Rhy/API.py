@@ -952,32 +952,43 @@ def d2m():
 
     :return:
     """
+    global url
     try:
         designation = sys.argv[2]
-    except:
+    except IndexError:
         return qs_default_console.print(qs_error_string, 'qs m2u <designation>')
 
     from PyInquirer import prompt
     from .API.SimpleAPI import Designation2magnet
 
     copy = requirePackage('pyperclip', 'copy', not_ask=True)
+    PyperclipException = requirePackage('pyperclip', 'PyperclipException')
+    copied = False
 
     searcher = Designation2magnet(designation)
     infos = searcher.search_designation()
     choices = [f'[{n + 1}] ' + i[1] + ': ' + i[-1] for n, i in enumerate(infos)]
 
-    (copy if copy is not None else qs_default_console.print)(
-        searcher.get_magnet(
-            infos[
-                choices.index(prompt({
-                    'type': 'list',
-                    'message': 'Select | 选择',
-                    'name': 'sub-url',
-                    'choices': choices
-                })['sub-url'])
-            ][0]
+    try:
+        url = searcher.get_magnet(
+                infos[
+                    choices.index(prompt({
+                        'type': 'list',
+                        'message': 'Select | 选择',
+                        'name': 'sub-url',
+                        'choices': choices
+                    })['sub-url'])
+                ][0]
         )
-    )
+        if copy:
+            copy(url)
+            copied = True
+        else:
+            raise PyperclipException
+    except KeyError:
+        return
+    except PyperclipException:
+        qs_default_console.print(qs_info_string, url)
 
-    if copy is not None:
+    if copied:
         qs_default_console.print(qs_info_string, 'magnet url copied to clipboard' if user_lang != 'zh' else '磁力链接已拷贝至粘贴板')

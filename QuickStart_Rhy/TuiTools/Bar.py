@@ -141,3 +141,11 @@ def DataTransformBar(has_size_info: bool = True):
             DownloadColumn(),
             console=qs_default_console
         )
+
+
+def NormalProgressBar(task_name, total):
+    from .. import qs_default_console
+    from rich.progress import Progress
+    progress = Progress()
+    task_id = progress.add_task(task_name, total=total, console=qs_default_console)
+    return progress, task_id
