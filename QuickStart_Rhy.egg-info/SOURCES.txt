@@ -7,10 +7,8 @@ QuickStart_Rhy/__init__.py
 QuickStart_Rhy/api.py
 QuickStart_Rhy/funcList.py
 QuickStart_Rhy/imageDeal.py
-QuickStart_Rhy/imagedeal.py
 QuickStart_Rhy/main.py
 QuickStart_Rhy/netTools.py
-QuickStart_Rhy/nettools.py
 QuickStart_Rhy/qsLesson.py
 QuickStart_Rhy/system.py
 QuickStart_Rhy.egg-info/PKG-INFO
@@ -35,6 +33,7 @@ QuickStart_Rhy/ImageTools/VideoTools.py
 QuickStart_Rhy/ImageTools/__init__.py
 QuickStart_Rhy/NetTools/HttpServer.py
 QuickStart_Rhy/NetTools/M3u8DL.py
+QuickStart_Rhy/NetTools/MultiSingleDL.py
 QuickStart_Rhy/NetTools/NormalDL.py
 QuickStart_Rhy/NetTools/WiFi.py
 QuickStart_Rhy/NetTools/WiFiDarwin.py
