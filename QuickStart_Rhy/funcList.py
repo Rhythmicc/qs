@@ -50,13 +50,13 @@ def base_menu():
     qs fcopy <file>          :-> copy file content to clipboard
     qs user_lang             :-> Get User Language in .qsrc""") \
         if user_lang != 'zh' else color_rep("""基础工具:
-    qs u   <url...>          :-> 使用默认浏览器打开多个链接
-    qs a   <app> \[file..]    :-> 打开应用或使用应用打开文件 (仅支持Mac OS)
-    qs f   <file...>         :-> 使用合适的应用打开文件
-    qs cal <exp>             :-> 计算算术表达式
+    qs u   <链接...>          :-> 使用默认浏览器打开多个链接
+    qs a   <应用> \[文件...]    :-> 打开应用或使用应用打开文件 (仅支持Mac OS)
+    qs f   <文件...>         :-> 使用合适的应用打开文件
+    qs cal <表达式>             :-> 计算算术表达式
     qs time                  :-> 查看当前时间
     qs pcat                  :-> 输出粘贴板内容
-    qs fcopy <file>          :-> 拷贝文件内容到粘贴板
+    qs fcopy <文件>          :-> 拷贝文件内容到粘贴板
     qs user_lang             :-> 获取用户的默认语言""")
 
 
@@ -82,33 +82,33 @@ def system_menu():
     qs top                   :-> CPU和内存监控器
     qs clear                 :-> 清理本机内存
     qs go2git                :-> 自动前往git目录托管仓库的网页
-    qs mktar  <path...>      :-> 使用多个文件或文件夹创建tar压缩包
-    qs untar  <path...>      :-> 解压各种格式的tar包
-    qs mkzip  <path...>      :-> 使用多个文件或文件夹创建zip压缩包
-    qs unzip  <path...>      :-> 解压zip压缩包
-    qs unrar  <path...>      :-> 解压rar压缩包
-    qs mk7z   <path...>      :-> 使用多个文件或文件夹创建7z 压缩包
-    qs un7z   <path...>      :-> 解压7z 压缩包
-    qs md5    <path...>      :-> 计算文件的md5值
-    qs sha1   <path...>      :-> 计算文件sha1值
-    qs sha256 <path...>      :-> 计算文件sha256值
-    qs sha512 <path...>      :-> 计算文件sha512值
-    qs diff <dir1> <dir2>    :-> 对比两个文件夹差异""")
+    qs mktar  <路径...>      :-> 使用多个文件或文件夹创建tar压缩包
+    qs untar  <路径...>      :-> 解压各种格式的tar包
+    qs mkzip  <路径...>      :-> 使用多个文件或文件夹创建zip压缩包
+    qs unzip  <路径...>      :-> 解压zip压缩包
+    qs unrar  <路径...>      :-> 解压rar压缩包
+    qs mk7z   <路径...>      :-> 使用多个文件或文件夹创建7z 压缩包
+    qs un7z   <路径...>      :-> 解压7z 压缩包
+    qs md5    <路径...>      :-> 计算文件的md5值
+    qs sha1   <路径...>      :-> 计算文件sha1值
+    qs sha256 <路径...>      :-> 计算文件sha256值
+    qs sha512 <路径...>      :-> 计算文件sha512值
+    qs diff <目录1> <目录2>    :-> 对比两个文件夹差异""")
 
 
 def net_menu():
     """网络类菜单 | Network menu"""
     color_rep("""Net Tools help:
     qs http \[ip] [-bind url] :-> start a multithread ftp server
-    qs netinfo [<domains>..] :-> get url's info which in clipboard or params 
+    qs netinfo <domains...*> :-> get url's info which in clipboard or params 
     qs dl [urls] [-help]     :-> download file from url(in clipboard)
     qs wifi                  :-> connect wifi
     qs upload                :-> upload your pypi library
     qs upgrade               :-> update qs""") \
         if user_lang != 'zh' else color_rep("""网络工具:
-    qs http \[ip] [-bind url] :-> 在当前路径下开启多线程http服务
-    qs netinfo [<domains>..] :-> 获取命令参数或剪切板中链接或ip的信息 
-    qs dl [urls]             :-> 从命令参数或剪切板中链接下载文件
+    qs http \[IP] [-bind 链接] :-> 在当前路径下开启多线程http服务
+    qs netinfo <域名...*> :-> 获取命令参数或剪切板中链接或ip的信息 
+    qs dl <链接*>             :-> 从命令参数或剪切板中链接下载文件
     qs wifi                  :-> 连接wifi
     qs upload                :-> 上传你的pypi仓库
     qs upgrade               :-> 更新qs""")
@@ -144,36 +144,38 @@ def api_menu():
     qs lmgtfy <keywords>     :-> Get LMGTFY link for keywords
     qs d60 [--save]          :-> Get the daily 60-second morning report
     qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file
-    qs d2m <designation> :-> search magnet url by designation""")\
+    qs d2m <designation> :-> search magnet url by designation
+    qs doutu <keywords> :-> get expression package of keywords""")\
         if user_lang != 'zh' else color_rep("""API工具:
-    qs trans  \[content]       :-> 翻译命令参数或剪切板中的内容
-    qs pinyin \[content]      :-> 获取中文内容的拼音
-    qs rmbg   <img>            :-> 移除图片背景
-    qs smms   <img/*.md>       :-> 将图片或Markdown中图片上传至sm.ms
+    qs trans  \[内容]       :-> 翻译命令参数或剪切板中的内容
+    qs pinyin \[内容]      :-> 获取中文内容的拼音
+    qs rmbg   <图像>            :-> 移除图片背景
+    qs smms   <图像/*.md>       :-> 将图片或Markdown中图片上传至sm.ms
     qs upimg  --help          :-> 将图片或Markdown中图片上传至多平台
     qs alioss --help          :-> 获取阿里云对象存储的使用帮助
     qs txcos  --help          :-> 获取腾讯云对象存储的使用帮助
     qs qiniu  --help          :-> 获取七牛云对象存储的使用帮助
-    qs weather \[address]     :-> 获取当地天气（或指定地址天气）
-    qs LG  <image>            :-> 通过百度图像效果增强放大图片
+    qs weather \[城市拼音]     :-> 获取当地天气（或指定地址天气）
+    qs LG  <图像>            :-> 通过百度图像效果增强放大图片
     qs nlp \[words]           :-> 通过百度NLP进行文本纠错
-    qs bcv   <url/video code> :-> 获取B站视频、直播封面图片
-    qs gbc   <garbage...>     :-> 查询垃圾分类
-    qs svi   <url*>      :-> 获取多平台短视频信息 (展示链接)
-    qs svd   <url*>            :-> 下载多平台短视频为mp4
+    qs bcv   <链接/视频号> :-> 获取B站视频、直播封面图片
+    qs gbc   <垃圾名称...>     :-> 查询垃圾分类
+    qs svi   <链接*>      :-> 获取多平台短视频信息 (展示链接)
+    qs svd   <链接*>            :-> 下载多平台短视频为mp4
     qs acg   [--save]          :-> 获取一张acg图片链接 (或保存)
     qs bing  [--save]          :-> 获取一张bing图片链接 (或保存)
-    qs phi   <url> [--save]   :-> 获取url里的图片链接 (Mac上iTerm可预览)
-    qs kd    <courier number> :-> 查询国内快递
+    qs phi   <链接> [--save]   :-> 获取<链接>里的图片链接 (Mac上iTerm可预览)
+    qs kd    <快递单号> :-> 查询国内快递
     qs loli  [--save] [-p]     :-> 获取一张萝莉图片链接 [或(使用默认代理)下载]
     qs setu  [--save] [-p]     :-> 随机调用acg, acg2, loli
-    qs exc <num> <to> \[fr]   :-> 汇率查询<number> <to> 对应 多少 <fr>
+    qs exc <数量> <to> \[fr]   :-> 汇率查询<数量> <to币种> 对应 多少 <fr币种>
     qs zhihu                :-> 获取知乎日报
     qs wallhaven [--save]     :-> 获取Wallhaven Top动漫涩图
-    qs lmgtfy <keywords>     :-> 获取关键词的LMGTFY链接
+    qs lmgtfy <关键词>     :-> 获取关键词的LMGTFY链接
     qs d60 [--save]           :-> 获取每日60秒早报
-    qs m2t <-f path | -u link | *> :-> 转换磁力链接为种子文件
-    qs d2m <designation> :-> 搜索番号的磁力链""")
+    qs m2t <-f 路径 | -u 链接 | *> :-> 转换磁力链接为种子文件
+    qs d2m <番号> :-> 搜索番号的磁力链
+    qs doutu <关键词> :-> 获取关键词的表情包""")
 
 
 def image_menu():
@@ -190,16 +192,16 @@ def image_menu():
     qs fmti <pic> <to> \[exp...] :-> format image to <to> color except \[exp...] color
     qs vsta    <video> <audio> :-> set video's audio""") \
         if user_lang != 'zh' else color_rep("""图像处理:
-    qs stbg    <pic> <to> \[from]    :-> 替换图片颜色 (from默认为透明)
-    qs icat    <img>            :-> 在终端预览图片
-    qs v2gif   <path> \[sz] \[fps] :-> 将视频导出为gif
-    qs v2mp4   <video>         :-> 将视频导出为mp4
-    qs v2mp3   <video>         :-> 提取视频音频为mp3
-    qs rmaudio <video>       :-> 删除mp4文件音频
-    qs i2png   <imgs...>       :-> 将图像转换为png
-    qs i2jpg   <imgs...>       :-> 将图像转换为jpg
-    qs fmti    <pic> <to> \[exp...] :-> 格式化图片颜色为<to>，忽略\[exp...]颜色
-    qs vsta    <video> <audio> :-> 设置视频的音频""")
+    qs stbg    <图像> <to> \[from]    :-> 替换图片颜色 (from默认为透明)
+    qs icat    <图像>            :-> 在终端预览图片
+    qs v2gif   <路径> \[sz] \[fps] :-> 将视频导出为gif
+    qs v2mp4   <视频>         :-> 将视频导出为mp4
+    qs v2mp3   <视频>         :-> 提取视频音频为mp3
+    qs rmaudio <视频>       :-> 删除mp4文件音频
+    qs i2png   <图像...>       :-> 将图像转换为png
+    qs i2jpg   <图像...>       :-> 将图像转换为jpg
+    qs fmti    <图像> <to> \[exp...] :-> 格式化图片颜色为<to>，忽略\[exp...]颜色
+    qs vsta    <视频> <音频> :-> 设置视频的音频""")
 
 
 menu_table = {
@@ -284,7 +286,8 @@ api_funcs = {
     'lmgtfy': 'lmgtfy',
     'd60': 'daily60s',
     'm2t': 'm2t',
-    'd2m': 'd2m'
+    'd2m': 'd2m',
+    'doutu': 'doutu'
 }
 
 image_funcs = {

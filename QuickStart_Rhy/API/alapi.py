@@ -505,11 +505,20 @@ def daily60s():
         return False, repr(e)
 
 
-def covidInfo():
+def doutu(keyword: str):
     """
-    获取两地疫情信息
+    获取keyword的表情包
 
-
-    :return:
+    :param keyword: 关键词
+    :return: 图片链接
     """
-    pass
+    try:
+        res = requests.post(v2_url + 'doutu',
+                            params={'keyword': keyword},
+                            headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, res['msg']
+        return True, res['data']
+    except Exception as e:
+        return False, repr(e)

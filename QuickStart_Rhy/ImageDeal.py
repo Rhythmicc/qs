@@ -132,6 +132,11 @@ def icat():
         path = sys.argv[2]
         is_url = '-open_url' in sys.argv or \
                  (not os.path.exists(path) and (path.startswith('http://') or path.startswith('https://')))
+        is_in_rc_file = '--rc' in sys.argv
+        if is_in_rc_file:
+            rc_width = int(sys.argv[sys.argv.index('--rc') + 1])
+        else:
+            rc_width = 0
         if not os.path.exists(path) and not is_url:
             qs_default_console.log(qs_error_string, 'No such file:', path)
             raise FileNotFoundError
@@ -139,7 +144,7 @@ def icat():
         qs_default_console.log(qs_error_string, 'Usage: qs icat <img path/url> [-open_url if is url]')
     else:
         from .ImageTools.ImagePreview import image_preview
-        image_preview(open(path)) if not is_url else image_preview(path, is_url)
+        image_preview(open(path), set_width_in_rc_file=rc_width) if not is_url else image_preview(path, is_url, set_width_in_rc_file=rc_width)
 
 
 def i2png():

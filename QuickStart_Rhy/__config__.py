@@ -29,7 +29,8 @@ default_language = {
                                     'spa', 'th', 'ara', 'ru', 'pt',
                                     'de', 'it', 'el', 'nl', 'bul',
                                     'est', 'dan', 'fin', 'cs', 'rom',
-                                    'slo', 'swe', 'hu', 'vie']
+                                    'slo', 'swe', 'hu', 'vie', 'Not Set | 暂不配置'],
+    'default': 'Not Set | 暂不配置'
 }
 
 default_currency = {
@@ -57,7 +58,8 @@ default_currency = {
                                     'JOD', 'HKD', 'EGP', 'KHR', 'ZAR', 'BRL', 'OMR', 'BHD', 'NOK', 'PLN',
                                     'QAR', 'RUB', 'MAD', 'EUR', 'GBP', 'BND', 'SAR', 'USD', 'KWD', 'SYP',
                                     'DKK', 'ILS', 'ISK', 'DZD', 'JPY', 'SEK', 'TRY', 'INR', 'KES', 'SGD',
-                                    'UGX', 'PHP', 'IQD', 'BUK', 'MXN'}
+                                    'UGX', 'PHP', 'IQD', 'BUK', 'MXN', 'Not set | 暂不设置'},
+    'default': 'Not set | 暂不设置'
 }
 
 default_translate_engine = {
@@ -88,10 +90,6 @@ default_proxy = {
     'default': 'Not set | 暂不设置',
     'validate': proxyValidator
 }
-
-
-def ask(questions):
-    return prompt(questions)
 
 
 class QsConfig:
@@ -144,9 +142,9 @@ class QsConfig:
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey"
   }
 }""")
-            res = ask([default_language, default_currency, default_translate_engine, default_proxy])
-            self.config['basic_settings']['default_language'] = res['default_language']
-            self.config['basic_settings']['default_currency'] = res['default_currency']
+            res = prompt([default_language, default_currency, default_translate_engine, default_proxy])
+            self.config['basic_settings']['default_language'] = res['default_language'] if res['default_language'] == 'Not Set | 暂不配置' else 'en'
+            self.config['basic_settings']['default_currency'] = res['default_currency'] if res['default_currency'] == 'Not Set | 暂不配置' else 'USD'
             self.config['basic_settings']['default_translate_engine']['index'] = ['default', 'TencentCloud'].index(
                 res['default_translate_engine'])
             self.config['basic_settings']['default_proxy'] = "" if res['default_proxy'] == 'Not set | 暂不设置' else res[
@@ -167,8 +165,8 @@ class QsConfig:
                 'type': 'confirm',
                 'name': 'use_iTerm',
                 'message': """Qs recommends that you use iTerm as the terminal program in
-  the Mac system, whether to open the iTerm official website?
-  qs推荐您在Mac系统中使用iTerm作为终端程序, 是否打开iTerm官网?""",
+  the Mac system, whether to open the iTerm2 official website?
+  qs推荐您在Mac系统中使用iTerm2作为终端程序, 是否打开iTerm2官网?""",
                 'default': True})['use_iTerm']:
                 from .NetTools import open_url
                 open_url('https://www.iterm2.com/')
@@ -179,8 +177,8 @@ class QsConfig:
 
     def basicSelect(self, key: str):
         if key not in self.config['basic_settings']:
-            exec(f'res = ask([{key}])')
-            exec("self.config['basic_settings'][key] = res[key]")
+            exec(f'res = prompt([{key}])')
+            exec(f"self.config['basic_settings']['{key}'] = res['{key}']")
             self.update()
         return self.config['basic_settings'][key]
 

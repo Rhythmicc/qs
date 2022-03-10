@@ -790,11 +790,11 @@ def wallhaven():
 
     url, oneFlag = '', False
     if '-h' in sys.argv:
-        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [-open_url <url>] [-one] [-save]")
+        return qs_default_console.print(qs_info_string, "Usage: qs wallhaven [--url <url>] [-one] [--save]")
 
-    if '-open_url' in sys.argv:
-        url = sys.argv[sys.argv.index('-open_url') + 1]
-        sys.argv.remove('-open_url')
+    if '--url' in sys.argv:
+        url = sys.argv[sys.argv.index('--url') + 1]
+        sys.argv.remove('--url')
         sys.argv.remove(url)
 
     oneFlag = '-one' in sys.argv
@@ -992,3 +992,32 @@ def d2m():
 
     if copied:
         qs_default_console.print(qs_info_string, 'magnet url copied to clipboard' if user_lang != 'zh' else '磁力链接已拷贝至粘贴板')
+
+
+def doutu():
+    """
+    获取关键词的随机十张表情包
+    :return:
+    """
+    try:
+        keyword = sys.argv[2]
+    except IndexError:
+        return qs_default_console.print(qs_error_string, 'qs doutu <designation>')
+
+    from .API.alapi import doutu
+    if system == 'darwin':
+        from .ImageTools.ImagePreview import image_preview
+    else:
+        image_preview = None
+
+    status, urls = doutu(keyword)
+    if not status:
+        qs_default_console.print(qs_error_string, urls)
+    else:
+        import random
+        urls = random.choices(urls, k=10)
+
+        for item in urls:
+            qs_default_console.print(qs_info_string, item)
+            if system == 'darwin':
+                image_preview(item, is_url=True)

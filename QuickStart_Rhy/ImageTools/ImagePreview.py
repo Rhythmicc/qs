@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .. import qs_default_console
+from .. import qs_default_console, qs_console_width
 from .. import headers
 import math
 import base64
@@ -257,12 +257,13 @@ def imgcat(buf, width=None, height=None, preserve_aspect_ratio=True, fp=None):
 
 
 def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
-                  qs_console_status=None):
+                  qs_console_status=None, set_width_in_rc_file: int = 0):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用
 
     preview image on terminal | At present, only iTerm under MacOS is available
 
+    :param set_width_in_rc_file:
     :param is_url:
     :param img: opened file, numpy array, PIL.Image, matplotlib fig
     :param set_proxy: set proxy
@@ -300,12 +301,13 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
         _real_height = real_height(buf)
         _real_width = math.ceil(width / height * _real_height) * 2 + 1
 
-        qs_default_console.print(' ' * int(max((qs_default_console.width - _real_width) / 2 - 1, 0)), end='')
+        console_width = qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
+        qs_default_console.print(' ' * int(max((console_width - _real_width) / 2 - 1, 0)), end='')
 
         imgcat(buf, height=real_height(buf))
     except Exception as e:
         if qs_console_status:
-            from .. import qs_error_string
-            qs_default_console.print(qs_error_string, repr(e))
             qs_console_status.stop()
+        from .. import qs_error_string
+        qs_default_console.print(qs_error_string, repr(e))
         return
