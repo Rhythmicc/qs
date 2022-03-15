@@ -136,11 +136,13 @@ def ali_oss():
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls', '-rm']:
             raise IndexError
-        file = sys.argv[3] if op != '-ls' else None
-        try:
-            bucket = sys.argv[4] if op != '-ls' else sys.argv[3]
-        except IndexError:
+        if op != '-ls' and '--bucket' in sys.argv:
+            bucket = sys.argv[sys.argv.index('--bucket') + 1]
+        elif op == '-ls':
+            bucket = None if len(sys.argv) < 4 else sys.argv[3]
+        else:
             bucket = None
+        files = sys.argv[3:] if op != '-ls' else []
     except IndexError:
         qs_default_console.print(
             qs_info_string,
@@ -162,10 +164,10 @@ def ali_oss():
         from .API.AliCloud import AliyunOSS
         ali_api = AliyunOSS()
         func_table = ali_api.get_func_table()
-        if not file:
-            func_table[op](bucket)
-        else:
+        for file in files:
             func_table[op](file, bucket)
+        if not files:
+            func_table[op](bucket)
 
 
 def qiniu():
@@ -176,13 +178,15 @@ def qiniu():
     """
     try:
         op = sys.argv[2]
-        if op not in ['-up', '-rm', '-cp', '-ls', '-dl']:
+        if op not in ['-dl', '-up', '-ls', '-rm']:
             raise IndexError
-        file = sys.argv[3] if op != '-ls' else None
-        try:
-            bucket = sys.argv[4] if op != '-ls' else sys.argv[3]
-        except IndexError:
+        if op != '-ls' and '--bucket' in sys.argv:
+            bucket = sys.argv[sys.argv.index('--bucket') + 1]
+        elif op == '-ls':
+            bucket = None if len(sys.argv) < 4 else sys.argv[3]
+        else:
             bucket = None
+        files = sys.argv[3:] if op != '-ls' else []
     except IndexError:
         qs_default_console.print(
             qs_info_string,
@@ -206,10 +210,10 @@ def qiniu():
         from .API.QiniuOSS import QiniuOSS
         qiniu_api = QiniuOSS()
         func_table = qiniu_api.get_func_table()
-        if not file:
-            func_table[op](bucket)
-        else:
+        for file in files:
             func_table[op](file, bucket)
+        if not files:
+            func_table[op](bucket)
 
 
 def txcos():
@@ -222,11 +226,13 @@ def txcos():
         op = sys.argv[2]
         if op not in ['-dl', '-up', '-ls', '-rm']:
             raise IndexError
-        file = sys.argv[3] if op != '-ls' else None
-        try:
-            bucket = sys.argv[4] if op != '-ls' else sys.argv[3]
-        except IndexError:
+        if op != '-ls' and '--bucket' in sys.argv:
+            bucket = sys.argv[sys.argv.index('--bucket') + 1]
+        elif op == '-ls':
+            bucket = None if len(sys.argv) < 4 else sys.argv[3]
+        else:
             bucket = None
+        files = sys.argv[3:] if op != '-ls' else []
     except IndexError:
         qs_default_console.print(
             qs_info_string,
@@ -248,10 +254,10 @@ def txcos():
         from .API.TencentCloud import TxCOS
         tx_api = TxCOS()
         func_table = tx_api.get_func_table()
-        if not file:
-            func_table[op](bucket)
-        else:
+        for file in files:
             func_table[op](file, bucket)
+        if not files:
+            func_table[op](bucket)
 
 
 def translate():

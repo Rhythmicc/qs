@@ -272,7 +272,10 @@ const completionSpec: Fig.Spec = {
     name: 'wallhaven',
     description: '获取Wallhaven Top动漫涩图',
     options: [
-      {name: '--save', description: '保存图片'}
+      {name: '--save', description: '保存图片'},
+      {name: '-h', description: '帮助'},
+      {name: '-one', description: '随机一张'},
+      {name: '--url', description: '设置爬取默认页面', args: {name: 'url', description: '链接'}},
     ]
   }, {
     name: 'lmgtfy',
@@ -296,6 +299,10 @@ const completionSpec: Fig.Spec = {
     name: 'd2m',
     description: '搜索番号的磁力链',
     args: {name: 'designation', description: '番号'}
+  }, {
+    name: 'doutu',
+    description: '斗图',
+    args: {name: 'keyword', description: '关键词'}
   }, {
     name: 'stbg',
     description: '替换图片颜色',
@@ -354,4 +361,3 @@ const completionSpec: Fig.Spec = {
   }],
 };
 export default completionSpec;
-

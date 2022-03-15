@@ -45,19 +45,20 @@ class TxCOS:
             '-ls': self.list_bucket
         }
 
-    def upload(self, filePath: str, bucket: str = None):
+    def upload(self, filePath: str, bucket: str = None, key: str = None):
         """
         上传文件
 
         Upload file
 
+        :param key: 在COS上的文件路径
         :param filePath: 文件地址
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
         bucket = bucket if bucket else self.df_bucket
         filename = filePath.strip()
-        self.client.upload_file(Bucket=bucket, LocalFilePath=filename, Key=filename.replace(dir_char, '/'))
+        self.client.upload_file(Bucket=bucket, LocalFilePath=filename, Key=key if key else filename.replace(dir_char, '/'))
 
     def download(self, filename: str, bucket: str = None):
         """
