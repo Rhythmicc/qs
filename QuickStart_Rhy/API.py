@@ -121,7 +121,6 @@ def up_img():
                 showSptPlatform(spt_type, spt_type_keys),
                 qs_default_console.print(qs_error_string, 'Upload Failed' if user_lang != 'zh' else '上传失败!')
             )
-
         else:
             upload_image(path, plt_type=random.choice(spt_type_keys))
 

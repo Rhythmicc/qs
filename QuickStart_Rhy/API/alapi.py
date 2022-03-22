@@ -126,7 +126,7 @@ def upload_image(file_path: str, plt_type: str = ''):
         progress.start()
         progress.start_task(pid)
         for aim in aims:
-            if aim.startswith('http'):  # Uploaded
+            if aim.startswith('http://') or aim.startswith('https://'):  # Uploaded
                 qs_default_console.print(qs_warning_string, aim,
                                          'is not a local file' if user_lang != 'zh' else '非本地文件')
                 progress.advance(pid, 1)
@@ -154,10 +154,10 @@ def upload_image(file_path: str, plt_type: str = ''):
                         res_table.add_row(aim.split(dir_char)[-1], str(res_dict['code']), res_dict['msg'])
                         img_dict[aim] = False
 
-                if img_dict[aim]:
-                    qs_default_console.print(qs_info_string, 'replacing img:' if user_lang != 'zh' else '替换路径',
-                                             f'"{raw_path}" with "{img_dict[aim]}"')
-                    ct = ct.replace(raw_path, img_dict[aim])
+            if aim in img_dict and img_dict[aim]:
+                qs_default_console.print(qs_info_string, 'replacing img:' if user_lang != 'zh' else '替换路径',
+                                         f'"{raw_path}" with "{img_dict[aim]}"')
+                ct = ct.replace(raw_path, img_dict[aim])
             progress.advance(pid, 1)
         progress.stop()
         with open(path, 'w') as fp:

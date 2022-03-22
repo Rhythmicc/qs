@@ -143,8 +143,8 @@ class QsConfig:
   }
 }""")
             res = prompt([default_language, default_currency, default_translate_engine, default_proxy])
-            self.config['basic_settings']['default_language'] = res['default_language'] if res['default_language'] == 'Not Set | 暂不配置' else 'en'
-            self.config['basic_settings']['default_currency'] = res['default_currency'] if res['default_currency'] == 'Not Set | 暂不配置' else 'USD'
+            self.config['basic_settings']['default_language'] = res['default_language'] if res['default_language'] != 'Not Set | 暂不配置' else 'en'
+            self.config['basic_settings']['default_currency'] = res['default_currency'] if res['default_currency'] != 'Not Set | 暂不配置' else 'USD'
             self.config['basic_settings']['default_translate_engine']['index'] = ['default', 'TencentCloud'].index(
                 res['default_translate_engine'])
             self.config['basic_settings']['default_proxy'] = "" if res['default_proxy'] == 'Not set | 暂不设置' else res[
