@@ -1,3 +1,23 @@
+export const generateApps = (unquotedPath: string): Fig.Generator => ({
+  cache: { strategy: "stale-while-revalidate" },
+  script: `mdfind kMDItemContentTypeTree=com.apple.application-bundle -onlyin ${unquotedPath}`,
+  postProcess: (out) => {
+    return out.split("\n").map((path) => {
+      const basename = path.slice(path.lastIndexOf("/") + 1);
+      return {
+        name: basename,
+        description: path,
+        icon: `fig://${path}`,
+        priority: path.endsWith(`/Applications/${basename}`)
+          ? 80
+          : path.startsWith("/Applications")
+          ? 76
+          : 50,
+      };
+    });
+  },
+});
+
 const completionSpec: Fig.Spec = {
   name: "qs",
   description: "QuickStart_Rhy--Your command line assistant",
@@ -24,7 +44,7 @@ const completionSpec: Fig.Spec = {
     name: 'a',
     description: 'open app or open file by app(for Mac OS)',
     args: [
-        {name: 'app', description: 'app'},
+        {name: 'app', description: 'app', generators: generateApps('/')},
         {name: 'files', description: 'files', isOptional: true, isVariadic: true, template: ['filepaths','folders']}
     ]
   }, {

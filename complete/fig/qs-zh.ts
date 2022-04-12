@@ -1,3 +1,23 @@
+export const generateApps = (unquotedPath: string): Fig.Generator => ({
+  cache: { strategy: "stale-while-revalidate" },
+  script: `mdfind kMDItemContentTypeTree=com.apple.application-bundle -onlyin ${unquotedPath}`,
+  postProcess: (out) => {
+    return out.split("\n").map((path) => {
+      const basename = path.slice(path.lastIndexOf("/") + 1);
+      return {
+        name: basename,
+        description: path,
+        icon: `fig://${path}`,
+        priority: path.endsWith(`/Applications/${basename}`)
+          ? 80
+          : path.startsWith("/Applications")
+          ? 76
+          : 50,
+      };
+    });
+  },
+});
+
 const completionSpec: Fig.Spec = {
   name: "qs",
   description: "QuickStart_Rhy--你的命令行助手",
@@ -24,7 +44,7 @@ const completionSpec: Fig.Spec = {
     name: 'a',
     description: '打开应用或使用应用打开文件(仅支持Mac)',
     args: [
-        {name: 'app', description: '应用程序'},
+        {name: 'app', description: '应用程序', generators: generateApps('/')},
         {name: 'files', description: '多个文件', isOptional: true, isVariadic: true, template: ['filepaths','folders']}
     ]
   }, {
@@ -303,6 +323,9 @@ const completionSpec: Fig.Spec = {
     name: 'doutu',
     description: '斗图',
     args: {name: 'keyword', description: '关键词'}
+  }, {
+    name: 'joke',
+    description: '获取中文笑话'
   }, {
     name: 'stbg',
     description: '替换图片颜色',
