@@ -57,17 +57,16 @@ class MultiSingleDL:
         self.status.update(f'获取文件信息中... {self.cur_task_num} / {self.task_num}')
         self.task_num_lock.release()
 
-    def _dl(self, url):
+    def _dl(self, url, filename):
         r = get(self.infos[url]['url'], stream=True, proxies=self.proxies, headers=self.headers)
-        with open(self.rt_dir + self.infos[url]['name'], 'wb') as f:
+        with open(self.rt_dir + filename, 'wb') as f:
             for chunk in r.iter_content(32768):
                 f.write(chunk)
         self.progress.advance(self.task_id, 1)
 
-    def run(self):
+    def run(self, name_map: dict = None):
         self.status.start()
-        futures = [self.pool.submit(self._info, item) for item in self.urls]
-        wait(futures)
+        wait([self.pool.submit(self._info, item) for item in self.urls])
 
         total = sum([self.infos[i]['size'] for i in self.infos])
         failed_num = [self.infos[i]['size'] for i in self.infos].count(-1)
@@ -75,11 +74,25 @@ class MultiSingleDL:
         self.status.stop()
 
         self.progress.start()
-        wait([self.pool.submit(self._dl, item) for item in self.urls])
+        wait([self.pool.submit(self._dl, item, self.infos[item]['name']) for item in self.urls] if not name_map else [self.pool.submit(self._dl, item, name_map[item]) for item in self.urls])
         self.progress.stop()
 
-        return [self.rt_dir + self.infos[i]['name'] for i in self.infos]
+        return [self.rt_dir + self.infos[i]['name'] for i in self.infos] if not name_map else [self.rt_dir + name_map[i] for i in self.infos]
 
 
-def multi_single_dl(urls: list, rt_dir: str = './', proxy: str = '', referer: str = '', failed2exit: bool = False):
-    return MultiSingleDL(urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer, failed2exit=failed2exit).run()
+def multi_single_dl(urls: list, rt_dir: str = './', proxy: str = '', referer: str = '',
+                    failed2exit: bool = False, name_map: dict = None):
+    """
+    并行多个小文件下载
+
+    :param urls: 小文件的URL
+    :param rt_dir: 文件下载目录
+    :param proxy: 代理
+    :param referer: referer
+    :param failed2exit: 信息获取失败立即退出
+    :param name_map: 文件命名映射{URL: filename}
+    :return: 下载好的文件路径列表
+    """
+    return MultiSingleDL(urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer, failed2exit=failed2exit).run(
+        name_map=name_map
+    )

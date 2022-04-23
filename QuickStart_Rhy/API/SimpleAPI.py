@@ -236,7 +236,7 @@ class Designation2magnet:
     import re
 
     def __init__(self, description):
-        self.rt_url = 'https://3mag.net'
+        self.rt_url = 'https://18mag.net'
         self.description = description
 
     def search_designation(self):

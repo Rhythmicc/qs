@@ -22,6 +22,7 @@ user_lang = qs_config.basicSelect('default_language')
 user_currency = qs_config.basicSelect('default_currency')
 trans_engine = qs_config.basicSelect('default_translate_engine')['support']\
 [qs_config.basicSelect('default_translate_engine')['index']]
+user_pip = qs_config.basicSelect('default_pip')
 
 qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
@@ -30,7 +31,7 @@ qs_default_console = Console()
 qs_console_width = qs_default_console.width
 
 
-def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False):
+def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False, set_pip: str = user_pip):
     """
     获取本机上的python第三方库
 
@@ -54,7 +55,7 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
   Qs 依赖 {pname + (' -> ' + module if module else '')}, 是否确认安装?""",
             'default': True})['install']
         if confirm:
-            os.system(f'pip3 install {pname if not real_name else real_name}')
+            os.system(f'{set_pip} install {pname if not real_name else real_name} -U')
             if not_exit:
                 exec(f'from {pname} import {module}' if module else f"import {pname}")
             else:
@@ -259,3 +260,13 @@ def fcopy():
 def get_user_lang():
     print(user_lang)
 
+
+def play_music():
+    AS = requirePackage('pydub', 'AudioSegment')
+    play = requirePackage('pydub.playback', 'play')
+
+    for music in sys.argv[2:]:
+        try:
+            play(AS.from_file(music))
+        except:
+            pass

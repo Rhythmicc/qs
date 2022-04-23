@@ -69,6 +69,13 @@ default_translate_engine = {
     'choices': ['default', 'TencentCloud']
 }
 
+default_pip = {
+    'type': 'input',
+    'name': 'default_pip',
+    'message': 'Input the default pip | 输入默认pip:',
+    'default': 'pip3'
+}
+
 
 class proxyValidator(Validator):
     from .NetTools import is_ip
@@ -113,7 +120,8 @@ class QsConfig:
       "index": 0,
       "support": ["default", "TencentCloud"]
     },
-    "default_proxy": "user:password@ip:port or ip:port"
+    "default_proxy": "user:password@ip:port or ip:port",
+    "default_pip": "pip3"
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
@@ -142,13 +150,14 @@ class QsConfig:
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey"
   }
 }""")
-            res = prompt([default_language, default_currency, default_translate_engine, default_proxy])
+            res = prompt([default_language, default_currency, default_translate_engine, default_proxy, default_pip])
             self.config['basic_settings']['default_language'] = res['default_language'] if res['default_language'] != 'Not Set | 暂不配置' else 'en'
             self.config['basic_settings']['default_currency'] = res['default_currency'] if res['default_currency'] != 'Not Set | 暂不配置' else 'USD'
             self.config['basic_settings']['default_translate_engine']['index'] = ['default', 'TencentCloud'].index(
                 res['default_translate_engine'])
             self.config['basic_settings']['default_proxy'] = "" if res['default_proxy'] == 'Not set | 暂不设置' else res[
                 'default_proxy']
+            self.config['basic_settings']['default_pip'] = res['default_pip']
             self.update()
             print(
                 '\nYour configuration table has been stored\n你的配置表被存储在: ' + Fore.LIGHTGREEN_EX + '%s' % configPath + Style.RESET_ALL)

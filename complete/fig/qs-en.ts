@@ -66,6 +66,10 @@ const completionSpec: Fig.Spec = {
     description: 'copy file content to clipboard',
     args: {name: 'file', description: 'file', template: ['filepaths', 'folders']}
   }, {
+    name: 'play',
+    description: 'play audio file',
+    args: {name: 'music', description: '音乐', template: ['filepaths', 'folders'], isVariadic: true}
+  }, {
     name: 'top',
     description: 'cpu and memory monitor',
   }, {

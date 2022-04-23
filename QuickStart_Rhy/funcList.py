@@ -48,7 +48,8 @@ def base_menu():
     qs time                  :-> view current time
     qs pact                  :-> output string in clipboard
     qs fcopy <file>          :-> copy file content to clipboard
-    qs user_lang             :-> Get User Language in .qsrc""") \
+    qs user_lang             :-> Get User Language in .qsrc
+    qs play <file...>        :-> Play Musics""") \
         if user_lang != 'zh' else color_rep("""基础工具:
     qs u   <链接...>          :-> 使用默认浏览器打开多个链接
     qs a   <应用> \[文件...]    :-> 打开应用或使用应用打开文件 (仅支持Mac OS)
@@ -57,7 +58,8 @@ def base_menu():
     qs time                  :-> 查看当前时间
     qs pcat                  :-> 输出粘贴板内容
     qs fcopy <文件>          :-> 拷贝文件内容到粘贴板
-    qs user_lang             :-> 获取用户的默认语言""")
+    qs user_lang             :-> 获取用户的默认语言
+    qs play <文件...>        :-> 播放音乐""")
 
 
 def system_menu():
@@ -145,7 +147,8 @@ def api_menu():
     qs d60 [--save]          :-> Get the daily 60-second morning report
     qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file
     qs d2m <designation> :-> search magnet url by designation
-    qs doutu <keywords> :-> get expression package of keywords""")\
+    qs doutu <keywords> :-> get expression package of keywords
+    qs joke :-> get a Chinese joke""")\
         if user_lang != 'zh' else color_rep("""API工具:
     qs trans  \[内容]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[内容]      :-> 获取中文内容的拼音
@@ -175,7 +178,8 @@ def api_menu():
     qs d60 [--save]           :-> 获取每日60秒早报
     qs m2t <-f 路径 | -u 链接 | *> :-> 转换磁力链接为种子文件
     qs d2m <番号> :-> 搜索番号的磁力链
-    qs doutu <关键词> :-> 获取关键词的表情包""")
+    qs doutu <关键词> :-> 获取关键词的表情包
+    qs joke :-> 获取一个中文笑话""")
 
 
 def image_menu():
@@ -223,7 +227,8 @@ basic_funcs = {
     'cal': 'calculate',
     'pcat': 'pcat',
     'fcopy': 'fcopy',
-    'user_lang': 'get_user_lang'
+    'user_lang': 'get_user_lang',
+    'play': 'play_music'
 }
 
 system_funcs = {
@@ -287,7 +292,8 @@ api_funcs = {
     'd60': 'daily60s',
     'm2t': 'm2t',
     'd2m': 'd2m',
-    'doutu': 'doutu'
+    'doutu': 'doutu',
+    'joke': 'joke'
 }
 
 image_funcs = {

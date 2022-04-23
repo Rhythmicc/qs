@@ -66,6 +66,10 @@ const completionSpec: Fig.Spec = {
     description: '拷贝文件内容到粘贴板',
     args: {name: 'file', description: '文件', template: ['filepaths', 'folders']}
   }, {
+    name: 'play',
+    description: '播放音乐',
+    args: {name: 'music', description: '音乐', template: ['filepaths', 'folders'], isVariadic: true}
+  }, {
     name: 'top',
     description: 'CPU和内存监控器',
   }, {

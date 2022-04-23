@@ -522,3 +522,19 @@ def doutu(keyword: str):
         return True, res['data']
     except Exception as e:
         return False, repr(e)
+
+
+def joke():
+    """
+    获取随机笑话
+
+    :return: title, content
+    """
+    try:
+        res = requests.get(v2_url + 'joke/random', headers={'token': alapi_token})
+        res = json.loads(res.text)
+        if res['code'] != 200:
+            return False, res['msg']
+        return True, res['data']
+    except Exception as e:
+        return False, repr(e)

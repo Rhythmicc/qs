@@ -961,7 +961,7 @@ def d2m():
     try:
         designation = sys.argv[2]
     except IndexError:
-        return qs_default_console.print(qs_error_string, 'qs m2u <designation>')
+        return qs_default_console.print(qs_error_string, 'qs d2m <designation>')
 
     from PyInquirer import prompt
     from .API.SimpleAPI import Designation2magnet
@@ -1026,3 +1026,20 @@ def doutu():
             qs_default_console.print(qs_info_string, item)
             if system == 'darwin':
                 image_preview(item, is_url=True)
+
+
+def joke():
+    """
+    获取段子
+    :return:
+    """
+    import re
+    from .API.alapi import joke
+    from rich.panel import Panel
+
+    status, ct = joke()
+    if not status:
+        qs_default_console.print(qs_error_string, ct)
+        return
+    content = re.sub('&(.*?);', '', ct['content'])
+    qs_default_console.print(Panel(content, title='[b magenta]' + ct['title'], title_align='center', width=qs_default_console.width, subtitle=ct['time']))
