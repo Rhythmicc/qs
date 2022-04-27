@@ -1,10 +1,9 @@
 from prompt_toolkit.validation import Validator, ValidationError
-from PyInquirer import prompt
+from inquirer_rhy.prompt import prompt
 import sys
-import colorama
-from colorama import Fore, Style
+from rich.console import Console
 
-colorama.init()
+qs_default_console = Console()
 system = sys.platform
 if system.startswith('win'):
     dir_char = '\\'
@@ -159,11 +158,10 @@ class QsConfig:
                 'default_proxy']
             self.config['basic_settings']['default_pip'] = res['default_pip']
             self.update()
-            print(
-                '\nYour configuration table has been stored\n你的配置表被存储在: ' + Fore.LIGHTGREEN_EX + '%s' % configPath + Style.RESET_ALL)
-            print(
-                Fore.LIGHTRED_EX +
-                '\nqs will not use your configuration do anything!\nqs不会用您的配置表做任何事情!' + Style.RESET_ALL)
+            qs_default_console.print(
+                '\nYour configuration table has been stored\n你的配置表被存储在: [bold green]' + '%s' % configPath + '[/bold green]')
+            qs_default_console.print(
+                '[bold red]\nqs will not use your configuration do anything!\nQpro不会用您的配置表做任何事情![/bold red]')
             prompt({
                 'type': 'confirm',
                 'message': 'Confirm | 确认',

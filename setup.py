@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-VERSION = '0.6.13'
+VERSION = '0.6.14'
 
 setup(
     name='QuickStart_Rhy',
@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=True,
-    install_requires=['requests', 'urllib3', 'colorama', 'rarfile', 'PyInquirer', 'rich', 'py7zr'],
+    install_requires=['requests', 'urllib3', 'rarfile', 'rich', 'py7zr', 'inquirer-rhy'],
     entry_points={
         'console_scripts': [
             'qs = QuickStart_Rhy.main:main'

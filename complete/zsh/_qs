@@ -15,7 +15,6 @@ _qs_args_comp_en() {
             --name:'set file name'
             -h:'get help'
         )
-        
     elif [[ ${prev} == alioss ]] || [[ ${prev} == txcos ]] || [[ ${prev} == qiniu ]]; then
         opt_args=(
             -help:'get help'
@@ -26,11 +25,11 @@ _qs_args_comp_en() {
         )
     elif [[ ${prev} == avg ]] || [[ ${prev} == photo ]] || [[ ${prev} == bing ]] || [[ ${prev} == wallhaven ]]; then
         opt_args=(
-            -save:'save image'
+            --save:'save image'
         )
     elif [[ ${prev} == loli ]] || [[ ${prev} == setu ]]; then
         opt_args=(
-            -save:'save image'
+            --save:'save image'
             -p:'use default proxy to download'
         )
     elif [[ ${prev} == m2t ]]; then
@@ -66,11 +65,11 @@ _qs_args_comp_zh() {
         )
     elif [[ ${prev} == avg ]] || [[ ${prev} == photo ]] || [[ ${prev} == bing ]] || [[ ${prev} == wallhaven ]]; then
         opt_args=(
-            -save:'保存图片'
+            --save:'保存图片'
         )
     elif [[ ${prev} == loli ]] || [[ ${prev} == setu ]]; then
         opt_args=(
-            -save:'保存图片'
+            --save:'保存图片'
             -p:'通过默认代理下载'
         )
     elif [[ ${prev} == m2t ]]; then
@@ -105,7 +104,6 @@ _qs_main_en() {
         netinfo:'get IP information'
         dl:'download file from http url*'
         wifi:'connect wifi'
-        upload:'upload your pypi lib'
         upgrade:'upgrade qs'
         top:'CPU & MEM monitor'
         clear:'clear MEM'
@@ -188,7 +186,6 @@ _qs_main_zh() {
         netinfo:'获取IP信息'
         dl:'通过http链接下载文件*'
         wifi:'连接WiFi'
-        upload:'上传你的pypi仓库'
         upgrade:'更新qs'
         top:'CPU和内存监控器'
         clear:'清理本机内存'

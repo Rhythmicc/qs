@@ -5,7 +5,7 @@
 Command interaction, view various menus and documents of QS
 """
 from . import user_lang, open_url
-from PyInquirer import prompt
+from .__config__ import prompt
 
 
 def onlineDocuments():

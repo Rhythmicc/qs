@@ -18,20 +18,6 @@ def upgrade():
         os.system('pip install QuickStart-Rhy --upgrade')
 
 
-def upload_pypi():
-    """
-    将pypi库上传
-
-    Upload Pypi Library
-    """
-    import os
-    from . import remove, dir_char
-    remove('dist')
-    if os.system('python3 setup.py sdist'):
-        os.system('python setup.py sdist')
-    os.system('twine upload dist%s*' % dir_char)
-
-
 def m3u8_dl(url):
     """
     下载m3u8

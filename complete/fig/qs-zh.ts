@@ -154,9 +154,6 @@ const completionSpec: Fig.Spec = {
     name: 'wifi',
     description: '连接WiFi'
   }, {
-    name: 'upload',
-    description: '上传你的pypi仓库'
-  }, {
     name: 'upgrade',
     description: '更新qs'
   }, {

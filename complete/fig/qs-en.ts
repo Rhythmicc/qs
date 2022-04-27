@@ -160,10 +160,6 @@ const completionSpec: Fig.Spec = {
     name: 'upgrade',
     description: 'update qs'
   }, {
-    name: 'trans',
-    description: 'translate the content(in clipboard)',
-    args: {name: 'content', description: 'content', isVariadic: true, isOptional: true}
-  }, {
     name: 'pinyin',
     description: 'get the pinyin of Chinese content',
     args: {name: 'content', description: 'content', isVariadic: true, isOptional: true}

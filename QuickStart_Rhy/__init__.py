@@ -7,9 +7,8 @@ Docs for different language:
 """
 import os
 import sys
-from .__config__ import QsConfig, QsCache, dir_char, system
+from .__config__ import QsConfig, QsCache, dir_char, system, qs_default_console, prompt
 from .NetTools import headers
-from rich.console import Console
 from rich.prompt import Prompt as qs_default_input
 
 name = 'QuickStart_Rhy'
@@ -27,7 +26,6 @@ user_pip = qs_config.basicSelect('default_pip')
 qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
 qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
-qs_default_console = Console()
 qs_console_width = qs_default_console.width
 
 
@@ -46,8 +44,6 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
     except (ModuleNotFoundError, ImportError):
         if not_ask:
             return None
-        from PyInquirer import prompt
-
         confirm = prompt({
             'type': 'confirm',
             'name': 'install',
