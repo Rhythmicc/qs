@@ -43,7 +43,7 @@ def GetBlockSize(sz):
 
 
 def ask_overwrite(path: str):
-    from PyInquirer import prompt
+    from ..__config__ import prompt
 
     return prompt({
         'type': 'confirm',

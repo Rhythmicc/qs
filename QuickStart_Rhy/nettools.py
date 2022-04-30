@@ -203,7 +203,7 @@ def wifi():
         qs_default_console.print(qs_error_string, "No available wifi" if user_lang != 'zh' else '没有可用的wifi')
         return
 
-    from PyInquirer import prompt
+    from .__config__ import prompt
     from prompt_toolkit.validation import Validator, ValidationError
 
     class ssidValidator(Validator):

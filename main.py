@@ -6,11 +6,14 @@ app = Commander()
 
 
 @app.command()
-def upload():
+def upload(msg: list):
     remove('dist')
     if os.system('python3 setup.py sdist'):
         os.system('python setup.py sdist')
     os.system('twine upload dist%s*' % dir_char)
+    os.system('git add .')
+    os.system(f'git commit -m "{" ".join(msg)}"')
+    os.system('git push')
 
 
 @app.command()

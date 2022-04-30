@@ -10,7 +10,7 @@ __common_token__ = 'hUxPTdnybk1XLUEFtzkj'
 alapi_token = pre_check('alapi_token', False)
 if not alapi_token:
     from .. import qs_default_console, qs_error_string, qs_warning_string
-    from PyInquirer import prompt
+    from ..__config__ import prompt
 
     qs_default_console.print(qs_error_string, 'This function require alapi token!\n这个功能需要alapi token\n')
     if prompt({

@@ -938,7 +938,7 @@ def m2t():
         contents = requirePackage('pyperclip', 'paste')()
     urls = re.findall('magnet:\?xt=urn:btih:(.*)', contents)
     if len(urls) > 1:
-        from PyInquirer import prompt
+        from .__config__ import prompt
         url = prompt({
             'type': 'list',
             'name': 'hash',
@@ -963,7 +963,7 @@ def d2m():
     except IndexError:
         return qs_default_console.print(qs_error_string, 'qs d2m <designation>')
 
-    from PyInquirer import prompt
+    from .__config__ import prompt
     from .API.SimpleAPI import Designation2magnet
 
     copy = requirePackage('pyperclip', 'copy', not_ask=True)
