@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 from .. import qs_default_console, qs_console_width
-from .. import headers
+from .. import headers, prompt, user_lang, force_show_img
 import math
 import base64
 import sys
@@ -18,6 +18,9 @@ import struct
 import io
 import subprocess
 
+# 记录强制显示状态，避免重复询问
+force_show_option = False
+has_set_force_show_option = False
 
 TMUX_WRAP_ST = b'\033Ptmux;'
 TMUX_WRAP_ED = b'\033\\'
@@ -257,22 +260,35 @@ def imgcat(buf, width=None, height=None, preserve_aspect_ratio=True, fp=None):
 
 
 def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
-                  qs_console_status=None, set_width_in_rc_file: int = 0):
+                  qs_console_status=None, set_width_in_rc_file: int = 0, force_show: bool = force_show_img):
     """
-    在终端预览图片 | 目前仅有MacOS下的iTerm可用
+    在终端预览图片 | 目前仅有MacOS下的iTerm可用, 但你可以开启强制显示选项预览
 
-    preview image on terminal | At present, only iTerm under MacOS is available
+    preview image on terminal | At present, only iTerm under MacOS is available, but you can enable force show option to preview
 
-    :param set_width_in_rc_file:
-    :param is_url:
+    :param force_show: 强制显示图片，即使终端非iTerm2
+    :param set_width_in_rc_file: 设置图片宽度，以像素为单位，默认为0，即不设置
+    :param is_url: 是否为url
     :param img: opened file, numpy array, PIL.Image, matplotlib fig
     :param set_proxy: set proxy
     :param set_referer: set refer
-    :param qs_console_status:
+    :param qs_console_status: qs终端的状态信息
     :return:
     """
+    global force_show_option, has_set_force_show_option
     try:
-        if not is_url and isinstance(img, str):
+        if not (force_show_option or force_show or (not has_set_force_show_option and prompt({
+            'type': 'confirm',
+            'name': 'preview_image_on_terminal',
+            'message': 'Preview image on this terminal?' if user_lang != 'zh' else '确认在该终端预览图片?',
+            'default': False,
+        })['preview_image_on_terminal'])):
+            has_set_force_show_option = True
+            return
+        else:
+            has_set_force_show_option = True
+            force_show_option = True
+        if not is_url and (isinstance(img, str) and not os.path.exists(img)):
             is_url = img.startswith('http')
         if is_url:
             # from PIL import Image
@@ -291,7 +307,8 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
                 qs_console_status.update(status='Opening')
             img = Image.open(BytesIO(res))
         elif not is_url and isinstance(img, str) and os.path.exists(img):
-            from PIL import Image
+            from .. import requirePackage
+            Image = requirePackage('PIL', 'Image', 'Pillow')
             img = Image.open(img)
         if qs_console_status:
             qs_console_status.stop()

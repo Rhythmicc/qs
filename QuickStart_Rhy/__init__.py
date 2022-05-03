@@ -22,6 +22,7 @@ user_currency = qs_config.basicSelect('default_currency')
 trans_engine = qs_config.basicSelect('default_translate_engine')['support']\
 [qs_config.basicSelect('default_translate_engine')['index']]
 user_pip = qs_config.basicSelect('default_pip')
+force_show_img = qs_config.basicSelect('force_show_img')
 
 qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
@@ -31,8 +32,10 @@ qs_console_width = qs_default_console.width
 
 def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False, set_pip: str = user_pip):
     """
-    获取本机上的python第三方库
+    获取本机上的python第三方库，如没有则询问安装
 
+    :param not_ask: 不询问，无依赖项则报错
+    :param set_pip: 设置pip路径
     :param pname: 库名
     :param module: 待引入的模块名，可缺省
     :param real_name: 用于 pip3 install 的名字

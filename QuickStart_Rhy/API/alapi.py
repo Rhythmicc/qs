@@ -228,6 +228,7 @@ def bili_cover(url: str):
     import re
     from ..NetTools.NormalDL import normal_dl
     from .. import qs_default_console, qs_error_string, qs_info_string
+    from ..ImageTools.ImagePreview import image_preview
     try:
         res = requests.post(v2_url + 'bilibili/cover', data='c=' + url,
                             headers={'Content-Type': 'application/x-www-form-urlencoded', 'token': alapi_token})
@@ -247,10 +248,7 @@ def bili_cover(url: str):
         qs_default_console.print(qs_info_string, '' if user_lang != 'zh' else '简介:', end='\n\t')
         qs_default_console.print(res['description'], end='\n\n')
         normal_dl(res['cover'], res['title'] + '.' + res['cover'].split('.')[-1])
-        if system == 'darwin':
-            from ..ImageTools.ImagePreview import image_preview
-            from PIL import Image
-            image_preview(Image.open(res['title'] + '.' + res['cover'].split('.')[-1]))
+        image_preview(res['title'] + '.' + res['cover'].split('.')[-1])
     else:
         qs_default_console.log(qs_error_string,
                                f"Get cover with: {url} failed" if user_lang != 'zh' else f'下载封面: {url} 失败')

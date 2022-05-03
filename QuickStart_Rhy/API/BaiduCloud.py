@@ -7,6 +7,7 @@ Baidu cloud API
 import os
 from . import pre_check, user_lang
 from .. import qs_default_console, qs_error_string, qs_info_string, requirePackage
+imgp = requirePackage('aip', 'imageprocess', real_name='baidu-aip')
 aip = requirePackage('aip', real_name='baidu-aip')
 
 
@@ -30,7 +31,7 @@ class ImageDeal:
         :param app_key: 应用key
         :param secret_key: 密钥
         """
-        self.client = aip.AipImageProcess(app_id, app_key, secret_key)
+        self.client = imgp.AipImageProcess(app_id, app_key, secret_key)
 
     def largeImage(self, path: str, st: qs_default_console.status = None):
         """

@@ -144,7 +144,7 @@ def icat():
         qs_default_console.log(qs_error_string, 'Usage: qs icat <img path/url> [-open_url if is url]')
     else:
         from .ImageTools.ImagePreview import image_preview
-        image_preview(open(path), set_width_in_rc_file=rc_width) if not is_url else image_preview(path, is_url, set_width_in_rc_file=rc_width)
+        image_preview(open(path), set_width_in_rc_file=rc_width, force_show=True) if not is_url else image_preview(path, is_url, set_width_in_rc_file=rc_width, force_show=True)
 
 
 def i2png():

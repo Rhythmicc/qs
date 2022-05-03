@@ -76,6 +76,14 @@ default_pip = {
 }
 
 
+force_show_img = {
+    'type': 'confirm',
+    'name': 'force_show_img',
+    'message': 'Force show image in terminal | 强制在终端显示图片?',
+    'default': False
+}
+
+
 class proxyValidator(Validator):
     from .NetTools import is_ip
 
@@ -120,7 +128,8 @@ class QsConfig:
       "support": ["default", "TencentCloud"]
     },
     "default_proxy": "user:password@ip:port or ip:port",
-    "default_pip": "pip3"
+    "default_pip": "pip3",
+    "force_show_img": false,
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",

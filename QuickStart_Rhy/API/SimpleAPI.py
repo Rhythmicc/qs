@@ -151,12 +151,10 @@ def imgs_in_url(url: str, save: bool = False):
         qs_default_console.log(
             qs_info_string, 'Link:' if user_lang != 'zh' else '链接:', url[:100] + ('' if len(url) <= 100 else '...'))
         if save:
-            normal_dl(url)
-        if system == 'darwin':
-            try:
-                image_preview(url, True)
-            except Exception as e:
-                qs_default_console.log(qs_error_string, repr(e))
+            file_name = normal_dl(url)
+        else:
+            file_name = url
+        image_preview(file_name, True)
 
 
 def acg2():

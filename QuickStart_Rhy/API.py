@@ -5,7 +5,7 @@
 Call various QS API
 """
 import sys
-from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, requirePackage
+from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, requirePackage, force_show_img
 
 
 def remove_bg():
@@ -560,12 +560,11 @@ def acg():
                 from .NetTools.NormalDL import normal_dl
                 st.stop()
                 acg_link = normal_dl(acg_link)  # disable download status for Windows
-            if system == 'darwin':  # Only support iTerm for Mac OS X
-                from .ImageTools.ImagePreview import image_preview
-                st.update(status='Loading image...\n' if user_lang != 'zh' else '加载图片中..\n')
-                image_preview(open(acg_link) if '--save' in sys.argv[2:] else acg_link,
-                              '--save' not in sys.argv[2:], qs_console_status=st)
-                return
+            from .ImageTools.ImagePreview import image_preview
+            st.update(status='Loading image...\n' if user_lang != 'zh' else '加载图片中..\n')
+            image_preview(open(acg_link) if '--save' in sys.argv[2:] else acg_link,
+                          '--save' not in sys.argv[2:], qs_console_status=st)
+            return
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -595,11 +594,10 @@ def bingImg():
                 from .NetTools.NormalDL import normal_dl
                 st.stop()
                 acg_link = normal_dl(acg_link)
-            if system == 'darwin':  # Only support iTerm for Mac OS X
-                from .ImageTools.ImagePreview import image_preview
-                st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
-                image_preview(open(acg_link) if '--save' in sys.argv[2:] else acg_link,
-                              '--save' not in sys.argv[2:], qs_console_status=st)
+            from .ImageTools.ImagePreview import image_preview
+            st.update(status='Loading image...' if user_lang != 'zh' else '加载图片中..')
+            image_preview(open(acg_link) if '--save' in sys.argv[2:] else acg_link,
+                          '--save' not in sys.argv[2:], qs_console_status=st)
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -777,11 +775,7 @@ def zhihuDaily():
                     res += '\n[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
                     res += '[bold blue]  ' + '\n  '.join(item['images'])
             elif 'image' in item:
-                if system == 'darwin':
-                    image_preview(item['image'], True)
-                else:
-                    res += '\n[bold cyan]' + ('Image: \n' if user_lang != 'zh' else '图像: \n')
-                    res += '[bold blue]  ' + item['image']
+                image_preview(item['image'], True)
             qs_default_console.print(Panel(res, title='[b]' + item['title'], width=qs_default_console.width),
                                      justify="center", end='/n/n')
     except Exception as e:
@@ -894,12 +888,11 @@ def daily60s():
                 st.stop()
                 name = normal_dl(res['image'], set_name='news.png')
                 st.start()
-                if system == 'darwin':
-                    qs_default_console.print('Preview' if user_lang != 'zh' else '预览', justify='center')
-                    from .ImageTools.ImagePreview import image_preview
+                qs_default_console.print('Preview' if user_lang != 'zh' else '预览', justify='center')
+                from .ImageTools.ImagePreview import image_preview
 
-                    st.update(status='loading image..' if user_lang != 'zh' else '加载图片中..')
-                    image_preview(open(name), qs_console_status=st)
+                st.update(status='loading image..' if user_lang != 'zh' else '加载图片中..')
+                image_preview(open(name), qs_console_status=st)
             exit(0)
 
         signal.signal(signal.SIGINT, dealSignal)
@@ -1010,10 +1003,7 @@ def doutu():
         return qs_default_console.print(qs_error_string, 'qs doutu <designation>')
 
     from .API.alapi import doutu
-    if system == 'darwin':
-        from .ImageTools.ImagePreview import image_preview
-    else:
-        image_preview = None
+    from .ImageTools.ImagePreview import image_preview
 
     status, urls = doutu(keyword)
     if not status:
@@ -1024,8 +1014,7 @@ def doutu():
 
         for item in urls:
             qs_default_console.print(qs_info_string, item)
-            if system == 'darwin':
-                image_preview(item, is_url=True)
+            image_preview(item, is_url=True)
 
 
 def joke():
