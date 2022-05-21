@@ -33,27 +33,5 @@ def git_push(msg: list):
     os.system('git push')
 
 
-@app.command()
-def post(path: str):
-    """
-    在开发环境应用
-
-    :param path: 文件路径
-    :return:
-    """
-    os.system(f'Qpro scp {path}')
-
-
-@app.command()
-def get(path: str):
-    """
-    获取开发环境的文件
-
-    :param path: 文件路径
-    :return:
-    """
-    os.system(f'Qpro get {path}')
-
-
 if __name__ == '__main__':
     app()
