@@ -57,18 +57,19 @@ class WiFi:
             has_add = set()
             res = []
             for i in tmp_ls:
-                mac_index = 0
-                while mac_index < len(i):
-                    if is_mac(i[mac_index]):
-                        break
-                    else:
-                        mac_index += 1
-                if mac_index >= len(i):
-                    qs_default_console.log(qs_warning_string, "Failed to get info with:", i)
-                    continue
-                ssid = ' '.join(i[:mac_index])
-                if i[0] not in has_add:
-                    res.append([ssid, int(i[mac_index+1]), i[-1]])
+                # mac_index = 0
+                # while mac_index < len(i):
+                #     if is_mac(i[mac_index]):
+                #         break
+                #     else:
+                #         mac_index += 1
+                # if mac_index >= len(i):
+                #     qs_default_console.log(qs_warning_string, "Failed to get info with:", i)
+                #     continue
+                index = i.index('--') - 3
+                ssid = ' '.join(i[:index])
+                if ssid not in has_add:
+                    res.append([ssid, int(i[index]), i[-1]])
                     has_add.add(ssid)
         return sorted(res, key=lambda x: x[1], reverse=True)
 

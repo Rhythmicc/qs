@@ -42,7 +42,7 @@ def base_menu():
     """基础类菜单 | Basic menu"""
     color_rep("""Basic Tools help:
     qs u   <url...>          :-> open urls using default browser
-    qs a   <app> \[file..]    :-> open app or open file by app(for Mac OS)
+    qs a   <app> \[file..]    :-> open app or open file by app ()
     qs f   <file...>         :-> open file by default app
     qs cal <exp>             :-> calculate exp
     qs time                  :-> view current time
@@ -52,7 +52,7 @@ def base_menu():
     qs play <file...>        :-> Play Musics""") \
         if user_lang != 'zh' else color_rep("""基础工具:
     qs u   <链接...>          :-> 使用默认浏览器打开多个链接
-    qs a   <应用> \[文件...]    :-> 打开应用或使用应用打开文件 (仅支持Mac OS)
+    qs a   <应用> \[文件...]    :-> 打开应用或使用应用打开文件 ()
     qs f   <文件...>         :-> 使用合适的应用打开文件
     qs cal <表达式>             :-> 计算算术表达式
     qs time                  :-> 查看当前时间
@@ -68,6 +68,8 @@ def system_menu():
     qs top                   :-> cpu and memory monitor
     qs clear                 :-> free memory
     qs go2git                :-> go to the webpage of the git config
+    qs mount                 :-> mount dmg ()
+    qs unmount               :-> unmount dmg ()
     qs mktar  <path...>      :-> create gzipped archive for path
     qs untar  <path...>      :-> extract *.tar.*
     qs mkzip  <path...>      :-> make a zip for path
@@ -84,6 +86,8 @@ def system_menu():
     qs top                   :-> CPU和内存监控器
     qs clear                 :-> 清理本机内存
     qs go2git                :-> 自动前往git目录托管仓库的网页
+    qs mount                 :-> 挂载 dmg ()
+    qs unmount               :-> 退出 dmg ()
     qs mktar  <路径...>      :-> 使用多个文件或文件夹创建tar压缩包
     qs untar  <路径...>      :-> 解压各种格式的tar包
     qs mkzip  <路径...>      :-> 使用多个文件或文件夹创建zip压缩包
@@ -245,7 +249,9 @@ system_funcs = {
     'sha1': 'sha1',
     'sha256': 'sha256',
     'sha512': 'sha512',
-    'diff': 'diff_dir'
+    'diff': 'diff_dir',
+    'mount': 'mount_dmg',
+    'unmount': 'unmount_dmg',
 }
 
 net_funcs = {

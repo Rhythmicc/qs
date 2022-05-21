@@ -254,3 +254,41 @@ def diff_dir():
         from .SystemTools.Diff import DiffFilesToStructHtml
 
         DiffFilesToStructHtml(d1, d2).generate()
+
+
+def mount_dmg():
+    """
+    挂载镜像
+
+    :return:
+    """
+    from .SystemTools.DiskMac import DMG
+    import sys
+
+    DMG().mount(sys.argv[2])
+
+
+def unmount_dmg():
+    """
+    卸载镜像
+    """
+    from .SystemTools.DiskMac import DMG
+    from .TuiTools.Table import qs_default_table
+    from . import qs_default_console, prompt, user_lang, qs_info_string
+
+    disks = DMG()
+    _ls = disks.get_disk_list()[2:]
+    if not _ls:
+        return qs_default_console.print(qs_info_string, 'No DMG disk found' if user_lang != 'zh' else '没有找到 dmg 磁盘')
+    table = qs_default_table(['Disk', 'Type', 'Size'])
+    for disk in _ls:
+        table.add_row(disk['path'], disk['type'], disk['size'])
+    qs_default_console.print(table, justify='center')
+    disk_path = prompt({
+        'type': 'list',
+        'message': 'Select a disk to umount' if user_lang != 'zh' else '选择要卸载的磁盘',
+        'choices': [disk['path'] for disk in _ls],
+        'name': 'disk',
+        'default': _ls[0]['path']
+    })['disk']
+    disks.unmount(disk_path)

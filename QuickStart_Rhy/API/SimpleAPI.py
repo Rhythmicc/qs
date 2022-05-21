@@ -235,6 +235,7 @@ class Designation2magnet:
 
     def __init__(self, description):
         self.rt_url = 'https://18mag.net'
+        self.cover_url = 'https://www5.javmost.com/search/{designation}/'
         self.description = description
 
     def search_designation(self):
@@ -264,3 +265,24 @@ class Designation2magnet:
             requests.get(self.rt_url + info).text,
             Designation2magnet.re.S
         )[0]
+
+    def get_cover(self):
+        """
+        获取封面
+
+        :return:
+        """
+        import re
+
+        try:
+            html = requests.get(self.cover_url.format(designation=self.description), headers=headers).text
+            img = re.findall('<img.*?card-img-top.*?data-src="(.*?)"', html)
+            if img:
+                img = img[0]
+            else:
+                return None
+            if img.startswith('//'):
+                img = f'http:{img}'
+            return img
+        except:
+            return None

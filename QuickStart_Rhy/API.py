@@ -259,11 +259,13 @@ def txcos():
             func_table[op](bucket)
 
 
-def translate():
+def translate(content: str = None):
     """
     qs默认的翻译引擎
 
     Qs default Translation engine
+
+    :param content: 需要翻译的内容
     """
     from . import trans_engine
     pyperclip = requirePackage('pyperclip')
@@ -272,7 +274,9 @@ def translate():
     else:
         from .API.alapi import translate
 
-    content = ' '.join(sys.argv[2:])
+    output_flag = False if content else True
+    if not content:
+        content = ' '.join(sys.argv[2:])
     if not content:
         try:
             content = pyperclip.paste()
@@ -283,13 +287,16 @@ def translate():
                 if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:')
     if content:
         ret = translate(content.replace('\n', ' '))
-        qs_default_console.print(ret) if ret else qs_default_console.log(qs_error_string, 'Translate Failed!')
+        if output_flag:
+            qs_default_console.print(ret) if ret else qs_default_console.log(qs_error_string, 'Translate Failed!')
+        return ret
     else:
         qs_default_console.log(
             qs_warning_string,
             "No content in your clipboard or command parameters!"
             if user_lang != 'zh' else
             '剪贴板或命令参数没有内容!')
+        return None
 
 
 def weather():
@@ -965,7 +972,12 @@ def d2m():
 
     searcher = Designation2magnet(designation)
     infos = searcher.search_designation()
+
     choices = [f'[{n + 1}] ' + i[1] + ': ' + i[-1] for n, i in enumerate(infos)]
+    cover_url = searcher.get_cover()
+    if cover_url:
+        from .ImageTools.ImagePreview import image_preview
+        image_preview(cover_url)
 
     try:
         url = searcher.get_magnet(

@@ -11,7 +11,7 @@ from .. import qs_default_console, qs_info_string, requirePackage
 
 
 class HttpServers:
-    qrcode_terminal = requirePackage('qrcode_terminal')
+    qrcode_terminal = requirePackage('qrcode_terminal', real_name='qrcode-terminal')
     import signal
 
     def __init__(self, ip='localhost', port=8000, url=''):

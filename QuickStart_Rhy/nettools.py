@@ -220,6 +220,7 @@ def wifi():
         'type': 'input',
         'name': 'ssid',
         'message': '选择序号以连接:' if user_lang == 'zh' else 'Choose id to connect:',
+        'default': '0',
         'validate': ssidValidator
     }, {
         'type': 'password',
