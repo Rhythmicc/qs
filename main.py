@@ -17,7 +17,7 @@ def upload(msg: list):
     if os.system('python3 setup.py sdist'):
         os.system('python setup.py sdist')
     os.system(f'twine upload dist{dir_char}*')
-    app.real_call('git', msg)
+    app.real_call('git-push', msg)
 
 
 @app.command()
