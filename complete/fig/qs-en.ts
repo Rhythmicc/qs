@@ -131,6 +131,13 @@ const completionSpec: Fig.Spec = {
       {name: 'folder', description: 'folder', template: 'folders'},
     ]
   }, {
+    name: 'mount',
+    description: ' mount a dmg file',
+    args: {name: 'file', description: 'file', template: ['filepaths', 'folders']}
+  }, {
+    name: 'unmount',
+    description: ' unmount dmg',
+  }, {
     name: 'http',
     description: 'start a multi thread ftp server',
     args: [

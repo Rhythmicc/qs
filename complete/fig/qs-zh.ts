@@ -131,6 +131,13 @@ const completionSpec: Fig.Spec = {
       {name: 'folder', description: '文件夹', template: 'folders'},
     ]
   }, {
+    name: 'mount',
+    description: ' 挂载dmg文件',
+    args: {name: 'file', description: 'file', template: ['filepaths', 'folders']}
+  }, {
+    name: 'unmount',
+    description: ' 推出dmg镜像',
+  }, {
     name: 'http',
     description: '在当前路径下开启多线程http服务',
     args: [
