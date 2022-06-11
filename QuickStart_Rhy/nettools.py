@@ -40,22 +40,33 @@ def download():
             qs_info_string, 'Usage: "qs dl [url...]"\n'
             '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
             '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc\n'
-            '  [--name fileName] :-> Set File Name'
+            '  [--name fileName] :-> Set File Name\n'
+            '  [--referer] | [-e] :-> Set Referer\n'
             if user_lang != 'zh' else
             '使用: "qs dl [链接...]"\n'
             '  [--video] | [-v]  :-> 使用youtube-dl下载视频\n'
             '  [--proxy] | [-px] :-> 使用配置表中的默认代理下载\n'
-            '  [--name fileName] :-> 设置文件名')
+            '  [--name fileName] :-> 设置文件名\n'
+            '  [--referer] | [-e] :-> 设置Referer\n'
+        )
         return
     global _real_main
     ytb_flag = '--video' in sys.argv or '-v' in sys.argv
     use_proxy = '--proxy' in sys.argv or '-px' in sys.argv
     other_args = []
     set_name = None
+    set_referer = None
     if '--name' in sys.argv:
         set_name = sys.argv[sys.argv.index('--name') + 1]
-    if ytb_flag or use_proxy or set_name:
-        [sys.argv.remove(i) if i in sys.argv else None for i in ['--video', '-v', '--proxy', '-px', '--name', set_name]]
+    if '--referer' in sys.argv or '-e' in sys.argv:
+        set_referer = sys.argv[sys.argv.index('--referer') + 1] if '--referer' in sys.argv else sys.argv[sys.argv.index('-e') + 1]
+        if not set_referer.endswith('/'):
+            set_referer += '/'
+    if ytb_flag or use_proxy or set_name or set_referer:
+        [
+            sys.argv.remove(i) if i in sys.argv else None for i in
+            ['--video', '-v', '--proxy', '-px', '--name', '--referer', '-e', set_name, set_referer]
+        ]
     nxt_flag = False
     for item in sys.argv[2:]:
         if item.startswith('-') or nxt_flag:
@@ -83,11 +94,11 @@ def download():
                 m3u8_dl(url)
             else:
                 if use_proxy:
-                    normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy')) \
+                    normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy'), set_referer=set_referer) \
                         if not ytb_flag else _real_main([url, '--proxy', qs_config.basicSelect('default_proxy'),
                                                          '--merge-output-format', 'mp4'] + other_args)
                 else:
-                    normal_dl(url, set_name=set_name) \
+                    normal_dl(url, set_name=set_name, set_referer=set_referer) \
                         if not ytb_flag else _real_main([url, '--merge-output-format', 'mp4'] + other_args)
     else:
         from . import user_lang, qs_default_console, qs_error_string

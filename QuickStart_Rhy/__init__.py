@@ -7,7 +7,8 @@ Docs for different language:
 """
 import os
 import sys
-from .__config__ import QsConfig, QsCache, dir_char, system, qs_default_console, prompt
+from .__config__ import QsConfig, dir_char, system, qs_default_console, prompt
+from .__cache__ import QsCache
 from .NetTools import headers
 from rich.prompt import Prompt as qs_default_input
 

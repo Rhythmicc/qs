@@ -2,6 +2,7 @@ LICENSE
 README.md
 setup.cfg
 setup.py
+QuickStart_Rhy/__cache__.py
 QuickStart_Rhy/__config__.py
 QuickStart_Rhy/__init__.py
 QuickStart_Rhy/api.py
