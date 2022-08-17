@@ -14,17 +14,16 @@ def clear_mem():
 
     :return: None
     """
-    from .. import dir_char, system
+    from .. import dir_char, system, external_exec
 
     if dir_char == '\\':
         print("Not support")
     else:
-        import os
         if system.startswith("darwin"):
-            os.system("sudo purge")
+            external_exec("sudo purge")
         else:
-            os.system('sync')
-            os.system("echo 3 > /proc/sys/vm/drop_caches")
+            external_exec('sync')
+            external_exec("echo 3 > /proc/sys/vm/drop_caches")
 
 
 def get_core_num():

@@ -31,6 +31,26 @@ qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_console_width = qs_default_console.width
 
 
+def external_exec(cmd: str, without_output: bool = False):
+    """
+    外部执行命令
+
+    :param cmd: 命令
+    :param without_output: 是否不输出
+    :return: status code, output
+    """
+    from subprocess import Popen, PIPE
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, encoding='utf-8')
+    ret_code = p.wait()
+    stdout, stderr = p.communicate()
+    content = stdout.strip() + stderr.strip()
+    if ret_code and content and not without_output:
+        qs_default_console.print(qs_error_string, content)
+    elif content and not without_output:
+        qs_default_console.print(qs_info_string, content)
+    return ret_code, content
+
+
 def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False, set_pip: str = user_pip):
     """
     获取本机上的python第三方库，如没有则询问安装
@@ -55,7 +75,8 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
   Qs 依赖 {pname + (' -> ' + module if module else '')}, 是否确认安装?""",
             'default': True})['install']
         if confirm:
-            os.system(f'{set_pip} install {pname if not real_name else real_name} -U')
+            with qs_default_console.status('Installing...' if user_lang != 'zh' else '正在安装...'):
+                external_exec(f'{set_pip} install {pname if not real_name else real_name} -U', True)
             if not_exit:
                 exec(f'from {pname} import {module}' if module else f"import {pname}")
             else:
@@ -184,9 +205,9 @@ def open_app():
     :return: None
     """
     if system == 'darwin':
-        os.system('open -a ' + ' '.join([i.replace(' ', '\\ ') for i in sys.argv[2:]]))
+        external_exec('open -a ' + ' '.join([i.replace(' ', '\\ ') for i in sys.argv[2:]]))
     else:
-        qs_default_console.print(qs_error_string, '"-a" is only support Mac OS X')
+        return qs_default_console.print(qs_error_string, '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
 
 
 def open_file(argv=None):
@@ -200,7 +221,7 @@ def open_file(argv=None):
     if not argv:
         argv = [i.replace(' ', '\\ ') for i in sys.argv[2:]]
     if system == 'darwin':
-        os.system('open ' + ' '.join(argv))
+        external_exec('open ' + ' '.join(argv))
     elif system == 'linux':
         from subprocess import run
         run(['xdg-open'] + [i for i in argv])
@@ -255,6 +276,28 @@ def fcopy():
         return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
     with open(sys.argv[2], 'r') as f:
         requirePackage('pyperclip').copy(f.read())
+
+
+def copy():
+    """
+    复制文件到粘贴板
+    :return:
+    """
+    def which(command):
+        return external_exec('which %s' % command, True)[0]
+
+    if system != 'darwin':
+        return qs_default_console.print(qs_error_string, '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
+
+    if not os.path.exists(sys.argv[2]):
+        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
+    # 检查 pdadd 是否在 PATH 中
+    if not which('pdadd'):
+        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+        normal_dl('https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005', set_name='pdadd')
+        external_exec('chmod +x pbadd')
+        external_exec('mv pbadd /usr/local/bin/')
+    external_exec('pdadd ' + sys.argv[2], True)
 
 
 def get_user_lang():

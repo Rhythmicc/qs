@@ -49,7 +49,6 @@ class WiFi:
 
         :return: 按信号强度排序好的可连接wifi列表 | A list of available wifi connections sorted by signal strength
         """
-        from . import is_mac
         with os.popen(
                 '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport scan') as pipe:
             res = pipe.read().strip().split('\n')[1:]
@@ -86,7 +85,8 @@ class WiFi:
         :param password: 密码
         :return: status
         """
-        os.system('networksetup -setairportnetwork %s %s "%s"' % (self.iface[0], ssid[0], password))
+        from .. import external_exec
+        external_exec('networksetup -setairportnetwork %s %s "%s"' % (self.iface[0], ssid[0], password))
         return self.status()
 
     def disconn(self):
