@@ -11,7 +11,7 @@ core_num = min(get_core_num() * 4, 16)
 
 
 class MultiSingleDL:
-    def __init__(self, urls: list, rt_dir: str, proxy: str = '', referer: str = '', failed2exit: bool = False):
+    def __init__(self, urls: list, rt_dir: str, proxy: str = '', referer: str = '', failed2exit: bool = False, save_to_mem: bool = False):
         self.proxy = proxy
         self.referer = referer
         self.proxies = {
@@ -23,10 +23,13 @@ class MultiSingleDL:
             self.headers['Referer'] = referer
         self.rt_dir = rt_dir if rt_dir.endswith(dir_char) else rt_dir + dir_char
         self.failed2exit = failed2exit
+        self.save_to_mem = save_to_mem
         self.status_dict = {}
         self.infos = {}
         self.urls = set(urls)
         self.task_num = len(self.urls)
+        if self.save_to_mem:
+            self.content_ls = [b''] * self.task_num
         self.cur_task_num = 0
         self.task_num_lock = Lock()
         self.pool = ThreadPoolExecutor(max_workers=core_num)
@@ -57,11 +60,15 @@ class MultiSingleDL:
         self.status.update(f'获取文件信息中... {self.cur_task_num} / {self.task_num}')
         self.task_num_lock.release()
 
-    def _dl(self, url, filename):
+    def _dl(self, url, filename, job_id):
         r = get(self.infos[url]['url'], stream=True, proxies=self.proxies, headers=self.headers)
-        with open(self.rt_dir + filename, 'wb') as f:
+        if not self.save_to_mem:
+            with open(self.rt_dir + filename, 'wb') as f:
+                for chunk in r.iter_content(32768):
+                    f.write(chunk)
+        else:
             for chunk in r.iter_content(32768):
-                f.write(chunk)
+                self.content_ls[job_id] += chunk
         self.progress.advance(self.task_id, 1)
 
     def run(self, name_map: dict = None):
@@ -74,10 +81,13 @@ class MultiSingleDL:
         self.status.stop()
 
         self.progress.start()
-        wait([self.pool.submit(self._dl, item, self.infos[item]['name']) for item in self.urls] if not name_map else [self.pool.submit(self._dl, item, name_map[item]) for item in self.urls])
+        wait([self.pool.submit(self._dl, item, self.infos[item]['name'], _id) for _id, item in enumerate(self.urls)] if not name_map else [self.pool.submit(self._dl, item, name_map[item], _id) for _id, item in enumerate(self.urls)])
         self.progress.stop()
 
         return [self.rt_dir + self.infos[i]['name'] for i in self.infos] if not name_map else [self.rt_dir + name_map[i] for i in self.infos]
+
+    def get_content_ls(self):
+        return self.content_ls
 
 
 def multi_single_dl(urls: list, rt_dir: str = './', proxy: str = '', referer: str = '',
@@ -96,3 +106,20 @@ def multi_single_dl(urls: list, rt_dir: str = './', proxy: str = '', referer: st
     return MultiSingleDL(urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer, failed2exit=failed2exit).run(
         name_map=name_map
     )
+
+
+def multi_single_dl_content_ls(urls: list, rt_dir: str = './', proxy: str = '', referer: str = '',
+                               failed2exit: bool = False):
+    """
+    并行多个小文件下载
+
+    :param urls: 小文件的URL
+    :param rt_dir: 文件下载目录
+    :param proxy: 代理
+    :param referer: referer
+    :param failed2exit: 信息获取失败立即退出
+    :return: 存储在内存中的文件内容列表
+    """
+    dl = MultiSingleDL(urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer, failed2exit=failed2exit, save_to_mem=True)
+    dl.run()
+    return dl.get_content_ls()
