@@ -284,20 +284,20 @@ def copy():
     :return:
     """
     def which(command):
-        return external_exec('which %s' % command, True)[0]
+        return False if external_exec('which %s' % command, True)[0] else True
 
     if system != 'darwin':
         return qs_default_console.print(qs_error_string, '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
 
     if not os.path.exists(sys.argv[2]):
         return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
-    # 检查 pdadd 是否在 PATH 中
-    if not which('pdadd'):
+    # 检查 pbadd 是否在 PATH 中
+    if not which('pbadd'):
         from QuickStart_Rhy.NetTools.NormalDL import normal_dl
-        normal_dl('https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005', set_name='pdadd')
+        normal_dl('https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005', set_name='pbadd')
         external_exec('chmod +x pbadd')
         external_exec('mv pbadd /usr/local/bin/')
-    external_exec('pdadd ' + sys.argv[2], True)
+    external_exec('pbadd ' + sys.argv[2], True)
 
 
 def get_user_lang():
