@@ -205,7 +205,7 @@ def open_app():
     :return: None
     """
     if system == 'darwin':
-        external_exec('open -a ' + ' '.join([i.replace(' ', '\\ ') for i in sys.argv[2:]]))
+        external_exec('open -a ' + ' '.join([i.replace(' ', '\\ ').replace('(', '\\(').replace(' ', '\\)') for i in sys.argv[2:]]))
     else:
         return qs_default_console.print(qs_error_string, '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
 
@@ -219,7 +219,7 @@ def open_file(argv=None):
     :return: None
     """
     if not argv:
-        argv = [i.replace(' ', '\\ ') for i in sys.argv[2:]]
+        argv = [i.replace(' ', '\\ ').replace('(', '\\(').replace(' ', '\\)') for i in sys.argv[2:]]
     if system == 'darwin':
         external_exec('open ' + ' '.join(argv))
     elif system == 'linux':
