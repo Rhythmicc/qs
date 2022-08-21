@@ -974,11 +974,6 @@ def d2m():
     infos = searcher.search_designation()
 
     choices = [f'[{n + 1}] ' + i[1] + ': ' + i[-1] for n, i in enumerate(infos)]
-    cover_url = searcher.get_cover()
-    if cover_url:
-        from .ImageTools.ImagePreview import image_preview
-        image_preview(cover_url)
-
     try:
         url = searcher.get_magnet(
                 infos[

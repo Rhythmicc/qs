@@ -49,7 +49,6 @@ def base_menu():
     qs pact                  :-> output string in clipboard
     qs fcopy <file>          :-> copy file content to clipboard
     qs copy <file>           :-> copy file to clipboard
-    qs user_lang             :-> Get User Language in .qsrc
     qs play <file...>        :-> Play Musics""") \
         if user_lang != 'zh' else color_rep("""基础工具:
     qs u   <链接...>          :-> 使用默认浏览器打开多个链接
@@ -60,7 +59,6 @@ def base_menu():
     qs pcat                  :-> 输出粘贴板内容
     qs fcopy <文件>          :-> 拷贝文件内容到粘贴板
     qs copy <文件>           :-> 拷贝文件到粘贴板
-    qs user_lang             :-> 获取用户的默认语言
     qs play <文件...>        :-> 播放音乐""")
 
 
