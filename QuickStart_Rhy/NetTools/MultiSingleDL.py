@@ -61,15 +61,18 @@ class MultiSingleDL:
         self.task_num_lock.release()
 
     def _dl(self, url, filename, job_id):
-        r = get(self.infos[url]['url'], stream=True, proxies=self.proxies, headers=self.headers)
-        if not self.save_to_mem:
-            with open(self.rt_dir + filename, 'wb') as f:
+        try:
+            r = get(self.infos[url]['url'], stream=True, proxies=self.proxies, headers=self.headers)
+            if not self.save_to_mem:
+                with open(self.rt_dir + filename, 'wb') as f:
+                    for chunk in r.iter_content(32768):
+                        f.write(chunk)
+            else:
                 for chunk in r.iter_content(32768):
-                    f.write(chunk)
-        else:
-            for chunk in r.iter_content(32768):
-                self.content_ls[job_id] += chunk
-        self.progress.advance(self.task_id, 1)
+                    self.content_ls[job_id] += chunk
+            self.progress.advance(self.task_id, 1)
+        except Exception as e:
+            qs_default_console.print(qs_error_string, f'下载失败 <{job_id}> "', url, '":', repr(e))
 
     def run(self, name_map: dict = None):
         self.status.start()
