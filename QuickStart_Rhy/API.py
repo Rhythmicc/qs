@@ -5,7 +5,8 @@
 Call various QS API
 """
 import sys
-from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, requirePackage, force_show_img
+
+from . import user_lang, system, qs_default_console, qs_error_string, qs_info_string, qs_warning_string, requirePackage
 
 
 def remove_bg():
@@ -388,6 +389,8 @@ def AipNLP():
     """百度NLP | Baidu NLP"""
     from .API.BaiduCloud import AipNLP
     pyperclip = requirePackage('pyperclip')
+    import pyperclip
+    pyperclip.paste()
     ct = sys.argv[2:]
     if not ct:
         try:
@@ -976,14 +979,14 @@ def d2m():
     choices = [f'[{n + 1}] ' + i[1] + ': ' + i[-1] for n, i in enumerate(infos)]
     try:
         url = searcher.get_magnet(
-                infos[
-                    choices.index(prompt({
-                        'type': 'list',
-                        'message': 'Select | 选择',
-                        'name': 'sub-url',
-                        'choices': choices
-                    })['sub-url'])
-                ][0]
+            infos[
+                choices.index(prompt({
+                    'type': 'list',
+                    'message': 'Select | 选择',
+                    'name': 'sub-url',
+                    'choices': choices
+                })['sub-url'])
+            ][0]
         )
         if copy:
             copy(url)
@@ -996,7 +999,8 @@ def d2m():
         qs_default_console.print(qs_info_string, url)
 
     if copied:
-        qs_default_console.print(qs_info_string, 'magnet url copied to clipboard' if user_lang != 'zh' else '磁力链接已拷贝至粘贴板')
+        qs_default_console.print(qs_info_string,
+                                 'magnet url copied to clipboard' if user_lang != 'zh' else '磁力链接已拷贝至粘贴板')
 
 
 def doutu():
@@ -1038,4 +1042,6 @@ def joke():
         qs_default_console.print(qs_error_string, ct)
         return
     content = re.sub('&(.*?);', '', ct['content'])
-    qs_default_console.print(Panel(content, title='[b magenta]' + ct['title'], title_align='center', width=qs_default_console.width, subtitle=ct['time']))
+    qs_default_console.print(
+        Panel(content, title='[b magenta]' + ct['title'], title_align='center', width=qs_default_console.width,
+              subtitle=ct['time']))

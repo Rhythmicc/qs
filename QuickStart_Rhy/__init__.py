@@ -7,10 +7,12 @@ Docs for different language:
 """
 import os
 import sys
-from .__config__ import QsConfig, dir_char, system, qs_default_console, prompt
-from .__cache__ import QsCache
-from .NetTools import headers
+
 from rich.prompt import Prompt as qs_default_input
+
+from .NetTools import headers
+from .__cache__ import QsCache
+from .__config__ import QsConfig, dir_char, system, qs_default_console, prompt
 
 name = 'QuickStart_Rhy'
 
@@ -20,8 +22,8 @@ qs_cache = QsCache(user_root + '.qs_cache')
 
 user_lang = qs_config.basicSelect('default_language')
 user_currency = qs_config.basicSelect('default_currency')
-trans_engine = qs_config.basicSelect('default_translate_engine')['support']\
-[qs_config.basicSelect('default_translate_engine')['index']]
+trans_engine = qs_config.basicSelect('default_translate_engine')['support'] \
+    [qs_config.basicSelect('default_translate_engine')['index']]
 user_pip = qs_config.basicSelect('default_pip')
 force_show_img = qs_config.basicSelect('force_show_img')
 
@@ -51,7 +53,8 @@ def external_exec(cmd: str, without_output: bool = False):
     return ret_code, content
 
 
-def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False, set_pip: str = user_pip):
+def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False,
+                   set_pip: str = user_pip):
     """
     获取本机上的python第三方库，如没有则询问安装
 
@@ -188,7 +191,7 @@ def open_url(argv: list = None):
         pyperclip = requirePackage('pyperclip')
         try:
             url = pyperclip.paste()
-        except :
+        except:
             url = qs_default_input.ask(
                 'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
                 if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:'
@@ -205,9 +208,11 @@ def open_app():
     :return: None
     """
     if system == 'darwin':
-        external_exec('open -a ' + ' '.join([i.replace(' ', '\\ ').replace('(', '\\(').replace(' ', '\\)') for i in sys.argv[2:]]))
+        external_exec('open -a ' + ' '.join(
+            [i.replace(' ', '\\ ').replace('(', '\\(').replace(' ', '\\)') for i in sys.argv[2:]]))
     else:
-        return qs_default_console.print(qs_error_string, '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
+        return qs_default_console.print(qs_error_string,
+                                        '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
 
 
 def open_file(argv=None):
@@ -273,7 +278,8 @@ def fcopy():
     :return:
     """
     if not os.path.exists(sys.argv[2]):
-        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
+        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:',
+                                        sys.argv[2])
     with open(sys.argv[2], 'r') as f:
         requirePackage('pyperclip').copy(f.read())
 
@@ -283,14 +289,17 @@ def copy():
     复制文件到粘贴板
     :return:
     """
+
     def which(command):
         return False if external_exec('which %s' % command, True)[0] else True
 
     if system != 'darwin':
-        return qs_default_console.print(qs_error_string, '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
+        return qs_default_console.print(qs_error_string,
+                                        '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
 
     if not os.path.exists(sys.argv[2]):
-        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:', sys.argv[2])
+        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:',
+                                        sys.argv[2])
     # 检查 pbadd 是否在 PATH 中
     if not which('pbadd'):
         from QuickStart_Rhy.NetTools.NormalDL import normal_dl

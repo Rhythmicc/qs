@@ -39,10 +39,10 @@ def download():
         from . import user_lang, qs_default_console, qs_info_string
         qs_default_console.print(
             qs_info_string, 'Usage: "qs dl [url...]"\n'
-            '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
-            '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc\n'
-            '  [--name fileName] :-> Set File Name\n'
-            '  [--referer] | [-e] :-> Set Referer\n'
+                            '  [--video] | [-v]  :-> download video (use youtube-dl)\n'
+                            '  [--proxy] | [-px] :-> use default proxy set in ~/.qsrc\n'
+                            '  [--name fileName] :-> Set File Name\n'
+                            '  [--referer] | [-e] :-> Set Referer\n'
             if user_lang != 'zh' else
             '使用: "qs dl [链接...]"\n'
             '  [--video] | [-v]  :-> 使用youtube-dl下载视频\n'
@@ -60,7 +60,8 @@ def download():
     if '--name' in sys.argv:
         set_name = sys.argv[sys.argv.index('--name') + 1]
     if '--referer' in sys.argv or '-e' in sys.argv:
-        set_referer = sys.argv[sys.argv.index('--referer') + 1] if '--referer' in sys.argv else sys.argv[sys.argv.index('-e') + 1]
+        set_referer = sys.argv[sys.argv.index('--referer') + 1] if '--referer' in sys.argv else sys.argv[
+            sys.argv.index('-e') + 1]
         if not set_referer.endswith('/'):
             set_referer += '/'
     if ytb_flag or use_proxy or set_name or set_referer:
@@ -95,7 +96,8 @@ def download():
                 m3u8_dl(url)
             else:
                 if use_proxy:
-                    normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy'), set_referer=set_referer) \
+                    normal_dl(url, set_name=set_name, set_proxy=qs_config.basicSelect('default_proxy'),
+                              set_referer=set_referer) \
                         if not ytb_flag else _real_main([url, '--proxy', qs_config.basicSelect('default_proxy'),
                                                          '--merge-output-format', 'mp4'] + other_args)
                 else:
@@ -150,9 +152,10 @@ def netinfo():
         from .TuiTools.Table import qs_default_table
 
         table = qs_default_table([
-            {'header': 'ip', 'justify': 'center', 'style': 'bold magenta'}, {'header': '运营商', 'justify': 'center'},
-            {'header': '地址', 'justify': 'center'}, {'header': '经纬', 'justify': 'center'},
-        ] if user_lang == 'zh' else [
+                                     {'header': 'ip', 'justify': 'center', 'style': 'bold magenta'},
+                                     {'header': '运营商', 'justify': 'center'},
+                                     {'header': '地址', 'justify': 'center'}, {'header': '经纬', 'justify': 'center'},
+                                 ] if user_lang == 'zh' else [
             {'header': 'ip', 'justify': 'center', 'style': 'bold magenta'}, {'header': 'isp', 'justify': 'center'},
             {'header': 'pos', 'justify': 'center'}, {'header': 'location', 'justify': 'center'},
         ], 'NetInfo Results\n')
@@ -166,7 +169,7 @@ def netinfo():
     if not urls:
         try:
             urls += pyperclip.paste().strip().split() if not urls else []
-        except :
+        except:
             from rich.prompt import Prompt
             urls = Prompt.ask(
                 'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
@@ -225,7 +228,8 @@ def wifi():
                 if int(document) >= len(connectable_wifi):
                     raise IndexError
             except:
-                raise ValidationError(message='请输入合法序号' if user_lang == 'zh' else 'Input validate id', cursor_position=len(document))
+                raise ValidationError(message='请输入合法序号' if user_lang == 'zh' else 'Input validate id',
+                                      cursor_position=len(document))
             return True
 
     questions = [{

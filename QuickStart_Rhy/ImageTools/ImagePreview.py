@@ -290,6 +290,8 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
             force_show_option = True
         if not is_url and (isinstance(img, str) and not os.path.exists(img)):
             is_url = img.startswith('http')
+        if qs_console_status:
+            qs_console_status.stop()
         if is_url:
             # from PIL import Image
             from .. import requirePackage
@@ -303,15 +305,11 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
                 'https': 'https://' + set_proxy
             } if set_proxy else {}
             res = requests.get(img, headers=headers, proxies=proxies).content
-            if qs_console_status:
-                qs_console_status.update(status='Opening')
             img = Image.open(BytesIO(res))
         elif not is_url and isinstance(img, str) and os.path.exists(img):
             from .. import requirePackage
             Image = requirePackage('PIL', 'Image', 'Pillow')
             img = Image.open(img)
-        if qs_console_status:
-            qs_console_status.stop()
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
