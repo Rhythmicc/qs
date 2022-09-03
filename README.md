@@ -1,8 +1,3 @@
-- [ QuickStart_Rhy ](#quickstart_rhy)
-  - [Install](#install)
-  - [Docs](#docs)
-  
-
 <h1 style="text-align: center"> QuickStart_Rhy </h1>
 
 ## Install
@@ -10,6 +5,8 @@
 pip3 install quickstart-rhy
 ```
 **Env: ^Python 3.7**
+
+**Font: [Cascadia Code](https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip)**
 
 ## Docs
 | |Url|
