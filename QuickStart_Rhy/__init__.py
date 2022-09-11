@@ -208,8 +208,7 @@ def open_app():
     :return: None
     """
     if system == 'darwin':
-        external_exec('open -a ' + ' '.join(
-            [i.replace(' ', '\\ ').replace('(', '\\(').replace(' ', '\\)') for i in sys.argv[2:]]))
+        external_exec('open -a "' + '" "'.join(sys.argv[2:]) + '"')
     else:
         return qs_default_console.print(qs_error_string,
                                         '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
@@ -224,24 +223,14 @@ def open_file(argv=None):
     :return: None
     """
     if not argv:
-        argv = [i.replace(' ', '\\ ').replace('(', '\\(').replace(' ', '\\)') for i in sys.argv[2:]]
+        argv = sys.argv[2:]
     if system == 'darwin':
-        external_exec('open ' + ' '.join(argv))
+        external_exec('open "' + '" "'.join(argv) + '"')
     elif system == 'linux':
-        from subprocess import run
-        run(['xdg-open'] + [i for i in argv])
+        external_exec('xdg-open "' + '" "'.join(argv) + '"')
     else:
-        import webbrowser as wb
-
         for file in argv:
-            if os.path.exists(file):
-                path = os.path.abspath(file)
-                wb.open('file://%s' % path)
-
-
-def init():
-    import webbrowser as wb
-    wb.open('http://login.cup.edu.cn')
+            os.startfile(os.path.abspath(file))
 
 
 def calculate():

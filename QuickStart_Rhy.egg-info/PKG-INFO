@@ -1,22 +1,16 @@
 Metadata-Version: 2.1
 Name: QuickStart-Rhy
-Version: 0.6.24
+Version: 0.6.25
 Summary: Simplify the operation in terminal!
 Home-page: https://github.com/Rhythmicc/qs
 Author: RhythmLian
 License: MIT
 Keywords: Simplify the operation in terminal!
-Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Description-Content-Type: text/markdown
 License-File: LICENSE
-
-- [ QuickStart_Rhy ](#quickstart_rhy)
-  - [Install](#install)
-  - [Docs](#docs)
-  
 
 <h1 style="text-align: center"> QuickStart_Rhy </h1>
 
@@ -25,6 +19,8 @@ License-File: LICENSE
 pip3 install quickstart-rhy
 ```
 **Env: ^Python 3.7**
+
+**Font: [Cascadia Code](https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip)**
 
 ## Docs
 | |Url|
@@ -36,5 +32,3 @@ pip3 install quickstart-rhy
 ```shell
 mv _qs /path/in/$fpath/
 ```
-
-

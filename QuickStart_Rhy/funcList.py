@@ -224,7 +224,6 @@ basic_funcs = {
     'u': 'open_url',
     'a': 'open_app',
     'f': 'open_file',
-    'i': 'init',
     'time': 'cur_time',
     'cal': 'calculate',
     'pcat': 'pcat',

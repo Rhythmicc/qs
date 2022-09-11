@@ -15,7 +15,7 @@ default_language = {
     'type': 'input',
     'name': 'default_language',
     'message': """Select your language, the flowing content is available choice
-  选择你的语言，下述内容为合法选项
+  选择你的语言，下述内容为合法选项 (此处顺序无任何意义)
     
     zh  (Chinese) en  (English)  jp  (Japanese) kor (Korean)   fra (French), 
     spa (Spanish) th  (Thailand) ara (al-ummah) ru  (Russian)  pt  (Portuguese), 
@@ -36,7 +36,7 @@ default_currency = {
     'type': 'input',
     'name': 'default_currency',
     'message': """Choose your common currency, the flowing content is available choice
-  选择你常用的币种，下述内容为合法选项
+  选择你常用的币种，下述内容为合法选项 (此处顺序无任何意义)
     
     CNY (Chinese)  USD (American) JPY (Japanese)  KRW (Korean)    DKK (Denmark)  EUR (Europe) 
     THB (Thailand) SAR (al-ummah) RUB (Russian)   BYR (Belarus)   RON (Romania)  PLN (Poland)
