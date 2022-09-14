@@ -48,24 +48,12 @@ def mkCompressPackageWrap(func):
     :return: 装饰器 | wrapper
     """
     def wrapper():
-        import os
-        from .. import dir_char
         from ..SystemTools.Compress import get_compress_package_name
         packages_name, ls = get_compress_package_name()
         packages = func(packages_name)
 
-        def dfs(cur_p):
-            if os.path.isfile(cur_p):
-                packages.add_file(cur_p)
-                return
-            file_ls = os.listdir(cur_p)
-            flag_ch = '' if cur_p.endswith(dir_char) else dir_char
-            for fp in file_ls:
-                fp = cur_p + flag_ch + fp
-                dfs(fp)
-
         for i in ls:
-            dfs(i)
+            packages.add_file(i)
         packages.save()
     return wrapper
 

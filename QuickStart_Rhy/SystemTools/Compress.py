@@ -46,6 +46,7 @@ def checkIsProtocolFile(protocol, path):
     验证压缩包文件
 
     Verify compressed package file
+
     :param protocol: 压缩协议 | compress protocol
     :param path: 文件路径 | File Path
     :return:
@@ -116,13 +117,20 @@ class _NormalCompressedPackage:
         """
         if self.mode:
             raise io.UnsupportedOperation
-        if os.path.exists(path):
+        if not os.path.exists(path):
+            raise FileNotFoundError
+        if os.path.isdir(path):
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    if self._protocol == tarfile:
+                        self.src.add(os.path.join(root, file))
+                    elif self._protocol in [zipfile, py7zr]:
+                        self.src.write(os.path.join(root, file))
+        else:
             if self._protocol == tarfile:
                 self.src.add(path)
             elif self._protocol in [zipfile, py7zr]:
                 self.src.write(path)
-        else:
-            raise FileNotFoundError
 
     def extract(self):
         """

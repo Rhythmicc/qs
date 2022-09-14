@@ -1,5 +1,3 @@
-import requests.exceptions
-
 from . import size_format, get_fileinfo
 from concurrent.futures import ThreadPoolExecutor, wait
 from ..SystemTools import get_core_num
