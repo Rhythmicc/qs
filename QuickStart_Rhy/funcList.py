@@ -310,5 +310,5 @@ image_funcs = {
     'i2png': 'i2png',
     'i2jpg': 'i2jpg',
     'fmti': 'fmt_img_color',
-    'vsta': 'vsta'
+    'vsta': 'vsta',
 }

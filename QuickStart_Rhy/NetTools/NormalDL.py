@@ -66,22 +66,32 @@ class Downloader:
 
         :param url: 文件url
         :param num: 线程数量
+        :param name: 文件名
+        :param proxy: 代理
+        :param referer: referer
+        :param output_error: 是否输出错误
+        :param failed2exit: 是否下载失败就退出
+        :param exit_if_exist: 如果文件已存在，是否退出
+        :param disableStatus: 是否禁用状态栏
+        :param disableParallel: 是否禁用并行下载
         """
         signal.signal(signal.SIGINT, self._kill_self)
         info_flag = True
         self.url, self.num, self.output_error, self.proxies = url, num, output_error, {}
         self.exit_if_exist = exit_if_exist
         self.enabled = True
-        if not disableStatus:
+        self.disableStatus = disableStatus
+        if not self.disableStatus:
             with qs_default_console.status('Getting file info..' if user_lang != 'zh' else '获取文件信息中..'):
                 self.url, self.name, r = get_fileinfo(url, proxy, referer)
         else:
             self.url, self.name, r = get_fileinfo(url, proxy, referer)
         if not (self.url and self.name and r):
             info_flag = False
-            qs_default_console.print(qs_error_string if failed2exit else qs_warning_string,
-                                     'Get File information failed, please check network!'
-                                     if user_lang != 'zh' else '获取文件信息失败，请检查网络!')
+            if not self.disableStatus:
+                qs_default_console.print(qs_error_string if failed2exit else qs_warning_string,
+                                         'Get File information failed, please check network!'
+                                         if user_lang != 'zh' else '获取文件信息失败，请检查网络!')
             if failed2exit:
                 self.enabled = False
                 return
@@ -113,8 +123,9 @@ class Downloader:
             self.dl_id = self.main_progress.add_task('Download', filename=self.name, start=False)
             self.main_progress.update(self.dl_id, total=self.size)
             if self.size < 5e6 or disableParallel:
-                qs_default_console.print(qs_info_string, 'FILE SIZE' if user_lang != 'zh' else '文件大小'
-                                         , size_format(self.size))
+                if not self.disableStatus:
+                    qs_default_console.print(qs_info_string, 'FILE SIZE' if user_lang != 'zh' else '文件大小'
+                                             , size_format(self.size))
                 self.size = -self.size
             else:
                 self.fileBlock = GetBlockSize(self.size)
@@ -133,10 +144,11 @@ class Downloader:
                 self.ctn_file = open(self.name + '.qs_dl', 'w')
                 self.ctn = []
             self.writers = FileWriters(self.name, max(2, int(core_num / 2)), "rb+" if self.ctn else "wb")
-            qs_default_console.print(qs_info_string, 'FILE  SIZE' if user_lang != 'zh' else '文件大小'
-                                     , size_format(self.size, align=True))
-            qs_default_console.print(qs_info_string, 'THRAED NUM' if user_lang != 'zh' else '线程数量'
-                                     , '%7d' % num)
+            if not self.disableStatus:
+                qs_default_console.print(qs_info_string, 'FILE  SIZE' if user_lang != 'zh' else '文件大小'
+                                         , size_format(self.size, align=True))
+                qs_default_console.print(qs_info_string, 'THRAED NUM' if user_lang != 'zh' else '线程数量'
+                                         , '%7d' % num)
 
     def _kill_self(self, signum, frame):
         """
@@ -175,7 +187,8 @@ class Downloader:
             _content = b''
             for chunk in get(self.url, headers=_headers, timeout=50, proxies=self.proxies).iter_content(65536):
                 _content += chunk
-                self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
+                if not self.disableStatus:
+                    self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
             self.writers.new_job(_content, start)
         except Exception as e:
             if self.output_error:
@@ -198,10 +211,11 @@ class Downloader:
         r = get(self.url, stream=True, proxies=self.proxies, headers=self.headers)
         flag = self.size != -1
 
-        if flag:
-            self.main_progress.start_task(self.dl_id)
-        else:
-            self.main_progress.update(self.dl_id, total=-1)
+        if not self.disableStatus:
+            if flag:
+                self.main_progress.start_task(self.dl_id)
+            else:
+                self.main_progress.update(self.dl_id, total=-1)
         with open(self.name, 'wb') as f:
             for chunk in r.iter_content(32768):
                 f.write(chunk)
@@ -220,14 +234,17 @@ class Downloader:
         :return: None
         """
         if not self.enabled:
-            return self.name if self.exit_if_exist else ''
-        self.main_progress.start()
+            return self.name if self.exit_if_exist else None
+        if not self.disableStatus:
+            self.main_progress.start()
         if self.size > 0:
-            self.main_progress.start_task(self.dl_id)
+            if not self.disableStatus:
+                self.main_progress.start_task(self.dl_id)
             if not self.ctn:
                 with open(self.name, "wb") as fp:
                     fp.truncate(self.size)
-            self.main_progress.advance(self.dl_id, self.fileBlock*len(self.ctn))
+            if not self.disableStatus:
+                self.main_progress.advance(self.dl_id, self.fileBlock*len(self.ctn))
             for i in range(0, self.size, self.fileBlock):
                 if self.ctn and i in self.ctn:
                     continue
@@ -251,8 +268,9 @@ class Downloader:
             os.remove(self.name + '.qs_dl')
         else:
             self._single_dl()
-        self.main_progress.stop()
-        qs_default_console.print(qs_info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!')
+        if not self.disableStatus:
+            self.main_progress.stop()
+            qs_default_console.print(qs_info_string, self.name, 'download done!' if user_lang != 'zh' else '下载完成!')
         return self.name
 
 
@@ -272,7 +290,9 @@ def normal_dl(url, set_name: str = '', set_proxy: str = '', set_referer: str = '
     :param thread_num: 线程数
     :param output_error: 输出报错信息
     :param failed2exit: 获取文件信息失败则不下载，否则qs将继续尝试下载
+    :param exit_if_exist: 如果文件已存在则不下载
     :param disableStatus: 是否显示当前任务状态
+    :param disableParallel: 是否禁用并行下载
     :return: file name
     """
     if set_name and os.path.exists(set_name) and not ask_overwrite(set_name):
