@@ -59,8 +59,8 @@ class FileWriters:
         :param mode: 读写模式，如'wb', 'rb+'
         """
         self.workers = workers
-        self.handles = [open(filename, mode) for i in range(workers)]
-        self.handles_lock = [threading.Lock() for i in range(workers)]
+        self.handles = [open(filename, mode) for _ in range(workers)]
+        self.handles_lock = [threading.Lock() for _ in range(workers)]
         self.pool = ThreadPoolExecutor(max_workers=workers)
         self.job_q = []
         self.cur_handle = 0

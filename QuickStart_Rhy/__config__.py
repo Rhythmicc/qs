@@ -106,6 +106,14 @@ default_proxy = {
 }
 
 
+center_prefix = {
+    'type': 'input',
+    'name': 'center_prefix',
+    'message': 'Space number before imgcat | 显示图片之前的空格数:',
+    'default': 'lambda x: 0'
+}
+
+
 class QsConfig:
     import json
 
@@ -129,7 +137,8 @@ class QsConfig:
     },
     "default_proxy": "user:password@ip:port or ip:port",
     "default_pip": "pip3",
-    "force_show_img": false
+    "force_show_img": false,
+    "center_prefix": "lambda x: 0"
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
@@ -158,7 +167,7 @@ class QsConfig:
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey"
   }
 }""")
-            res = prompt([default_language, default_currency, default_translate_engine, default_proxy, default_pip])
+            res = prompt([default_language, default_currency, default_translate_engine, default_proxy, default_pip, default_terminal_width])
             self.config['basic_settings']['default_language'] = res['default_language'] if res['default_language'] != 'Not Set | 暂不配置' else 'en'
             self.config['basic_settings']['default_currency'] = res['default_currency'] if res['default_currency'] != 'Not Set | 暂不配置' else 'USD'
             self.config['basic_settings']['default_translate_engine']['index'] = ['default', 'TencentCloud'].index(

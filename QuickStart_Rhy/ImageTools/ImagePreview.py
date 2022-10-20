@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 from .. import qs_default_console, qs_console_width
-from .. import headers, prompt, user_lang, force_show_img
+from .. import headers, prompt, user_lang, force_show_img, qs_config
 import math
 import base64
 import sys
@@ -317,7 +317,11 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
         _real_width = math.ceil(width / height * _real_height) * 2 + 1
 
         console_width = qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
-        qs_default_console.print(' ' * int(max((console_width - _real_width) / 2 - 1, 0)), end='')
+        center_prefix = (eval(qs_config.basicSelect('center_prefix')))(console_width)
+        qs_default_console.print(
+            ' ' * int(max((console_width - _real_width) / 2 - 1, 0) if not center_prefix else center_prefix),
+            end=''
+        )
 
         imgcat(buf, height=real_height(buf))
     except Exception as e:
