@@ -33,24 +33,61 @@ qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_console_width = qs_default_console.width
 
 
-def external_exec(cmd: str, without_output: bool = False):
+def external_exec(
+    cmd: str,
+    without_output: bool = False,
+    without_stdout: bool = False,
+    without_stderr: bool = False,
+):
     """
     外部执行命令
 
     :param cmd: 命令
     :param without_output: 是否不输出
+    :param without_stdout: 是否不输出stdout
+    :param without_stderr: 是否不输出stderr
     :return: status code, output
     """
+    # import threading
     from subprocess import Popen, PIPE
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, encoding='utf-8')
+    from concurrent.futures import ThreadPoolExecutor, wait
+
+    class MixContent:
+        def __init__(self):
+            self.content = ""
+
+        def __add__(self, other):
+            self.content += other
+            return self
+
+        def __str__(self):
+            return self.content
+
+    content = MixContent()
+
+    def _output(pipe_name: str, process: Popen, content: MixContent):
+        ignore_status = (
+            without_stdout if pipe_name == "stdout" else without_stderr
+        ) or without_output
+        for line in iter(eval(f"process.{pipe_name}.readline"), ""):
+            if not ignore_status:
+                qs_default_console.print(line.strip())
+            content += line
+
+    pool = ThreadPoolExecutor(2)
+    p = Popen(cmd, shell=True, stdout=PIPE,
+              stderr=PIPE, bufsize=1, encoding="utf-8")
+
+    wait(
+        [
+            pool.submit(_output, "stdout", p, content),
+            pool.submit(_output, "stderr", p, content),
+        ]
+    )
+    pool.shutdown()
     ret_code = p.wait()
-    stdout, stderr = p.communicate()
-    content = stdout.strip() + stderr.strip()
-    if ret_code and content and not without_output:
-        qs_default_console.print(qs_error_string, content)
-    elif content and not without_output:
-        qs_default_console.print(qs_info_string, content)
-    return ret_code, content
+
+    return ret_code, str(content)
 
 
 def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False,
@@ -214,7 +251,7 @@ def open_app():
                                         '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
 
 
-def open_file(argv=None):
+def open_file(*argv):
     """
     使用合适应用打开文件
 
@@ -311,3 +348,21 @@ def play_music():
             play(AS.from_file(music))
         except:
             pass
+
+
+def qs_print(*argv):
+    """
+    打印文件
+
+    :return:
+    """
+    if not argv:
+        argv = sys.argv[2:]
+    if dir_char != '/':
+        win32api = requirePackage('pywin32', 'win32api')
+        win32print = requirePackage('pywin32', 'win32print')
+        for file in argv:
+            win32api.ShellExecute(0, "print", file, '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
+    else:
+        for file in argv:
+            external_exec(f'lp {file}')
