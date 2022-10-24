@@ -102,6 +102,7 @@ _qs_main_en() {
         fcopy:'copy file content to clipboard'
         play:'play audio file'
         copy:'copy file to clipboard'
+        lp:'print file'
         http:'start multi-threads http server'
         netinfo:'get IP information'
         dl:'download file from http url*'

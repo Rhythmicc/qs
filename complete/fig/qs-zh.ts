@@ -90,6 +90,10 @@ const completionSpec: Fig.Spec = {
         description: ' 拷贝文件到粘贴板',
         args: {name: 'file', description: '文件', template: ['filepaths', 'folders']}
     }, {
+        name: 'lp',
+        description: '使用默认打印机打印文件',
+        args: {name: 'file', description: '文件', template: ['filepaths', 'folders']}
+    }, {
         name: 'top',
         description: 'CPU和内存监控器',
     }, {

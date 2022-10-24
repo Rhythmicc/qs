@@ -48,9 +48,9 @@ def base_menu():
     qs time                  :-> view current time
     qs pact                  :-> output string in clipboard
     qs fcopy <file>          :-> copy file content to clipboard
-    qs copy <file>           :-> copy file to clipboard
-    qs play <file...>        :-> Play Musics
-    qs lp <file...>          :-> Print Files""") \
+    qs copy  <file>           :-> copy file to clipboard
+    qs play  <file...>        :-> Play Musics
+    qs lp    <file...>          :-> Print Files""") \
         if user_lang != 'zh' else color_rep("""基础工具:
     qs u   <链接...>          :-> 使用默认浏览器打开多个链接
     qs a   <应用> \[文件...]    :-> 打开应用或使用应用打开文件 ()
@@ -59,9 +59,9 @@ def base_menu():
     qs time                  :-> 查看当前时间
     qs pcat                  :-> 输出粘贴板内容
     qs fcopy <文件>          :-> 拷贝文件内容到粘贴板
-    qs copy <文件>           :-> 拷贝文件到粘贴板
-    qs play <文件...>        :-> 播放音乐
-    qs lp <文件...>          :-> 打印文件""")
+    qs copy  <文件>           :-> 拷贝文件到粘贴板
+    qs play  <文件...>        :-> 播放音乐
+    qs lp    <文件...>          :-> 打印文件""")
 
 
 def system_menu():

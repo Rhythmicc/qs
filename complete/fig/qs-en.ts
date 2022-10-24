@@ -84,11 +84,15 @@ const completionSpec: Fig.Spec = {
     }, {
         name: 'play',
         description: 'play audio file',
-        args: {name: 'music', description: '音乐', template: ['filepaths', 'folders'], isVariadic: true}
+        args: {name: 'audio', description: 'Audio', template: ['filepaths', 'folders'], isVariadic: true}
     }, {
         name: 'copy',
         description: ' copy file to clipboard',
-        args: {name: 'file', description: '文件', template: ['filepaths', 'folders']}
+        args: {name: 'file', description: 'File', template: ['filepaths', 'folders']}
+    }, {
+        name: 'lp',
+        description: 'Printing documents using the default printer',
+        args: {name: 'file', description: 'File', template: ['filepaths', 'folders']}
     }, {
         name: 'top',
         description: 'cpu and memory monitor',
