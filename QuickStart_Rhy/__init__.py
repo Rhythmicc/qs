@@ -128,6 +128,38 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
         return eval(f'{module if module else pname}')
 
 
+def _ask(question: dict, timeout: int = 0):
+    if timeout:
+        def ask():
+            def handle(signum, frame):
+                raise RuntimeError
+
+            import signal
+
+            try:
+                signal.signal(signal.SIGALRM, handle)
+                signal.alarm(timeout)
+                res = prompt(question)
+                signal.alarm(0)
+                return res
+            except RuntimeError:
+                if dir_char == '/':
+                    os.system('stty echo')
+                qs_default_console.print('\n[bold yellow][Warning | 警告][/bold yellow]',
+                                         f"Time out & Return | 超时并返回: {question['default'] if 'default' in question else None}")
+                return question['default'] if 'default' in question else None
+    else:
+        def ask():
+            return prompt(question)[question['name']]
+    try:
+        if 'name' not in question:
+            question['name'] = 'NoName'
+        return ask()
+    except:
+        exit(0)
+
+
+
 def cut_string(string: str, length: int) -> list:
     """
     每隔l个字符切分字符串
@@ -148,6 +180,21 @@ def cut_string(string: str, length: int) -> list:
     if cur:
         res.append(cur)
     return res
+
+
+def _is_in_path(cmd: str):
+    """
+    判断cmd是否在环境变量中
+
+    :param cmd: 命令
+    :return: 是否在环境变量中
+    """
+    import os
+    ls = os.environ['PATH'].split(os.pathsep)
+    for prefix in ls:
+        if os.path.exists(os.path.join(prefix, cmd)):
+            return True
+    return False
 
 
 def table_cell(string: str, length: int) -> str:
@@ -366,3 +413,51 @@ def qs_print(*argv):
     else:
         for file in argv:
             external_exec(f'lp {file}')
+
+
+def sas():
+    """
+    设置音源
+
+    Set audio source
+
+    :return: None
+    """
+    if system != 'darwin':
+        qs_default_console.print(qs_error_string, 'Not support your system' if user_lang != 'zh' else '不支持你的系统')
+        return
+    if not _is_in_path('SwitchAudioSource'):
+        if _ask({
+            'type': 'confirm',
+            'message': 'Install SwitchAudioSource?' if user_lang != 'zh' else '安装 SwitchAudioSource？',
+            'default': True
+        }):
+            with qs_default_console.status('Installing SwitchAudioSource...' if user_lang != 'zh' else '正在安装 SwitchAudioSource...'):
+                retries = 3
+                while retries:
+                    external_exec('brew install SwitchAudioSource')
+                    if _is_in_path('SwitchAudioSource'):
+                        break
+                    retries -= 1
+                if not retries:
+                    qs_default_console.print(qs_error_string, 'Install failed' if user_lang != 'zh' else '安装失败')
+                    return
+    import json
+    devices = [json.loads(i) for i in external_exec('SwitchAudioSource -a -f json', True)[1].splitlines()]
+    devices = {i['name']: {'id': i['id'], 'type': '🔈' if i['type'] == 'output' else '🎤'} for i in devices}
+    if not devices:
+        qs_default_console.print(qs_error_string, 'No device found' if user_lang != 'zh' else '未找到设备')
+        return
+    from .TuiTools.Table import qs_default_table
+
+    table = qs_default_table(['ID', 'Name', 'Type'])
+    for i in devices:
+        table.add_row(devices[i]['id'], i, devices[i]['type'])
+    qs_default_console.print(table, justify='center')
+
+    external_exec('SwitchAudioSource -i %s' % _ask({
+        'type': 'input',
+        'message': 'Input device ID' if user_lang != 'zh' else '输入设备 ID',
+        'validate': lambda x: x in [str(i['id']) for i in devices.values()]
+    }), True)
+    qs_default_console.print(qs_info_string, 'Done' if user_lang != 'zh' else '完成')
