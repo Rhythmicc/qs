@@ -94,6 +94,9 @@ const completionSpec: Fig.Spec = {
         description: 'Printing documents using the default printer',
         args: {name: 'file', description: 'File', template: ['filepaths', 'folders']}
     }, {
+        name: 'sas',
+        description: ' Switch Audio Source',
+    }, {
         name: 'top',
         description: 'cpu and memory monitor',
     }, {

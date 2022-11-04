@@ -94,6 +94,9 @@ const completionSpec: Fig.Spec = {
         description: '使用默认打印机打印文件',
         args: {name: 'file', description: '文件', template: ['filepaths', 'folders']}
     }, {
+        name: 'sas',
+        description: ' 设置系统音源'
+    }, {
         name: 'top',
         description: 'CPU和内存监控器',
     }, {
