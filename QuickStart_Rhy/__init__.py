@@ -455,9 +455,25 @@ def sas():
         table.add_row(devices[i]['id'], i, devices[i]['type'])
     qs_default_console.print(table, justify='center')
 
-    external_exec('SwitchAudioSource -i %s' % _ask({
+    default = qs_cache.get('audio_source')
+    choises = [str(i['id']) for i in devices.values()]
+    question = {
         'type': 'input',
         'message': 'Input device ID' if user_lang != 'zh' else '输入设备 ID',
-        'validate': lambda x: x in [str(i['id']) for i in devices.values()]
-    }), True)
+        'validate': lambda x: x in [str(i['id']) for i in devices.values()],
+    }
+    if default:
+        _default = default.copy()
+        for item in default:
+            if item not in choises:
+                _default.pop(item)
+        if _default:
+            question['default'] = sorted(_default.items(), key=lambda x: -x[1])[0][0]
+    else:
+        default = {}
+    select = _ask(question)
+    default[select] = default.get(select, 0) + 1
+
+    external_exec('SwitchAudioSource -i %s' % select, True)
+    qs_cache.set('audio_source', default)
     qs_default_console.print(qs_info_string, 'Done' if user_lang != 'zh' else '完成')
