@@ -20,27 +20,41 @@ def color_rep(ss, is_top_menu: bool = False):
     """
     from rich.table import Table, Column
     from rich.box import SIMPLE
-    ss = ss.strip().split('\n')
+
+    ss = ss.strip().split("\n")
 
     tb = Table(
-        *([Column('1', style='bold magenta', justify='left'), Column('2', style='bold yellow', justify='center'),
-           Column('3', style='bold green', justify='right')] if is_top_menu else
-          [Column('1', style='bold magenta', justify='left'), Column('2', style='bold yellow', justify='right')]),
-        title=f'[bold underline]{"QuickStart_Rhy" if is_top_menu else ss[0].strip().strip(":")}' + '\n',
-        show_header=False, show_edge=False, box=SIMPLE
+        *(
+            [
+                Column("1", style="bold magenta", justify="left"),
+                Column("2", style="bold yellow", justify="center"),
+                Column("3", style="bold green", justify="right"),
+            ]
+            if is_top_menu
+            else [
+                Column("1", style="bold magenta", justify="left"),
+                Column("2", style="bold yellow", justify="right"),
+            ]
+        ),
+        title=f'[bold underline]{"QuickStart_Rhy" if is_top_menu else ss[0].strip().strip(":")}'
+        + "\n",
+        show_header=False,
+        show_edge=False,
+        box=SIMPLE,
     )
     for i, line in enumerate(ss if is_top_menu else ss[1:]):
-        if ':->' in line:
-            line = [i.strip() for i in line.split(':->')]
-            if '|' in line[1]:
-                line += [i.strip() for i in line.pop(-1).split('|')]
+        if ":->" in line:
+            line = [i.strip() for i in line.split(":->")]
+            if "|" in line[1]:
+                line += [i.strip() for i in line.pop(-1).split("|")]
         tb.add_row(*line)
     qs_default_console.print(tb, justify="center")
 
 
 def base_menu():
     """基础类菜单 | Basic menu"""
-    color_rep("""Basic Tools help:
+    color_rep(
+        """Basic Tools help:
     qs u   <url...>          :-> open urls using default browser
     qs a   <app> \[file..]    :-> open app or open file by app ()
     qs f   <file...>         :-> open file by default app
@@ -51,8 +65,9 @@ def base_menu():
     qs copy  <file>          :-> copy file to clipboard
     qs play  <file...>       :-> Play Musics
     qs lp    <file...>       :-> Print Files
-    qs sas                   :-> Switch Audio Source ()""") \
-        if user_lang != 'zh' else color_rep("""基础工具:
+    qs sas                   :-> Switch Audio Source ()"""
+    ) if user_lang != "zh" else color_rep(
+        """基础工具:
     qs u   <链接...>          :-> 使用默认浏览器打开多个链接
     qs a   <应用> \[文件...]   :-> 打开应用或使用应用打开文件 ()
     qs f   <文件...>          :-> 使用合适的应用打开文件
@@ -63,12 +78,14 @@ def base_menu():
     qs copy  <文件>           :-> 拷贝文件到粘贴板
     qs play  <文件...>        :-> 播放音乐
     qs lp    <文件...>        :-> 打印文件
-    qs sas                   :-> 切换音频源 ()""")
+    qs sas                   :-> 切换音频源 ()"""
+    )
 
 
 def system_menu():
     """系统类菜单 | System menu"""
-    color_rep("""System Tools help:
+    color_rep(
+        """System Tools help:
     qs top                   :-> cpu and memory monitor
     qs clear                 :-> free memory
     qs go2git                :-> go to the webpage of the git config
@@ -85,8 +102,9 @@ def system_menu():
     qs sha1   <path...>      :-> calculate SHA1 of files
     qs sha256 <path...>      :-> calculate SHA256 of files
     qs sha512 <path...>      :-> calculate SHA512 of files
-    qs diff <dir1> <dir2>    :-> diff two directories""") \
-        if user_lang != 'zh' else color_rep("""系统工具:
+    qs diff <dir1> <dir2>    :-> diff two directories"""
+    ) if user_lang != "zh" else color_rep(
+        """系统工具:
     qs top                   :-> CPU和内存监控器
     qs clear                 :-> 清理本机内存
     qs go2git                :-> 自动前往git目录托管仓库的网页
@@ -103,33 +121,37 @@ def system_menu():
     qs sha1   <路径...>      :-> 计算文件sha1值
     qs sha256 <路径...>      :-> 计算文件sha256值
     qs sha512 <路径...>      :-> 计算文件sha512值
-    qs diff <目录1> <目录2>    :-> 对比两个文件夹差异""")
+    qs diff <目录1> <目录2>    :-> 对比两个文件夹差异"""
+    )
 
 
 def net_menu():
     """网络类菜单 | Network menu"""
-    color_rep("""Net Tools help:
+    color_rep(
+        """Net Tools help:
     qs http \[ip] [-bind url] :-> start a multithread ftp server
     qs netinfo <domains...*> :-> get url's info which in clipboard or params 
     qs dl [urls] [-help]     :-> download file from url(in clipboard)
     qs wifi                  :-> connect wifi
-    qs upgrade               :-> update qs""") \
-        if user_lang != 'zh' else color_rep("""网络工具:
+    qs upgrade               :-> update qs"""
+    ) if user_lang != "zh" else color_rep(
+        """网络工具:
     qs http \[IP] [-bind 链接] :-> 在当前路径下开启多线程http服务
     qs netinfo <域名...*> :-> 获取命令参数或剪切板中链接或ip的信息 
     qs dl <链接*>             :-> 从命令参数或剪切板中链接下载文件
     qs wifi                  :-> 连接wifi
-    qs upgrade               :-> 更新qs""")
+    qs upgrade               :-> 更新qs"""
+    )
 
 
 def api_menu():
     """api类菜单 | API menu"""
-    color_rep("""API Tools help:
+    color_rep(
+        """API Tools help:
     qs trans  \[content]       :-> translate the content(in clipboard)
     qs pinyin \[content]      :-> get the pinyin of Chinese content
     qs rmbg   <img>            :-> remove image background
     qs smms   <img/*.md>       :-> upload img or img in markdown to sm.ms
-    qs upimg  --help          :-> upload img or img in markdown to platform
     qs alioss --help          :-> get aliyun oss api help menu
     qs txcos  --help          :-> get tencent cos api help menu
     qs qiniu  --help          :-> get qiniu oss api help menu
@@ -154,13 +176,13 @@ def api_menu():
     qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file
     qs d2m <designation> :-> search magnet url by designation
     qs doutu <keywords> :-> get expression package of keywords
-    qs joke :-> get a Chinese joke""")\
-        if user_lang != 'zh' else color_rep("""API工具:
+    qs joke :-> get a Chinese joke"""
+    ) if user_lang != "zh" else color_rep(
+        """API工具:
     qs trans  \[内容]       :-> 翻译命令参数或剪切板中的内容
     qs pinyin \[内容]      :-> 获取中文内容的拼音
     qs rmbg   <图像>            :-> 移除图片背景
     qs smms   <图像/*.md>       :-> 将图片或Markdown中图片上传至sm.ms
-    qs upimg  --help          :-> 将图片或Markdown中图片上传至多平台
     qs alioss --help          :-> 获取阿里云对象存储的使用帮助
     qs txcos  --help          :-> 获取腾讯云对象存储的使用帮助
     qs qiniu  --help          :-> 获取七牛云对象存储的使用帮助
@@ -185,12 +207,14 @@ def api_menu():
     qs m2t <-f 路径 | -u 链接 | *> :-> 转换磁力链接为种子文件
     qs d2m <番号> :-> 搜索番号的磁力链
     qs doutu <关键词> :-> 获取关键词的表情包
-    qs joke :-> 获取一个中文笑话""")
+    qs joke :-> 获取一个中文笑话"""
+    )
 
 
 def image_menu():
     """图像处理类菜单 | Image Deal Menu"""
-    color_rep("""Image Tools help:
+    color_rep(
+        """Image Tools help:
     qs stbg <pic> <to> \[from]    :-> color replace for picture
     qs icat <img>            :-> preview image on terminal
     qs v2gif <path> \[sz] \[fps] :-> generate gif from video
@@ -200,8 +224,9 @@ def image_menu():
     qs i2png <imgs...>       :-> transform imgs to png
     qs i2jpg <imgs...>       :-> transform imgs to jpg
     qs fmti <pic> <to> \[exp...] :-> format image to <to> color except \[exp...] color
-    qs vsta    <video> <audio> :-> set video's audio""") \
-        if user_lang != 'zh' else color_rep("""图像处理:
+    qs vsta    <video> <audio> :-> set video's audio"""
+    ) if user_lang != "zh" else color_rep(
+        """图像处理:
     qs stbg    <图像> <to> \[from]    :-> 替换图片颜色 (from默认为透明)
     qs icat    <图像>            :-> 在终端预览图片
     qs v2gif   <路径> \[sz] \[fps] :-> 将视频导出为gif
@@ -211,110 +236,110 @@ def image_menu():
     qs i2png   <图像...>       :-> 将图像转换为png
     qs i2jpg   <图像...>       :-> 将图像转换为jpg
     qs fmti    <图像> <to> \[exp...] :-> 格式化图片颜色为<to>，忽略\[exp...]颜色
-    qs vsta    <视频> <音频> :-> 设置视频的音频""")
+    qs vsta    <视频> <音频> :-> 设置视频的音频"""
+    )
 
 
 menu_table = {
-    'basic': base_menu,
-    'system': system_menu,
-    'net': net_menu,
-    'api': api_menu,
-    'image': image_menu,
-    'lesson': lesson
+    "basic": base_menu,
+    "system": system_menu,
+    "net": net_menu,
+    "api": api_menu,
+    "image": image_menu,
+    "lesson": lesson,
 }
 
 basic_funcs = {
-    'self': 'basic',
-    'u': 'open_url',
-    'a': 'open_app',
-    'f': 'open_file',
-    'time': 'cur_time',
-    'cal': 'calculate',
-    'pcat': 'pcat',
-    'fcopy': 'fcopy',
-    'user_lang': 'get_user_lang',
-    'play': 'play_music',
-    'copy': 'copy',
-    'lp': 'qs_print',
-    'sas': 'sas'
+    "self": "basic",
+    "u": "open_url",
+    "a": "open_app",
+    "f": "open_file",
+    "time": "cur_time",
+    "cal": "calculate",
+    "pcat": "pcat",
+    "fcopy": "fcopy",
+    "user_lang": "get_user_lang",
+    "play": "play_music",
+    "copy": "copy",
+    "lp": "qs_print",
+    "sas": "sas",
 }
 
 system_funcs = {
-    'self': 'system',
-    'top': 'top',
-    'clear': 'clear_mem',
-    'go2git': 'go_github',
-    'mktar': 'mktar',
-    'untar': 'untar',
-    'mkzip': 'mkzip',
-    'unzip': 'unzip',
-    'unrar': 'unrar',
-    'mk7z': 'mk7z',
-    'un7z': 'un7z',
-    'md5': 'md5',
-    'sha1': 'sha1',
-    'sha256': 'sha256',
-    'sha512': 'sha512',
-    'diff': 'diff_dir',
-    'mount': 'mount_dmg',
-    'unmount': 'unmount_dmg',
+    "self": "system",
+    "top": "top",
+    "clear": "clear_mem",
+    "go2git": "go_github",
+    "mktar": "mktar",
+    "untar": "untar",
+    "mkzip": "mkzip",
+    "unzip": "unzip",
+    "unrar": "unrar",
+    "mk7z": "mk7z",
+    "un7z": "un7z",
+    "md5": "md5",
+    "sha1": "sha1",
+    "sha256": "sha256",
+    "sha512": "sha512",
+    "diff": "diff_dir",
+    "mount": "mount_dmg",
+    "unmount": "unmount_dmg",
 }
 
 net_funcs = {
-    'self': 'netTools',
-    'http': 'http',
-    'dl': 'download',
-    'wifi': 'wifi',
-    'upgrade': 'upgrade',
-    'netinfo': 'netinfo'
+    "self": "netTools",
+    "http": "http",
+    "dl": "download",
+    "wifi": "wifi",
+    "upgrade": "upgrade",
+    "netinfo": "netinfo",
 }
 
 api_funcs = {
-    'self': 'api',
-    'trans': 'translate',
-    'pinyin': 'pinyin',
-    'rmbg': 'remove_bg',
-    'smms': 'smms',
-    'upimg': 'up_img',
-    'alioss': 'ali_oss',
-    'qiniu': 'qiniu',
-    'txcos': 'txcos',
-    'LG': 'largeImage',
-    'weather': 'weather',
-    'nlp': 'AipNLP',
-    'cb': 'CommonClipboard',
-    'bcv': 'bili_cover',
-    'gbc': 'gbc',
-    'svi': 'short_video_info',
-    'svd': 'short_video_dl',
-    'acg': 'acg',
-    'bing': 'bingImg',
-    'phi': 'preview_html_images',
-    'kd': 'kdCheck',
-    'loli': 'loli',
-    'photo': 'photo',
-    'setu': 'setu',
-    'exc': 'exchange',
-    'zhihu': 'zhihuDaily',
-    'wallhaven': 'wallhaven',
-    'lmgtfy': 'lmgtfy',
-    'd60': 'daily60s',
-    'm2t': 'm2t',
-    'd2m': 'd2m',
-    'doutu': 'doutu',
-    'joke': 'joke'
+    "self": "api",
+    "trans": "translate",
+    "pinyin": "pinyin",
+    "rmbg": "remove_bg",
+    "smms": "smms",
+    "alioss": "ali_oss",
+    "qiniu": "qiniu",
+    "txcos": "txcos",
+    "LG": "largeImage",
+    "weather": "weather",
+    "nlp": "AipNLP",
+    "cb": "CommonClipboard",
+    "bcv": "bili_cover",
+    "gbc": "gbc",
+    "svi": "short_video_info",
+    "svd": "short_video_dl",
+    "acg": "acg",
+    "bing": "bingImg",
+    "phi": "preview_html_images",
+    "kd": "kdCheck",
+    "loli": "loli",
+    "photo": "photo",
+    "setu": "setu",
+    "exc": "exchange",
+    "zhihu": "zhihuDaily",
+    "wallhaven": "wallhaven",
+    "lmgtfy": "lmgtfy",
+    "d60": "daily60s",
+    "m2t": "m2t",
+    "d2m": "d2m",
+    "doutu": "doutu",
+    "joke": "joke",
 }
 
 image_funcs = {
-    'self': 'imageDeal',
-    'stbg': 'set_img_background',
-    'icat': 'icat',
-    'v2gif': 'v2gif',
-    'rmaudio': 'remove_audio',
-    'v2mp4': 'v2mp4',
-    'v2mp3': 'v2mp3',
-    'i2png': 'i2png',
-    'i2jpg': 'i2jpg',
-    'fmti': 'fmt_img_color',
-    'vsta': 'vsta',
+    "self": "imageDeal",
+    "stbg": "set_img_background",
+    "icat": "icat",
+    "v2gif": "v2gif",
+    "rmaudio": "remove_audio",
+    "v2mp4": "v2mp4",
+    "v2mp3": "v2mp3",
+    "i2png": "i2png",
+    "i2jpg": "i2jpg",
+    "fmti": "fmt_img_color",
+    "vsta": "vsta",
 }

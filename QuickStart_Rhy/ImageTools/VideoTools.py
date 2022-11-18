@@ -17,13 +17,20 @@ def VideoWrapper(func):
     :param func: 函数
     :return: wrapper
     """
+
     def wrapper(path, *args, **kwargs):
         if not os.path.exists(path):
-            qs_default_console.log(qs_error_string, f'{"No such file" if user_lang != "zh" else "文件不存在"}: {path}')
+            qs_default_console.log(
+                qs_error_string,
+                f'{"No such file" if user_lang != "zh" else "文件不存在"}: {path}',
+            )
             return
         if not os.path.isfile(path):
-            qs_default_console.log(qs_error_string, f'{"No a file" if user_lang != "zh" else "不是文件"}: {path}')
-        mpy = requirePackage('moviepy', 'editor')
+            qs_default_console.log(
+                qs_error_string,
+                f'{"No a file" if user_lang != "zh" else "不是文件"}: {path}',
+            )
+        mpy = requirePackage("moviepy", "editor")
         func(path, *args, **kwargs, mpy=mpy)
 
     return wrapper
@@ -42,7 +49,7 @@ def video_2_gif(path: str, size: tuple = (480, 320), fps: int = None, mpy=None):
     :param fps: fps
     :return: None
     """
-    file_name = '.'.join(os.path.basename(path).split('.')[:-1]) + '.gif'
+    file_name = ".".join(os.path.basename(path).split(".")[:-1]) + ".gif"
     dir_name = os.path.abspath(os.path.dirname(path))
     ct = mpy.VideoFileClip(path) if not size else mpy.VideoFileClip(path).resize(size)
     ct.write_gif(os.path.join(dir_name, file_name), fps=fps)
@@ -60,13 +67,13 @@ def rm_audio(path: str, mpy=None):
     :return: None
     """
     file_name = os.path.basename(path)
-    if '.' in file_name:
-        indx = file_name.index('.')
-        file_name = file_name[:indx] + '_rm_audio' + file_name[indx:]
-        file_name = file_name.split('.')
-        file_name = '.'.join(file_name[:-1]) + '.mp4'
+    if "." in file_name:
+        indx = file_name.index(".")
+        file_name = file_name[:indx] + "_rm_audio" + file_name[indx:]
+        file_name = file_name.split(".")
+        file_name = ".".join(file_name[:-1]) + ".mp4"
     else:
-        file_name += '_rm_audio'
+        file_name += "_rm_audio"
     dir_name = os.path.abspath(os.path.dirname(path))
     ct = mpy.VideoFileClip(path).set_audio(None)
     ct.write_videofile(os.path.join(dir_name, file_name))
@@ -84,7 +91,11 @@ def tomp4(path: str, mpy=None):
     :return: None
     """
     file_name = os.path.basename(path)
-    file_name = '.'.join(file_name.split('.')[:-1]) + '.mp4' if '.' in file_name else file_name + '.mp4'
+    file_name = (
+        ".".join(file_name.split(".")[:-1]) + ".mp4"
+        if "." in file_name
+        else file_name + ".mp4"
+    )
     dir_name = os.path.abspath(os.path.dirname(path))
     ct = mpy.VideoFileClip(path)
     ct.write_videofile(os.path.join(dir_name, file_name))
@@ -100,7 +111,11 @@ def video_2_mp3(path: str, mpy=None):
     :return:
     """
     file_name = os.path.basename(path)
-    file_name = '.'.join(file_name[:-1].split('.')) + '.mp3' if '.' in file_name else file_name + '.mp3'
+    file_name = (
+        ".".join(file_name[:-1].split(".")) + ".mp3"
+        if "." in file_name
+        else file_name + ".mp3"
+    )
     dir_name = os.path.abspath(os.path.dirname(path))
     mpy.VideoFileClip(path).audio.write_audiofile(os.path.join(dir_name, file_name))
 
@@ -118,9 +133,13 @@ def set_video_audio(v_path: str, a_path: str, mpy=None):
     :return:
     """
     file_name = os.path.basename(v_path)
-    file_name = '.'.join(file_name.split('.')[:-1]) + '_sta.mp4' if '.' in file_name else file_name + '_sta.mp4'
+    file_name = (
+        ".".join(file_name.split(".")[:-1]) + "_sta.mp4"
+        if "." in file_name
+        else file_name + "_sta.mp4"
+    )
     dir_name = os.path.abspath(os.path.dirname(v_path))
     v = mpy.VideoFileClip(v_path)
     a = mpy.AudioFileClip(a_path)
     v = v.set_audio(a)
-    v.write_videofile(os.path.join(dir_name, file_name), audio_codec='aac')
+    v.write_videofile(os.path.join(dir_name, file_name), audio_codec="aac")

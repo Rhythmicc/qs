@@ -19,7 +19,7 @@ class RollBar:
         :param max_: 最大值
         :param height: 高度
         """
-        self._title = ''
+        self._title = ""
         self.max_ = max_
         self.width = len(values)
         self.height = height
@@ -27,9 +27,9 @@ class RollBar:
         for val in values:
             cur = math.ceil(val / max_ * height)
             for _i in range(cur):
-                self.canvas[_i].append(Back.GREEN + ' ' + Style.RESET_ALL)
+                self.canvas[_i].append(Back.GREEN + " " + Style.RESET_ALL)
             for _i in range(cur, height):
-                self.canvas[_i].append(Style.RESET_ALL + ' ')
+                self.canvas[_i].append(Style.RESET_ALL + " ")
 
     def __str__(self):
         """
@@ -42,11 +42,17 @@ class RollBar:
         if self.title:
             title_idx = (self.width - len(self._title)) // 2 + 1
             title_idx = max(title_idx, 0)
-            res = ' ' * title_idx + self._title + '\n'
+            res = " " * title_idx + self._title + "\n"
         else:
-            res = ''
-        return res + '100%%%s' % ('_' * (self.width + 1)) + '\n    │' + '\n    │'.join(
-            [''.join(i) for i in self.canvas[::-1]]) + '\n  0%╂' + '────┴' * math.ceil(self.width // 5)
+            res = ""
+        return (
+            res
+            + "100%%%s" % ("_" * (self.width + 1))
+            + "\n    │"
+            + "\n    │".join(["".join(i) for i in self.canvas[::-1]])
+            + "\n  0%╂"
+            + "────┴" * math.ceil(self.width // 5)
+        )
 
     def show(self):
         """
@@ -61,9 +67,9 @@ class RollBar:
     def _fresh(self, val):
         cur = math.ceil(val / self.max_ * self.height)
         for _i in range(cur):
-            self.canvas[_i].append(Back.GREEN + ' ' + Style.RESET_ALL)
+            self.canvas[_i].append(Back.GREEN + " " + Style.RESET_ALL)
         for _i in range(cur, self.height):
-            self.canvas[_i].append(Style.RESET_ALL + ' ')
+            self.canvas[_i].append(Style.RESET_ALL + " ")
 
     def add(self, val: float):
         """
@@ -113,7 +119,14 @@ def DataTransformBar(has_size_info: bool = True):
     :param has_size_info: 是否有总任务量
     :return: rich.progress.Progress
     """
-    from rich.progress import Progress, TextColumn, BarColumn, DownloadColumn, TransferSpeedColumn, TimeRemainingColumn
+    from rich.progress import (
+        Progress,
+        TextColumn,
+        BarColumn,
+        DownloadColumn,
+        TransferSpeedColumn,
+        TimeRemainingColumn,
+    )
     from .. import qs_default_console
 
     if has_size_info:
@@ -127,25 +140,27 @@ def DataTransformBar(has_size_info: bool = True):
             TransferSpeedColumn(),
             "•",
             TimeRemainingColumn(),
-            console=qs_default_console
+            console=qs_default_console,
         )
     else:
         from .. import user_lang
+
         return Progress(
             TextColumn(
-                "[bold blue]{task.fields[filename]} [red]" +
-                ('Unknow size' if user_lang != 'zh' else '未知大小'),
-                justify="right"
+                "[bold blue]{task.fields[filename]} [red]"
+                + ("Unknow size" if user_lang != "zh" else "未知大小"),
+                justify="right",
             ),
             BarColumn(bar_width=None),
             DownloadColumn(),
-            console=qs_default_console
+            console=qs_default_console,
         )
 
 
 def NormalProgressBar(task_name, total):
     from .. import qs_default_console
     from rich.progress import Progress
+
     progress = Progress()
     task_id = progress.add_task(task_name, total=total, console=qs_default_console)
     return progress, task_id

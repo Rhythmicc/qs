@@ -11,10 +11,10 @@ from .. import qs_default_console, qs_info_string, requirePackage
 
 
 class HttpServers:
-    qrcode_terminal = requirePackage('qrcode_terminal', real_name='qrcode-terminal')
+    qrcode_terminal = requirePackage("qrcode_terminal", real_name="qrcode-terminal")
     import signal
 
-    def __init__(self, ip='localhost', port=8000, url=''):
+    def __init__(self, ip="localhost", port=8000, url=""):
         """
         http服务类初始化
 
@@ -41,9 +41,11 @@ class HttpServers:
         :return: None
         """
         HttpServers.signal.signal(HttpServers.signal.SIGINT, self.shutdown)
-        self.httpd = HttpServers.Server((self.web_address, self.web_port), SimpleHTTPRequestHandler)
+        self.httpd = HttpServers.Server(
+            (self.web_address, self.web_port), SimpleHTTPRequestHandler
+        )
         if not self.bind_url:
-            self.bind_url = 'http://' + self.web_address + ':' + str(self.web_port)
+            self.bind_url = "http://" + self.web_address + ":" + str(self.web_port)
         qs_default_console.print(qs_info_string, self.bind_url)  # * 展示待访问的url
         HttpServers.qrcode_terminal.draw(self.bind_url)  # * 为待访问的url绘制二维码
         try:
@@ -57,6 +59,7 @@ class HttpServers:
         :return: None
         """
         import os
+
         self.httpd.shutdown()
-        qs_default_console.print(qs_info_string, 'HTTP Server: Closed.')
+        qs_default_console.print(qs_info_string, "HTTP Server: Closed.")
         os._exit(0)

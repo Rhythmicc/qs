@@ -16,13 +16,13 @@ class WiFi:
 
         Wifi tools for Mac OS X
         """
-        with os.popen('networksetup -listallhardwareports') as pipe:
+        with os.popen("networksetup -listallhardwareports") as pipe:
             ifaces = pipe.read()
-        ifaces = [i.split('\n') for i in ifaces.strip().split('\n\n')]
-        ifaces.remove(['VLAN Configurations', '==================='])
+        ifaces = [i.split("\n") for i in ifaces.strip().split("\n\n")]
+        ifaces.remove(["VLAN Configurations", "==================="])
         self.ifaces = ifaces
         for i in self.ifaces:
-            if i[0].endswith('Wi-Fi'):
+            if i[0].endswith("Wi-Fi"):
                 self.iface = [j.split()[-1] for j in i[1:]]
                 return
 
@@ -34,10 +34,12 @@ class WiFi:
 
         :return: 连接的wifi名 | The name of the connecting wifi
         """
-        with os.popen('networksetup -getairportnetwork %s' % self.iface[0]) as pipe:
+        with os.popen("networksetup -getairportnetwork %s" % self.iface[0]) as pipe:
             res = pipe.read().strip()
-            res = re.sub('.*?:', '', res).strip()
-        qs_default_console.print(qs_info_string, f"{'已' if res else '未'}连接", res if res else '')
+            res = re.sub(".*?:", "", res).strip()
+        qs_default_console.print(
+            qs_info_string, f"{'已' if res else '未'}连接", res if res else ""
+        )
         return res
 
     @staticmethod
@@ -50,8 +52,9 @@ class WiFi:
         :return: 按信号强度排序好的可连接wifi列表 | A list of available wifi connections sorted by signal strength
         """
         with os.popen(
-                '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport scan') as pipe:
-            res = pipe.read().strip().split('\n')[1:]
+            "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport scan"
+        ) as pipe:
+            res = pipe.read().strip().split("\n")[1:]
             tmp_ls = [i.strip().split() for i in res]
             has_add = set()
             res = []
@@ -65,8 +68,8 @@ class WiFi:
                 # if mac_index >= len(i):
                 #     qs_default_console.log(qs_warning_string, "Failed to get info with:", i)
                 #     continue
-                index = i.index('--') - 3
-                ssid = ' '.join(i[:index])
+                index = i.index("--") - 3
+                ssid = " ".join(i[:index])
                 if ssid not in has_add:
                     res.append([ssid, int(i[index]), i[-1]])
                     has_add.add(ssid)
@@ -86,7 +89,11 @@ class WiFi:
         :return: status
         """
         from .. import external_exec
-        external_exec('networksetup -setairportnetwork %s %s "%s"' % (self.iface[0], ssid[0], password))
+
+        external_exec(
+            'networksetup -setairportnetwork %s %s "%s"'
+            % (self.iface[0], ssid[0], password)
+        )
         return self.status()
 
     def disconn(self):

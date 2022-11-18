@@ -7,7 +7,7 @@ Line Graph
 import io
 from .. import requirePackage
 
-diagram = requirePackage('diagram')
+diagram = requirePackage("diagram")
 
 
 class Line:
@@ -35,12 +35,10 @@ class Line:
         """
         opt = diagram.DOption()
         opt.size = diagram.Point([self.height, self.width])
-        opt.mode = 'g'
+        opt.mode = "g"
         stream = io.BytesIO()
         gram = diagram.DGWrapper(
-            data=[self.values, range(len(self.values))],
-            dg_option=opt,
-            ostream=stream
+            data=[self.values, range(len(self.values))], dg_option=opt, ostream=stream
         )
         gram.show()
         return str(stream.getvalue(), encoding="utf-8")

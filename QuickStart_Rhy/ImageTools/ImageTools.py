@@ -10,7 +10,7 @@ def topng(imgPath: str):
     :param imgPath: 图片路径 | image path
     :return:
     """
-    Image.open(imgPath).save(imgPath + '.png', quality=100)
+    Image.open(imgPath).save(imgPath + ".png", quality=100)
 
 
 def tojpg(imgPath: str):
@@ -22,4 +22,4 @@ def tojpg(imgPath: str):
     :param imgPath: 图片路径 | image path
     :return:
     """
-    Image.open(imgPath).convert("RGB").save(imgPath + '.jpg', quality=100)
+    Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100)

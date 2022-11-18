@@ -15,12 +15,14 @@ def set_timeout(num: int):
     :param num: 时间（秒）
     :return: wrapper
     """
+
     def wrapper(func):
         def handle(signum, frame):
             raise RuntimeError
 
         def run(*args, **kwargs):
             import signal
+
             try:
                 signal.signal(signal.SIGALRM, handle)
                 signal.alarm(num)
@@ -29,7 +31,9 @@ def set_timeout(num: int):
                 return res
             except RuntimeError:
                 return False
+
         return run
+
     return wrapper
 
 
@@ -47,14 +51,17 @@ def mkCompressPackageWrap(func):
     :param func: func(filePath: str = '') -> QuickStart_Rhy.SystemTools.Compress._NormalCompressedPackage
     :return: 装饰器 | wrapper
     """
+
     def wrapper():
         from ..SystemTools.Compress import get_compress_package_name
+
         packages_name, ls = get_compress_package_name()
         packages = func(packages_name)
 
         for i in ls:
             packages.add_file(i)
         packages.save()
+
     return wrapper
 
 
@@ -72,6 +79,7 @@ def unCompressPackageWrap(func):
     :param func: func(filePath: str = '') -> QuickStart_Rhy.SystemTools.Compress._NormalCompressedPackage
     :return: 装饰器 | wrapper
     """
+
     def wrapper():
         import os
         import sys
@@ -82,6 +90,7 @@ def unCompressPackageWrap(func):
         from .. import qs_default_console, qs_error_string
         from ..NetTools.NormalDL import core_num
         from ..ThreadTools import ThreadPoolExecutor, wait
+
         pool = ThreadPoolExecutor(max_workers=max(core_num // 2, 4))
         job_q = []
 
@@ -93,11 +102,14 @@ def unCompressPackageWrap(func):
                 except Exception as e:
                     qs_default_console.log(qs_error_string, repr(e))
             else:
-                qs_default_console.log(qs_error_string, "No such file or dictionary: %s" % path)
+                qs_default_console.log(
+                    qs_error_string, "No such file or dictionary: %s" % path
+                )
 
         for file_name in file_names:
             job_q.append(pool.submit(run, file_name))
         wait(job_q)
+
     return wrapper
 
 
@@ -108,6 +120,7 @@ def HashWrapper(algorithm: str):
     :param algorithm: 算法名称 [md5, sha1, sha256, sha512]
     :return:
     """
+
     def Wrapper(func):
         def _wrapper():
             import sys, os
@@ -115,14 +128,22 @@ def HashWrapper(algorithm: str):
 
             ls = sys.argv[2:]
             if not ls:
-                qs_default_console.print(qs_info_string, 'Usage: qs %s file1 file2 ...' % algorithm)
+                qs_default_console.print(
+                    qs_info_string, "Usage: qs %s file1 file2 ..." % algorithm
+                )
                 return
 
-            exec('from QuickStart_Rhy.SystemTools.FileHash import %s' % algorithm)
+            exec("from QuickStart_Rhy.SystemTools.FileHash import %s" % algorithm)
             for file in ls:
                 qs_default_console.print(
-                    qs_info_string, 'Calculate:' if user_lang != 'zh' else '计算:', os.path.basename(file)
+                    qs_info_string,
+                    "Calculate:" if user_lang != "zh" else "计算:",
+                    os.path.basename(file),
                 )
-                exec(f'qs_default_console.print(qs_info_string, "{algorithm}" + ":", {algorithm}("{file}"))')
+                exec(
+                    f'qs_default_console.print(qs_info_string, "{algorithm}" + ":", {algorithm}("{file}"))'
+                )
+
         return _wrapper
+
     return Wrapper

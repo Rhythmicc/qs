@@ -14,18 +14,19 @@ from .NetTools import headers
 from .__cache__ import QsCache
 from .__config__ import QsConfig, dir_char, system, qs_default_console, prompt
 
-name = 'QuickStart_Rhy'
+name = "QuickStart_Rhy"
 
-user_root = os.path.expanduser('~') + dir_char
-qs_config = QsConfig(user_root + '.qsrc', os.path.exists(user_root + '.qsrc'))
-qs_cache = QsCache(user_root + '.qs_cache')
+user_root = os.path.expanduser("~") + dir_char
+qs_config = QsConfig(user_root + ".qsrc", os.path.exists(user_root + ".qsrc"))
+qs_cache = QsCache(user_root + ".qs_cache")
 
-user_lang = qs_config.basicSelect('default_language')
-user_currency = qs_config.basicSelect('default_currency')
-trans_engine = qs_config.basicSelect('default_translate_engine')['support'] \
-    [qs_config.basicSelect('default_translate_engine')['index']]
-user_pip = qs_config.basicSelect('default_pip')
-force_show_img = qs_config.basicSelect('force_show_img')
+user_lang = qs_config.basicSelect("default_language")
+user_currency = qs_config.basicSelect("default_currency")
+trans_engine = qs_config.basicSelect("default_translate_engine")["support"][
+    qs_config.basicSelect("default_translate_engine")["index"]
+]
+user_pip = qs_config.basicSelect("default_pip")
+force_show_img = qs_config.basicSelect("force_show_img")
 
 qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
@@ -75,8 +76,7 @@ def external_exec(
             content += line
 
     pool = ThreadPoolExecutor(2)
-    p = Popen(cmd, shell=True, stdout=PIPE,
-              stderr=PIPE, bufsize=1, encoding="utf-8")
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, bufsize=1, encoding="utf-8")
 
     wait(
         [
@@ -90,8 +90,14 @@ def external_exec(
     return ret_code, str(content)
 
 
-def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: bool = True, not_ask: bool = False,
-                   set_pip: str = user_pip):
+def requirePackage(
+    pname: str,
+    module: str = "",
+    real_name: str = "",
+    not_exit: bool = True,
+    not_ask: bool = False,
+    set_pip: str = user_pip,
+):
     """
     获取本机上的python第三方库，如没有则询问安装
 
@@ -104,32 +110,43 @@ def requirePackage(pname: str, module: str = "", real_name: str = "", not_exit: 
     :return: 库或模块的地址
     """
     try:
-        exec(f'from {pname} import {module}' if module else f"import {pname}")
+        exec(f"from {pname} import {module}" if module else f"import {pname}")
     except (ModuleNotFoundError, ImportError):
         if not_ask:
             return None
-        confirm = prompt({
-            'type': 'confirm',
-            'name': 'install',
-            'message': f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?  
+        confirm = prompt(
+            {
+                "type": "confirm",
+                "name": "install",
+                "message": f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?  
   Qs 依赖 {pname + (' -> ' + module if module else '')}, 是否确认安装?""",
-            'default': True})['install']
+                "default": True,
+            }
+        )["install"]
         if confirm:
-            with qs_default_console.status('Installing...' if user_lang != 'zh' else '正在安装...'):
-                external_exec(f'{set_pip} install {pname if not real_name else real_name} -U', True)
+            with qs_default_console.status(
+                "Installing..." if user_lang != "zh" else "正在安装..."
+            ):
+                external_exec(
+                    f"{set_pip} install {pname if not real_name else real_name} -U",
+                    True,
+                )
             if not_exit:
-                exec(f'from {pname} import {module}' if module else f"import {pname}")
+                exec(f"from {pname} import {module}" if module else f"import {pname}")
             else:
-                qs_default_console.print(qs_info_string, f'just run again: "{" ".join(sys.argv)}"')
+                qs_default_console.print(
+                    qs_info_string, f'just run again: "{" ".join(sys.argv)}"'
+                )
                 exit(0)
         else:
             exit(-1)
     finally:
-        return eval(f'{module if module else pname}')
+        return eval(f"{module if module else pname}")
 
 
 def _ask(question: dict, timeout: int = 0):
     if timeout:
+
         def ask():
             def handle(signum, frame):
                 raise RuntimeError
@@ -143,21 +160,25 @@ def _ask(question: dict, timeout: int = 0):
                 signal.alarm(0)
                 return res
             except RuntimeError:
-                if dir_char == '/':
-                    os.system('stty echo')
-                qs_default_console.print('\n[bold yellow][Warning | 警告][/bold yellow]',
-                                         f"Time out & Return | 超时并返回: {question['default'] if 'default' in question else None}")
-                return question['default'] if 'default' in question else None
+                if dir_char == "/":
+                    os.system("stty echo")
+                qs_default_console.print(
+                    "\n[bold yellow][Warning | 警告][/bold yellow]",
+                    f"Time out & Return | 超时并返回: {question['default'] if 'default' in question else None}",
+                )
+                return question["default"] if "default" in question else None
+
     else:
+
         def ask():
-            return prompt(question)[question['name']]
+            return prompt(question)[question["name"]]
+
     try:
-        if 'name' not in question:
-            question['name'] = 'NoName'
+        if "name" not in question:
+            question["name"] = "NoName"
         return ask()
     except:
         exit(0)
-
 
 
 def cut_string(string: str, length: int) -> list:
@@ -168,8 +189,8 @@ def cut_string(string: str, length: int) -> list:
     :param length: 切分长度
     :return: 切分后产生的list
     """
-    string = string.strip().replace('\n', ' ')
-    res, cur, cnt = [], '', 0
+    string = string.strip().replace("\n", " ")
+    res, cur, cnt = [], "", 0
     for i in string:
         cnt += 2 if ord(i) > 255 else 1
         if cnt <= length:
@@ -190,7 +211,8 @@ def _is_in_path(cmd: str):
     :return: 是否在环境变量中
     """
     import os
-    ls = os.environ['PATH'].split(os.pathsep)
+
+    ls = os.environ["PATH"].split(os.pathsep)
     for prefix in ls:
         if os.path.exists(os.path.join(prefix, cmd)):
             return True
@@ -198,7 +220,7 @@ def _is_in_path(cmd: str):
 
 
 def table_cell(string: str, length: int) -> str:
-    return ' '.join(cut_string(string, length))
+    return " ".join(cut_string(string, length))
 
 
 def deal_ctrl_c(signum, frame):
@@ -227,6 +249,7 @@ def remove(path):
     if os.path.exists(path):
         if os.path.isdir(path):
             import shutil
+
             shutil.rmtree(path)
         else:
             os.remove(path)
@@ -241,18 +264,19 @@ def cur_time():
     :return: None
     """
     week = {
-        'Monday': '周一',
-        'Tuesday': '周二',
-        'Wednesday': '周三',
-        'Thursday': '周四',
-        'Friday': '周五',
-        'Saturday': '周六',
-        'Sunday': '周日'
+        "Monday": "周一",
+        "Tuesday": "周二",
+        "Wednesday": "周三",
+        "Thursday": "周四",
+        "Friday": "周五",
+        "Saturday": "周六",
+        "Sunday": "周日",
     }
     import time
-    tm = time.strftime('%Y年%m月%d日 %A %H:%M:%S', time.localtime(time.time())).split()
+
+    tm = time.strftime("%Y年%m月%d日 %A %H:%M:%S", time.localtime(time.time())).split()
     tm[1] = week[tm[1]]
-    qs_default_console.print(qs_info_string, ' '.join(tm))
+    qs_default_console.print(qs_info_string, " ".join(tm))
 
 
 def open_url(argv: list = None):
@@ -265,6 +289,7 @@ def open_url(argv: list = None):
     """
     import webbrowser as wb
     from .NetTools import formatUrl
+
     if not argv:
         argv = sys.argv[2:]
     if argv:
@@ -272,14 +297,16 @@ def open_url(argv: list = None):
             url = formatUrl(url)
             wb.open_new_tab(url)
     else:
-        pyperclip = requirePackage('pyperclip')
+        pyperclip = requirePackage("pyperclip")
         try:
             url = pyperclip.paste()
         except:
             url = qs_default_input.ask(
-                'Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: '
-                if user_lang != 'zh' else '抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:'
-                , console=qs_default_console)
+                "Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: "
+                if user_lang != "zh"
+                else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:",
+                console=qs_default_console,
+            )
         wb.open_new_tab(formatUrl(url))
 
 
@@ -291,11 +318,15 @@ def open_app():
 
     :return: None
     """
-    if system == 'darwin':
+    if system == "darwin":
         external_exec('open -a "' + '" "'.join(sys.argv[2:]) + '"')
     else:
-        return qs_default_console.print(qs_error_string,
-                                        '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
+        return qs_default_console.print(
+            qs_error_string,
+            '"copy" is only support Mac OS X'
+            if user_lang != "zh"
+            else '"copy" 只支持Mac OS X',
+        )
 
 
 def open_file(*argv):
@@ -308,9 +339,9 @@ def open_file(*argv):
     """
     if not argv:
         argv = sys.argv[2:]
-    if system == 'darwin':
+    if system == "darwin":
         external_exec('open "' + '" "'.join(argv) + '"')
-    elif system == 'linux':
+    elif system == "linux":
         external_exec('xdg-open "' + '" "'.join(argv) + '"')
     else:
         for file in argv:
@@ -326,8 +357,8 @@ def calculate():
     :return: None
     """
     try:
-        exp = ' '.join(sys.argv[2:])
-        qs_default_console.print('%s = %s' % (exp, eval(exp)))
+        exp = " ".join(sys.argv[2:])
+        qs_default_console.print("%s = %s" % (exp, eval(exp)))
     except Exception as e:
         qs_default_console.print(qs_info_string, 'Usage: qs cal <exp like "1+1">')
         qs_default_console.print(qs_error_string, repr(e))
@@ -340,7 +371,7 @@ def pcat():
     Output the contents of the clipboard
     :return: None
     """
-    print(requirePackage('pyperclip', 'paste')())
+    print(requirePackage("pyperclip", "paste")())
 
 
 def fcopy():
@@ -351,10 +382,13 @@ def fcopy():
     :return:
     """
     if not os.path.exists(sys.argv[2]):
-        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:',
-                                        sys.argv[2])
-    with open(sys.argv[2], 'r') as f:
-        requirePackage('pyperclip').copy(f.read())
+        return qs_default_console.print(
+            qs_error_string,
+            "No such file:" if user_lang != "zh" else "未找到文件:",
+            sys.argv[2],
+        )
+    with open(sys.argv[2], "r") as f:
+        requirePackage("pyperclip").copy(f.read())
 
 
 def copy():
@@ -364,22 +398,33 @@ def copy():
     """
 
     def which(command):
-        return False if external_exec('which %s' % command, True)[0] else True
+        return False if external_exec("which %s" % command, True)[0] else True
 
-    if system != 'darwin':
-        return qs_default_console.print(qs_error_string,
-                                        '"copy" is only support Mac OS X' if user_lang != 'zh' else '"copy" 只支持Mac OS X')
+    if system != "darwin":
+        return qs_default_console.print(
+            qs_error_string,
+            '"copy" is only support Mac OS X'
+            if user_lang != "zh"
+            else '"copy" 只支持Mac OS X',
+        )
 
     if not os.path.exists(sys.argv[2]):
-        return qs_default_console.print(qs_error_string, "No such file:" if user_lang != 'zh' else '未找到文件:',
-                                        sys.argv[2])
+        return qs_default_console.print(
+            qs_error_string,
+            "No such file:" if user_lang != "zh" else "未找到文件:",
+            sys.argv[2],
+        )
     # 检查 pbadd 是否在 PATH 中
-    if not which('pbadd'):
+    if not which("pbadd"):
         from QuickStart_Rhy.NetTools.NormalDL import normal_dl
-        normal_dl('https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005', set_name='pbadd')
-        external_exec('chmod +x pbadd')
-        external_exec('mv pbadd /usr/local/bin/')
-    external_exec('pbadd ' + sys.argv[2], True)
+
+        normal_dl(
+            "https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005",
+            set_name="pbadd",
+        )
+        external_exec("chmod +x pbadd")
+        external_exec("mv pbadd /usr/local/bin/")
+    external_exec("pbadd " + sys.argv[2], True)
 
 
 def get_user_lang():
@@ -387,8 +432,8 @@ def get_user_lang():
 
 
 def play_music():
-    AS = requirePackage('pydub', 'AudioSegment')
-    play = requirePackage('pydub.playback', 'play')
+    AS = requirePackage("pydub", "AudioSegment")
+    play = requirePackage("pydub.playback", "play")
 
     for music in sys.argv[2:]:
         try:
@@ -405,14 +450,16 @@ def qs_print(*argv):
     """
     if not argv:
         argv = sys.argv[2:]
-    if dir_char != '/':
-        win32api = requirePackage('pywin32', 'win32api')
-        win32print = requirePackage('pywin32', 'win32print')
+    if dir_char != "/":
+        win32api = requirePackage("pywin32", "win32api")
+        win32print = requirePackage("pywin32", "win32print")
         for file in argv:
-            win32api.ShellExecute(0, "print", file, '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
+            win32api.ShellExecute(
+                0, "print", file, '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0
+            )
     else:
         for file in argv:
-            external_exec(f'lp {file}')
+            external_exec(f"lp {file}")
 
 
 def sas():
@@ -423,44 +470,71 @@ def sas():
 
     :return: None
     """
-    if system != 'darwin':
-        qs_default_console.print(qs_error_string, 'Not support your system' if user_lang != 'zh' else '不支持你的系统')
+    if system != "darwin":
+        qs_default_console.print(
+            qs_error_string,
+            "Not support your system" if user_lang != "zh" else "不支持你的系统",
+        )
         return
-    if not _is_in_path('SwitchAudioSource'):
-        if _ask({
-            'type': 'confirm',
-            'message': 'Install SwitchAudioSource?' if user_lang != 'zh' else '安装 SwitchAudioSource？',
-            'default': True
-        }):
-            with qs_default_console.status('Installing SwitchAudioSource...' if user_lang != 'zh' else '正在安装 SwitchAudioSource...'):
+    if not _is_in_path("SwitchAudioSource"):
+        if _ask(
+            {
+                "type": "confirm",
+                "message": "Install SwitchAudioSource?"
+                if user_lang != "zh"
+                else "安装 SwitchAudioSource？",
+                "default": True,
+            }
+        ):
+            with qs_default_console.status(
+                "Installing SwitchAudioSource..."
+                if user_lang != "zh"
+                else "正在安装 SwitchAudioSource..."
+            ):
                 retries = 3
                 while retries:
-                    external_exec('brew install SwitchAudioSource')
-                    if _is_in_path('SwitchAudioSource'):
+                    external_exec("brew install SwitchAudioSource")
+                    if _is_in_path("SwitchAudioSource"):
                         break
                     retries -= 1
                 if not retries:
-                    qs_default_console.print(qs_error_string, 'Install failed' if user_lang != 'zh' else '安装失败')
+                    qs_default_console.print(
+                        qs_error_string,
+                        "Install failed" if user_lang != "zh" else "安装失败",
+                    )
                     return
     import json
-    devices = [json.loads(i) for i in external_exec('SwitchAudioSource -a -f json', True)[1].splitlines()]
-    devices = {i['id']: {'uid': i['uid'], 'type': '🔈' if i['type'] == 'output' else '🎤', 'name': i['name']} for i in devices}
+
+    devices = [
+        json.loads(i)
+        for i in external_exec("SwitchAudioSource -a -f json", True)[1].splitlines()
+    ]
+    devices = {
+        i["id"]: {
+            "uid": i["uid"],
+            "type": "🔈" if i["type"] == "output" else "🎤",
+            "name": i["name"],
+        }
+        for i in devices
+    }
     if not devices:
-        qs_default_console.print(qs_error_string, 'No device found' if user_lang != 'zh' else '未找到设备')
+        qs_default_console.print(
+            qs_error_string, "No device found" if user_lang != "zh" else "未找到设备"
+        )
         return
     from .TuiTools.Table import qs_default_table
 
-    table = qs_default_table(['ID', 'Name', 'Type'])
+    table = qs_default_table(["ID", "Name", "Type"])
     for i in devices:
-        table.add_row(i, devices[i]['name'], devices[i]['type'])
-    qs_default_console.print(table, justify='center')
+        table.add_row(i, devices[i]["name"], devices[i]["type"])
+    qs_default_console.print(table, justify="center")
 
-    default = qs_cache.get('audio_source')
-    uids = {val['uid']: key for key, val in devices.items()}
+    default = qs_cache.get("audio_source")
+    uids = {val["uid"]: key for key, val in devices.items()}
     question = {
-        'type': 'input',
-        'message': 'Input device ID' if user_lang != 'zh' else '输入设备 ID',
-        'validate': lambda x: x in [str(i) for i in devices],
+        "type": "input",
+        "message": "Input device ID" if user_lang != "zh" else "输入设备 ID",
+        "validate": lambda x: x in [str(i) for i in devices],
     }
     if default:
         _default = default.copy()
@@ -468,13 +542,13 @@ def sas():
             if item not in uids:
                 _default.pop(item)
         if _default:
-            question['default'] = uids[max(_default, key=_default.get)]
+            question["default"] = uids[max(_default, key=_default.get)]
     else:
         default = {}
     select = _ask(question)
-    uid = devices[select]['uid']
+    uid = devices[select]["uid"]
     default[uid] = default.get(uid, 0) + 1
 
-    external_exec('SwitchAudioSource -i %s' % select, True)
-    qs_cache.set('audio_source', default)
-    qs_default_console.print(qs_info_string, 'Done' if user_lang != 'zh' else '完成')
+    external_exec("SwitchAudioSource -i %s" % select, True)
+    qs_cache.set("audio_source", default)
+    qs_default_console.print(qs_info_string, "Done" if user_lang != "zh" else "完成")

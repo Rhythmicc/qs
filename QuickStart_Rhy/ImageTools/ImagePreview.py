@@ -22,22 +22,23 @@ import subprocess
 force_show_option = False
 has_set_force_show_option = False
 
-TMUX_WRAP_ST = b'\033Ptmux;'
-TMUX_WRAP_ED = b'\033\\'
+TMUX_WRAP_ST = b"\033Ptmux;"
+TMUX_WRAP_ED = b"\033\\"
 
-OSC = b'\033]'
-CSI = b'\033['
-ST  = b'\a'      # \a = ^G (bell)
+OSC = b"\033]"
+CSI = b"\033["
+ST = b"\a"  # \a = ^G (bell)
 
 
 def get_image_shape(buf):
-    '''
+    """
     Extracts image shape as 2-tuple (width, height) from the content buffer.
 
     Supports GIF, PNG and other image types (e.g. JPEG) if PIL/Pillow is installed.
     Returns (None, None) if it can't be identified.
-    '''
-    def _unpack(fmt, buffer, mode='Image'):
+    """
+
+    def _unpack(fmt, buffer, mode="Image"):
         try:
             return struct.unpack(fmt, buffer)
         except struct.error:
@@ -46,12 +47,12 @@ def get_image_shape(buf):
     # TODO: handle 'stream-like' data efficiently, not storing all the content into memory
     L = len(buf)
 
-    if L >= 10 and buf[:6] in (b'GIF87a', b'GIF89a'):
-        return _unpack("<hh", buf[6:10], mode='GIF')
-    elif L >= 24 and buf.startswith(b'\211PNG\r\n\032\n') and buf[12:16] == b'IHDR':
-        return _unpack(">LL", buf[16:24], mode='PNG')
-    elif L >= 16 and buf.startswith(b'\211PNG\r\n\032\n'):
-        return _unpack(">LL", buf[8:16], mode='PNG')
+    if L >= 10 and buf[:6] in (b"GIF87a", b"GIF89a"):
+        return _unpack("<hh", buf[6:10], mode="GIF")
+    elif L >= 24 and buf.startswith(b"\211PNG\r\n\032\n") and buf[12:16] == b"IHDR":
+        return _unpack(">LL", buf[16:24], mode="PNG")
+    elif L >= 16 and buf.startswith(b"\211PNG\r\n\032\n"):
+        return _unpack(">LL", buf[8:16], mode="PNG")
     else:
         # everything else: get width/height from PIL
         # TODO: it might be inefficient to write again the memory-loaded content to buffer...
@@ -60,14 +61,20 @@ def get_image_shape(buf):
 
         try:
             from PIL import Image
+
             im = Image.open(b)
             return im.width, im.height
         except (IOError, OSError) as ex:
             # PIL.Image.open throws an error -- probably invalid byte input are given
-            sys.stderr.write("Warning: PIL cannot identify image; this may not be an image file" + "\n")
+            sys.stderr.write(
+                "Warning: PIL cannot identify image; this may not be an image file"
+                + "\n"
+            )
         except ImportError:
             # PIL not available
-            sys.stderr.write("Warning: cannot determine the image size; please install Pillow" + "\n")
+            sys.stderr.write(
+                "Warning: cannot determine the image size; please install Pillow" + "\n"
+            )
             sys.stderr.flush()
         finally:
             b.close()
@@ -102,63 +109,70 @@ def to_content_buf(data):
     elif isinstance(data, io.TextIOWrapper):
         return data.buffer.read()
 
-    elif _isinstance(data, 'numpy', 'ndarray'):
+    elif _isinstance(data, "numpy", "ndarray"):
         # numpy ndarray: convert to png
         im = data
         if len(im.shape) == 2:
-            mode = 'L'     # 8-bit pixels, grayscale
-            im = im.astype(sys.modules['numpy'].uint8)
+            mode = "L"  # 8-bit pixels, grayscale
+            im = im.astype(sys.modules["numpy"].uint8)
         elif len(im.shape) == 3 and im.shape[2] in (3, 4):
-            mode = None    # RGB/RGBA
-            if im.dtype.kind == 'f':
-                im = (im * 255).astype('uint8')
+            mode = None  # RGB/RGBA
+            if im.dtype.kind == "f":
+                im = (im * 255).astype("uint8")
         else:
-            raise ValueError("Expected a 3D ndarray (RGB/RGBA image) or 2D (grayscale image), "
-                             "but given shape: {}".format(im.shape))
+            raise ValueError(
+                "Expected a 3D ndarray (RGB/RGBA image) or 2D (grayscale image), "
+                "but given shape: {}".format(im.shape)
+            )
 
         try:
             from PIL import Image
         except ImportError as e:
-            raise ImportError(e.msg +
-                              "\nTo draw numpy arrays, we require Pillow. " +
-                              "(pip install Pillow)")       # TODO; reraise
+            raise ImportError(
+                e.msg
+                + "\nTo draw numpy arrays, we require Pillow. "
+                + "(pip install Pillow)"
+            )  # TODO; reraise
 
         with io.BytesIO() as buf:
             # mode: https://pillow.readthedocs.io/en/4.2.x/handbook/concepts.html#concept-modes
-            Image.fromarray(im, mode=mode).save(buf, format='png')
+            Image.fromarray(im, mode=mode).save(buf, format="png")
             return buf.getvalue()
 
-    elif _isinstance(data, 'torch', 'Tensor'):
+    elif _isinstance(data, "torch", "Tensor"):
         # pytorch tensor: convert to png
         im = data
         try:
             from torchvision import transforms
         except ImportError as e:
-            raise ImportError(e.msg +
-                              "\nTo draw torch tensor, we require torchvision. " +
-                              "(pip install torchvision)")
+            raise ImportError(
+                e.msg
+                + "\nTo draw torch tensor, we require torchvision. "
+                + "(pip install torchvision)"
+            )
 
         with io.BytesIO() as buf:
-            transforms.ToPILImage()(im).save(buf, format='png')
+            transforms.ToPILImage()(im).save(buf, format="png")
             return buf.getvalue()
 
-    elif _isinstance(data, 'tensorflow.python.framework.ops', 'EagerTensor'):
+    elif _isinstance(data, "tensorflow.python.framework.ops", "EagerTensor"):
         im = data
         return to_content_buf(im.numpy())
 
-    elif _isinstance(data, 'PIL.Image', 'Image'):
+    elif _isinstance(data, "PIL.Image", "Image"):
         # PIL/Pillow images
         img = data
 
         with io.BytesIO() as buf:
-            img.save(buf, format='png')
+            img.save(buf, format="png")
             return buf.getvalue()
 
-    elif _isinstance(data, 'matplotlib.figure', 'Figure'):
+    elif _isinstance(data, "matplotlib.figure", "Figure"):
         # matplotlib figures
         fig = data
         if fig.canvas is None:
             from matplotlib.backends.backend_agg import FigureCanvasAgg
+
             FigureCanvasAgg(fig)
 
         with io.BytesIO() as buf:
@@ -170,8 +184,8 @@ def to_content_buf(data):
 
 
 def get_tty_size():
-    with open('/dev/tty') as tty:
-        rows, columns = subprocess.check_output(['stty', 'size'], stdin=tty).split()
+    with open("/dev/tty") as tty:
+        rows, columns = subprocess.check_output(["stty", "size"], stdin=tty).split()
     return int(rows), int(columns)
 
 
@@ -218,27 +232,27 @@ def imgcat(buf, width=None, height=None, preserve_aspect_ratio=True, fp=None):
         height = real_height(buf)
 
     # need to detect tmux
-    is_tmux = 'TMUX' in os.environ and 'tmux' in os.environ['TMUX']
+    is_tmux = "TMUX" in os.environ and "tmux" in os.environ["TMUX"]
 
     # tmux: print some margin and the DCS escape sequence for passthrough
     # In tmux mode, we need to first determine the number of actual lines
     if is_tmux:
-        fp.write(b'\n' * height)
+        fp.write(b"\n" * height)
         # move the cursers back
-        fp.write(CSI + b'?25l')
-        fp.write(CSI + str(height).encode() + b"F")     # PEP-461
-        fp.write(TMUX_WRAP_ST + b'\033')
+        fp.write(CSI + b"?25l")
+        fp.write(CSI + str(height).encode() + b"F")  # PEP-461
+        fp.write(TMUX_WRAP_ST + b"\033")
 
     # now starts the iTerm2 file transfer protocol.
     fp.write(OSC)
-    fp.write(b'1337;File=inline=1')
-    fp.write(b';size=' + str(len(buf)).encode())
-    fp.write(b';height=' + str(height).encode())
+    fp.write(b"1337;File=inline=1")
+    fp.write(b";size=" + str(len(buf)).encode())
+    fp.write(b";height=" + str(height).encode())
     if width:
-        fp.write(b';width=' + str(width).encode())
+        fp.write(b";width=" + str(width).encode())
     if not preserve_aspect_ratio:
-        fp.write(b';preserveAspectRatio=0')
-    fp.write(b':')
+        fp.write(b";preserveAspectRatio=0")
+    fp.write(b":")
     fp.flush()
 
     buf_base64 = base64.b64encode(buf)
@@ -251,16 +265,23 @@ def imgcat(buf, width=None, height=None, preserve_aspect_ratio=True, fp=None):
         fp.write(TMUX_WRAP_ED)
         # move back the cursor lines down
         fp.write(CSI + str(height).encode() + b"E")
-        fp.write(CSI + b'?25h')
+        fp.write(CSI + b"?25h")
     else:
-        fp.write(b'\n')
+        fp.write(b"\n")
 
     # flush is needed so that the cursor control sequence can take effect
     fp.flush()
 
 
-def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
-                  qs_console_status=None, set_width_in_rc_file: int = 0, force_show: bool = force_show_img):
+def image_preview(
+    img,
+    is_url=False,
+    set_proxy: str = "",
+    set_referer: str = "",
+    qs_console_status=None,
+    set_width_in_rc_file: int = 0,
+    force_show: bool = force_show_img,
+):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用, 但你可以开启强制显示选项预览
 
@@ -277,19 +298,30 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
     """
     global force_show_option, has_set_force_show_option
     try:
-        if not (force_show_option or force_show or (not has_set_force_show_option and prompt({
-            'type': 'confirm',
-            'name': 'preview_image_on_terminal',
-            'message': 'Preview image on this terminal?' if user_lang != 'zh' else '确认在该终端预览图片?',
-            'default': False,
-        })['preview_image_on_terminal'])):
+        if not (
+            force_show_option
+            or force_show
+            or (
+                not has_set_force_show_option
+                and prompt(
+                    {
+                        "type": "confirm",
+                        "name": "preview_image_on_terminal",
+                        "message": "Preview image on this terminal?"
+                        if user_lang != "zh"
+                        else "确认在该终端预览图片?",
+                        "default": False,
+                    }
+                )["preview_image_on_terminal"]
+            )
+        ):
             has_set_force_show_option = True
             return
         else:
             has_set_force_show_option = True
             force_show_option = True
         if not is_url and (isinstance(img, str) and not os.path.exists(img)):
-            is_url = img.startswith('http')
+            is_url = img.startswith("http")
         if qs_console_status:
             qs_console_status.stop()
         if is_url:
@@ -297,18 +329,21 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
             from .. import requirePackage
             from io import BytesIO
             import requests
-            Image = requirePackage('PIL', 'Image', 'Pillow')
+
+            Image = requirePackage("PIL", "Image", "Pillow")
             if set_referer:
-                headers['referer'] = set_referer
-            proxies = {
-                'http': 'http://' + set_proxy,
-                'https': 'https://' + set_proxy
-            } if set_proxy else {}
+                headers["referer"] = set_referer
+            proxies = (
+                {"http": "http://" + set_proxy, "https": "https://" + set_proxy}
+                if set_proxy
+                else {}
+            )
             res = requests.get(img, headers=headers, proxies=proxies).content
             img = Image.open(BytesIO(res))
         elif not is_url and isinstance(img, str) and os.path.exists(img):
             from .. import requirePackage
-            Image = requirePackage('PIL', 'Image', 'Pillow')
+
+            Image = requirePackage("PIL", "Image", "Pillow")
             img = Image.open(img)
 
         buf = to_content_buf(img)
@@ -316,11 +351,18 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
         _real_height = real_height(buf)
         _real_width = math.ceil(width / height * _real_height) * 2 + 1
 
-        console_width = qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
-        center_prefix = (eval(qs_config.basicSelect('center_prefix')))(console_width)
+        console_width = (
+            qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
+        )
+        center_prefix = (eval(qs_config.basicSelect("center_prefix")))(console_width)
         qs_default_console.print(
-            ' ' * int(max((console_width - _real_width) / 2 - 1, 0) if not center_prefix else center_prefix),
-            end=''
+            " "
+            * int(
+                max((console_width - _real_width) / 2 - 1, 0)
+                if not center_prefix
+                else center_prefix
+            ),
+            end="",
         )
 
         imgcat(buf, height=real_height(buf))
@@ -328,5 +370,6 @@ def image_preview(img, is_url=False, set_proxy: str = '', set_referer: str = '',
         if qs_console_status:
             qs_console_status.stop()
         from .. import qs_error_string
+
         qs_default_console.print(qs_error_string, repr(e))
         return

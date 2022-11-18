@@ -7,8 +7,9 @@ Baidu cloud API
 import os
 from . import pre_check, user_lang
 from .. import qs_default_console, qs_error_string, qs_info_string, requirePackage
-imgp = requirePackage('aip', 'imageprocess', real_name='baidu-aip')
-aip = requirePackage('aip', real_name='baidu-aip')
+
+imgp = requirePackage("aip", "imageprocess", real_name="baidu-aip")
+aip = requirePackage("aip", real_name="baidu-aip")
 
 
 class ImageDeal:
@@ -17,11 +18,15 @@ class ImageDeal:
 
     Baidu image processing class
     """
+
     import base64
 
-    def __init__(self, app_id: str = pre_check('AipImageAPP_ID'),
-                 app_key: str = pre_check('AipImageAPP_KEY'),
-                 secret_key: str = pre_check('AipImageSECRET_KEY')):
+    def __init__(
+        self,
+        app_id: str = pre_check("AipImageAPP_ID"),
+        app_key: str = pre_check("AipImageAPP_KEY"),
+        secret_key: str = pre_check("AipImageSECRET_KEY"),
+    ):
         """
         初始化并登陆百度图像处理
 
@@ -44,24 +49,37 @@ class ImageDeal:
         :return: None
         """
         if not os.path.exists(path) or not os.path.isfile(path):
-            qs_default_console.log(qs_error_string, ('No file named: %s' if user_lang != 'zh' else '没有文件: %s') % path)
+            qs_default_console.log(
+                qs_error_string,
+                ("No file named: %s" if user_lang != "zh" else "没有文件: %s") % path,
+            )
             return
         img_name = os.path.basename(path)
-        img_name = img_name[:img_name.index('.')] + '_LG.' + '.'.join(img_name.split('.')[1:])
+        img_name = (
+            img_name[: img_name.index(".")] + "_LG." + ".".join(img_name.split(".")[1:])
+        )
 
-        with qs_default_console.status(f'{"Reading Image" if user_lang != "zh" else "读取图片"}: {path}') if not st else st as status:
-            with open(path, 'rb') as f:
+        with qs_default_console.status(
+            f'{"Reading Image" if user_lang != "zh" else "读取图片"}: {path}'
+        ) if not st else st as status:
+            with open(path, "rb") as f:
                 img = f.read()
-            status.update(status=f'{qs_info_string} {"Dealing..." if user_lang != "zh" else "处理中..."}')
+            status.update(
+                status=f'{qs_info_string} {"Dealing..." if user_lang != "zh" else "处理中..."}'
+            )
             img = self.client.imageQualityEnhance(img)
             try:
-                status.update(status=f'{qs_info_string} {"Write to" if user_lang != "zh" else "写入"}: {img_name}')
-                img = ImageDeal.base64.b64decode(img['image'])
-                with open(img_name, 'wb') as f:
+                status.update(
+                    status=f'{qs_info_string} {"Write to" if user_lang != "zh" else "写入"}: {img_name}'
+                )
+                img = ImageDeal.base64.b64decode(img["image"])
+                with open(img_name, "wb") as f:
                     f.write(img)
             except:
                 qs_default_console.print(qs_error_string, img)
-        qs_default_console.print(qs_info_string, "Deal Done!" if user_lang != "zh" else "处理完成!")
+        qs_default_console.print(
+            qs_info_string, "Deal Done!" if user_lang != "zh" else "处理完成!"
+        )
 
 
 class AipNLP:
@@ -70,10 +88,13 @@ class AipNLP:
 
     Baidu language processing class
     """
-    def __init__(self,
-                 appid: str = pre_check("AipNlpAPP_ID"),
-                 appkey: str = pre_check("AipNlpAPP_KEY"),
-                 sckey: str = pre_check("AipNlpSECRET_KEY")):
+
+    def __init__(
+        self,
+        appid: str = pre_check("AipNlpAPP_ID"),
+        appkey: str = pre_check("AipNlpAPP_KEY"),
+        sckey: str = pre_check("AipNlpSECRET_KEY"),
+    ):
         """
         初始化并登陆百度语言处理应用
 
@@ -95,7 +116,7 @@ class AipNLP:
         :return: 处理后的文本 | proceed words
         """
         try:
-            res = self.client.ecnet(words)['item']['correct_query']
+            res = self.client.ecnet(words)["item"]["correct_query"]
         except Exception as e:
             qs_default_console.log(qs_error_string, repr(e))
         else:

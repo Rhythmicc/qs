@@ -6,12 +6,18 @@ Alibaba cloud API
 """
 from . import pre_check, user_lang, dir_char
 from .. import requirePackage
-oss2 = requirePackage('oss2')
+
+oss2 = requirePackage("oss2")
 
 
 class AliyunOSS:
-    def __init__(self, ac_id=pre_check('aliyun_oss_acid'), ac_key=pre_check('aliyun_oss_ackey'),
-                 bucket_url=pre_check('aliyun_oss_df_endpoint'), df_bucket=pre_check('aliyun_oss_df_bucket')):
+    def __init__(
+        self,
+        ac_id=pre_check("aliyun_oss_acid"),
+        ac_key=pre_check("aliyun_oss_ackey"),
+        bucket_url=pre_check("aliyun_oss_df_endpoint"),
+        df_bucket=pre_check("aliyun_oss_df_bucket"),
+    ):
         """
         初始化并登陆阿里云对象存储
 
@@ -38,10 +44,10 @@ class AliyunOSS:
         :return: 支持的函数字典
         """
         return {
-            '-up': self.upload,
-            '-rm': self.remove,
-            '-dl': self.download,
-            '-ls': self.list_bucket
+            "-up": self.upload,
+            "-rm": self.remove,
+            "-dl": self.download,
+            "-ls": self.list_bucket,
         }
 
     def _progress_bar(self, cur, total):
@@ -56,9 +62,13 @@ class AliyunOSS:
         """
         if not self.progress:
             from ..TuiTools.Bar import DataTransformBar
+
             self.progress = DataTransformBar(True if total else False)
-            self.trans_id = self.progress.add_task('Transform', total=total if total else -1,
-                                                   filename=self._progress_file_name)
+            self.trans_id = self.progress.add_task(
+                "Transform",
+                total=total if total else -1,
+                filename=self._progress_file_name,
+            )
             self.progress.start()
             self.progress.start_task(self.trans_id)
         self.progress.update(self.trans_id, completed=cur)
@@ -76,14 +86,22 @@ class AliyunOSS:
         import os
         from .. import qs_default_console, qs_info_string
         from ..SystemTools import get_core_num
+
         bucket = bucket if bucket else self.df_bucket
         bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         filePath = filePath.strip()
         self._progress_file_name = os.path.basename(filePath)
-        oss2.resumable_upload(bucket, filePath.replace(dir_char, '/'), filePath, num_threads=get_core_num() * 4,
-                              progress_callback=self._progress_bar)
+        oss2.resumable_upload(
+            bucket,
+            filePath.replace(dir_char, "/"),
+            filePath,
+            num_threads=get_core_num() * 4,
+            progress_callback=self._progress_bar,
+        )
         self.progress.stop()
-        qs_default_console.print(qs_info_string, 'Transform Completed!' if user_lang != 'zh' else '传输完成!')
+        qs_default_console.print(
+            qs_info_string, "Transform Completed!" if user_lang != "zh" else "传输完成!"
+        )
 
     def download(self, filename: str, bucket: str = None):
         """
@@ -98,13 +116,21 @@ class AliyunOSS:
         import os
         from .. import qs_default_console, qs_info_string
         from ..SystemTools import get_core_num
+
         bucket = bucket if bucket else self.df_bucket
         bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
         self._progress_file_name = os.path.basename(filename)
-        oss2.resumable_download(bucket, filename, filename, num_threads=get_core_num() * 4,
-                                progress_callback=self._progress_bar)
+        oss2.resumable_download(
+            bucket,
+            filename,
+            filename,
+            num_threads=get_core_num() * 4,
+            progress_callback=self._progress_bar,
+        )
         self.progress.stop()
-        qs_default_console.print(qs_info_string, 'Transform Completed!' if user_lang != 'zh' else '传输完成!')
+        qs_default_console.print(
+            qs_info_string, "Transform Completed!" if user_lang != "zh" else "传输完成!"
+        )
 
     def remove(self, filePath: str, bucket: str = None):
         """
@@ -136,15 +162,20 @@ class AliyunOSS:
 
         bucket = bucket if bucket else self.df_bucket
         ls = oss2.Bucket(self.auth, self.bucket_url, bucket)
-        tb = qs_default_table(['File', 'Size'] if user_lang != 'zh' else ['文件', '体积'], title='Aliyun OSS')
+        tb = qs_default_table(
+            ["File", "Size"] if user_lang != "zh" else ["文件", "体积"], title="Aliyun OSS"
+        )
         prefix = dict()
         for obj in oss2.ObjectIterator(ls):
-            if '/' in obj.key:
-                prefix[obj.key[obj.key[:obj.key.index('/')]]] = 0
-            tb.add_row(Text(obj.key, justify='left'), Text(size_format(obj.size, True), justify='right'))
+            if "/" in obj.key:
+                prefix[obj.key[obj.key[: obj.key.index("/")]]] = 0
+            tb.add_row(
+                Text(obj.key, justify="left"),
+                Text(size_format(obj.size, True), justify="right"),
+            )
         qs_default_console.print(
             qs_info_string,
-            'Bucket Url:' if user_lang != 'zh' else '桶链接:',
-            'https://' + bucket + '.' + self.bucket_url + '/'
+            "Bucket Url:" if user_lang != "zh" else "桶链接:",
+            "https://" + bucket + "." + self.bucket_url + "/",
         )
         qs_default_console.print(tb, justify="center")

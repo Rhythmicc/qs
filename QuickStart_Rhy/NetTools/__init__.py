@@ -10,8 +10,9 @@ from requests.exceptions import RequestException
 
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) '
-                  'Version/11.0.2 Safari/604.4.7'}
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) "
+    "Version/11.0.2 Safari/604.4.7"
+}
 
 
 def is_ipv4(ip: str) -> bool:
@@ -29,7 +30,7 @@ def is_ipv4(ip: str) -> bool:
             socket.inet_aton(ip)
         except socket.error:
             return False
-        return ip.count('.') == 3
+        return ip.count(".") == 3
     except socket.error:  # not a valid ip
         return False
     return True
@@ -58,7 +59,7 @@ def is_ip(ip: str) -> bool:
     :param ip: like fe80::1862:5a79:a8a0:aae5, 8.8.8.8 etc.
     :return: bool
     """
-    if ip == 'localhost':
+    if ip == "localhost":
         return True
     return is_ipv4(ip) or is_ipv6(ip)
 
@@ -72,14 +73,14 @@ def is_mac(addr: str) -> bool:
     :param addr: string like '80:8f:1d:e2:f2:f5'
     :return: bool
     """
-    part = addr.split(':')
+    part = addr.split(":")
     if len(part) != 6:
         return False
     for i in part:
         if len(i) != 2:
             return False
         for j in i:
-            if j not in '0123456789abcdefABCDEF':
+            if j not in "0123456789abcdefABCDEF":
                 return False
     return True
 
@@ -109,13 +110,13 @@ def formatUrl(try_url: str) -> str:
     :param try_url: 待尝试的url
     :return: 能被成功访问的url
     """
-    if try_url.startswith('http://') or try_url.startswith('https://'):
+    if try_url.startswith("http://") or try_url.startswith("https://"):
         return try_url
     res_url = try_url
     if not check_one_page(res_url):
-        res_url = 'https://' + try_url
+        res_url = "https://" + try_url
         if not check_one_page(res_url):
-            res_url = 'http://' + try_url
+            res_url = "http://" + try_url
     return res_url
 
 
@@ -129,6 +130,7 @@ def open_url(url: str):
     :return:
     """
     import webbrowser as wb
+
     url = formatUrl(url)
     wb.open_new_tab(url)
 
@@ -142,9 +144,10 @@ def get_ip() -> str:
     :return: ip
     """
     import socket
+
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        s.connect(('8.8.8.8', 80))
+        s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         return ip
     except Exception:
@@ -163,13 +166,13 @@ def size_format(sz: int, align: bool = False) -> str:
     :return: 文件大小字符串
     """
     if sz >= 1e9:
-        return '%.3f GB' % (sz / 1e9) if not align else '%7.3f GB' % (sz / 1e9)
+        return "%.3f GB" % (sz / 1e9) if not align else "%7.3f GB" % (sz / 1e9)
     elif sz >= 1e6:
-        return '%.3f MB' % (sz / 1e6) if not align else '%7.3f MB' % (sz / 1e6)
+        return "%.3f MB" % (sz / 1e6) if not align else "%7.3f MB" % (sz / 1e6)
     elif sz >= 1e3:
-        return '%.3f KB' % (sz / 1e3) if not align else '%7.3f KB' % (sz / 1e3)
+        return "%.3f KB" % (sz / 1e3) if not align else "%7.3f KB" % (sz / 1e3)
     else:
-        return '%.2f B' % sz if not align else '%7.2f B' % sz
+        return "%.2f B" % sz if not align else "%7.2f B" % sz
 
 
 def get_ip_info() -> dict:
@@ -181,14 +184,17 @@ def get_ip_info() -> dict:
     :return: ip信息的dict，失败返回None
     """
     import json
-    res = requests.get('http://ip-api.com/json/', headers=headers)
+
+    res = requests.get("http://ip-api.com/json/", headers=headers)
     if res.status_code == requests.codes.ok:
         return json.loads(res.text)
     else:
         return {}
 
 
-def get_fileinfo(url: str, proxy: str = '', referer: str = '') -> (str, str, requests.Response):
+def get_fileinfo(
+    url: str, proxy: str = "", referer: str = ""
+) -> (str, str, requests.Response):
     """
     获取待下载的文件信息
 
@@ -201,27 +207,29 @@ def get_fileinfo(url: str, proxy: str = '', referer: str = '') -> (str, str, req
     """
     import re
     import os
-    proxies = {
-        'http': 'http://'+proxy,
-        'https': 'https://'+proxy
-    } if proxy else {}
+
+    proxies = {"http": "http://" + proxy, "https": "https://" + proxy} if proxy else {}
     if referer:
-        headers['referer'] = referer
+        headers["referer"] = referer
     try:
         res = requests.head(url, headers=headers, proxies=proxies)
     except Exception as e:
-        return '', repr(e), None
+        return "", repr(e), None
     while res.status_code in [301, 302]:
-        url = {i[0]: i[1] for i in res.headers.lower_items()}['location']
+        url = {i[0]: i[1] for i in res.headers.lower_items()}["location"]
         res = requests.head(url, headers=headers, proxies=proxies)
     res.headers = {i[0]: i[1] for i in res.headers.lower_items()}
-    if 'content-disposition' in res.headers:
+    if "content-disposition" in res.headers:
         try:
-            filename = re.findall('filename=(.*?);', res.headers['content-disposition'])[0]
+            filename = re.findall(
+                "filename=(.*?);", res.headers["content-disposition"]
+            )[0]
         except IndexError:
             from urllib.parse import urlparse
-            filename = os.path.basename(urlparse(url).path.strip('/'))
+
+            filename = os.path.basename(urlparse(url).path.strip("/"))
     else:
         from urllib.parse import urlparse
-        filename = os.path.basename(urlparse(url).path.strip('/'))
+
+        filename = os.path.basename(urlparse(url).path.strip("/"))
     return url, re.sub(r"^\W+|\W+$", "", filename), res

@@ -6,9 +6,9 @@ with open("README.md", "r") as fh:
 VERSION = "0.6.32"
 
 setup(
-    name='QuickStart_Rhy',
+    name="QuickStart_Rhy",
     version=VERSION,
-    description='Simplify the operation in terminal!',
+    description="Simplify the operation in terminal!",
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
@@ -16,17 +16,20 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords='Simplify the operation in terminal!',
-    author='RhythmLian',
+    keywords="Simplify the operation in terminal!",
+    author="RhythmLian",
     url="https://github.com/Rhythmicc/qs",
-    license='MIT',
+    license="MIT",
     packages=find_packages(),
     include_package_data=True,
     zip_safe=True,
-    install_requires=['requests', 'urllib3', 'rarfile', 'rich', 'py7zr', 'inquirer-rhy'],
-    entry_points={
-        'console_scripts': [
-            'qs = QuickStart_Rhy.main:main'
-        ]
-    },
+    install_requires=[
+        "requests",
+        "urllib3",
+        "rarfile",
+        "rich",
+        "py7zr",
+        "inquirer-rhy",
+    ],
+    entry_points={"console_scripts": ["qs = QuickStart_Rhy.main:main"]},
 )

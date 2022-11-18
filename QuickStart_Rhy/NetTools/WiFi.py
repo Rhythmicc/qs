@@ -7,8 +7,8 @@ The WiFi module of QS helps to connect WiFi, but does not support the automatic 
 import time
 from .. import user_lang, qs_default_console, qs_error_string, requirePackage
 
-const = requirePackage('pywifi', 'const')
-PyWiFi = requirePackage('pywifi', 'PyWiFi')
+const = requirePackage("pywifi", "const")
+PyWiFi = requirePackage("pywifi", "PyWiFi")
 
 
 class WiFi:
@@ -29,7 +29,7 @@ class WiFi:
         :return: 连接的wifi名 | The name of the connecting wifi
         """
         flag = self.iface.status() in [const.IFACE_CONNECTED, const.IFACE_CONNECTING]
-        return self.iface.name if flag else ''
+        return self.iface.name if flag else ""
 
     def scan(self):
         """
@@ -59,17 +59,25 @@ class WiFi:
         num = len(self.ifaces)
         if num <= 0:
             qs_default_console.log(
-                qs_error_string, "There is no recognizable network card interface"
-                if user_lang != 'zh' else '没有可识别的网卡接口')
+                qs_error_string,
+                "There is no recognizable network card interface"
+                if user_lang != "zh"
+                else "没有可识别的网卡接口",
+            )
             return
         elif num != 1:
             from ..TuiTools.Table import qs_default_table
-            table = qs_default_table(['id', 'interface'] if user_lang != 'zh' else ['序号', '网卡'])
+
+            table = qs_default_table(
+                ["id", "interface"] if user_lang != "zh" else ["序号", "网卡"]
+            )
             for i, w in enumerate(self.ifaces):
                 table.add_row(str(i), w.name())
             qs_default_console.print(table)
             while True:
-                iface_no = input('请选择网卡接口序号: ' if user_lang != 'zh' else 'Select interface by id: ')
+                iface_no = input(
+                    "请选择网卡接口序号: " if user_lang != "zh" else "Select interface by id: "
+                )
                 try:
                     no = int(iface_no)
                     if 0 <= no < num:
@@ -78,7 +86,9 @@ class WiFi:
                 except:
                     continue
         else:
-            qs_default_console.print(f"{'Only one' if user_lang != 'zh' else '仅有可用'}: {self.iface.name()}")
+            qs_default_console.print(
+                f"{'Only one' if user_lang != 'zh' else '仅有可用'}: {self.iface.name()}"
+            )
 
     def conn(self, ssid, password):
         """
@@ -91,7 +101,7 @@ class WiFi:
         :return: status
         """
         # from pywifi import Profile
-        Profile = requirePackage('pywifi', 'Profile')
+        Profile = requirePackage("pywifi", "Profile")
         self.iface.disconnect()
         time.sleep(1)
         pinfo = Profile()

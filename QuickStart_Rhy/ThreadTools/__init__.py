@@ -92,8 +92,10 @@ class FileWriters:
         :param index: 起始位置
         :return:
         """
-        self.job_q.append(self.pool.submit(self._write, self.cur_handle, content, index))
-        self.cur_handle = (self.cur_handle+1) % self.workers
+        self.job_q.append(
+            self.pool.submit(self._write, self.cur_handle, content, index)
+        )
+        self.cur_handle = (self.cur_handle + 1) % self.workers
 
     def __del__(self):
         """

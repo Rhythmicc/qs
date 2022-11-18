@@ -20,11 +20,12 @@ def top():
     from .. import cur_time, dir_char, requirePackage
     from ..TuiTools import Bar
     from ..NetTools.NormalDL import size_format
-    psutil = requirePackage('psutil')
-    PrettyTable = requirePackage('prettytable', 'PrettyTable')
+
+    psutil = requirePackage("psutil")
+    PrettyTable = requirePackage("prettytable", "PrettyTable")
 
     def deal():
-        print(ansi.clear_screen() + Cursor.POS(0, 0) + Style.RESET_ALL, end='')
+        print(ansi.clear_screen() + Cursor.POS(0, 0) + Style.RESET_ALL, end="")
         exit(0)
 
     colorama.init()
@@ -44,11 +45,14 @@ def top():
             _mem_cur = psutil.virtual_memory().used
             _cpu_chart.add(math.ceil(_cpu_cur))
             _mem_chart.add(math.ceil(_mem_cur / _total_mem * 100))
-            window.field_names = ['CPU: %.2f%%' % _cpu_cur, 'MEM: %s' % size_format(_mem_cur)]
-            print((ansi.clear_screen() if dir_char == '\\' else '') + Cursor.POS(0, 0))
-            print(' ' * 39, end='')
+            window.field_names = [
+                "CPU: %.2f%%" % _cpu_cur,
+                "MEM: %s" % size_format(_mem_cur),
+            ]
+            print((ansi.clear_screen() if dir_char == "\\" else "") + Cursor.POS(0, 0))
+            print(" " * 39, end="")
             cur_time()
-            cur_img = '    '.join(str(window).split('\n') + [' '])
+            cur_img = "    ".join(str(window).split("\n") + [" "])
             print(cur_img)
             time.sleep(1)
     except:

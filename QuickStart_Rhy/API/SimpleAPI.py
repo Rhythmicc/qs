@@ -19,20 +19,20 @@ def rmbg(filePath: str):
     :param filePath: 图片的路径
     :return: None
     """
-    api_key = pre_check('rmbg')
+    api_key = pre_check("rmbg")
     res = requests.post(
-        'https://api.remove.bg/v1.0/removebg',
-        files={'image_file': open(filePath, 'rb')},
-        data={'size': 'auto'},
-        headers={'X-Api-Key': api_key},
+        "https://api.remove.bg/v1.0/removebg",
+        files={"image_file": open(filePath, "rb")},
+        data={"size": "auto"},
+        headers={"X-Api-Key": api_key},
     )
     if res.status_code == requests.codes.ok:
-        img_name = filePath.split(dir_char)[-1].split('.')[0]
+        img_name = filePath.split(dir_char)[-1].split(".")[0]
         if dir_char in filePath:
             img_root = dir_char.join(filePath.split(dir_char)[:-1]) + dir_char
         else:
-            img_root = ''
-        with open(img_root + img_name + '_rmbg.png', 'wb') as imgfile:
+            img_root = ""
+        with open(img_root + img_name + "_rmbg.png", "wb") as imgfile:
             imgfile.write(res.content)
     else:
         qs_default_console.log(qs_error_string, res.status_code, res.text)
@@ -50,18 +50,21 @@ def smms(filePath: str):
     import os
     from ..TuiTools.Table import qs_default_table
 
-    api_key = pre_check('smms')
-    res_tb = qs_default_table(['File', 'Status', 'url'] if user_lang != 'zh' else ['文件', '状态', '链接'])
+    api_key = pre_check("smms")
+    res_tb = qs_default_table(
+        ["File", "Status", "url"] if user_lang != "zh" else ["文件", "状态", "链接"]
+    )
 
     def post_img(path: str) -> dict:
         try:
-            data = {
-                'smfile': (path.split('/')[-1], open(path, 'rb')),
-                'format': 'json'
-            }
+            data = {"smfile": (path.split("/")[-1], open(path, "rb")), "format": "json"}
         except:
             return {}
-        res_json = requests.post('https://sm.ms/api/v2/upload', headers={'Authorization': api_key}, files=data).text
+        res_json = requests.post(
+            "https://sm.ms/api/v2/upload",
+            headers={"Authorization": api_key},
+            files=data,
+        ).text
         return json.loads(res_json)
 
     def get_path(rt, rel):
@@ -69,49 +72,60 @@ def smms(filePath: str):
 
     def format_markdown(path):
         import re
-        _user_path = os.path.expanduser('~')
+
+        _user_path = os.path.expanduser("~")
         rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
         img_set = {}
-        with open(path, 'r') as fp:
+        with open(path, "r") as fp:
             ct = fp.read()
-        aims = re.findall('!\[.*?]\((.*?)\)', ct, re.M) + re.findall('<img.*?src="(.*?)".*?>', ct, re.M)
+        aims = re.findall("!\[.*?]\((.*?)\)", ct, re.M) + re.findall(
+            '<img.*?src="(.*?)".*?>', ct, re.M
+        )
         for aim in aims:
             raw_path = aim
-            aim = aim.replace('~', _user_path)
+            aim = aim.replace("~", _user_path)
             aim = aim if aim.startswith(dir_char) else get_path(rt_path, aim)
             if aim not in img_set:
                 res_dict = post_img(aim)
                 if not res_dict:
-                    res_tb.add_row(aim.split(dir_char)[-1], 'No File', '')
+                    res_tb.add_row(aim.split(dir_char)[-1], "No File", "")
                     img_set[aim] = False
                 else:
                     res_tb.add_row(
-                        aim.split(dir_char)[-1], res_dict['success'],
-                        res_dict['message'] if not res_dict['success'] else res_dict['data']['url']
+                        aim.split(dir_char)[-1],
+                        res_dict["success"],
+                        res_dict["message"]
+                        if not res_dict["success"]
+                        else res_dict["data"]["url"],
                     )
-                    if not res_dict['success'] and res_dict['code'] == 'unauthorized':
+                    if not res_dict["success"] and res_dict["code"] == "unauthorized":
                         break
-                    img_set[aim] = res_dict['data']['url'] if res_dict['success'] else False
+                    img_set[aim] = (
+                        res_dict["data"]["url"] if res_dict["success"] else False
+                    )
             if img_set[aim]:
                 ct = ct.replace(raw_path, img_set[aim])
-        with open(path, 'w') as fp:
+        with open(path, "w") as fp:
             fp.write(ct)
         qs_default_console.print(res_tb, justify="center")
 
     try:
-        is_md = filePath.endswith('.md')
+        is_md = filePath.endswith(".md")
     except IndexError:
-        exit('Usage: qs {*.md} | {picture}')
+        exit("Usage: qs {*.md} | {picture}")
     else:
         if is_md:
             format_markdown(filePath)
         else:
             res = post_img(filePath)
             if not res:
-                res_tb.add_row(filePath.split(dir_char)[-1], 'No File', '')
+                res_tb.add_row(filePath.split(dir_char)[-1], "No File", "")
             else:
                 res_tb.add_row(
-                    filePath.split(dir_char)[-1], res['success'], '' if not res['success'] else res['data']['url'])
+                    filePath.split(dir_char)[-1],
+                    res["success"],
+                    "" if not res["success"] else res["data"]["url"],
+                )
             qs_default_console.print(res_tb, justify="center")
 
 
@@ -126,12 +140,16 @@ def imgs_in_url(url: str, save: bool = False):
     :return:
     """
     from .. import headers
+
     html = requests.get(url, headers=headers)
     if html.status_code != requests.codes.ok:
-        qs_default_console.log(qs_error_string, 'Network Error' if user_lang != 'zh' else '网络错误')
+        qs_default_console.log(
+            qs_error_string, "Network Error" if user_lang != "zh" else "网络错误"
+        )
         return
     import re
     from ..ImageTools.ImagePreview import image_preview
+
     normal_dl = None
     if save:
         from ..NetTools.NormalDL import normal_dl
@@ -140,16 +158,19 @@ def imgs_in_url(url: str, save: bool = False):
     a_ls = re.findall('<a.*?href="(.*?)".*?>', html.text)
     for i in a_ls:
         aim = i.lower()
-        for j in ['.png', '.jpg', 'jpeg']:
+        for j in [".png", ".jpg", "jpeg"]:
             if j in aim:
                 imgs.append(i)
                 break
     for url in imgs:
-        if not url.startswith('http') or url.endswith('svg'):
+        if not url.startswith("http") or url.endswith("svg"):
             continue
-        url = url.replace('&#46;', '.')
+        url = url.replace("&#46;", ".")
         qs_default_console.log(
-            qs_info_string, 'Link:' if user_lang != 'zh' else '链接:', url[:100] + ('' if len(url) <= 100 else '...'))
+            qs_info_string,
+            "Link:" if user_lang != "zh" else "链接:",
+            url[:100] + ("" if len(url) <= 100 else "..."),
+        )
         if save:
             file_name = normal_dl(url)
         else:
@@ -166,16 +187,24 @@ def acg2():
     :return: 请求状态, 链接或报错, 宽度, 高度 | status, url or error, width, height
     """
     try:
-        res = requests.get('https://api.luvying.com/acgimg?return=json')
+        res = requests.get("https://api.luvying.com/acgimg?return=json")
     except Exception as e:
         return False, repr(e), None, None
     else:
         import json
+
         res = json.loads(res.text)
-        return res['code'] == '200', (res['acgurl'] if res['code'] == '200' else 'Error'), res['width'], res['height']
+        return (
+            res["code"] == "200",
+            (res["acgurl"] if res["code"] == "200" else "Error"),
+            res["width"],
+            res["height"],
+        )
 
 
-def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False), randomOne: bool = False):
+def wallhaven(
+    set_search_url: str = pre_check("wallhaven_aim_url", False), randomOne: bool = False
+):
     """
     获取wallhaven toplist或指定图片列表
 
@@ -191,24 +220,32 @@ def wallhaven(set_search_url: str = pre_check('wallhaven_aim_url', False), rando
     import re
 
     if not set_search_url:
-        set_search_url = 'https://wallhaven.cc/search?categories=010&purity=011&topRange=1M&sorting=toplist&order=desc'
+        set_search_url = "https://wallhaven.cc/search?categories=010&purity=011&topRange=1M&sorting=toplist&order=desc"
 
-    urlTemplate = 'https://w.wallhaven.cc/full/{}/wallhaven-{}'
+    urlTemplate = "https://w.wallhaven.cc/full/{}/wallhaven-{}"
     html = requests.get(set_search_url, headers=headers)
     if html.status_code != requests.codes.ok:
-        qs_default_console.print(qs_error_string, f'Http Status: {html.status_code}')
+        qs_default_console.print(qs_error_string, f"Http Status: {html.status_code}")
         return None
-    html = re.findall('<section.*?>(.*?)</section', html.text, re.S)[0]
-    lis = re.findall('<li>(.*?)</li', html, re.S)
+    html = re.findall("<section.*?>(.*?)</section", html.text, re.S)[0]
+    lis = re.findall("<li>(.*?)</li", html, re.S)
     res = []
     for i in lis:
-        url, size = re.findall('<img.*?data-src="(.*?)".*?<span.*?class="wall-res".*?>(.*?)<', i, re.S)[0]
-        url = url.split('/')[-2:]
+        url, size = re.findall(
+            '<img.*?data-src="(.*?)".*?<span.*?class="wall-res".*?>(.*?)<', i, re.S
+        )[0]
+        url = url.split("/")[-2:]
         if '<span class="png">' in i:
-            url[-1] = url[-1].replace('.jpg', '.png')
-        res.append({'url': urlTemplate.format(*url), 'size': [int(i) for i in re.findall('\d+\.?\d*', size)]})
+            url[-1] = url[-1].replace(".jpg", ".png")
+        res.append(
+            {
+                "url": urlTemplate.format(*url),
+                "size": [int(i) for i in re.findall("\d+\.?\d*", size)],
+            }
+        )
     if randomOne:
         import random
+
         return [random.choice(res)]
     return res
 
@@ -224,18 +261,19 @@ def lmgtfy(keyword: str):
     """
     import random
     import base64
-    supportLs = [
-        'https://moedog.org/tools/google/?q='
-    ]
-    return random.choice(supportLs) + base64.b64encode(bytes(keyword, 'utf-8')).decode('utf-8')
+
+    supportLs = ["https://moedog.org/tools/google/?q="]
+    return random.choice(supportLs) + base64.b64encode(bytes(keyword, "utf-8")).decode(
+        "utf-8"
+    )
 
 
 class Designation2magnet:
     import re
 
     def __init__(self, description):
-        self.rt_url = 'https://18mag.net'
-        self.cover_url = 'https://www5.javmost.com/search/{designation}/'
+        self.rt_url = "https://18mag.net"
+        self.cover_url = "https://www5.javmost.com/search/{designation}/"
         self.description = description
 
     def search_designation(self):
@@ -245,11 +283,23 @@ class Designation2magnet:
         :return:
         """
         infos = [
-            Designation2magnet.re.findall('<a.*?href="(.*?)".*?>(.*?)<.*?td-size.*?>(.*?)<', item, Designation2magnet.re.S) for item in
-            Designation2magnet.re.findall('<tr>(.*?)</tr>', requests.get(self.rt_url + '/search?q={}'.format(self.description)).text.replace('<b>', '').replace('</b>', ''), Designation2magnet.re.S)
+            Designation2magnet.re.findall(
+                '<a.*?href="(.*?)".*?>(.*?)<.*?td-size.*?>(.*?)<',
+                item,
+                Designation2magnet.re.S,
+            )
+            for item in Designation2magnet.re.findall(
+                "<tr>(.*?)</tr>",
+                requests.get(self.rt_url + "/search?q={}".format(self.description))
+                .text.replace("<b>", "")
+                .replace("</b>", ""),
+                Designation2magnet.re.S,
+            )
         ]
         if [] in infos:
-            return [(i[0][0], i[0][1].strip(), i[0][2]) for i in infos[:infos.index([])]]
+            return [
+                (i[0][0], i[0][1].strip(), i[0][2]) for i in infos[: infos.index([])]
+            ]
         else:
             return [(i[0][0], i[0][1].strip(), i[0][2]) for i in infos]
 
@@ -260,8 +310,11 @@ class Designation2magnet:
         :param info:
         :return:
         """
-        return 'magnet:?xt=urn:btih:' + Designation2magnet.re.findall(
-            '种子特征码.*?<dd>(.*?)<',
-            requests.get(self.rt_url + info).text,
-            Designation2magnet.re.S
-        )[0]
+        return (
+            "magnet:?xt=urn:btih:"
+            + Designation2magnet.re.findall(
+                "种子特征码.*?<dd>(.*?)<",
+                requests.get(self.rt_url + info).text,
+                Designation2magnet.re.S,
+            )[0]
+        )

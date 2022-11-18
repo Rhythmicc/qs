@@ -28,8 +28,7 @@ class DMG:
         """
         获取磁盘列表
         """
-        # disk_list = subprocess.run(['diskutil', 'list'], stdout=subprocess.PIPE).stdout.decode().split('\n\n')
-        _, disk_list = external_exec("diskutil list")
+        _, disk_list = external_exec("diskutil list", True)
         disk_list = disk_list.split("\n\n")
         for item in disk_list:
             item_info = item.split("\n")

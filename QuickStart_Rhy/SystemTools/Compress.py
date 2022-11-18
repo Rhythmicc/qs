@@ -24,14 +24,14 @@ def get_compress_package_name():
     """
     file_names = sys.argv[2:]
     if not file_names:
-        exit('No enough parameters')
+        exit("No enough parameters")
     if len(file_names) > 1:
-        tar_name = 'pigeonhole'
+        tar_name = "pigeonhole"
     else:
         ls = file_names[0].split(dir_char)
         while not ls[-1]:
             ls.pop()
-        tar_name = ls[-1].split('.')[0]
+        tar_name = ls[-1].split(".")[0]
     ls = []
     for file_name in file_names:
         if os.path.exists(file_name):
@@ -53,13 +53,41 @@ def checkIsProtocolFile(protocol, path):
     """
     if os.path.exists(path):
         if protocol == tarfile and not tarfile.is_tarfile(path):
-            raise TypeError(f"{path} " + ('Not recognized by tar protocol' if user_lang != 'zh' else '无法被tar协议识别'))
+            raise TypeError(
+                f"{path} "
+                + (
+                    "Not recognized by tar protocol"
+                    if user_lang != "zh"
+                    else "无法被tar协议识别"
+                )
+            )
         elif protocol == zipfile and not zipfile.is_zipfile(path):
-            raise TypeError(f"{path} " + ('Not recognized by zip protocol' if user_lang != 'zh' else '无法被zip协议识别'))
+            raise TypeError(
+                f"{path} "
+                + (
+                    "Not recognized by zip protocol"
+                    if user_lang != "zh"
+                    else "无法被zip协议识别"
+                )
+            )
         elif protocol == rarfile and not rarfile.is_rarfile(path):
-            raise TypeError(f"{path} " + ('Not recognized by rar protocol' if user_lang != 'zh' else '无法被rar协议识别'))
+            raise TypeError(
+                f"{path} "
+                + (
+                    "Not recognized by rar protocol"
+                    if user_lang != "zh"
+                    else "无法被rar协议识别"
+                )
+            )
         elif protocol == py7zr and not py7zr.is_7zfile(path):
-            raise TypeError(f"{path} " + ('Not recognized by 7z protocol' if user_lang != 'zh' else '无法被7z协议识别'))
+            raise TypeError(
+                f"{path} "
+                + (
+                    "Not recognized by 7z protocol"
+                    if user_lang != "zh"
+                    else "无法被7z协议识别"
+                )
+            )
     else:
         raise FileNotFoundError
 
@@ -70,7 +98,8 @@ class _NormalCompressedPackage:
 
     General compression protocol class, if you do not understand what it does, please do not call it
     """
-    def __init__(self, _protocol, path: str, mode='r'):
+
+    def __init__(self, _protocol, path: str, mode="r"):
         """
         通用压缩协议类初始化
 
@@ -82,28 +111,30 @@ class _NormalCompressedPackage:
         """
         self._protocol = _protocol
         self.path = path
-        if mode not in ('r', 'w'):
+        if mode not in ("r", "w"):
             raise ValueError("Requires mode 'r', 'w'")
-        if mode == 'r':
+        if mode == "r":
             checkIsProtocolFile(_protocol, path)
             if _protocol == zipfile:
-                self.src = zipfile.ZipFile(path, 'r')
+                self.src = zipfile.ZipFile(path, "r")
             elif _protocol == rarfile:
                 self.src = rarfile.RarFile(path)
             elif _protocol == py7zr:
-                self.src = py7zr.SevenZipFile(path, 'r')
+                self.src = py7zr.SevenZipFile(path, "r")
             else:
-                self.src = _protocol.open(path, 'r')
+                self.src = _protocol.open(path, "r")
             self.mode = True
-        elif mode == 'w':
+        elif mode == "w":
             if _protocol == tarfile:
-                self.src = _protocol.open(path, 'x:gz')
+                self.src = _protocol.open(path, "x:gz")
             elif _protocol == zipfile:
-                self.src = _protocol.ZipFile(path, 'w')
+                self.src = _protocol.ZipFile(path, "w")
             elif _protocol == rarfile:
-                raise NotImplementedError('qs not support to create rar file because `RarFile`')
+                raise NotImplementedError(
+                    "qs not support to create rar file because `RarFile`"
+                )
             elif _protocol == py7zr:
-                self.src = _protocol.SevenZipFile(path, 'w')
+                self.src = _protocol.SevenZipFile(path, "w")
             self.mode = False
 
     def add_file(self, path):
@@ -143,13 +174,14 @@ class _NormalCompressedPackage:
                 self.src.extractall()
             elif self._protocol in [zipfile]:
                 from pathlib import Path
+
                 for fn in self.src.namelist():
                     path = Path(self.src.extract(fn))
                     try:
-                        path.rename(fn.encode('cp437').decode('utf-8'))
+                        path.rename(fn.encode("cp437").decode("utf-8"))
                     except:
                         try:
-                            path.rename(fn.encode('cp437').decode('gbk'))
+                            path.rename(fn.encode("cp437").decode("gbk"))
                         except Exception as e:
                             qs_default_console.log(qs_warning_string, repr(e))
 
@@ -169,7 +201,7 @@ class _NormalCompressedPackage:
 
 
 class Tar(_NormalCompressedPackage):
-    def __init__(self, path, mode='r'):
+    def __init__(self, path, mode="r"):
         """
         Tar协议初始化
 
@@ -207,7 +239,7 @@ class Tar(_NormalCompressedPackage):
 
 
 class Zip(_NormalCompressedPackage):
-    def __init__(self, path, mode='r'):
+    def __init__(self, path, mode="r"):
         """
         Zip协议初始化
 
@@ -245,7 +277,7 @@ class Zip(_NormalCompressedPackage):
 
 
 class Rar(_NormalCompressedPackage):
-    def __init__(self, path, mode='r'):
+    def __init__(self, path, mode="r"):
         """
         Rar协议初始化
 
@@ -283,7 +315,7 @@ class Rar(_NormalCompressedPackage):
 
 
 class SevenZip(_NormalCompressedPackage):
-    def __init__(self, path, mode='r'):
+    def __init__(self, path, mode="r"):
         """
         7z协议初始化
 
