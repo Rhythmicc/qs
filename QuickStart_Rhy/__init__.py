@@ -444,7 +444,7 @@ def sas():
                     return
     import json
     devices = [json.loads(i) for i in external_exec('SwitchAudioSource -a -f json', True)[1].splitlines()]
-    devices = {i['name']: {'id': i['id'], 'type': '🔈' if i['type'] == 'output' else '🎤'} for i in devices}
+    devices = {i['id']: {'uid': i['uid'], 'type': '🔈' if i['type'] == 'output' else '🎤', 'name': i['name']} for i in devices}
     if not devices:
         qs_default_console.print(qs_error_string, 'No device found' if user_lang != 'zh' else '未找到设备')
         return
@@ -452,27 +452,28 @@ def sas():
 
     table = qs_default_table(['ID', 'Name', 'Type'])
     for i in devices:
-        table.add_row(devices[i]['id'], i, devices[i]['type'])
+        table.add_row(i, devices[i]['name'], devices[i]['type'])
     qs_default_console.print(table, justify='center')
 
     default = qs_cache.get('audio_source')
-    choises = [str(i['id']) for i in devices.values()]
+    uids = {val['uid']: key for key, val in devices.items()}
     question = {
         'type': 'input',
         'message': 'Input device ID' if user_lang != 'zh' else '输入设备 ID',
-        'validate': lambda x: x in [str(i['id']) for i in devices.values()],
+        'validate': lambda x: x in [str(i) for i in devices],
     }
     if default:
         _default = default.copy()
         for item in default:
-            if item not in choises:
+            if item not in uids:
                 _default.pop(item)
         if _default:
-            question['default'] = sorted(_default.items(), key=lambda x: -x[1])[0][0]
+            question['default'] = uids[max(_default, key=_default.get)]
     else:
         default = {}
     select = _ask(question)
-    default[select] = default.get(select, 0) + 1
+    uid = devices[select]['uid']
+    default[uid] = default.get(uid, 0) + 1
 
     external_exec('SwitchAudioSource -i %s' % select, True)
     qs_cache.set('audio_source', default)
