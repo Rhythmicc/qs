@@ -9,7 +9,6 @@ Author: RhythmLian (https://rhythmlian.cn)
 """
 from . import size_format, get_fileinfo
 from concurrent.futures import ThreadPoolExecutor, wait
-from ..ThreadTools import FileWriters
 from ..SystemTools import get_core_num
 from .. import (
     user_lang,
@@ -18,6 +17,7 @@ from .. import (
     qs_info_string,
     qs_warning_string,
     headers,
+    requirePackage,
 )
 from threading import Lock
 from requests import get
@@ -79,6 +79,7 @@ class Downloader:
         exit_if_exist: bool = False,
         disableStatus: bool = False,
         disableParallel: bool = False,
+        write_to_memory: bool = False,
     ):
         """
         qs普通文件下载引擎
@@ -102,6 +103,7 @@ class Downloader:
         self.exit_if_exist = exit_if_exist
         self.enabled = True
         self.disableStatus = disableStatus
+        self.write_to_memory = write_to_memory
         if not self.disableStatus:
             with qs_default_console.status(
                 "Getting file info.." if user_lang != "zh" else "获取文件信息中.."
@@ -169,12 +171,18 @@ class Downloader:
             self.job_queue = queue.Queue()
             if os.path.exists(self.name + ".qs_dl"):
                 self.ctn_file = open(self.name + ".qs_dl", "r+")
-                self.ctn = [int(i) for i in self.ctn_file.read().strip().split()]
-            else:
+                self.ctn = {int(i) for i in self.ctn_file.read().strip().split()}
+            elif not self.write_to_memory:
                 self.ctn_file = open(self.name + ".qs_dl", "w")
-                self.ctn = []
-            self.writers = FileWriters(
-                self.name, max(2, int(core_num / 2)), "rb+" if self.ctn else "wb"
+                self.ctn = set()
+            else:
+                self.ctn = set()
+            self.writers = (
+                requirePackage(".ThreadTools", "FileWriters")(
+                    self.name, max(2, int(core_num / 2)), "rb+" if self.ctn else "wb"
+                )
+                if not self.write_to_memory
+                else requirePackage(".ThreadTools", "MemWriter")()
             )
             if not self.disableStatus:
                 qs_default_console.print(
@@ -205,7 +213,8 @@ class Downloader:
                 qs_info_string,
                 "Get Ctrl-C, exiting..." if user_lang != "zh" else "捕获Ctrl-C, 正在退出...",
             )
-            self.ctn_file.close()
+            if not self.write_to_memory:
+                self.ctn_file.close()
             self.pool.shutdown(wait=False)
             self.writers.wait()
             qs_default_console.print(
@@ -239,10 +248,11 @@ class Downloader:
                 qs_default_console.print(qs_error_string, repr(e))
             self.job_queue.put(start)
         else:
-            self.fileLock.acquire()
-            self.ctn.append(start)
-            self.ctn_file.write("%d\n" % start)
-            self.fileLock.release()
+            self.ctn.add(start)
+            if not self.write_to_memory:
+                self.fileLock.acquire()
+                self.ctn_file.write("%d\n" % start)
+                self.fileLock.release()
 
     def _single_dl(self):
         """
@@ -260,9 +270,15 @@ class Downloader:
                 self.main_progress.start_task(self.dl_id)
             else:
                 self.main_progress.update(self.dl_id, total=-1)
-        with open(self.name, "wb") as f:
+        if self.write_to_memory == False:
+            with open(self.name, "wb") as f:
+                for chunk in r.iter_content(32768):
+                    f.write(chunk)
+                    self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
+        else:
+            self.name = b""
             for chunk in r.iter_content(32768):
-                f.write(chunk)
+                self.name += chunk
                 self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
 
     def run(self):
@@ -284,15 +300,21 @@ class Downloader:
         if self.size > 0:
             if not self.disableStatus:
                 self.main_progress.start_task(self.dl_id)
-            if not self.ctn:
-                with open(self.name, "wb") as fp:
-                    fp.truncate(self.size)
-            if not self.disableStatus:
-                self.main_progress.advance(self.dl_id, self.fileBlock * len(self.ctn))
-            for i in range(0, self.size, self.fileBlock):
-                if self.ctn and i in self.ctn:
-                    continue
-                else:
+            if not self.write_to_memory:
+                if not self.ctn:
+                    with open(self.name, "wb") as fp:
+                        fp.truncate(self.size)
+                if not self.disableStatus:
+                    self.main_progress.advance(
+                        self.dl_id, self.fileBlock * len(self.ctn)
+                    )
+                for i in range(0, self.size, self.fileBlock):
+                    if self.ctn and i in self.ctn:
+                        continue
+                    else:
+                        self.job_queue.put(i)
+            else:
+                for i in range(0, self.size, self.fileBlock):
                     self.job_queue.put(i)
             retry_cnt = 0
             while not self.job_queue.empty():
@@ -312,8 +334,11 @@ class Downloader:
                     time.sleep(0.5)
                 retry_cnt += 1
             self.writers.wait()
-            self.ctn_file.close()
-            os.remove(self.name + ".qs_dl")
+            if not self.write_to_memory:
+                self.ctn_file.close()
+                os.remove(self.name + ".qs_dl")
+            else:
+                self.name = self.writers.content
         else:
             self._single_dl()
         if not self.disableStatus:
@@ -337,6 +362,7 @@ def normal_dl(
     exit_if_exist: bool = False,
     disableStatus: bool = False,
     disableParallel: bool = False,
+    write_to_memory: bool = False,
 ):
     """
     自动规划下载线程数量并开始并行下载
@@ -345,16 +371,17 @@ def normal_dl(
 
     :param disableStatus:
     :param url: 文件url
-    :param set_name: 设置文件名（默认采用url所指向的资源名）
+    :param set_name: 设置文件路径
     :param set_proxy: 设置代理（默认无代理）
     :param set_referer: 设置referer
     :param thread_num: 线程数
     :param output_error: 输出报错信息
-    :param failed2exit: 获取文件信息失败则不下载，否则qs将继续尝试下载
+    :param failed2exit: 获取文件信息失败则不下载, 否则qs将继续尝试下载
     :param exit_if_exist: 如果文件已存在则不下载
     :param disableStatus: 是否显示当前任务状态
     :param disableParallel: 是否禁用并行下载
-    :return: file name
+    :param write_to_memory: 是否将下载内容直接写入内存（默认写入文件）
+    :return: 文件路径或二进制内容 | file path or bytes
     """
     if set_name and os.path.exists(set_name) and not ask_overwrite(set_name):
         return ""
@@ -369,4 +396,5 @@ def normal_dl(
         exit_if_exist=exit_if_exist,
         disableStatus=disableStatus,
         disableParallel=disableParallel,
+        write_to_memory=write_to_memory,
     ).run()

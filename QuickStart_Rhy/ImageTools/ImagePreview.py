@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 from .. import qs_default_console, qs_console_width
-from .. import headers, prompt, user_lang, force_show_img, qs_config
+from .. import prompt, user_lang, force_show_img, qs_config
 import math
 import base64
 import sys
@@ -325,26 +325,24 @@ def image_preview(
         if qs_console_status:
             qs_console_status.stop()
         if is_url:
-            # from PIL import Image
             from .. import requirePackage
             from io import BytesIO
-            import requests
 
-            Image = requirePackage("PIL", "Image", "Pillow")
-            if set_referer:
-                headers["referer"] = set_referer
-            proxies = (
-                {"http": "http://" + set_proxy, "https": "https://" + set_proxy}
-                if set_proxy
-                else {}
+            img = requirePackage("PIL", "Image", "Pillow").open(
+                BytesIO(
+                    requirePackage(".NetTools.NormalDL", "normal_dl")(
+                        img,
+                        set_referer=set_referer,
+                        set_proxy=set_proxy,
+                        disableStatus=True,
+                        write_to_memory=True,
+                    )
+                )
             )
-            res = requests.get(img, headers=headers, proxies=proxies).content
-            img = Image.open(BytesIO(res))
         elif not is_url and isinstance(img, str) and os.path.exists(img):
             from .. import requirePackage
 
-            Image = requirePackage("PIL", "Image", "Pillow")
-            img = Image.open(img)
+            img = requirePackage("PIL", "Image", "Pillow").open(img)
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)

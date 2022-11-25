@@ -7,6 +7,7 @@ The network tool library of QS
 import socket
 import requests
 from requests.exceptions import RequestException
+from typing import Tuple
 
 
 headers = {
@@ -194,7 +195,7 @@ def get_ip_info() -> dict:
 
 def get_fileinfo(
     url: str, proxy: str = "", referer: str = ""
-) -> (str, str, requests.Response):
+) -> Tuple[str, str, requests.Response]:
     """
     获取待下载的文件信息
 

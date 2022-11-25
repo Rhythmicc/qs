@@ -862,10 +862,10 @@ def exchange():
     )
     st.start()
     try:
-        status, data = exchange(sys.argv[3], float(sys.argv[2]))
+        status, data = exchange(sys.argv[3], 1)
         qs_default_console.print(
             f"{sys.argv[2]} {sys.argv[3]} ==> {data['exchange']} × {sys.argv[2]} = "
-            f"{data['exchange_round']} {data['currency_to']}\n"
+            f"{data['exchange'] * float(sys.argv[2])} {data['currency_to']}\n"
             f"{'Update' if user_lang != 'zh' else '更新时间'}: {data['update_time']}",
             justify="center",
         ) if status else qs_default_console.log(qs_error_string, data)

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: QuickStart-Rhy
-Version: 0.6.32
+Version: 0.6.33
 Summary: Simplify the operation in terminal!
 Home-page: https://github.com/Rhythmicc/qs
 Author: RhythmLian
@@ -15,20 +15,24 @@ License-File: LICENSE
 <h1 style="text-align: center"> QuickStart_Rhy </h1>
 
 ## Install
+
 ```shell
 pip3 install quickstart-rhy
 ```
+
 **Env: ^Python 3.7**
 
 **Font: [Cascadia Code](https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip)**
 
 ## Docs
-| |Url|
-|:---:|:---:|
-|1|https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/      |
-|2|https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/|
+
+|     |                          Url                           |
+| :-: | :----------------------------------------------------: |
+|  1  |    https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/    |
+|  2  | https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/ |
 
 ## Tab Complete (zsh only)
+
 ```shell
 mv _qs /path/in/$fpath/
 ```

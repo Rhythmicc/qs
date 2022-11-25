@@ -162,7 +162,7 @@ def http():
 
                 url = formatUrl(url)
             except IndexError:
-                print("Usage: qs ftp ip:port -bind url")
+                print("Usage: qs http ip:port -bind url")
                 exit(0)
     else:
         from .NetTools import get_ip
@@ -186,7 +186,6 @@ def netinfo():
     import urllib.parse
     from . import user_lang, qs_default_console, qs_error_string, requirePackage
 
-    pyperclip = requirePackage("pyperclip")
     from .API.alapi import ip_info
 
     def print_ip_info(info_ls):
@@ -220,7 +219,9 @@ def netinfo():
     urls = sys.argv[2:] if len(sys.argv) > 2 else []
     if not urls:
         try:
-            urls += pyperclip.paste().strip().split() if not urls else []
+            urls += (
+                requirePackage("pyperclip").paste().strip().split() if not urls else []
+            )
         except:
             from rich.prompt import Prompt
 

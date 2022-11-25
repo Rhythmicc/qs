@@ -107,3 +107,28 @@ class FileWriters:
         """
         self.wait()
         self.pool.shutdown()
+
+
+class MemWriter:
+    import heapq
+
+    def __init__(self):
+        """
+        线程安全的写内存。
+        """
+        self.mem_blocks = []
+
+    def new_job(self, content: bytes, index: int):
+        # 将内容写入内存
+        self.heapq.heappush(self.mem_blocks, (index, content))
+
+    @property
+    def content(self):
+        # 获取内存内容
+        res = b""
+        while self.mem_blocks:
+            res += self.heapq.heappop(self.mem_blocks)[1]
+        return res
+
+    def wait(self):
+        pass
