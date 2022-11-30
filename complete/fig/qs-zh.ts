@@ -1,5 +1,5 @@
 export const generateApps = (unquotedPath: string): Fig.Generator => ({
-    cache: {strategy: "stale-while-revalidate"},
+    // cache: {strategy: "stale-while-revalidate"},
     script: `mdfind kMDItemContentTypeTree=com.apple.application-bundle -onlyin ${unquotedPath}`,
     postProcess: (out) => {
         return out.split("\n").map((path) => {
