@@ -505,6 +505,7 @@ def sas():
                     return
     import json
 
+    current = json.loads(external_exec("SwitchAudioSource -c -f json", True)[1])
     devices = [
         json.loads(i)
         for i in external_exec("SwitchAudioSource -a -f json", True)[1].splitlines()
@@ -524,9 +525,17 @@ def sas():
         return
     from .TuiTools.Table import qs_default_table
 
-    table = qs_default_table(["ID", "Name", "Type"])
+    table = qs_default_table(
+        ["ID", "Name", "Type", "Current"]
+        if user_lang != "zh"
+        else ["ID", "名称", "类型", "当前设备"]
+    )
     for i in devices:
-        table.add_row(i, devices[i]["name"], devices[i]["type"])
+        table.add_row(i, devices[i]["name"], devices[i]["type"]) if devices[i][
+            "uid"
+        ] != current["uid"] else table.add_row(
+            i, devices[i]["name"], devices[i]["type"], "[bold green]⬅[/]"
+        )
     qs_default_console.print(table, justify="center")
 
     default = qs_cache.get("audio_source")
