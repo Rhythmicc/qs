@@ -196,11 +196,11 @@ default_proxy = {
 }
 
 
-center_prefix = {
+terminal_font_size = {
     "type": "input",
-    "name": "center_prefix",
-    "message": "Space number before imgcat | 显示图片之前的空格数:",
-    "default": "lambda x: 0",
+    "name": "terminal_font_size",
+    "message": "Input terminal font size   | 输入终端字体大小:",
+    "default": "16",
 }
 
 
@@ -229,7 +229,7 @@ class QsConfig:
     "default_proxy": "user:password@ip:port or ip:port",
     "default_pip": "pip3",
     "force_show_img": false,
-    "center_prefix": "lambda x: 0"
+    "terminal_font_size": 16
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
@@ -267,7 +267,7 @@ class QsConfig:
                     default_translate_engine,
                     default_proxy,
                     default_pip,
-                    center_prefix,
+                    terminal_font_size,
                 ]
             )
             self.config["basic_settings"]["default_language"] = (

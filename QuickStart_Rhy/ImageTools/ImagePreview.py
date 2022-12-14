@@ -189,7 +189,7 @@ def get_tty_size():
     return int(rows), int(columns)
 
 
-def real_height(buf, pixels_per_line=24):
+def real_height(buf, pixels_per_line=int(qs_config.basicSelect("terminal_font_size"))):
     im_width, im_height = get_image_shape(buf)
     if im_height:
         assert pixels_per_line > 0
@@ -347,19 +347,14 @@ def image_preview(
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
         _real_height = real_height(buf)
-        _real_width = math.ceil(width / height * _real_height) * 2 + 1
+        _real_width = math.ceil(width / height * _real_height) * 2
 
         console_width = (
             qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
         )
-        center_prefix = (eval(qs_config.basicSelect("center_prefix")))(console_width)
+
         qs_default_console.print(
-            " "
-            * int(
-                max((console_width - _real_width) / 2 - 1, 0)
-                if not center_prefix
-                else center_prefix
-            ),
+            " " * max((console_width - _real_width) // 2, 0),
             end="",
         )
 
