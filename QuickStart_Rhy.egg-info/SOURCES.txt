@@ -21,6 +21,7 @@ QuickStart_Rhy.egg-info/top_level.txt
 QuickStart_Rhy.egg-info/zip-safe
 QuickStart_Rhy/API/AliCloud.py
 QuickStart_Rhy/API/BaiduCloud.py
+QuickStart_Rhy/API/ChatGPT.py
 QuickStart_Rhy/API/Lolicon.py
 QuickStart_Rhy/API/QiniuOSS.py
 QuickStart_Rhy/API/SimpleAPI.py

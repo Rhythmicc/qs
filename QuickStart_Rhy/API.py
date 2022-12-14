@@ -1223,3 +1223,35 @@ def joke():
             subtitle=ct["time"],
         )
     )
+
+
+def gpt():
+    """
+    Chat GPT-3
+    :return:
+    """
+    from .API.ChatGPT import chatGPT
+    from . import _ask, table_cell
+
+    qs_default_console.print(qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出")
+
+    while (
+        prompt := _ask(
+            {
+                "type": "input",
+                "message": "Input Question" if user_lang != "zh" else "输入问题",
+            }
+        )
+    ) != "exit":
+        with qs_default_console.status(
+            "Thinking..." if user_lang != "zh" else "思考中..."
+        ):
+            res = chatGPT(prompt)
+        res = "\n".join(
+            [table_cell(i, qs_default_console.width) for i in res.split("\n")]
+        )
+        qs_default_console.print(
+            "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
+            justify="center",
+        )
+        qs_default_console.print(res)

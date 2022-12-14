@@ -355,6 +355,16 @@ const completionSpec: Fig.Spec = {
         description: 'search magnet url by designation',
         args: {name: 'designation', description: 'designation'}
     }, {
+        name: 'doutu',
+        description: 'get doutu image',
+        args: {name: 'keyword', description: 'keyword'},
+    }, {
+        name: 'joke',
+        description: 'get Chinese joke',
+    }, {
+        name: 'gpt',
+        description: 'ChatGPT',
+    }, {
         name: 'stbg',
         description: 'color replace for picture',
         args: [

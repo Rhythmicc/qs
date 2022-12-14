@@ -255,7 +255,8 @@ class QsConfig:
     "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "commonClipboardFilePath": "GET: /Path/to/file",
     "alapi_token": "GET: https://user.alapi.cn/",
-    "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey"
+    "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey",
+    "openai": "GET: https://openai.com/api/"
   }
 }"""
             )

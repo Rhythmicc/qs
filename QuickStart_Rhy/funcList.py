@@ -328,6 +328,7 @@ api_funcs = {
     "d2m": "d2m",
     "doutu": "doutu",
     "joke": "joke",
+    "gpt": "gpt",
 }
 
 image_funcs = {

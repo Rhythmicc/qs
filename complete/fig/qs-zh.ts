@@ -366,6 +366,9 @@ const completionSpec: Fig.Spec = {
         name: 'joke',
         description: '获取中文笑话'
     }, {
+        name: 'gpt',
+        description: 'ChatGPT',
+    }, {
         name: 'stbg',
         description: '替换图片颜色',
         args: [

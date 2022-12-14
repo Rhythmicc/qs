@@ -551,6 +551,8 @@ def sas():
             if item not in uids:
                 _default.pop(item)
         if _default:
+            if len(_default) > 1:
+                _default.pop(current["uid"])
             question["default"] = uids[max(_default, key=_default.get)]
     else:
         default = {}
