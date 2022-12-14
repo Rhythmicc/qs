@@ -346,19 +346,56 @@ def image_preview(
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
-        _real_height = real_height(buf)
-        _real_width = math.ceil(width / height * _real_height) * 2
+        rate = width / height
+        font_rate = 2.125
+        _real_height = height / int(qs_config.basicSelect("terminal_font_size"))
+        _real_width = (
+            width * font_rate / int(qs_config.basicSelect("terminal_font_size"))
+        )
 
         console_width = (
             qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
         )
+
+        console_height = qs_default_console.height - 3
+
+        if _real_width > console_width:
+            _real_width = console_width
+            _real_height = math.floor(_real_width / rate / font_rate)
+
+            max_iter = 100
+            _iter = 0
+            while math.fabs(_real_width / _real_height / font_rate - rate) > 0.01:
+                _real_height += (
+                    1 if _real_width / _real_height / font_rate > rate else -1
+                )
+                _iter += 1
+                if _real_height <= 1 or _iter > max_iter:
+                    break
+            if height > width:
+                _real_height += 1
+        if _real_height > console_height:
+            _real_height = console_height
+            _real_width = math.floor(_real_height * rate * font_rate)
+
+            max_iter = 100
+            _iter = 0
+            while math.fabs(_real_width / _real_height / font_rate - rate) > 0.01:
+                _real_width += (
+                    -1 if _real_width / _real_height / font_rate > rate else 1
+                )
+                _iter += 1
+                if _real_width <= 1 or _iter > max_iter:
+                    break
+            if height < width:
+                _real_width += 1
 
         qs_default_console.print(
             " " * max((console_width - _real_width) // 2, 0),
             end="",
         )
 
-        imgcat(buf, height=real_height(buf))
+        imgcat(buf, width=min(_real_width, console_width), height=_real_height)
     except Exception as e:
         if qs_console_status:
             qs_console_status.stop()
