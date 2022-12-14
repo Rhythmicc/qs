@@ -391,7 +391,7 @@ def image_preview(
                 _real_width += 1
 
         qs_default_console.print(
-            " " * max((console_width - _real_width) // 2, 0),
+            " " * int(max((console_width - _real_width) // 2, 0)),
             end="",
         )
 
@@ -401,5 +401,6 @@ def image_preview(
             qs_console_status.stop()
         from .. import qs_error_string
 
-        qs_default_console.print(qs_error_string, repr(e))
+        # qs_default_console.print(qs_error_string, repr(e))
+        qs_default_console.print_exception()
         return
