@@ -220,7 +220,7 @@ def _is_in_path(cmd: str):
 
 
 def table_cell(string: str, length: int) -> str:
-    return " ".join(cut_string(string, length))
+    return "\n".join(cut_string(string, length))
 
 
 def deal_ctrl_c(signum, frame):

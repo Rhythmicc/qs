@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-VERSION = "0.6.34"
+VERSION = "0.6.35"
 
 setup(
     name="QuickStart_Rhy",

@@ -3,7 +3,7 @@ Generate Various Table
 """
 
 
-def qs_default_table(headers: list, title: str = ""):
+def qs_default_table(headers: list, title: str = "", without_headers: bool = False):
     """
     生成一个具有默认样式的表格
 
@@ -41,6 +41,7 @@ def qs_default_table(headers: list, title: str = ""):
     from rich.box import SIMPLE_HEAVY
 
     res_table = Table(
+        show_header=not without_headers,
         show_edge=False,
         row_styles=["none", "dim"],
         box=SIMPLE_HEAVY,
