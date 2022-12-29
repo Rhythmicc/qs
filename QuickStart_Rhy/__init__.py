@@ -49,7 +49,6 @@ def external_exec(
     :param without_stderr: 是否不输出stderr
     :return: status code, output
     """
-    # import threading
     from subprocess import Popen, PIPE
     from concurrent.futures import ThreadPoolExecutor, wait
 
@@ -114,16 +113,14 @@ def requirePackage(
     except (ModuleNotFoundError, ImportError):
         if not_ask:
             return None
-        confirm = prompt(
+        if _ask(
             {
                 "type": "confirm",
-                "name": "install",
                 "message": f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?  
-  Qs 依赖 {pname + (' -> ' + module if module else '')}, 是否确认安装?""",
+  Qs 依赖 {pname + (' -> ' + module if module else '')}, 确认安装?""",
                 "default": True,
             }
-        )["install"]
-        if confirm:
+        ):
             with qs_default_console.status(
                 "Installing..." if user_lang != "zh" else "正在安装..."
             ):

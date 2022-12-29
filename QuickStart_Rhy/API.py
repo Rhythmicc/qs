@@ -238,9 +238,9 @@ def translate(content: str = None):
 
     pyperclip = requirePackage("pyperclip")
     if trans_engine != "default":
-        from .API.TencentCloud import translate
-    else:
-        from .API.alapi import translate
+        trans_engine = "alapi"
+
+    _translate = requirePackage(f".API.{trans_engine}", "translate")
 
     output_flag = False if content else True
     if not content:
@@ -257,7 +257,7 @@ def translate(content: str = None):
                 else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:"
             )
     if content:
-        ret = translate(content.replace("\n", " "))
+        ret = _translate(content.replace("\n", " "))
         if output_flag:
             qs_default_console.print(ret) if ret else qs_default_console.log(
                 qs_error_string, "Translate Failed!"
@@ -816,6 +816,7 @@ def loli():
                 not save_flag,
                 set_proxy=proxy,
                 set_referer="https://i.pximg.net",
+                qs_console_status=qs_default_console.status("展示图片中.."),
             )
 
         qs_default_console.print(
@@ -1231,9 +1232,11 @@ def gpt():
     :return:
     """
     from .API.ChatGPT import chatGPT
-    from . import _ask, table_cell
+    from . import _ask
 
-    qs_default_console.print(qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出")
+    qs_default_console.print(
+        qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出"
+    )
 
     while (
         prompt := _ask(
@@ -1247,9 +1250,6 @@ def gpt():
             "Thinking..." if user_lang != "zh" else "思考中..."
         ):
             res = chatGPT(prompt)
-        res = "\n".join(
-            [table_cell(i, qs_default_console.width) for i in res.split("\n")]
-        )
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",

@@ -25,9 +25,9 @@ def pre_check(funcName: str, ext: bool = True) -> str:
     except KeyError:
         if ext:
             exit(
-                "You should set %s api key at: %s.qsrc" % (funcName, user_root)
+                "You should set '%s' api key at: %s.qsrc" % (funcName, user_root)
                 if user_lang != "zh"
-                else "你需要在qs的配置表 %s.qsrc 中填入设%s键值" % (user_root, funcName)
+                else "你需要在qs的配置表 %s.qsrc 中填入 '%s' 键值" % (user_root, funcName)
             )
         else:
             return ""

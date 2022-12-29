@@ -150,7 +150,7 @@ default_translate_engine = {
     "type": "list",
     "name": "default_translate_engine",
     "message": "Select translate engine    | 选择翻译引擎:",
-    "choices": ["default", "TencentCloud"],
+    "choices": ["default", "TencentCloud", "DeepL"],
 }
 
 default_pip = {
@@ -224,7 +224,7 @@ class QsConfig:
     "default_currency": "CNY",
     "default_translate_engine": {
       "index": 0,
-      "support": ["default", "TencentCloud"]
+      "support": ["default", "TencentCloud", "DeepL"]
     },
     "default_proxy": "user:password@ip:port or ip:port",
     "default_pip": "pip3",
@@ -256,7 +256,8 @@ class QsConfig:
     "commonClipboardFilePath": "GET: /Path/to/file",
     "alapi_token": "GET: https://user.alapi.cn/",
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey",
-    "openai": "GET: https://openai.com/api/"
+    "openai": "GET: https://openai.com/api/",
+    "DeepL": "GET: https://www.deepl.com/zh/pro-api?cta=header-pro-api/"
   }
 }"""
             )
@@ -283,6 +284,7 @@ class QsConfig:
             self.config["basic_settings"]["default_translate_engine"]["index"] = [
                 "default",
                 "TencentCloud",
+                "DeepL",
             ].index(res["default_translate_engine"])
             self.config["basic_settings"]["default_proxy"] = (
                 "" if res["default_proxy"] == "Not set | 暂不设置" else res["default_proxy"]

@@ -344,6 +344,10 @@ def image_preview(
 
             img = requirePackage("PIL", "Image", "Pillow").open(img)
 
+        if qs_console_status:
+            qs_console_status.start()
+            qs_console_status.update("计算图片摆放位置")
+
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
         rate = width / height
@@ -389,6 +393,8 @@ def image_preview(
                     break
             if height < width:
                 _real_width += 1
+        if qs_console_status:
+            qs_console_status.stop()
 
         qs_default_console.print(
             " " * int(max((console_width - _real_width) // 2, 0)),
