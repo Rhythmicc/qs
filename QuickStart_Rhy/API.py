@@ -236,8 +236,7 @@ def translate(content: str = None):
     """
     from . import trans_engine
 
-    pyperclip = requirePackage("pyperclip")
-    if trans_engine != "default":
+    if trans_engine == "default":
         trans_engine = "alapi"
 
     _translate = requirePackage(f".API.{trans_engine}", "translate")
@@ -247,7 +246,7 @@ def translate(content: str = None):
         content = " ".join(sys.argv[2:])
     if not content:
         try:
-            content = pyperclip.paste()
+            content = requirePackage("pyperclip", "paste")()
         except:
             from . import qs_default_input
 
@@ -386,7 +385,6 @@ def AipNLP():
     from .API.BaiduCloud import AipNLP
 
     pyperclip = requirePackage("pyperclip")
-    import pyperclip
 
     pyperclip.paste()
     ct = sys.argv[2:]
