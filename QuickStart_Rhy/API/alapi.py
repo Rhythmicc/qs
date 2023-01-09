@@ -404,11 +404,7 @@ def kdCheck(kd_number: str):
             return False, 0, res["msg"]
         return (
             True,
-            (
-                int(res["data"]["status"])
-                if "status" in res["data"]
-                else int(res["data"]["state"])
-            ),
+            int(res["data"]["state"]),
             res["data"]["info"],
         )
     except Exception as e:
