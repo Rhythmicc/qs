@@ -8,8 +8,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .. import qs_default_console, qs_console_width
-from .. import prompt, user_lang, force_show_img, qs_config
+from .. import qs_default_console, qs_console_width, requirePackage, qs_default_status
+from .. import _ask, user_lang, force_show_img, qs_config
 import math
 import base64
 import sys
@@ -60,9 +60,7 @@ def get_image_shape(buf):
         b.write(buf)
 
         try:
-            from PIL import Image
-
-            im = Image.open(b)
+            im = requirePackage("PIL", "Image", "Pillow").open(b)
             return im.width, im.height
         except (IOError, OSError) as ex:
             # PIL.Image.open throws an error -- probably invalid byte input are given
@@ -124,15 +122,6 @@ def to_content_buf(data):
                 "Expected a 3D ndarray (RGB/RGBA image) or 2D (grayscale image), "
                 "but given shape: {}".format(im.shape)
             )
-
-        try:
-            from PIL import Image
-        except ImportError as e:
-            raise ImportError(
-                e.msg
-                + "\nTo draw numpy arrays, we require Pillow. "
-                + "(pip install Pillow)"
-            )  # TODO; reraise
 
         with io.BytesIO() as buf:
             # mode: https://pillow.readthedocs.io/en/4.2.x/handbook/concepts.html#concept-modes
@@ -206,7 +195,14 @@ def real_height(buf, pixels_per_line=int(qs_config.basicSelect("terminal_font_si
         return 10
 
 
-def imgcat(buf, width=None, height=None, preserve_aspect_ratio=True, fp=None):
+def imgcat(
+    buf,
+    width=None,
+    height=None,
+    preserve_aspect_ratio=True,
+    fp=None,
+    force_show: bool = False,
+):
     """
     Print image on terminal (iTerm2).
 
@@ -241,6 +237,13 @@ def imgcat(buf, width=None, height=None, preserve_aspect_ratio=True, fp=None):
         fp.write(CSI + str(height).encode() + b"F")  # PEP-461
         fp.write(TMUX_WRAP_ST + b"\033")
 
+    is_iterm2 = "ITERM_SESSION_ID" in os.environ
+
+    if not is_iterm2 and not force_show:
+        raise RuntimeError(
+            "This function is only supported in iTerm2. "
+            "Please set `force_show=True` to force show the image."
+        )
     # now starts the iTerm2 file transfer protocol.
     fp.write(OSC)
     fp.write(b"1337;File=inline=1")
@@ -276,7 +279,6 @@ def image_preview(
     is_url=False,
     set_proxy: str = "",
     set_referer: str = "",
-    qs_console_status=None,
     set_width_in_rc_file: int = 0,
     force_show: bool = force_show_img,
 ):
@@ -291,7 +293,6 @@ def image_preview(
     :param img: opened file, numpy array, PIL.Image, matplotlib fig
     :param set_proxy: set proxy
     :param set_referer: set refer
-    :param qs_console_status: qs终端的状态信息
     :return:
     """
     global force_show_option, has_set_force_show_option
@@ -301,16 +302,15 @@ def image_preview(
             or force_show
             or (
                 not has_set_force_show_option
-                and prompt(
+                and _ask(
                     {
                         "type": "confirm",
-                        "name": "preview_image_on_terminal",
                         "message": "Preview image on this terminal?"
                         if user_lang != "zh"
                         else "确认在该终端预览图片?",
                         "default": False,
                     }
-                )["preview_image_on_terminal"]
+                )
             )
         ):
             has_set_force_show_option = True
@@ -320,8 +320,7 @@ def image_preview(
             force_show_option = True
         if not is_url and (isinstance(img, str) and not os.path.exists(img)):
             is_url = img.startswith("http")
-        if qs_console_status:
-            qs_console_status.stop()
+        qs_default_status.stop()
         if is_url:
             from .. import requirePackage
             from io import BytesIO
@@ -342,9 +341,10 @@ def image_preview(
 
             img = requirePackage("PIL", "Image", "Pillow").open(img)
 
-        if qs_console_status:
-            qs_console_status.start()
-            qs_console_status.update("计算图片摆放位置")
+        qs_default_status.start()
+        qs_default_status.update(
+            "Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置"
+        )
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
@@ -391,20 +391,20 @@ def image_preview(
                     break
             if height < width:
                 _real_width += 1
-        if qs_console_status:
-            qs_console_status.stop()
+        qs_default_status.stop()
 
         qs_default_console.print(
             " " * int(max((console_width - _real_width) // 2, 0)),
             end="",
         )
 
-        imgcat(buf, width=min(_real_width, console_width), height=_real_height)
+        imgcat(
+            buf,
+            width=min(_real_width, console_width),
+            height=_real_height,
+            force_show=force_show_option,
+        )
     except Exception as e:
-        if qs_console_status:
-            qs_console_status.stop()
-        from .. import qs_error_string
-
-        # qs_default_console.print(qs_error_string, repr(e))
+        qs_default_status.stop()
         qs_default_console.print_exception()
         return

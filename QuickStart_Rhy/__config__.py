@@ -1,9 +1,8 @@
 from prompt_toolkit.validation import Validator, ValidationError
 from inquirer_rhy.prompt import prompt
 import sys
-from rich.console import Console
+from QuickProject import QproDefaultConsole as qs_default_console
 
-qs_default_console = Console()
 system = sys.platform
 if system.startswith("win"):
     dir_char = "\\"

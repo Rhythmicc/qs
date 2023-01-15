@@ -5,6 +5,7 @@ from ..TuiTools.Bar import NormalProgressBar
 from .. import (
     user_lang,
     qs_default_console,
+    qs_default_status,
     qs_error_string,
     qs_info_string,
     qs_warning_string,
@@ -54,7 +55,8 @@ class MultiSingleDL:
         self.job_queue = queue.Queue()
         self.task_num_lock = Lock()
         self.pool = ThreadPoolExecutor(max_workers=core_num)
-        self.status = qs_default_console.status("获取文件信息中...")
+        self.status = qs_default_status
+        qs_default_status.update("获取文件信息中...")
         self.progress, self.task_id = NormalProgressBar("多文件下载", self.task_num)
 
     def _info(self, url):

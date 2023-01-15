@@ -4,15 +4,13 @@
 
 Command interaction, view various menus and documents of QS
 """
-from . import user_lang, open_url
-from .__config__ import prompt
+from . import user_lang, open_url, _ask
 
 
 def onlineDocuments():
-    res = prompt(
+    res = _ask(
         {
             "type": "list",
-            "name": "onlineSource",
             "message": "Switch a website source:"
             if user_lang != "zh"
             else "选择合适你的网站源:",
@@ -23,7 +21,7 @@ def onlineDocuments():
                 else "2. Github Page (非中国用户)",
             ],
         }
-    )["onlineSource"]
+    )
     import webbrowser as wb
 
     wb.open(
@@ -47,7 +45,6 @@ def onlineDocuments():
 def lesson():
     mainMenu = {
         "type": "list",
-        "name": "action",
         "message": "Welcome using qs, choose and get help:"
         if user_lang != "zh"
         else "欢迎使用qs, 选择以下选项获得帮助:",
@@ -61,7 +58,7 @@ def lesson():
             "7. join TG group" if user_lang != "zh" else "7. 加入TG群",
         ],
     }
-    res = prompt(mainMenu)["action"]
+    res = _ask(mainMenu)
 
     if res[0] == "7":
         return open_url(["https://t.me/joinchat/G2mpk7-S85eM7sb7"])

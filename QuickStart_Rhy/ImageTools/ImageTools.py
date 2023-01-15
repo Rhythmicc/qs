@@ -35,6 +35,7 @@ def imgsConcat(imgs: list):
         terminal_font_size,
         requirePackage,
         qs_default_console,
+        qs_default_status,
         qs_error_string,
     )
 
@@ -45,7 +46,8 @@ def imgsConcat(imgs: list):
         qs_default_console.print(qs_error_string, "样品图获取失败!")
         return
 
-    with qs_default_console.status("拼接图片中") as st:
+    qs_default_status.update("拼接图片中")
+    with qs_default_status as st:
         heights_len = min(len(imgs), 3)
 
         one_width = int(

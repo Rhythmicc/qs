@@ -9,20 +9,18 @@ import requests
 __common_token__ = "hUxPTdnybk1XLUEFtzkj"
 alapi_token = pre_check("alapi_token", False)
 if not alapi_token:
-    from .. import qs_default_console, qs_error_string, qs_warning_string
-    from ..__config__ import prompt
+    from .. import qs_default_console, qs_error_string, qs_warning_string, _ask
 
     qs_default_console.print(
         qs_error_string, "This function require alapi token!\n这个功能需要alapi token\n"
     )
-    if prompt(
+    if _ask(
         {
             "type": "confirm",
-            "name": "confirm",
             "message": "To get alapi token?\n是否前往获取alapi token?",
             "default": True,
         }
-    )["confirm"]:
+    ):
         from .. import open_url
         from .. import qs_config
 
@@ -34,22 +32,20 @@ if not alapi_token:
                 "Failed to open browser, try url: https://www.alapi.cn/",
             )
         finally:
-            alapi_token = prompt(
+            alapi_token = _ask(
                 {
                     "type": "input",
-                    "name": "token",
                     "message": "Input alapi token | 输入alapi token:",
                 }
-            )["token"]
+            )
             qs_config.apiUpdate("alapi_token", alapi_token)
-    elif prompt(
+    elif _ask(
         {
             "type": "confirm",
-            "name": "confirm",
             "message": "Use common but limited token?\n是否愿意使用公共但是受限的token?",
             "default": True,
         }
-    )["confirm"]:
+    ):
         alapi_token = __common_token__
         qs_config.apiUpdate("alapi_token", alapi_token)
         qs_default_console.print(

@@ -8,11 +8,12 @@ Docs for different language:
 import os
 import sys
 
-from rich.prompt import Prompt as qs_default_input
+from QuickProject import QproDefaultStatus as qs_default_status
+from QuickProject import external_exec, _ask
 
 from .NetTools import headers
 from .__cache__ import QsCache
-from .__config__ import QsConfig, dir_char, system, qs_default_console, prompt
+from .__config__ import QsConfig, dir_char, system, qs_default_console
 
 name = "QuickStart_Rhy"
 
@@ -32,61 +33,6 @@ qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
 qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
 qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_console_width = qs_default_console.width
-
-
-def external_exec(
-    cmd: str,
-    without_output: bool = False,
-    without_stdout: bool = False,
-    without_stderr: bool = False,
-):
-    """
-    外部执行命令
-
-    :param cmd: 命令
-    :param without_output: 是否不输出
-    :param without_stdout: 是否不输出stdout
-    :param without_stderr: 是否不输出stderr
-    :return: status code, output
-    """
-    from subprocess import Popen, PIPE
-    from concurrent.futures import ThreadPoolExecutor, wait
-
-    class MixContent:
-        def __init__(self):
-            self.content = ""
-
-        def __add__(self, other):
-            self.content += other
-            return self
-
-        def __str__(self):
-            return self.content
-
-    content = MixContent()
-
-    def _output(pipe_name: str, process: Popen, content: MixContent):
-        ignore_status = (
-            without_stdout if pipe_name == "stdout" else without_stderr
-        ) or without_output
-        for line in iter(eval(f"process.{pipe_name}.readline"), ""):
-            if not ignore_status:
-                qs_default_console.print(line.strip())
-            content += line
-
-    pool = ThreadPoolExecutor(2)
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, bufsize=1, encoding="utf-8")
-
-    wait(
-        [
-            pool.submit(_output, "stdout", p, content),
-            pool.submit(_output, "stderr", p, content),
-        ]
-    )
-    pool.shutdown()
-    ret_code = p.wait()
-
-    return ret_code, str(content)
 
 
 def requirePackage(
@@ -121,13 +67,20 @@ def requirePackage(
                 "default": True,
             }
         ):
-            with qs_default_console.status(
+            qs_default_status.update(
                 "Installing..." if user_lang != "zh" else "正在安装..."
-            ):
-                external_exec(
+            )
+            with qs_default_status:
+                st, _ = external_exec(
                     f"{set_pip} install {pname if not real_name else real_name} -U",
                     True,
                 )
+            if st:
+                qs_default_console.print(
+                    qs_error_string,
+                    f"Install {pname + (' -> ' + module if module else '')} failed, please install it manually!",
+                )
+                exit(-1)
             if not_exit:
                 exec(f"from {pname} import {module}" if module else f"import {pname}")
             else:
@@ -139,43 +92,6 @@ def requirePackage(
             exit(-1)
     finally:
         return eval(f"{module if module else pname}")
-
-
-def _ask(question: dict, timeout: int = 0):
-    if timeout:
-
-        def ask():
-            def handle(signum, frame):
-                raise RuntimeError
-
-            import signal
-
-            try:
-                signal.signal(signal.SIGALRM, handle)
-                signal.alarm(timeout)
-                res = prompt(question)
-                signal.alarm(0)
-                return res
-            except RuntimeError:
-                if dir_char == "/":
-                    os.system("stty echo")
-                qs_default_console.print(
-                    "\n[bold yellow][Warning | 警告][/bold yellow]",
-                    f"Time out & Return | 超时并返回: {question['default'] if 'default' in question else None}",
-                )
-                return question["default"] if "default" in question else None
-
-    else:
-
-        def ask():
-            return prompt(question)[question["name"]]
-
-    try:
-        if "name" not in question:
-            question["name"] = "NoName"
-        return ask()
-    except:
-        exit(0)
 
 
 def cut_string(string: str, length: int) -> list:
@@ -298,11 +214,19 @@ def open_url(argv: list = None):
         try:
             url = pyperclip.paste()
         except:
-            url = qs_default_input.ask(
-                "Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: "
-                if user_lang != "zh"
-                else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:",
-                console=qs_default_console,
+            # url = _ask(
+            #     "Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: "
+            #     if user_lang != "zh"
+            #     else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:",
+            #     console=qs_default_console,
+            # )
+            url = _ask(
+                {
+                    "type": "input",
+                    "message": "Sorry, but your system is not supported by `pyperclip`\n  So you need input content manually: "
+                    if user_lang != "zh"
+                    else "抱歉，但是“pyperclip”不支持你的系统\n  所以你需要手动输入内容:",
+                }
             )
         wb.open_new_tab(formatUrl(url))
 
@@ -483,11 +407,12 @@ def sas():
                 "default": True,
             }
         ):
-            with qs_default_console.status(
+            qs_default_status.update(
                 "Installing SwitchAudioSource..."
                 if user_lang != "zh"
                 else "正在安装 SwitchAudioSource..."
-            ):
+            )
+            with qs_default_status:
                 retries = 3
                 while retries:
                     external_exec("brew install SwitchAudioSource")

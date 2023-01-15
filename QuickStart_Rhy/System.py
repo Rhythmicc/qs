@@ -256,7 +256,7 @@ def diff_dir():
     对比两个文件夹差异，并生成相应html对比结果
     :return:
     """
-    from . import user_lang, qs_default_console, qs_info_string
+    from . import user_lang, qs_default_console, qs_info_string, qs_default_status
     from .SystemTools.Diff import DictionaryFiles
     import sys
 
@@ -273,9 +273,10 @@ def diff_dir():
     if not (d1.available and d2.available):
         return
 
-    with qs_default_console.status(
+    qs_default_status.update(
         "Generating diff result.." if user_lang != "zh" else "生成对比结果中.."
-    ):
+    )
+    with qs_default_status:
         from .SystemTools.Diff import DiffFilesToStructHtml
 
         DiffFilesToStructHtml(d1, d2).generate()
@@ -299,7 +300,7 @@ def unmount_dmg():
     """
     from .SystemTools.DiskMac import DMG
     from .TuiTools.Table import qs_default_table
-    from . import qs_default_console, prompt, user_lang, qs_info_string
+    from . import qs_default_console, user_lang, qs_info_string, _ask
 
     disks = DMG()
     _ls = disks.get_disk_list()[2:]
@@ -311,13 +312,12 @@ def unmount_dmg():
     for disk in _ls:
         table.add_row(disk["path"], disk["type"], disk["size"])
     qs_default_console.print(table, justify="center")
-    disk_path = prompt(
+    disk_path = _ask(
         {
             "type": "list",
             "message": "Select a disk to umount" if user_lang != "zh" else "选择要卸载的磁盘",
             "choices": [disk["path"] for disk in _ls],
-            "name": "disk",
             "default": _ls[0]["path"],
         }
-    )["disk"]
+    )
     disks.unmount(disk_path)

@@ -13,6 +13,7 @@ from ..SystemTools import get_core_num
 from .. import (
     user_lang,
     qs_default_console,
+    qs_default_status,
     qs_error_string,
     qs_info_string,
     qs_warning_string,
@@ -50,18 +51,17 @@ def GetBlockSize(sz):
 
 
 def ask_overwrite(path: str):
-    from ..__config__ import prompt
+    from .. import _ask
 
-    return prompt(
+    return _ask(
         {
             "type": "confirm",
-            "name": "overwrite",
             "message": f'"{path}" 已存在, 是否覆盖?'
             if user_lang == "zh"
             else f'"{path}" already exists, overwrite?',
             "default": False,
         }
-    )["overwrite"]
+    )
 
 
 class Downloader:
@@ -105,9 +105,10 @@ class Downloader:
         self.disableStatus = disableStatus
         self.write_to_memory = write_to_memory
         if not self.disableStatus:
-            with qs_default_console.status(
+            qs_default_status.update(
                 "Getting file info.." if user_lang != "zh" else "获取文件信息中.."
-            ):
+            )
+            with qs_default_status:
                 self.url, self.name, r = get_fileinfo(url, proxy, referer)
         else:
             self.url, self.name, r = get_fileinfo(url, proxy, referer)

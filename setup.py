@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.6.42"
+VERSION = "0.6.43"
 
 setup(
     name="QuickStart_Rhy",
@@ -23,6 +23,7 @@ setup(
         "requests",
         "urllib3",
         "rich",
+        "Qpro",
         "inquirer-rhy",
     ],
     entry_points={"console_scripts": ["qs = QuickStart_Rhy.main:main"]},

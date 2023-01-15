@@ -38,7 +38,7 @@ class ImageDeal:
         """
         self.client = imgp.AipImageProcess(app_id, app_key, secret_key)
 
-    def largeImage(self, path: str, st: qs_default_console.status = None):
+    def largeImage(self, path: str):
         """
         放大图片 (图像效果增强)
 
@@ -59,18 +59,21 @@ class ImageDeal:
             img_name[: img_name.index(".")] + "_LG." + ".".join(img_name.split(".")[1:])
         )
 
-        with qs_default_console.status(
+        from .. import qs_console_status
+
+        qs_console_status.update(
             f'{"Reading Image" if user_lang != "zh" else "读取图片"}: {path}'
-        ) if not st else st as status:
+        )
+        with qs_console_status as status:
             with open(path, "rb") as f:
                 img = f.read()
             status.update(
-                status=f'{qs_info_string} {"Dealing..." if user_lang != "zh" else "处理中..."}'
+                f'{qs_info_string} {"Dealing..." if user_lang != "zh" else "处理中..."}'
             )
             img = self.client.imageQualityEnhance(img)
             try:
                 status.update(
-                    status=f'{qs_info_string} {"Write to" if user_lang != "zh" else "写入"}: {img_name}'
+                    f'{qs_info_string} {"Write to" if user_lang != "zh" else "写入"}: {img_name}'
                 )
                 img = ImageDeal.base64.b64decode(img["image"])
                 with open(img_name, "wb") as f:
