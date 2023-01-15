@@ -817,10 +817,6 @@ def loli():
                 qs_console_status=qs_default_console.status("展示图片中.."),
             )
 
-        qs_default_console.print(
-            "-" * (qs_default_console.width // 4 * 3), justify="center"
-        )
-
 
 def pinyin():
     from .API.alapi import pinyin

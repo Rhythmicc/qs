@@ -136,7 +136,9 @@ def to_content_buf(data):
 
         with io.BytesIO() as buf:
             # mode: https://pillow.readthedocs.io/en/4.2.x/handbook/concepts.html#concept-modes
-            Image.fromarray(im, mode=mode).save(buf, format="png")
+            requirePackage("PIL", "Image", "Pillow").fromarray(im, mode=mode).save(
+                buf, format="png"
+            )
             return buf.getvalue()
 
     elif _isinstance(data, "torch", "Tensor"):
@@ -186,7 +188,7 @@ def get_tty_size():
 
 
 def real_height(buf, pixels_per_line=int(qs_config.basicSelect("terminal_font_size"))):
-    im_width, im_height = get_image_shape(buf)
+    _, im_height = get_image_shape(buf)
     if im_height:
         assert pixels_per_line > 0
         height = (im_height + (pixels_per_line - 1)) // pixels_per_line

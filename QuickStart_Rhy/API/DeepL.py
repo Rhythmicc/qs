@@ -12,7 +12,7 @@ _token = pre_check("DeepL")
 
 def translate(text, target_lang=user_lang.upper()):
     """翻译文本"""
-    url = "https://api.deepl.com/v2/translate"
+    url = "https://api-free.deepl.com/v2/translate"
     params = {
         "auth_key": _token,
         "text": text,

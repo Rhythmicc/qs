@@ -7,11 +7,14 @@ Compress and decompress all kinds of files
 import io
 import os
 import sys
-import tarfile
-import zipfile
-import rarfile
-import py7zr
-from .. import dir_char, user_lang, qs_default_console, qs_warning_string
+
+from .. import (
+    dir_char,
+    user_lang,
+    qs_default_console,
+    qs_warning_string,
+    requirePackage,
+)
 
 
 def get_compress_package_name():
@@ -41,7 +44,7 @@ def get_compress_package_name():
     return tar_name, ls
 
 
-def checkIsProtocolFile(protocol, path):
+def checkIsProtocolFile(protocol, verify_func, path):
     """
     验证压缩包文件
 
@@ -51,41 +54,22 @@ def checkIsProtocolFile(protocol, path):
     :param path: 文件路径 | File Path
     :return:
     """
+
+    protocol_name = {
+        "tarfile": "tar",
+        "zipfile": "zip",
+        "rarfile": "rar",
+        "py7zr": "7z",
+    }
+
     if os.path.exists(path):
-        if protocol == tarfile and not tarfile.is_tarfile(path):
+        if not requirePackage(protocol, verify_func)(path):
             raise TypeError(
                 f"{path} "
                 + (
-                    "Not recognized by tar protocol"
+                    f"Not recognized by {protocol_name[protocol]} protocol"
                     if user_lang != "zh"
-                    else "无法被tar协议识别"
-                )
-            )
-        elif protocol == zipfile and not zipfile.is_zipfile(path):
-            raise TypeError(
-                f"{path} "
-                + (
-                    "Not recognized by zip protocol"
-                    if user_lang != "zh"
-                    else "无法被zip协议识别"
-                )
-            )
-        elif protocol == rarfile and not rarfile.is_rarfile(path):
-            raise TypeError(
-                f"{path} "
-                + (
-                    "Not recognized by rar protocol"
-                    if user_lang != "zh"
-                    else "无法被rar协议识别"
-                )
-            )
-        elif protocol == py7zr and not py7zr.is_7zfile(path):
-            raise TypeError(
-                f"{path} "
-                + (
-                    "Not recognized by 7z protocol"
-                    if user_lang != "zh"
-                    else "无法被7z协议识别"
+                    else f"无法被{protocol_name[protocol]}协议识别"
                 )
             )
     else:
@@ -99,42 +83,36 @@ class _NormalCompressedPackage:
     General compression protocol class, if you do not understand what it does, please do not call it
     """
 
-    def __init__(self, _protocol, path: str, mode="r"):
+    def __init__(self, protocol, verify_func, obj_name, path: str, mode="r"):
         """
         通用压缩协议类初始化
 
         General compression protocol class initialization
 
-        :param _protocol: 压缩协议包 | General compression protocol packages
+        :param protocol: 压缩协议包 | General compression protocol packages
+        :param verify_func: 验证函数 | Verification function
+        :param obj_name: 对象名称 | Object name
         :param path: 压缩包路径 | compression package path
         :param mode: 读写模式 | 'r' or 'w', which 'r' means read and 'w' means write
         """
-        self._protocol = _protocol
+        self._protocol = protocol
         self.path = path
         if mode not in ("r", "w"):
             raise ValueError("Requires mode 'r', 'w'")
         if mode == "r":
-            checkIsProtocolFile(_protocol, path)
-            if _protocol == zipfile:
-                self.src = zipfile.ZipFile(path, "r")
-            elif _protocol == rarfile:
-                self.src = rarfile.RarFile(path)
-            elif _protocol == py7zr:
-                self.src = py7zr.SevenZipFile(path, "r")
+            checkIsProtocolFile(protocol, verify_func, path)
+            if protocol != "rarfile":
+                self.src = requirePackage(protocol, obj_name)(path, "r")
             else:
-                self.src = _protocol.open(path, "r")
+                self.src = requirePackage(protocol, obj_name)(path)
             self.mode = True
         elif mode == "w":
-            if _protocol == tarfile:
-                self.src = _protocol.open(path, "x:gz")
-            elif _protocol == zipfile:
-                self.src = _protocol.ZipFile(path, "w")
-            elif _protocol == rarfile:
+            if protocol != "rarfile":
+                self.src = requirePackage(protocol, obj_name)(path, "w")
+            else:
                 raise NotImplementedError(
                     "qs not support to create rar file because `RarFile`"
                 )
-            elif _protocol == py7zr:
-                self.src = _protocol.SevenZipFile(path, "w")
             self.mode = False
 
     def add_file(self, path):
@@ -153,14 +131,14 @@ class _NormalCompressedPackage:
         if os.path.isdir(path):
             for root, dirs, files in os.walk(path):
                 for file in files:
-                    if self._protocol == tarfile:
+                    if self._protocol == "tarfile":
                         self.src.add(os.path.join(root, file))
-                    elif self._protocol in [zipfile, py7zr]:
+                    elif self._protocol in ["zipfile", "py7zr"]:
                         self.src.write(os.path.join(root, file))
         else:
-            if self._protocol == tarfile:
+            if self._protocol == "tarfile":
                 self.src.add(path)
-            elif self._protocol in [zipfile, py7zr]:
+            elif self._protocol in ["zipfile", "py7zr"]:
                 self.src.write(path)
 
     def extract(self):
@@ -170,9 +148,9 @@ class _NormalCompressedPackage:
         :return: None
         """
         if self.mode:
-            if self._protocol in [tarfile, rarfile, py7zr]:
+            if self._protocol in ["tarfile", "rarfile", "py7zr"]:
                 self.src.extractall()
-            elif self._protocol in [zipfile]:
+            elif self._protocol == "zipfile":
                 from pathlib import Path
 
                 for fn in self.src.namelist():
@@ -210,7 +188,7 @@ class Tar(_NormalCompressedPackage):
         :param path: 压缩包路径 | The package path is compressed.
         :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        super().__init__(tarfile, path, mode)
+        super().__init__("tarfile", "is_tarfile", "TarFile", path, mode)
 
     def add_file(self, path):
         """
@@ -248,7 +226,7 @@ class Zip(_NormalCompressedPackage):
         :param path: 压缩包路径 | The package path is compressed.
         :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        super().__init__(zipfile, path, mode)
+        super().__init__("zipfile", "is_zipfile", "ZipFile", path, mode)
 
     def add_file(self, path):
         """
@@ -286,7 +264,7 @@ class Rar(_NormalCompressedPackage):
         :param path: 压缩包路径 | The package path is compressed.
         :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        super().__init__(rarfile, path, mode)
+        super().__init__("rarfile", "is_rarfile", "RarFile", path, mode)
 
     def add_file(self, path):
         """
@@ -324,7 +302,7 @@ class SevenZip(_NormalCompressedPackage):
         :param path: 压缩包路径 | The package path is compressed.
         :param mode: 工作模式 | Working mode ('read' or 'write')
         """
-        super().__init__(py7zr, path, mode)
+        super().__init__("py7zr", "is_7zfile", "SevenZipFile", path, mode)
 
     def add_file(self, path):
         """

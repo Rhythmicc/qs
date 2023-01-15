@@ -1,15 +1,11 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
-VERSION = "0.6.41"
+VERSION = "0.6.42"
 
 setup(
     name="QuickStart_Rhy",
     version=VERSION,
     description="Simplify the operation in terminal!",
-    long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -26,9 +22,7 @@ setup(
     install_requires=[
         "requests",
         "urllib3",
-        "rarfile",
         "rich",
-        "py7zr",
         "inquirer-rhy",
     ],
     entry_points={"console_scripts": ["qs = QuickStart_Rhy.main:main"]},

@@ -1,6 +1,4 @@
 requests
 urllib3
-rarfile
 rich
-py7zr
 inquirer-rhy
