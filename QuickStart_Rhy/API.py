@@ -692,11 +692,11 @@ def kdCheck():
 
     :return:
     """
-    from .API.alapi import kdCheck
+    from .API.alapi import kdCheck as kdCheckAPI
 
     qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
     with qs_default_status:
-        status, code, msg = kdCheck(sys.argv[2])
+        status, code, msg = kdCheckAPI(sys.argv[2])
         if not status:
             qs_default_console.print(qs_error_string, msg)
             return
@@ -722,32 +722,26 @@ def kdCheck():
         ],
         (
             [
-                "[bold underline red]Unknown:heavy_exclamation_mark:",
-                "[bold underline yellow]In transit:airplane:",
-                "[bold underline green]In delivery:delivery_truck:",
-                "[bold underline bold green]Signed receipt:hearts:",
+                ":heavy_exclamation_mark: [bold underline red]Unknown",
+                ":airplane: [bold underline yellow]In transit",
+                ":delivery_truck: [bold underline green]In delivery",
+                ":hearts: [bold underline bold green]Signed receipt",
             ][code]
             if user_lang != "zh"
             else [
-                "[bold underline red]未知:heavy_exclamation_mark:",
-                "[bold underline yellow]运输中:airplane:",
-                "[bold underline green]派送中:delivery_truck:",
-                "[bold underline magenta]已签收:hearts:",
+                ":heavy_exclamation_mark: [bold underline red]未知",
+                ":airplane: [bold underline yellow]运输中",
+                ":delivery_truck: [bold underline green]派送中",
+                ":hearts: [bold underline magenta]已签收:hearts:",
             ][code]
         )
         + "\n",
     )
-    for info in msg[:-1] if code != 3 else msg:
+    for _id, info in enumerate(msg):
         tb.add_row(
             info["time"],
             Text(table_cell(info["content"], width), justify="full"),
-            "[green]:heavy_check_mark:",
-        )
-    if code != 3:
-        tb.add_row(
-            msg[-1]["time"],
-            Text(table_cell(msg[-1]["content"], width), justify="full"),
-            "[bold yellow]:arrow_left:",
+            "[bold green]:heavy_check_mark:" if _id else "[bold yellow]:arrow_left:",
         )
     qs_default_console.print(tb, justify="center")
 

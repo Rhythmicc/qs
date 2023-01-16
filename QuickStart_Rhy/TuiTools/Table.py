@@ -45,7 +45,7 @@ def qs_default_table(headers: list, title: str = "", without_headers: bool = Fal
         show_edge=False,
         row_styles=["none", "dim"],
         box=SIMPLE_HEAVY,
-        title=("[bold underline]" + title if title else ""),
+        title=title,
     )
     for i in headers:
         if isinstance(i, str):

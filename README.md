@@ -1,24 +1,26 @@
-<h1 style="text-align: center"> QuickStart_Rhy </h1>
-
-## Install
+# QuickStart_Rhy
 
 ```shell
-pip3 install quickstart-rhy
+pip3 install quickstart-rhy                                         # stable version
+pip3 install git+https://github.com/Rhythmicc/quickstart-rhy.git -U # beta version but more features
 ```
 
-**Env: ^Python 3.7**
+| Key  | Value                                              |
+| :--: | -------------------------------------------------- |
+| ENV  | **^Python 3.7**                                    |
+| FONT | **Cascadia Code / Meslo**                          |
+| DOCS | <https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/> |
 
-**Font: [Cascadia Code](https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip)**
+## Tab Complete
 
-## Docs
+1. fig
 
-|     |                          Url                           |
-| :-: | :----------------------------------------------------: |
-|  1  |    https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/    |
-|  2  | https://rhythmicc.github.io/2020/02/14/QuickStart-Rhy/ |
+   ```shell
+   npx @fig/publish-spec -p complete/fig/qs-<your language>.ts --name qs
+   ```
 
-## Tab Complete (zsh only)
+2. zsh
 
-```shell
-mv _qs /path/in/$fpath/
-```
+   ```shell
+   mv _qs /path/in/$FPATH/
+   ```
