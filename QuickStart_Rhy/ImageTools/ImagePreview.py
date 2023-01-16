@@ -4,10 +4,6 @@
 preview image on terminal | At present, only iTerm under MacOS is available,
 you need to install imgcat library by yourself
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from .. import qs_default_console, qs_console_width, requirePackage, qs_default_status
 from .. import _ask, user_lang, force_show_img, qs_config
 import math
@@ -16,7 +12,6 @@ import sys
 import os
 import struct
 import io
-import subprocess
 
 # 记录强制显示状态，避免重复询问
 force_show_option = False
@@ -170,12 +165,6 @@ def to_content_buf(data):
         raise TypeError("Unsupported type : {}".format(type(data)))
 
 
-def get_tty_size():
-    with open("/dev/tty") as tty:
-        rows, columns = subprocess.check_output(["stty", "size"], stdin=tty).split()
-    return int(rows), int(columns)
-
-
 def real_height(buf, pixels_per_line=int(qs_config.basicSelect("terminal_font_size"))):
     _, im_height = get_image_shape(buf)
     if im_height:
@@ -185,8 +174,7 @@ def real_height(buf, pixels_per_line=int(qs_config.basicSelect("terminal_font_si
         # automatically limit height to the current tty,
         # otherwise the image will be just erased
         try:
-            tty_height, _ = get_tty_size()
-            return max(1, min(height, tty_height - 9))
+            return max(1, min(height, qs_default_console.height - 9))
         except OSError:
             # may not be a terminal
             pass
@@ -320,7 +308,7 @@ def image_preview(
             force_show_option = True
         if not is_url and (isinstance(img, str) and not os.path.exists(img)):
             is_url = img.startswith("http")
-        qs_default_status.stop()
+
         if is_url:
             from .. import requirePackage
             from io import BytesIO
@@ -341,10 +329,9 @@ def image_preview(
 
             img = requirePackage("PIL", "Image", "Pillow").open(img)
 
-        qs_default_status.start()
-        qs_default_status.update(
+        qs_default_status(
             "Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置"
-        )
+        ).start()
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)

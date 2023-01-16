@@ -4,7 +4,9 @@
 
 Modify image color tool
 """
-from PIL import Image
+from .. import requirePackage
+
+Image = requirePackage("PIL", "Image")
 
 
 def transport_back(

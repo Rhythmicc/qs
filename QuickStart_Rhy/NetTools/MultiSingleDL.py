@@ -10,7 +10,6 @@ from .. import (
     qs_info_string,
     qs_warning_string,
     headers,
-    dir_char,
 )
 from threading import Lock
 from requests import get
@@ -39,7 +38,7 @@ class MultiSingleDL:
         self.headers = headers
         if referer:
             self.headers["Referer"] = referer
-        self.rt_dir = rt_dir if rt_dir.endswith(dir_char) else rt_dir + dir_char
+        self.rt_dir = rt_dir
         self.failed2exit = failed2exit
         self.save_to_mem = save_to_mem
         self.status_dict = {}
@@ -55,8 +54,7 @@ class MultiSingleDL:
         self.job_queue = queue.Queue()
         self.task_num_lock = Lock()
         self.pool = ThreadPoolExecutor(max_workers=core_num)
-        self.status = qs_default_status
-        qs_default_status.update("获取文件信息中...")
+        self.status = qs_default_status("获取文件信息中...")
         self.progress, self.task_id = NormalProgressBar("多文件下载", self.task_num)
 
     def _info(self, url):
@@ -101,7 +99,7 @@ class MultiSingleDL:
                 headers=self.headers,
             )
             if not self.save_to_mem:
-                with open(self.rt_dir + filename, "wb") as f:
+                with open(os.path.join(self.rt_dir, filename), "wb") as f:
                     for chunk in r.iter_content(32768):
                         f.write(chunk)
             else:
@@ -170,9 +168,9 @@ class MultiSingleDL:
             wait(wait_list)
         self.progress.stop()
         return (
-            [self.rt_dir + self.infos[i]["name"] for i in self.infos]
+            [os.path.join(self.rt_dir, self.infos[i]["name"]) for i in self.infos]
             if not name_map
-            else [self.rt_dir + name_map[i] for i in self.infos]
+            else [os.path.join(self.rt_dir, name_map[i]) for i in self.infos]
         )
 
     def get_content_ls(self):

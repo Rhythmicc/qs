@@ -1,5 +1,6 @@
 from prompt_toolkit.validation import Validator, ValidationError
 from inquirer_rhy.prompt import prompt
+import os
 import sys
 from QuickProject import QproDefaultConsole as qs_default_console
 
@@ -206,9 +207,9 @@ terminal_font_size = {
 class QsConfig:
     import json
 
-    def __init__(self, configPath, isExists):
+    def __init__(self, configPath):
         self.path = configPath
-        if isExists:
+        if os.path.exists(configPath):
             try:
                 with open(configPath, "r") as f:
                     self.config = QsConfig.json.loads(f.read())

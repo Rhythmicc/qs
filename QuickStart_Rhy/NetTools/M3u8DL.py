@@ -10,7 +10,6 @@ import requests
 import os
 import queue
 from .. import (
-    dir_char,
     remove,
     headers,
     user_lang,
@@ -33,11 +32,9 @@ def merge_file(path, ts_ls, name):
     :param name: 合并后的ts文件名
     :return:
     """
-    if not path.endswith(dir_char):
-        path += dir_char
     with open(name + ".ts", "wb") as f:
         for ts in ts_ls:
-            with open(path + ts, "rb") as ff:
+            with open(os.path.join(path, ts), "rb") as ff:
                 f.write(ff.read())
 
 
@@ -105,7 +102,7 @@ class M3U8DL:
         :return: None
         """
         target = self.target
-        download_path = os.getcwd() + dir_char + self.name
+        download_path = os.path.join(os.getcwd(), self.name)
         self.path = download_path
         if not os.path.exists(download_path):
             os.mkdir(download_path)

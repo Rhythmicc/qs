@@ -14,9 +14,9 @@ def clear_mem():
 
     :return: None
     """
-    from .. import dir_char, system, external_exec
+    from .. import system, external_exec
 
-    if dir_char == "\\":
+    if system.startswith("win"):
         print("Not support")
     else:
         if system.startswith("darwin"):

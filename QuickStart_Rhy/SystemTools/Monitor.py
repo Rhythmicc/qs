@@ -17,7 +17,7 @@ def top():
     import math
     import colorama
     from colorama import Style, ansi, Cursor
-    from .. import cur_time, dir_char, requirePackage
+    from .. import cur_time, system, requirePackage
     from ..TuiTools import Bar
     from ..NetTools.NormalDL import size_format
 
@@ -49,7 +49,7 @@ def top():
                 "CPU: %.2f%%" % _cpu_cur,
                 "MEM: %s" % size_format(_mem_cur),
             ]
-            print((ansi.clear_screen() if dir_char == "\\" else "") + Cursor.POS(0, 0))
+            print(ansi.clear_screen() + Cursor.POS(0, 0))
             print(" " * 39, end="")
             cur_time()
             cur_img = "    ".join(str(window).split("\n") + [" "])

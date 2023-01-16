@@ -1,7 +1,6 @@
 # coding=utf-8
 from . import *
 from .. import user_currency
-import os
 import json
 from urllib.parse import quote
 import requests

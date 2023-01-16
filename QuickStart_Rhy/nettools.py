@@ -21,8 +21,7 @@ def upgrade():
         qs_default_status,
     )
 
-    qs_default_status.update("正在更新")
-    with qs_default_status:
+    with qs_default_status("正在更新"):
         external_exec(f"{user_pip} install QuickStart-Rhy --upgrade", True)
     qs_default_console.print(qs_info_string, "更新完成")
 

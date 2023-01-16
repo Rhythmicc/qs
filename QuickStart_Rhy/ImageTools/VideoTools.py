@@ -5,7 +5,7 @@
 Video processing library, you need to install additional moviepy library
 """
 import os
-from .. import dir_char, user_lang, qs_default_console, qs_error_string, requirePackage
+from .. import user_lang, qs_default_console, qs_error_string, requirePackage
 
 
 def VideoWrapper(func):

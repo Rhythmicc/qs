@@ -73,7 +73,7 @@ class AliyunOSS:
             self.progress.start_task(self.trans_id)
         self.progress.update(self.trans_id, completed=cur)
 
-    def upload(self, filePath: str, bucket: str = None):
+    def upload(self, filePath: str, bucket: str = None, key: str = None):
         """
         上传文件（支持断点续传）
 
@@ -93,7 +93,7 @@ class AliyunOSS:
         self._progress_file_name = os.path.basename(filePath)
         oss2.resumable_upload(
             bucket,
-            filePath.replace(dir_char, "/"),
+            key if key else filePath.replace(dir_char, "/"),
             filePath,
             num_threads=get_core_num() * 4,
             progress_callback=self._progress_bar,

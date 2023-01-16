@@ -105,10 +105,9 @@ class Downloader:
         self.disableStatus = disableStatus
         self.write_to_memory = write_to_memory
         if not self.disableStatus:
-            qs_default_status.update(
+            with qs_default_status(
                 "Getting file info.." if user_lang != "zh" else "获取文件信息中.."
-            )
-            with qs_default_status:
+            ):
                 self.url, self.name, r = get_fileinfo(url, proxy, referer)
         else:
             self.url, self.name, r = get_fileinfo(url, proxy, referer)

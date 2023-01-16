@@ -9,7 +9,6 @@ import os
 import sys
 
 from .. import (
-    dir_char,
     user_lang,
     qs_default_console,
     qs_warning_string,
@@ -29,19 +28,19 @@ def get_compress_package_name():
     if not file_names:
         exit("No enough parameters")
     if len(file_names) > 1:
-        tar_name = "pigeonhole"
+        name = "pigeonhole"
     else:
-        ls = file_names[0].split(dir_char)
-        while not ls[-1]:
-            ls.pop()
-        tar_name = ls[-1].split(".")[0]
+        name = os.path.basename(file_names[0]).split(".")[0]
     ls = []
     for file_name in file_names:
         if os.path.exists(file_name):
             ls.append(file_name)
         else:
-            print("No such file or dictionary:%s" % file_name)
-    return tar_name, ls
+            qs_default_console.print(
+                qs_warning_string,
+                f"{file_name} not found" if user_lang != "zh" else f"{file_name} 未找到",
+            )
+    return name, ls
 
 
 def checkIsProtocolFile(protocol, verify_func, path):

@@ -48,7 +48,7 @@ class QiniuOSS:
             "-ls": self.list_bucket,
         }
 
-    def upload(self, filePath: str, bucket: str = None):
+    def upload(self, filePath: str, bucket: str = None, key: str = None):
         """
         上传文件
 
@@ -79,7 +79,10 @@ class QiniuOSS:
         filePath = filePath.strip()
         tk = self.auth.upload_token(bucket if bucket else self.df_bucket, filePath)
         QiniuOSS.qiniu.put_file(
-            tk, filePath.replace(dir_char, "/"), filePath, progress_handler=progress
+            tk,
+            key if key else filePath.replace(dir_char, "/"),
+            filePath,
+            progress_handler=progress,
         )
         self.bar.stop()
 

@@ -4,37 +4,7 @@ qs用到的函数装饰器, 在使用它们前, 请确保你理解注释描述�
 
 Before using function decorators used by QS, please make sure that you understand the content described by the annotation.
 """
-
-
-def set_timeout(num: int):
-    """
-    定时函数装饰器
-
-    Timing function decorator
-
-    :param num: 时间（秒）
-    :return: wrapper
-    """
-
-    def wrapper(func):
-        def handle(signum, frame):
-            raise RuntimeError
-
-        def run(*args, **kwargs):
-            import signal
-
-            try:
-                signal.signal(signal.SIGALRM, handle)
-                signal.alarm(num)
-                res = func(*args, **kwargs)
-                signal.alarm(0)
-                return res
-            except RuntimeError:
-                return False
-
-        return run
-
-    return wrapper
+from QuickProject.__config__ import set_timeout
 
 
 def mkCompressPackageWrap(func):

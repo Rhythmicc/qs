@@ -27,12 +27,12 @@ def rmbg(filePath: str):
         headers={"X-Api-Key": api_key},
     )
     if res.status_code == requests.codes.ok:
-        img_name = filePath.split(dir_char)[-1].split(".")[0]
-        if dir_char in filePath:
-            img_root = dir_char.join(filePath.split(dir_char)[:-1]) + dir_char
-        else:
-            img_root = ""
-        with open(img_root + img_name + "_rmbg.png", "wb") as imgfile:
+        import os
+
+        img_name = os.path.basename(filePath).split(".")[0]
+        img_root = os.path.dirname(os.path.abspath(filePath))
+
+        with open(os.path.join(img_root, img_name + "_rmbg.png"), "wb") as imgfile:
             imgfile.write(res.content)
     else:
         qs_default_console.log(qs_error_string, res.status_code, res.text)
@@ -48,6 +48,7 @@ def smms(filePath: str):
     :return: None
     """
     import os
+    from .. import user_root
     from ..TuiTools.Table import qs_default_table
 
     api_key = pre_check("smms")
@@ -68,13 +69,12 @@ def smms(filePath: str):
         return json.loads(res_json)
 
     def get_path(rt, rel):
-        return os.path.abspath(rt + rel)
+        return os.path.abspath(os.path.join(rt, rel))
 
     def format_markdown(path):
         import re
 
-        _user_path = os.path.expanduser("~")
-        rt_path = dir_char.join(os.path.abspath(path).split(dir_char)[:-1]) + dir_char
+        rt_path = os.path.dirname(os.path.abspath(path))
         img_set = {}
         with open(path, "r") as fp:
             ct = fp.read()
@@ -83,16 +83,15 @@ def smms(filePath: str):
         )
         for aim in aims:
             raw_path = aim
-            aim = aim.replace("~", _user_path)
-            aim = aim if aim.startswith(dir_char) else get_path(rt_path, aim)
+            aim = get_path(rt_path, aim.replace("~", user_root))
             if aim not in img_set:
                 res_dict = post_img(aim)
                 if not res_dict:
-                    res_tb.add_row(aim.split(dir_char)[-1], "No File", "")
+                    res_tb.add_row(os.path.basename(aim), "No File", "")
                     img_set[aim] = False
                 else:
                     res_tb.add_row(
-                        aim.split(dir_char)[-1],
+                        os.path.basename(aim),
                         res_dict["success"],
                         res_dict["message"]
                         if not res_dict["success"]
@@ -119,10 +118,10 @@ def smms(filePath: str):
         else:
             res = post_img(filePath)
             if not res:
-                res_tb.add_row(filePath.split(dir_char)[-1], "No File", "")
+                res_tb.add_row(os.path.basename(filePath), "No File", "")
             else:
                 res_tb.add_row(
-                    filePath.split(dir_char)[-1],
+                    os.path.basename(filePath),
                     res["success"],
                     "" if not res["success"] else res["data"]["url"],
                 )
@@ -214,8 +213,7 @@ def wallhaven(
     :param randomOne: 随机抽一张返回
     :return: 包含链接的列表 | [link1, link2, ...]
     """
-    from .. import qs_default_console, qs_error_string
-    from . import headers
+    from .. import qs_default_console, qs_error_string, headers
     import requests
     import re
 

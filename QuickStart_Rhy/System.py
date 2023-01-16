@@ -11,18 +11,13 @@ miss_file = [".DS_Store"]
 
 def __latest_filename(name):
     import os
-    from . import dir_char
 
     cur = os.getcwd()
-    rec = cur
-    while cur != dir_char:
-        if os.path.exists(name):
-            os.chdir(rec)
-            return cur + dir_char + name
-        os.chdir("..")
-        cur = os.getcwd()
-    os.chdir(rec)
-    return ""
+    while cur != os.path.dirname(cur):
+        if os.path.exists(os.path.join(cur, name)):
+            return os.path.join(cur, name)
+        cur = os.path.dirname(cur)
+    return os.path.join(cur, name) if os.path.exists(os.path.join(cur, name)) else ""
 
 
 def top():
@@ -33,9 +28,9 @@ def top():
 
     :return: None
     """
-    from . import dir_char
+    from . import system
 
-    if dir_char == "\\":
+    if system.startswith("win"):
         from .SystemTools.Monitor import top
 
         top()
@@ -273,10 +268,9 @@ def diff_dir():
     if not (d1.available and d2.available):
         return
 
-    qs_default_status.update(
+    with qs_default_status(
         "Generating diff result.." if user_lang != "zh" else "生成对比结果中.."
-    )
-    with qs_default_status:
+    ):
         from .SystemTools.Diff import DiffFilesToStructHtml
 
         DiffFilesToStructHtml(d1, d2).generate()

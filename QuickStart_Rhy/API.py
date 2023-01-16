@@ -43,8 +43,7 @@ def remove_bg():
             return
         from .API.SimpleAPI import rmbg
 
-        qs_default_status.update("Dealing.." if user_lang != "zh" else "处理中..")
-        with qs_default_status:
+        with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
             rmbg(path)
 
 
@@ -81,8 +80,7 @@ def smms():
             return
         from .API.SimpleAPI import smms
 
-        qs_default_status.update("Dealing.." if user_lang != "zh" else "处理中..")
-        with qs_default_status:
+        with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
             smms(path)
 
 
@@ -271,7 +269,7 @@ def translate(content: str = None):
 
 def weather():
     """查天气 | Check weather"""
-    from . import headers, dir_char
+    from . import headers
     from .ThreadTools import ThreadFunctionWrapper
     import requests
 
@@ -282,7 +280,7 @@ def weather():
             return
         ct.encoding = "utf-8"
         ct = ct.text.split("\n")
-        if dir_char == "/":
+        if not system.startswith("win"):
             res = ct.copy()
         else:
             import re
@@ -305,8 +303,7 @@ def weather():
     ]
     for i in tls:
         i.start()
-    qs_default_status.update("Requesting.." if user_lang != "zh" else "请求中..")
-    with qs_default_status:
+    with qs_default_status("Requesting.." if user_lang != "zh" else "请求中.."):
         for i in tls:
             i.join()
     simple = tls[0].get_res()
@@ -368,8 +365,7 @@ def largeImage():
         from .API.BaiduCloud import ImageDeal
 
         aip_cli = ImageDeal()
-        qs_default_status.update("Dealing.." if user_lang != "zh" else "处理中..")
-        with qs_default_status:
+        with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
             aip_cli.largeImage(path)
 
 
@@ -442,10 +438,7 @@ def gbc():
     from .API.alapi import garbage_classification
 
     try:
-        qs_default_status.update(
-            "Requesting data.." if user_lang != "zh" else "请求数据中.."
-        )
-        with qs_default_status:
+        with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
             res = garbage_classification(sys.argv[2:])
         qs_default_console.print(res, justify="center")
     except Exception as e:
@@ -497,8 +490,7 @@ def short_video_info(son_call=False):
         "source": "Source" if user_lang != "zh" else "来源",
     }
 
-    qs_default_status.update("正在获取视频信息")
-    with qs_default_status:
+    with qs_default_status("正在获取视频信息"):
         status, res = short_video_info(url.strip("/"))
         if not status:
             qs_default_console.print(qs_info_string, res["title"] + ":" + res["source"])
@@ -588,8 +580,7 @@ def acg():
     from .API.alapi import acg
     from .API.SimpleAPI import acg2
 
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    qs_default_status.start()
+    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
     try:
         status, acg_link, width, height = random.choice([acg, acg2])()
         qs_default_console.print(
@@ -604,16 +595,14 @@ def acg():
                 height,
             )
             if "--save" in sys.argv[2:]:
-                from . import dir_char
                 from .NetTools.NormalDL import normal_dl
 
-                qs_default_status.stop()
                 acg_link = normal_dl(acg_link)  # disable download status for Windows
             from .ImageTools.ImagePreview import image_preview
 
-            qs_default_status.update(
+            qs_default_status(
                 status="Loading image...\n" if user_lang != "zh" else "加载图片中..\n"
-            )
+            ).start()
             image_preview(
                 open(acg_link) if "--save" in sys.argv[2:] else acg_link,
                 "--save" not in sys.argv[2:],
@@ -635,8 +624,7 @@ def bingImg():
     """
     from .API.alapi import bingImg
 
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    qs_default_status.start()
+    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
 
     try:
         status, acg_link, cprt = bingImg()
@@ -694,8 +682,7 @@ def kdCheck():
     """
     from .API.alapi import kdCheck as kdCheckAPI
 
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    with qs_default_status:
+    with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
         status, code, msg = kdCheckAPI(sys.argv[2])
         if not status:
             qs_default_console.print(qs_error_string, msg)
@@ -758,8 +745,7 @@ def loli():
     from .ImageTools import ImagePreview
     from .NetTools import NormalDL
 
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    with qs_default_status:
+    with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
         status, msg, data = loli_img()
         if not status:
             qs_default_console.print(qs_error_string, msg)
@@ -818,8 +804,7 @@ def pinyin():
                 if user_lang != "zh"
                 else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:"
             )
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    with qs_default_status:
+    with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
         status, res = pinyin(content)
     qs_default_console.print(qs_info_string, content)
     qs_default_console.print(qs_info_string if status else qs_error_string, res)
@@ -834,8 +819,7 @@ def setu():
 def exchange():
     from .API.alapi import exchange
 
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    qs_default_status.start()
+    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
     try:
         status, data = exchange(sys.argv[3], 1)
         qs_default_console.print(
@@ -855,8 +839,7 @@ def zhihuDaily():
     from rich.panel import Panel
     from .ImageTools.ImagePreview import image_preview
 
-    qs_default_status.update("Requesting data.." if user_lang != "zh" else "请求数据中..")
-    qs_default_status.start()
+    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
     try:
         status, data = zhihuDaily()
         qs_default_status.stop()
@@ -937,8 +920,7 @@ def wallhaven():
             )
             from .ImageTools.ImagePreview import image_preview
 
-            qs_default_status.update("Getting.." if user_lang != "zh" else "获取图片中..")
-            with qs_default_status:
+            with qs_default_status("Getting.." if user_lang != "zh" else "获取图片中.."):
                 image_preview(res["url"], True)
         else:
             from .TuiTools.Table import qs_default_table
@@ -1004,8 +986,7 @@ def daily60s():
 
     cur_index = 0
 
-    qs_default_status.update("showing" if user_lang != "zh" else "展示中")
-    with qs_default_status:
+    with qs_default_status("showing" if user_lang != "zh" else "展示中"):
 
         def dealSignal(*argv):
             for index in range(cur_index + 1, len(res["news"])):
@@ -1022,9 +1003,7 @@ def daily60s():
                 import os
                 from .NetTools.NormalDL import normal_dl
 
-                qs_default_status.stop()
                 name = normal_dl(res["image"], set_name="news.png")
-                qs_default_status.start()
                 qs_default_console.print(
                     "Preview" if user_lang != "zh" else "预览", justify="center"
                 )
@@ -1218,8 +1197,7 @@ def gpt():
             }
         )
     ) != "exit":
-        qs_default_status.update("Thinking..." if user_lang != "zh" else "思考中...")
-        with qs_default_status:
+        with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
             res = chatGPT(prompt)
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",

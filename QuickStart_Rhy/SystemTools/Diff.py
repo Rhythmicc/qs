@@ -1,9 +1,9 @@
 from .. import (
-    dir_char,
     qs_default_console,
     qs_error_string,
     qs_warning_string,
     user_lang,
+    dir_char,
 )
 from ..SystemTools.FileHash import md5
 import os
@@ -25,7 +25,7 @@ class DictionaryFiles(set):
             )
             self.available = False
             return
-        self.name = rt.strip(dir_char).split(dir_char)[-1]
+        self.name = os.path.basename(rt)
         self.rt = os.path.abspath(rt)
         self.available = True
         self.ignored = set(ignorePatterns) if ignorePatterns else None
@@ -61,7 +61,7 @@ class DiffFilesToStructHtml:
     def __init__(self, d1: DictionaryFiles, d2: DictionaryFiles):
         self.d1 = d1
         self.d2 = d2
-        self.rt = os.getcwd() + dir_char + d1.name + "-vs-" + d2.name + ".qs_diff"
+        self.rt = os.path.join(os.getcwd(), d1.name + "-vs-" + d2.name + ".qs_diff")
         self.pool = DiffFilesToStructHtml.ThreadPoolExecutor(max_workers=8)
         self.jobLs = []
         self.progress = DiffFilesToStructHtml.Progress(console=qs_default_console)
@@ -70,7 +70,7 @@ class DiffFilesToStructHtml:
     def _run(self, item: str):
         pathLs = item.strip(dir_char).split(dir_char)[:-1]
         for i in range(len(pathLs)):
-            dirName = self.rt + dir_char + dir_char.join(pathLs[: i + 1])
+            dirName = os.path.join(self.rt, *pathLs[: i + 1])
             if not os.path.exists(dirName):
                 os.mkdir(dirName)
         with open(self.d1.getFilepathByItem(item), "r") as f:
@@ -107,7 +107,7 @@ class DiffFilesToStructHtml:
         DiffFilesToStructHtml.wait(self.jobLs)
         self.progress.stop()
 
-        with open(self.rt + dir_char + "README.md", "w") as f:
+        with open(os.path.join(self.rt, "README.md"), "w") as f:
             print("# Diff Results | 目录对比结果", file=f, end="\n\n")
 
             print(

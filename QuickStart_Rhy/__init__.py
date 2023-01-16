@@ -17,9 +17,9 @@ from .__config__ import QsConfig, dir_char, system, qs_default_console
 
 name = "QuickStart_Rhy"
 
-user_root = os.path.expanduser("~") + dir_char
-qs_config = QsConfig(user_root + ".qsrc", os.path.exists(user_root + ".qsrc"))
-qs_cache = QsCache(user_root + ".qs_cache")
+user_root = os.path.expanduser("~")
+qs_config = QsConfig(os.path.join(user_root, ".qsrc"))
+qs_cache = QsCache(os.path.join(user_root, ".qs_cache"))
 
 user_lang = qs_config.basicSelect("default_language")
 user_currency = qs_config.basicSelect("default_currency")
@@ -67,10 +67,7 @@ def requirePackage(
                 "default": True,
             }
         ):
-            qs_default_status.update(
-                "Installing..." if user_lang != "zh" else "正在安装..."
-            )
-            with qs_default_status:
+            with qs_default_status("Installing..." if user_lang != "zh" else "正在安装..."):
                 st, _ = external_exec(
                     f"{set_pip} install {pname if not real_name else real_name} -U",
                     True,
@@ -214,12 +211,6 @@ def open_url(argv: list = None):
         try:
             url = pyperclip.paste()
         except:
-            # url = _ask(
-            #     "Sorry, but your system is not supported by `pyperclip`\nSo you need input content manually: "
-            #     if user_lang != "zh"
-            #     else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:",
-            #     console=qs_default_console,
-            # )
             url = _ask(
                 {
                     "type": "input",
@@ -371,7 +362,7 @@ def qs_print(*argv):
     """
     if not argv:
         argv = sys.argv[2:]
-    if dir_char != "/":
+    if system.startswith("win"):
         win32api = requirePackage("pywin32", "win32api")
         win32print = requirePackage("pywin32", "win32print")
         for file in argv:
@@ -407,12 +398,11 @@ def sas():
                 "default": True,
             }
         ):
-            qs_default_status.update(
+            with qs_default_status(
                 "Installing SwitchAudioSource..."
                 if user_lang != "zh"
                 else "正在安装 SwitchAudioSource..."
-            )
-            with qs_default_status:
+            ):
                 retries = 3
                 while retries:
                     external_exec("brew install SwitchAudioSource")
