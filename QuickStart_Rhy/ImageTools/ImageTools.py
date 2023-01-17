@@ -46,6 +46,10 @@ def imgsConcat(imgs: list):
         qs_default_console.print(qs_error_string, "样品图获取失败!")
         return
 
+    if not imgs:
+        qs_default_console.print(qs_error_string, "无样品图")
+        return
+
     with qs_default_status("拼接图片中") as st:
         heights_len = min(len(imgs), 3)
 

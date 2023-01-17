@@ -114,21 +114,19 @@ class MemWriter:
         """
         线程安全的写内存。
         """
-        import queue
+        from io import BytesIO
 
-        self.q = queue.PriorityQueue()
+        self.q = BytesIO()
 
     def new_job(self, content: bytes, index: int):
         # 将内容写入内存
-        self.q.put((index, content))
+        self.q.seek(index)
+        self.q.write(content)
 
     @property
     def content(self):
         # 获取内存内容
-        res = b""
-        while not self.q.empty():
-            res += self.q.get()[1]
-        return res
+        return self.q.getvalue()
 
     def wait(self):
         pass

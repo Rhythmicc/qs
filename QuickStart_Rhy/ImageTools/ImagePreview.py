@@ -89,7 +89,7 @@ def _isinstance(obj, module, clsname):
         return False
 
 
-def to_content_buf(data):
+def to_content_buf(data, fmt="png"):
     # TODO: handle 'stream-like' data efficiently, rather than storing into RAM
 
     if isinstance(data, bytes):
@@ -121,7 +121,7 @@ def to_content_buf(data):
         with io.BytesIO() as buf:
             # mode: https://pillow.readthedocs.io/en/4.2.x/handbook/concepts.html#concept-modes
             requirePackage("PIL", "Image", "Pillow").fromarray(im, mode=mode).save(
-                buf, format="png"
+                buf, format=fmt
             )
             return buf.getvalue()
 
@@ -133,7 +133,7 @@ def to_content_buf(data):
 
         with io.BytesIO() as buf:
             requirePackage("torchvision", "transforms").ToPILImage()(im).save(
-                buf, format="png"
+                buf, format=fmt
             )
             return buf.getvalue()
 
@@ -146,7 +146,7 @@ def to_content_buf(data):
         img = data
 
         with io.BytesIO() as buf:
-            img.save(buf, format="png")
+            img.save(buf, format=fmt)
             return buf.getvalue()
 
     elif _isinstance(data, "matplotlib.figure", "Figure"):
@@ -310,24 +310,30 @@ def image_preview(
             is_url = img.startswith("http")
 
         if is_url:
-            from .. import requirePackage
-            from io import BytesIO
+            img_bytes = requirePackage(".NetTools.NormalDL", "normal_dl")(
+                img,
+                set_referer=set_referer,
+                set_proxy=set_proxy,
+                disableStatus=True,
+                write_to_memory=True,
+            )
+
+            if not img_bytes:
+                from .. import qs_error_string
+
+                qs_default_console.print(
+                    qs_error_string,
+                    "Failed to download image" if user_lang != "zh" else "图片下载失败",
+                )
+                return
 
             img = requirePackage("PIL", "Image", "Pillow").open(
-                BytesIO(
-                    requirePackage(".NetTools.NormalDL", "normal_dl")(
-                        img,
-                        set_referer=set_referer,
-                        set_proxy=set_proxy,
-                        disableStatus=True,
-                        write_to_memory=True,
-                    )
-                )
+                requirePackage("io", "BytesIO")(img_bytes)
             )
         elif not is_url and isinstance(img, str) and os.path.exists(img):
-            from .. import requirePackage
-
             img = requirePackage("PIL", "Image", "Pillow").open(img)
+
+        _st = qs_default_status.status
 
         qs_default_status(
             "Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置"
@@ -391,6 +397,9 @@ def image_preview(
             height=_real_height,
             force_show=force_show_option,
         )
+
+        if _st:
+            qs_default_status.start()
     except Exception as e:
         qs_default_status.stop()
         qs_default_console.print_exception()

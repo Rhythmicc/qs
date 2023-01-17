@@ -123,6 +123,13 @@ class Downloader:
             if failed2exit:
                 self.enabled = False
                 return
+        if not self.url:
+            qs_default_console.print(
+                qs_error_string, "Connection Error!" if user_lang != "zh" else "连接失败!"
+            )
+            self.enabled = False
+            return
+
         if self.name and "." not in self.name:
             self.name = os.path.basename(url)
         if name:
@@ -137,9 +144,6 @@ class Downloader:
         self.headers = headers
         if referer:
             self.headers["Referer"] = referer
-        if not self.url:
-            qs_default_console.print(qs_error_string, self.name)
-            raise Exception("Connection Error!" if user_lang != "zh" else "连接失败!")
         try:
             if not info_flag:
                 raise KeyError

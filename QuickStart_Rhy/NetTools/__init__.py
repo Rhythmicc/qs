@@ -214,6 +214,8 @@ def get_fileinfo(
         headers["referer"] = referer
     try:
         res = requests.head(url, headers=headers, proxies=proxies)
+        if res.status_code == 404:
+            return "", "", None
     except Exception as e:
         return "", repr(e), None
     while res.status_code in [301, 302]:
