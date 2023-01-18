@@ -17,7 +17,7 @@ def top():
     import math
     import colorama
     from colorama import Style, ansi, Cursor
-    from .. import cur_time, system, requirePackage
+    from .. import cur_time, platform, requirePackage
     from ..TuiTools import Bar
     from ..NetTools.NormalDL import size_format
 

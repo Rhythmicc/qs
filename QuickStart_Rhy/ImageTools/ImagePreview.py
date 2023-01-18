@@ -353,19 +353,22 @@ def image_preview(
         )
 
         console_height = qs_default_console.height - 3
+        max_iter = 10
 
         if _real_width > console_width:
             _real_width = console_width
             _real_height = math.floor(_real_width / rate / font_rate)
 
-            max_iter = 100
             _iter = 0
-            while math.fabs(_real_width / _real_height / font_rate - rate) > 0.01:
+            while (
+                math.fabs(_real_width / _real_height / font_rate - rate) > 0.01
+                and _iter < max_iter
+            ):
                 _real_height += (
                     1 if _real_width / _real_height / font_rate > rate else -1
                 )
                 _iter += 1
-                if _real_height <= 1 or _iter > max_iter:
+                if _real_height <= 1:
                     break
             if height > width:
                 _real_height += 1
@@ -373,14 +376,16 @@ def image_preview(
             _real_height = console_height
             _real_width = math.floor(_real_height * rate * font_rate)
 
-            max_iter = 100
             _iter = 0
-            while math.fabs(_real_width / _real_height / font_rate - rate) > 0.01:
+            while (
+                math.fabs(_real_width / _real_height / font_rate - rate) > 0.01
+                and _iter < max_iter
+            ):
                 _real_width += (
                     -1 if _real_width / _real_height / font_rate > rate else 1
                 )
                 _iter += 1
-                if _real_width <= 1 or _iter > max_iter:
+                if _real_width <= 1:
                     break
             if height < width:
                 _real_width += 1

@@ -28,9 +28,9 @@ def top():
 
     :return: None
     """
-    from . import system
+    from . import platform
 
-    if system.startswith("win"):
+    if platform.startswith("win"):
         from .SystemTools.Monitor import top
 
         top()

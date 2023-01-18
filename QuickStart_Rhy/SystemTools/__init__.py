@@ -14,12 +14,12 @@ def clear_mem():
 
     :return: None
     """
-    from .. import system, external_exec
+    from .. import platform, external_exec
 
-    if system.startswith("win"):
+    if platform.startswith("win"):
         print("Not support")
     else:
-        if system.startswith("darwin"):
+        if platform.startswith("darwin"):
             external_exec("sudo purge")
         else:
             external_exec("sync")

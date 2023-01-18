@@ -8,7 +8,7 @@ import sys
 
 from . import (
     user_lang,
-    system,
+    platform,
     qs_default_console,
     qs_default_status,
     qs_error_string,
@@ -280,7 +280,7 @@ def weather():
             return
         ct.encoding = "utf-8"
         ct = ct.text.split("\n")
-        if not system.startswith("win"):
+        if not platform.startswith("win"):
             res = ct.copy()
         else:
             import re
@@ -523,7 +523,7 @@ def short_video_info(son_call=False):
                     res["cover_url"] if showStatus else "",
                 ),
             )
-    if system == "darwin":
+    if platform == "darwin":
         from .ImageTools.ImagePreview import image_preview
 
         image_preview(res["cover_url"], True)
@@ -779,7 +779,7 @@ def loli():
             img["url"] = NormalDL.normal_dl(
                 img["url"], set_proxy=proxy, set_referer="https://i.pximg.net"
             )
-        if system == "darwin":
+        if platform == "darwin":
             ImagePreview.image_preview(
                 open(img["url"]) if save_flag else img["url"],
                 not save_flag,
@@ -853,7 +853,7 @@ def zhihuDaily():
             res += "[bold cyan]" + ("Link:" if user_lang != "zh" else "链接: ")
             res += "[bold blue]" + item["url"] + "[/bold blue]"
             if "images" in item:
-                if system == "darwin":
+                if platform == "darwin":
                     image_preview(item["images"][0], True)
                 else:
                     res += "\n[bold cyan]" + (

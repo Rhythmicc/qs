@@ -271,10 +271,16 @@ def wifi():
 
     :return:
     """
-    from . import system, user_lang, qs_default_console, qs_error_string, qs_info_string
+    from . import (
+        platform,
+        user_lang,
+        qs_default_console,
+        qs_error_string,
+        qs_info_string,
+    )
     from .TuiTools.Table import qs_default_table
 
-    if system.lower() != "darwin":
+    if platform.lower() != "darwin":
         from .NetTools.WiFi import WiFi
     else:
         from .NetTools.WiFiDarwin import WiFi

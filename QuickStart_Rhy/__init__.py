@@ -13,7 +13,7 @@ from QuickProject import external_exec, _ask
 
 from .NetTools import headers
 from .__cache__ import QsCache
-from .__config__ import QsConfig, dir_char, system, qs_default_console
+from .__config__ import QsConfig, dir_char, platform, qs_default_console
 
 name = "QuickStart_Rhy"
 
@@ -230,7 +230,7 @@ def open_app():
 
     :return: None
     """
-    if system == "darwin":
+    if platform == "darwin":
         external_exec('open -a "' + '" "'.join(sys.argv[2:]) + '"')
     else:
         return qs_default_console.print(
@@ -251,9 +251,9 @@ def open_file(*argv):
     """
     if not argv:
         argv = sys.argv[2:]
-    if system == "darwin":
+    if platform == "darwin":
         external_exec('open "' + '" "'.join(argv) + '"')
-    elif system == "linux":
+    elif platform == "linux":
         external_exec('xdg-open "' + '" "'.join(argv) + '"')
     else:
         for file in argv:
@@ -312,7 +312,7 @@ def copy():
     def which(command):
         return False if external_exec("which %s" % command, True)[0] else True
 
-    if system != "darwin":
+    if platform != "darwin":
         return qs_default_console.print(
             qs_error_string,
             '"copy" is only support Mac OS X'
@@ -362,7 +362,7 @@ def qs_print(*argv):
     """
     if not argv:
         argv = sys.argv[2:]
-    if system.startswith("win"):
+    if platform.startswith("win"):
         win32api = requirePackage("pywin32", "win32api")
         win32print = requirePackage("pywin32", "win32print")
         for file in argv:
@@ -382,7 +382,7 @@ def sas():
 
     :return: None
     """
-    if system != "darwin":
+    if platform != "darwin":
         qs_default_console.print(
             qs_error_string,
             "Not support your system" if user_lang != "zh" else "不支持你的系统",

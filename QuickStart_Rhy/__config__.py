@@ -4,8 +4,8 @@ import os
 import sys
 from QuickProject import QproDefaultConsole as qs_default_console
 
-system = sys.platform
-if system.startswith("win"):
+platform = sys.platform
+if platform.startswith("win"):
     dir_char = "\\"
 else:
     dir_char = "/"
@@ -308,7 +308,7 @@ class QsConfig:
                 }
             )
             if (
-                system.startswith("darwin")
+                platform.startswith("darwin")
                 and prompt(
                     {
                         "type": "confirm",
