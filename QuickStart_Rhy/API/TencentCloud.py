@@ -5,8 +5,8 @@
 Tencent cloud API
 """
 import json
-from .. import requirePackage
-from . import pre_check, user_lang, dir_char
+from .. import requirePackage, user_lang
+from . import pre_check
 
 
 class TxCOS:
@@ -56,6 +56,8 @@ class TxCOS:
         :param bucket: 桶名称，缺省使用self.df_bucket
         :return: None
         """
+        from .. import dir_char
+
         bucket = bucket if bucket else self.df_bucket
         filename = filePath.strip()
         self.client.upload_file(

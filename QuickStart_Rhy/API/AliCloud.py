@@ -4,7 +4,7 @@
 
 Alibaba cloud API
 """
-from . import pre_check, user_lang, dir_char
+from . import pre_check, user_lang
 from .. import requirePackage
 
 oss2 = requirePackage("oss2")
@@ -84,7 +84,7 @@ class AliyunOSS:
         :return: None
         """
         import os
-        from .. import qs_default_console, qs_info_string
+        from .. import qs_default_console, qs_info_string, dir_char
         from ..SystemTools import get_core_num
 
         bucket = bucket if bucket else self.df_bucket

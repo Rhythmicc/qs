@@ -4,7 +4,7 @@
 
 Qiniu cloud OSS API
 """
-from . import pre_check, dir_char, user_lang
+from . import pre_check, user_lang
 from .. import requirePackage
 
 
@@ -59,6 +59,7 @@ class QiniuOSS:
         :return: None
         """
         import os
+        from .. import dir_char
 
         filename = os.path.basename(filePath)
 
