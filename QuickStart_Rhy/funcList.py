@@ -344,3 +344,11 @@ image_funcs = {
     "fmti": "fmt_img_color",
     "vsta": "vsta",
 }
+
+
+cmd_table = {
+    j: i
+    for i in [basic_funcs, api_funcs, net_funcs, image_funcs, system_funcs]
+    for j in i
+    if j != "self"
+}

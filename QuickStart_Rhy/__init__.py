@@ -75,20 +75,26 @@ def requirePackage(
             if st:
                 qs_default_console.print(
                     qs_error_string,
-                    f"Install {pname + (' -> ' + module if module else '')} failed, please install it manually!",
+                    f"Install {pname + (' -> ' + module if module else '')} failed, please install it manually: "
+                    if user_lang != "zh"
+                    else f"安装 {pname + (' -> ' + module if module else '')} 失败，请手动安装: ",
+                    f"'{set_pip} install {pname if not real_name else real_name} -U'",
                 )
                 exit(-1)
             if not_exit:
                 exec(f"from {pname} import {module}" if module else f"import {pname}")
             else:
                 qs_default_console.print(
-                    qs_info_string, f'just run again: "{" ".join(sys.argv)}"'
+                    qs_info_string,
+                    "Install complete! Run again:"
+                    if user_lang != "zh"
+                    else f"安装完成！再次运行:",
+                    " ".join(sys.argv),
                 )
                 exit(0)
         else:
             exit(-1)
-    finally:
-        return eval(f"{module if module else pname}")
+    return eval(f"{module if module else pname}")
 
 
 def cut_string(string: str, length: int) -> list:

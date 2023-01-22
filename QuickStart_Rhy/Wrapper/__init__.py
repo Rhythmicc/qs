@@ -83,18 +83,18 @@ def unCompressPackageWrap(func):
     return wrapper
 
 
-def HashWrapper(algorithm: str):
+def HashWrapper():
     """
     文件哈希值计算(通用函数)
-
-    :param algorithm: 算法名称 [md5, sha1, sha256, sha512]
     :return:
     """
 
     def Wrapper(func):
+        algorithm = func.__name__
+
         def _wrapper():
             import sys, os
-            from .. import qs_default_console, qs_info_string, user_lang
+            from .. import qs_default_console, qs_info_string, requirePackage
 
             ls = sys.argv[2:]
             if not ls:
@@ -103,15 +103,11 @@ def HashWrapper(algorithm: str):
                 )
                 return
 
-            exec("from QuickStart_Rhy.SystemTools.FileHash import %s" % algorithm)
+            func = requirePackage(".SystemTools.FileHash", algorithm)
             for file in ls:
                 qs_default_console.print(
-                    qs_info_string,
-                    "Calculate:" if user_lang != "zh" else "计算:",
-                    os.path.basename(file),
-                )
-                exec(
-                    f'qs_default_console.print(qs_info_string, "{algorithm}" + ":", {algorithm}("{file}"))'
+                    f"\[[bold magenta]{algorithm}[/]]",
+                    f"[underline]{os.path.basename(file)}[/]: '{func(file)}'",
                 )
 
         return _wrapper

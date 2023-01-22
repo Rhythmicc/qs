@@ -59,10 +59,8 @@ def main():
                 func_table = cmd_config[func_name]
                 file_name = func_table["self"]
                 func_name = func_table[func_name]
-                (
-                    requirePackage("QuickStart_Rhy", func_name)
-                    if file_name == "basic"
-                    else requirePackage(f"QuickStart_Rhy.{file_name}", func_name)
+                requirePackage(
+                    "." if file_name == "basic" else f".{file_name}", func_name
                 )()
         except Exception as e:
             from . import qs_default_console

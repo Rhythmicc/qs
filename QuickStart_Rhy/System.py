@@ -88,13 +88,6 @@ def go_github():
     open_url(url_ls)
 
 
-@_wrapper.mkCompressPackageWrap
-def _mktar(file_path: str = ""):
-    from .SystemTools.Compress import Tar
-
-    return Tar(file_path + ".tar.gz", "w")
-
-
 def mktar():
     """
     创建tar包
@@ -103,14 +96,14 @@ def mktar():
 
     :return: None
     """
+
+    @_wrapper.mkCompressPackageWrap
+    def _mktar(file_path: str = ""):
+        from .SystemTools.Compress import Tar
+
+        return Tar(file_path + ".tar.gz", "w")
+
     return _mktar()
-
-
-@_wrapper.unCompressPackageWrap
-def _untar(file_path: str = ""):
-    from .SystemTools.Compress import Tar
-
-    return Tar(file_path)
 
 
 def untar():
@@ -121,14 +114,14 @@ def untar():
 
     :return: None
     """
+
+    @_wrapper.unCompressPackageWrap
+    def _untar(file_path: str = ""):
+        from .SystemTools.Compress import Tar
+
+        return Tar(file_path)
+
     return _untar()
-
-
-@_wrapper.mkCompressPackageWrap
-def _mkzip(file_path: str = ""):
-    from .SystemTools.Compress import Zip
-
-    return Zip(file_path + ".zip", "w")
 
 
 def mkzip():
@@ -139,14 +132,14 @@ def mkzip():
 
     :return: None
     """
+
+    @_wrapper.mkCompressPackageWrap
+    def _mkzip(file_path: str = ""):
+        from .SystemTools.Compress import Zip
+
+        return Zip(file_path + ".zip", "w")
+
     return _mkzip()
-
-
-@_wrapper.unCompressPackageWrap
-def _unzip(file_path: str = ""):
-    from .SystemTools.Compress import Zip
-
-    return Zip(file_path, "r")
 
 
 def unzip():
@@ -157,14 +150,14 @@ def unzip():
 
     :return: None
     """
+
+    @_wrapper.unCompressPackageWrap
+    def _unzip(file_path: str = ""):
+        from .SystemTools.Compress import Zip
+
+        return Zip(file_path, "r")
+
     return _unzip()
-
-
-@_wrapper.unCompressPackageWrap
-def _unrar(file_path: str = ""):
-    from .SystemTools.Compress import Rar
-
-    return Rar(file_path)
 
 
 def unrar():
@@ -175,14 +168,14 @@ def unrar():
 
     :return: None
     """
+
+    @_wrapper.unCompressPackageWrap
+    def _unrar(file_path: str = ""):
+        from .SystemTools.Compress import Rar
+
+        return Rar(file_path)
+
     return _unrar()
-
-
-@_wrapper.mkCompressPackageWrap
-def _mk7z(file_path: str = ""):
-    from .SystemTools.Compress import SevenZip
-
-    return SevenZip(file_path + ".7z", "w")
 
 
 def mk7z():
@@ -193,14 +186,14 @@ def mk7z():
 
     :return: None
     """
+
+    @_wrapper.mkCompressPackageWrap
+    def _mk7z(file_path: str = ""):
+        from .SystemTools.Compress import SevenZip
+
+        return SevenZip(file_path + ".7z", "w")
+
     return _mk7z()
-
-
-@_wrapper.unCompressPackageWrap
-def _un7z(file_path: str = ""):
-    from .SystemTools.Compress import SevenZip
-
-    return SevenZip(file_path)
 
 
 def un7z():
@@ -211,10 +204,17 @@ def un7z():
 
     :return:
     """
+
+    @_wrapper.unCompressPackageWrap
+    def _un7z(file_path: str = ""):
+        from .SystemTools.Compress import SevenZip
+
+        return SevenZip(file_path)
+
     return _un7z()
 
 
-@_wrapper.HashWrapper("md5")
+@_wrapper.HashWrapper()
 def md5():
     """
     获取文件md5值
@@ -222,7 +222,7 @@ def md5():
     """
 
 
-@_wrapper.HashWrapper("sha1")
+@_wrapper.HashWrapper()
 def sha1():
     """
     获取文件sha1值
@@ -230,7 +230,7 @@ def sha1():
     """
 
 
-@_wrapper.HashWrapper("sha256")
+@_wrapper.HashWrapper()
 def sha256():
     """
     获取文件sha256值
@@ -238,7 +238,7 @@ def sha256():
     """
 
 
-@_wrapper.HashWrapper("sha512")
+@_wrapper.HashWrapper()
 def sha512():
     """
     获取文件sha512值
