@@ -468,7 +468,8 @@ def sas():
             question["default"] = uids[max(_default, key=_default.get)]
     else:
         default = {}
-    select = _ask(question)
+    if not (select := _ask(question)):
+        return
     uid = devices[select]["uid"]
     default[uid] = default.get(uid, 0) + 1
 

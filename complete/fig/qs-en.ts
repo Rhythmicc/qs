@@ -47,6 +47,9 @@ const completionSpec: Fig.Spec = {
         name: 'image',
         description: 'image tools help',
     }, {
+        name: 'lesson',
+        description: 'Tutorial'
+    }, {
         name: 'u',
         description: 'open urls using default browser',
         args: {name: 'url', description: 'URL', isVariadic: true}

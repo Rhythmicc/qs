@@ -392,14 +392,14 @@ def image_preview(
         qs_default_status.stop()
 
         qs_default_console.print(
-            " " * int(max((console_width - _real_width) // 2, 0)),
+            " " * math.ceil((console_width - _real_width) / 2),
             end="",
         )
 
         imgcat(
             buf,
             width=min(_real_width, console_width),
-            height=_real_height,
+            height=min(_real_height, console_height),
             force_show=force_show_option,
         )
 

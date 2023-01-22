@@ -47,6 +47,9 @@ const completionSpec: Fig.Spec = {
         name: 'image',
         description: '图像工具帮助',
     }, {
+        name: 'lesson',
+        description: '引导'
+    }, {
         name: 'u',
         description: '使用默认浏览器打开多个链接',
         args: {name: 'url', description: '链接', isVariadic: true}
