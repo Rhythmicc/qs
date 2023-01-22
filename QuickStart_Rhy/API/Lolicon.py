@@ -1,4 +1,5 @@
-from .. import headers, user_lang
+from ..NetTools import headers
+from .. import user_lang
 from . import pre_check
 import requests
 import json

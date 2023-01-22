@@ -321,11 +321,10 @@ def image_preview(
             if not img_bytes:
                 from .. import qs_error_string
 
-                qs_default_console.print(
+                return qs_default_console.print(
                     qs_error_string,
                     "Failed to download image" if user_lang != "zh" else "图片下载失败",
                 )
-                return
 
             img = requirePackage("PIL", "Image", "Pillow").open(
                 requirePackage("io", "BytesIO")(img_bytes)

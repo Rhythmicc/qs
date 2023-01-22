@@ -9,11 +9,17 @@ import os
 import sys
 
 from QuickProject import QproDefaultStatus as qs_default_status
-from QuickProject import external_exec, _ask
+from QuickProject import external_exec, user_pip
 
-from .NetTools import headers
 from .__cache__ import QsCache
-from .__config__ import QsConfig, dir_char, platform, qs_default_console
+from .__config__ import (
+    QsConfig,
+    dir_char,
+    platform,
+    qs_default_console,
+    _ask,
+    user_lang,
+)
 
 name = "QuickStart_Rhy"
 
@@ -21,12 +27,10 @@ user_root = os.path.expanduser("~")
 qs_config = QsConfig(os.path.join(user_root, ".qsrc"))
 qs_cache = QsCache(os.path.join(user_root, ".qs_cache"))
 
-user_lang = qs_config.basicSelect("default_language")
 user_currency = qs_config.basicSelect("default_currency")
 trans_engine = qs_config.basicSelect("default_translate_engine")["support"][
     qs_config.basicSelect("default_translate_engine")["index"]
 ]
-user_pip = qs_config.basicSelect("default_pip")
 force_show_img = qs_config.basicSelect("force_show_img")
 
 qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
@@ -62,8 +66,9 @@ def requirePackage(
         if _ask(
             {
                 "type": "confirm",
-                "message": f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?  
-  Qs 依赖 {pname + (' -> ' + module if module else '')}, 确认安装?""",
+                "message": f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?"""
+                if user_lang != "zh"
+                else f"""Qs 依赖 {pname + (' -> ' + module if module else '')}，确认安装吗？""",
                 "default": True,
             }
         ):
@@ -105,15 +110,16 @@ def cut_string(string: str, length: int) -> list:
     :param length: 切分长度
     :return: 切分后产生的list
     """
-    string = string.strip().replace("\n", " ")
+    string = string.strip()
     res, cur, cnt = [], "", 0
     for i in string:
-        cnt += 2 if ord(i) > 255 else 1
+        _char_len = 2 if ord(i) > 255 else 1 if ord(i) > 127 else 1.5
+        cnt += _char_len
         if cnt <= length:
             cur += i
         else:
             res.append(cur)
-            cur, cnt = i, 2 if ord(i) > 255 else 1
+            cur, cnt = i, _char_len
     if cur:
         res.append(cur)
     return res

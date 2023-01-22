@@ -11,12 +11,12 @@ import os
 import queue
 from .. import (
     remove,
-    headers,
     user_lang,
     qs_default_console,
     qs_error_string,
     qs_info_string,
 )
+from . import headers
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

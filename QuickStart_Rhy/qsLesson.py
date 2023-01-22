@@ -21,23 +21,24 @@ def onlineDocuments():
 
 
 def lesson():
-    mainMenu = {
-        "type": "list",
-        "message": "Welcome using qs, choose and get help:"
-        if user_lang != "zh"
-        else "欢迎使用qs, 选择以下选项获得帮助:",
-        "choices": [
-            "1. basic tools" if user_lang != "zh" else "1. 基础工具",
-            "2. system tools" if user_lang != "zh" else "2. 系统工具",
-            "3. network tools" if user_lang != "zh" else "3. 网络工具",
-            "4. api tools" if user_lang != "zh" else "4. 扩展工具",
-            "5. image tools" if user_lang != "zh" else "5. 图像工具",
-            "6. online Docs" if user_lang != "zh" else "6. 在线文档",
-            "7. join TG group" if user_lang != "zh" else "7. 加入TG群",
-        ],
-    }
     try:
-        res = _ask(mainMenu)
+        res = _ask(
+            {
+                "type": "list",
+                "message": "Welcome using qs, choose and get help:"
+                if user_lang != "zh"
+                else "欢迎使用qs, 选择以下选项获得帮助:",
+                "choices": [
+                    "1. basic tools" if user_lang != "zh" else "1. 基础工具",
+                    "2. system tools" if user_lang != "zh" else "2. 系统工具",
+                    "3. network tools" if user_lang != "zh" else "3. 网络工具",
+                    "4. api tools" if user_lang != "zh" else "4. 扩展工具",
+                    "5. image tools" if user_lang != "zh" else "5. 图像工具",
+                    "6. online Docs" if user_lang != "zh" else "6. 在线文档",
+                    "7. join TG group" if user_lang != "zh" else "7. 加入TG群",
+                ],
+            }
+        )
     except KeyboardInterrupt:
         from . import qs_default_console, qs_error_string
 

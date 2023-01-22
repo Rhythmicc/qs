@@ -269,7 +269,7 @@ def translate(content: str = None):
 
 def weather():
     """查天气 | Check weather"""
-    from . import headers
+    from .NetTools import headers
     from .ThreadTools import ThreadFunctionWrapper
     import requests
 

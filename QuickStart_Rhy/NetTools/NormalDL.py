@@ -7,7 +7,7 @@ good-looking command line interaction, and it can download fuck any files; (only
 
 Author: RhythmLian (https://rhythmlian.cn)
 """
-from . import size_format, get_fileinfo
+from . import size_format, get_fileinfo, headers
 from concurrent.futures import ThreadPoolExecutor, wait
 from ..SystemTools import get_core_num
 from .. import (
@@ -17,7 +17,6 @@ from .. import (
     qs_error_string,
     qs_info_string,
     qs_warning_string,
-    headers,
     requirePackage,
 )
 from threading import Lock

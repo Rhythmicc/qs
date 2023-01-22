@@ -1,4 +1,4 @@
-from . import size_format, get_fileinfo
+from . import size_format, get_fileinfo, headers
 from concurrent.futures import ThreadPoolExecutor, wait
 from ..SystemTools import get_core_num
 from ..TuiTools.Bar import NormalProgressBar
@@ -9,7 +9,6 @@ from .. import (
     qs_error_string,
     qs_info_string,
     qs_warning_string,
-    headers,
 )
 from threading import Lock
 from requests import get

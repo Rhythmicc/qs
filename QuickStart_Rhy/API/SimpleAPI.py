@@ -138,7 +138,7 @@ def imgs_in_url(url: str, save: bool = False):
     :param save:
     :return:
     """
-    from .. import headers
+    from ..NetTools import headers
 
     html = requests.get(url, headers=headers)
     if html.status_code != requests.codes.ok:
@@ -214,7 +214,7 @@ def wallhaven(
     :param randomOne: 随机抽一张返回
     :return: 包含链接的列表 | [link1, link2, ...]
     """
-    from .. import qs_default_console, qs_error_string, headers
+    from ..NetTools import qs_default_console, qs_error_string, headers
     import requests
     import re
 

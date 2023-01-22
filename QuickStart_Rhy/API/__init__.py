@@ -32,6 +32,14 @@ def pre_check(*keys, ext: bool = True) -> str:
                     if user_lang != "zh"
                     else '你需要在qs的配置表 %s/.qsrc 中填入 "%s" 键值' % (user_root, key),
                 )
+                if _val:
+                    from .. import qs_info_string
+
+                    qs_default_console.print(
+                        qs_info_string,
+                        "How to get it:" if user_lang != "zh" else "如何获取:",
+                        _val.split()[-1],
+                    )
                 exit(-1)
             else:
                 _val = None
