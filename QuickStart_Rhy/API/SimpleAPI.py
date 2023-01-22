@@ -214,7 +214,8 @@ def wallhaven(
     :param randomOne: 随机抽一张返回
     :return: 包含链接的列表 | [link1, link2, ...]
     """
-    from ..NetTools import qs_default_console, qs_error_string, headers
+    from .. import qs_default_console, qs_error_string
+    from ..NetTools import headers
     import requests
     import re
 
