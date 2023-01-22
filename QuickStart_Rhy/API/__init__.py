@@ -4,10 +4,10 @@ qs的API模块, 使用前确保配置文件~/.qsrc中已经配置相关的KEY值
 
 Before using the API module of QS, make sure that the relevant key value has been configured in the configuration file ~/.qsrc
 """
-from .. import qs_config, user_lang, user_root
+from .. import qs_config, user_lang, user_root, qs_default_console, qs_error_string
 
 
-def pre_check(funcName: str, ext: bool = True) -> str:
+def pre_check(*keys, ext: bool = True) -> str:
     """
     获取用户保存的API KEY
 
@@ -18,18 +18,22 @@ def pre_check(funcName: str, ext: bool = True) -> str:
 
     :return: 找到的API KEY | API KEY found.
     """
-    try:
-        api_key = qs_config.apiSelect(funcName)
-        if api_key.startswith("GET:"):
-            raise KeyError
-    except KeyError:
-        if ext:
-            exit(
-                "You should set '%s' api key at: %s/.qsrc" % (funcName, user_root)
-                if user_lang != "zh"
-                else "你需要在qs的配置表 %s/.qsrc 中填入 '%s' 键值" % (user_root, funcName)
-            )
-        else:
-            return ""
-    else:
-        return api_key
+    res = []
+    for key in keys:
+        try:
+            _val = qs_config.apiSelect(key)
+            if _val.startswith("GET:"):
+                raise KeyError
+        except KeyError:
+            if ext:
+                qs_default_console.print(
+                    qs_error_string,
+                    'You should set "%s" api key at: %s/.qsrc' % (key, user_root)
+                    if user_lang != "zh"
+                    else '你需要在qs的配置表 %s/.qsrc 中填入 "%s" 键值' % (user_root, key),
+                )
+                exit(-1)
+            else:
+                _val = None
+        res.append(_val)
+    return res if len(res) > 1 else res[0]

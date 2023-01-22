@@ -202,7 +202,8 @@ def acg2():
 
 
 def wallhaven(
-    set_search_url: str = pre_check("wallhaven_aim_url", False), randomOne: bool = False
+    set_search_url: str = pre_check("wallhaven_aim_url", ext=False),
+    randomOne: bool = False,
 ):
     """
     获取wallhaven toplist或指定图片列表

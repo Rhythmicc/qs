@@ -12,17 +12,27 @@ from . import pre_check
 class TxCOS:
     qcloud_cos = requirePackage("qcloud_cos", real_name="cos-python-sdk-v5")
 
-    def __init__(self):
+    def __init__(self, scid=None, sckey=None, region=None, bucket=None, cdn_url=None):
         """
         初始化并登陆腾讯云对象存储
 
         Initialize and log in Tencent Cloud object storage
+
+        :param scid: SecretId
+        :param sckey: SecretKey
+        :param region: 地区
+        :param bucket: 桶名称
+        :param cdn_url: CDN地址
+
+        :return: None
         """
-        scid = pre_check("txyun_scid")
-        sckey = pre_check("txyun_sckey")
-        self.region = pre_check("txyun_df_region")
-        self.df_bucket = pre_check("txyun_cos_df_bucket")
-        self.cdn_url = pre_check("txyun_df_cdn_url", ext=False)
+        if not (scid and sckey and region and bucket):
+            scid, sckey, self.region, self.df_bucket = pre_check(
+                "txyun_scid", "txyun_sckey", "txyun_df_region", "txyun_cos_df_bucket"
+            )
+        self.cdn_url = (
+            pre_check("txyun_df_cdn_url", ext=False) if not cdn_url else cdn_url
+        )
         if self.cdn_url and not self.cdn_url.endswith("/"):
             self.cdn_url += "/"
         config = TxCOS.qcloud_cos.CosConfig(
@@ -149,12 +159,7 @@ class Translate:
     from tencentcloud.common.profile.http_profile import HttpProfile
     from tencentcloud.tmt.v20180321 import tmt_client, models
 
-    def __init__(
-        self,
-        scid: str = pre_check("txyun_scid"),
-        sckey: str = pre_check("txyun_sckey"),
-        region: str = pre_check("txyun_df_region"),
-    ):
+    def __init__(self, scid, sckey, region):
         """
         初始化并登陆腾讯翻译接口
 
@@ -164,6 +169,10 @@ class Translate:
         :param sckey: secret key
         :param region: 地区
         """
+        if not (scid and sckey and region):
+            scid, sckey, region = pre_check(
+                "txyun_scid", "txyun_sckey", "txyun_df_region"
+            )
         Translate.DetectorFactory.seed = 0
         cred = Translate.credential.Credential(scid, sckey)
         http_profile = Translate.HttpProfile()

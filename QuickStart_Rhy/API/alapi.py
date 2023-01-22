@@ -6,7 +6,7 @@ from urllib.parse import quote
 import requests
 
 __common_token__ = "hUxPTdnybk1XLUEFtzkj"
-alapi_token = pre_check("alapi_token", False)
+alapi_token = pre_check("alapi_token", ext=False)
 if not alapi_token:
     from .. import qs_default_console, qs_error_string, qs_warning_string, _ask
 
@@ -57,7 +57,7 @@ if not alapi_token:
     else:
         exit()
 
-if not pre_check("__ban_warning", False) and alapi_token == __common_token__:
+if not pre_check("__ban_warning", ext=False) and alapi_token == __common_token__:
     from .. import qs_default_console, qs_warning_string
 
     qs_default_console.print(

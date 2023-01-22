@@ -13,9 +13,9 @@ class QiniuOSS:
 
     def __init__(
         self,
-        ac_key: str = pre_check("qiniu_ac_key"),
-        sc_key: str = pre_check("qiniu_sc_key"),
-        df_bucket: str = pre_check("qiniu_bk_name"),
+        ac_key: str = None,
+        sc_key: str = None,
+        df_bucket: str = None,
     ):
         """
         初始化并登陆七牛云对象存储
@@ -26,6 +26,10 @@ class QiniuOSS:
         :param sc_key: Secret Key
         :param df_bucket: 默认桶名称
         """
+        if not (ac_key and sc_key and df_bucket):
+            ac_key, sc_key, df_bucket = pre_check(
+                "qiniu_ac_key", "qiniu_sc_key", "qiniu_bk_name"
+            )
         self.ac_key = ac_key
         self.sc_key = sc_key
         self.auth = QiniuOSS.qiniu.Auth(self.ac_key, self.sc_key)
