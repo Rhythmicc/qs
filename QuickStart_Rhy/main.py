@@ -47,16 +47,13 @@ def main():
     if len(sys.argv) >= 2:
         try:
             func_name = sys.argv[1]
-            cmd_config = {
-                j: i
-                for i in [basic_funcs, api_funcs, net_funcs, image_funcs, system_funcs]
-                for j in i
-            }
-            cmd_config.pop("self")
-            if func_name not in cmd_config:
+
+            from .funcList import cmd_table
+
+            if func_name not in cmd_table:
                 qs_help(func_name)
             else:
-                func_table = cmd_config[func_name]
+                func_table = cmd_table[func_name]
                 file_name = func_table["self"]
                 func_name = func_table[func_name]
                 requirePackage(
