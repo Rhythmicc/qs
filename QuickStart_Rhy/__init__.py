@@ -48,14 +48,14 @@ def requirePackage(
     set_pip: str = user_pip,
 ):
     """
-    获取本机上的python第三方库，如没有则询问安装
+    获取本机上的python第三方库
 
-    :param not_ask: 不询问，无依赖项则报错
-    :param set_pip: 设置pip路径
     :param pname: 库名
     :param module: 待引入的模块名，可缺省
     :param real_name: 用于 pip3 install 的名字
     :param not_exit: 安装后不退出
+    :param not_ask: 不询问
+    :param set_pip: pip3的路径
     :return: 库或模块的地址
     """
     try:
@@ -72,7 +72,11 @@ def requirePackage(
                 "default": True,
             }
         ):
-            with qs_default_status("Installing..." if user_lang != "zh" else "正在安装..."):
+            with qs_default_status(
+                f"Installing {pname if not real_name else real_name}"
+                if user_lang != "zh"
+                else f"正在安装 {pname if not real_name else real_name}"
+            ):
                 st, _ = external_exec(
                     f"{set_pip} install {pname if not real_name else real_name} -U",
                     True,
