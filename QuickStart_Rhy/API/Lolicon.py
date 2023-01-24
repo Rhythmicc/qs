@@ -4,7 +4,7 @@ from . import pre_check
 import requests
 import json
 
-lolicon_token = pre_check("lolicon_token", False)
+lolicon_token = pre_check("lolicon_token", ext=False)
 
 
 def loli_img(keyword: str = ""):

@@ -215,7 +215,7 @@ def get_fileinfo(
     try:
         res = requests.head(url, headers=headers, proxies=proxies)
         if res.status_code == 404:
-            return "", "", None
+            return url, "", res  # 某些网站会返回404，但是文件还是可以下载的
     except Exception as e:
         return "", repr(e), None
     while res.status_code in [301, 302]:

@@ -79,6 +79,7 @@ class Downloader:
         disableStatus: bool = False,
         disableParallel: bool = False,
         write_to_memory: bool = False,
+        ignore_404: bool = False,
     ):
         """
         qs普通文件下载引擎
@@ -95,6 +96,8 @@ class Downloader:
         :param exit_if_exist: 如果文件已存在，是否退出
         :param disableStatus: 是否禁用状态栏
         :param disableParallel: 是否禁用并行下载
+        :param write_to_memory: 是否写入内存
+        :param ignore_404: 是否忽略404错误
         """
         signal.signal(signal.SIGINT, self._kill_self)
         info_flag = True
@@ -119,12 +122,14 @@ class Downloader:
                     if user_lang != "zh"
                     else "获取文件信息失败，请检查网络!",
                 )
-            if failed2exit:
+            if failed2exit and not ignore_404:
                 self.enabled = False
                 return
         if not self.url:
             qs_default_console.print(
-                qs_error_string, "Connection Error!" if user_lang != "zh" else "连接失败!"
+                qs_error_string,
+                "Connection Error!" if user_lang != "zh" else "连接失败!",
+                self.name,
             )
             self.enabled = False
             return
@@ -366,6 +371,7 @@ def normal_dl(
     disableStatus: bool = False,
     disableParallel: bool = False,
     write_to_memory: bool = False,
+    ignore_404: bool = False,
 ):
     """
     自动规划下载线程数量并开始并行下载
@@ -384,6 +390,7 @@ def normal_dl(
     :param disableStatus: 是否显示当前任务状态
     :param disableParallel: 是否禁用并行下载
     :param write_to_memory: 是否将下载内容直接写入内存（默认写入文件）
+    :param ignore_404: 忽略404错误, 因无法获取文件信息，所以需自行设置文件名
     :return: 文件路径或二进制内容 | file path or bytes
     """
     if set_name and os.path.exists(set_name) and not ask_overwrite(set_name):
@@ -400,4 +407,5 @@ def normal_dl(
         disableStatus=disableStatus,
         disableParallel=disableParallel,
         write_to_memory=write_to_memory,
+        ignore_404=ignore_404,
     ).run()
