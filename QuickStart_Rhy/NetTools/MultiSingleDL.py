@@ -57,7 +57,12 @@ class MultiSingleDL:
         self.progress, self.task_id = NormalProgressBar("多文件下载", self.task_num)
 
     def _info(self, url):
-        real_url, name, r = get_fileinfo(url, self.proxy, self.referer)
+        retry = 3
+        while retry:
+            real_url, name, r = get_fileinfo(url, self.proxy, self.referer)
+            if all([real_url, name, r]):
+                break
+            retry -= 1
 
         info_flag = True
         if not (url and name and r):
@@ -115,9 +120,9 @@ class MultiSingleDL:
             self.progress.advance(self.task_id, 1)
         except Exception as e:
             if retry < self.max_retry:
-                qs_default_console.print(
+                self.progress.print(
                     qs_warning_string,
-                    f'"{url}": {repr(e)},',
+                    f'"{url}": task anomaly, ' if user_lang != "zh" else f'"{url}": 任务异常, ',
                     "retrying..." if user_lang != "zh" else "正在重试...",
                 )
                 self.job_queue.put(
@@ -129,7 +134,7 @@ class MultiSingleDL:
                     }
                 )
             else:
-                qs_default_console.print(
+                self.progress.print(
                     qs_error_string,
                     f'"{url}":',
                     "Download failed!" if user_lang != "zh" else "下载失败！",
@@ -142,6 +147,10 @@ class MultiSingleDL:
         self.status.start()
         wait([self.pool.submit(self._info, item) for item in self.urls])
 
+        if name_map:
+            from .. import requirePackage
+            file_suffix = requirePackage('.SystemTools', 'file_suffix')
+
         total = sum([self.infos[i]["size"] for i in self.infos])
         failed_num = [self.infos[i]["size"] for i in self.infos].count(-1)
         if not without_output:
@@ -153,9 +162,10 @@ class MultiSingleDL:
 
         for _id, item in enumerate(self.urls):
             self.job_queue.put(
-                {"url": item, "filename": self.infos[item]["name"], "job_id": _id}
+                {"url": item,
+                    "filename": self.infos[item]["name"], "job_id": _id}
                 if not name_map
-                else {"url": item, "filename": name_map[item], "job_id": _id}
+                else {"url": item, "filename": f'{name_map[item]}.{file_suffix(self.infos[item]["name"])}', "job_id": _id}
             )
 
         self.progress.start()
@@ -167,9 +177,10 @@ class MultiSingleDL:
             wait(wait_list)
         self.progress.stop()
         return (
-            [os.path.join(self.rt_dir, self.infos[i]["name"]) for i in self.infos]
+            [os.path.join(self.rt_dir, self.infos[i]["name"])
+             for i in self.infos]
             if not name_map
-            else [os.path.join(self.rt_dir, name_map[i]) for i in self.infos]
+            else [os.path.join(self.rt_dir, f'{name_map[i]}.{file_suffix(self.infos[i]["name"])}') for i in self.infos]
         )
 
     def get_content_ls(self):
@@ -194,7 +205,7 @@ def multi_single_dl(
     :param proxy: 代理
     :param referer: referer
     :param failed2exit: 信息获取失败立即退出
-    :param name_map: 文件命名映射{URL: filename}
+    :param name_map: 文件命名映射{URL: filename}, 后缀名会自动获取并添加
     :param qps: 限制每秒请求次数
     :param without_output: 不输出信息
     :return: 下载好的文件路径列表

@@ -35,3 +35,13 @@ def get_core_num():
     from .. import requirePackage
 
     return requirePackage("psutil").cpu_count()
+
+
+def file_suffix(file_name):
+    """
+    获取文件后缀
+
+    :param file_name: 文件名
+    :return: 后缀
+    """
+    return file_name.split(".")[-1]
