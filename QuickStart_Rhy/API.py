@@ -237,6 +237,10 @@ def translate(content: str = None):
 
     _translate = requirePackage(f".API.{trans_engine}", "translate")
 
+    qs_default_console.print(
+        qs_warning_string, "引入包:", f".API.{trans_engine}", "translate"
+    )
+
     output_flag = False if content else True
     if not content:
         content = " ".join(sys.argv[2:])
@@ -252,10 +256,12 @@ def translate(content: str = None):
                 else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:"
             )
     if content:
+        qs_default_console.print(qs_warning_string, "翻译:", content)
         retry = 3
         while retry:
             try:
-                ret = _translate(content.replace("\n", " "))
+                ret = _translate(content)
+                break
             except SSLError:
                 retry -= 1
                 qs_default_console.log(
