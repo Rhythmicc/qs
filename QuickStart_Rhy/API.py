@@ -230,6 +230,7 @@ def translate(content: str = None):
     :param content: 需要翻译的内容
     """
     from . import trans_engine
+    from requests.exceptions import SSLError
 
     if trans_engine == "default":
         trans_engine = "alapi"
@@ -251,8 +252,23 @@ def translate(content: str = None):
                 else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:"
             )
     if content:
-        ret = _translate(content.replace("\n", " "))
-        if output_flag:
+        retry = 3
+        while retry:
+            try:
+                ret = _translate(content.replace("\n", " "))
+            except SSLError:
+                retry -= 1
+                qs_default_console.log(
+                    qs_warning_string,
+                    f"SSL Error, Retrying... \[{3 - retry} / 3]"
+                    if user_lang != "zh"
+                    else f"SSL错误，重试中... \[{3 - retry} / 3]",
+                )
+            except Exception as e:
+                qs_default_console.log(qs_error_string, e)
+                return None
+
+        if output_flag and ret:
             qs_default_console.print(ret) if ret else qs_default_console.log(
                 qs_error_string, "Translate Failed!"
             )
@@ -597,7 +613,8 @@ def acg():
             if "--save" in sys.argv[2:]:
                 from .NetTools.NormalDL import normal_dl
 
-                acg_link = normal_dl(acg_link)  # disable download status for Windows
+                # disable download status for Windows
+                acg_link = normal_dl(acg_link)
             from .ImageTools.ImagePreview import image_preview
 
             qs_default_status(
@@ -1199,6 +1216,7 @@ def gpt():
     ) != "exit":
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
             res = chatGPT(prompt)
+
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",

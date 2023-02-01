@@ -359,13 +359,19 @@ def get_user_lang():
     print(user_lang)
 
 
-def play_music():
-    AS = requirePackage("pydub", "AudioSegment")
-    play = requirePackage("pydub.playback", "play")
+def play_music(*argv, using_afplay: bool = False):
+    if not argv:
+        argv = sys.argv[2:]
 
-    for music in sys.argv[2:]:
+    if not using_afplay:
+        AS = requirePackage("pydub", "AudioSegment")
+        play = requirePackage("pydub.playback", "play")
+
+    for music in argv:
         try:
-            play(AS.from_file(music))
+            play(AS.from_file(music)) if not using_afplay else external_exec(
+                f"afplay {os.path.abspath(music)}"
+            )
         except:
             pass
 

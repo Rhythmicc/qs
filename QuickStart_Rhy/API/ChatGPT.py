@@ -4,11 +4,11 @@ from . import pre_check
 _openai = None
 
 
-def chatGPT(
-    prompt: str,
-):
+def chatGPT(prompt: str,):
     """
     使用OpenAI的GPT-3 API进行聊天
+
+    :param prompt: 聊天内容
     """
     global _openai
     if _openai is None:
@@ -19,6 +19,6 @@ def chatGPT(
         prompt=prompt,
         max_tokens=1024,
         n=1,
-        temperature=0.5,
+        temperature=0.9
     )
-    return response["choices"][0]["text"].strip()
+    return response.choices[0].text.strip()
