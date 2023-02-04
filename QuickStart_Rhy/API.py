@@ -1216,10 +1216,13 @@ def gpt():
         )
     ) != "exit":
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
-            res = chatGPT(prompt)
+            response_stream = chatGPT(prompt)
 
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",
         )
-        qs_default_console.print(res)
+
+        for res in response_stream:
+            qs_default_console.print(res, end="")
+        qs_default_console.print()

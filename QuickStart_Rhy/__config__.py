@@ -1,5 +1,4 @@
 from QuickProject import QproDefaultConsole as qs_default_console
-from prompt_toolkit.validation import Validator, ValidationError
 from QuickProject import _ask, user_lang
 import sys
 import os
@@ -10,24 +9,6 @@ if platform.startswith("win"):
     dir_char = "\\"
 else:
     dir_char = "/"
-
-
-class proxyValidator(Validator):
-    from .NetTools import is_ip
-
-    def validate(self, document):
-        document = document.text
-        if document == "Not set" if user_lang != "zh" else "未设置":
-            return True
-        ip_flag = proxyValidator.is_ip(
-            ":".join(document.split("@")[-1].split(":")[:-1])
-        )
-        if not ip_flag:
-            raise ValidationError(
-                message="Not a valid IP address" if user_lang != "zh" else "不是合法的IP地址",
-                cursor_position=len(document),
-            )
-        return False
 
 
 translate_engines = ["default", "TencentCloud", "DeepL"]
@@ -144,7 +125,6 @@ questions = {
         "name": "default_proxy",
         "message": "Input download proxy" if user_lang != "zh" else "输入下载代理",
         "default": "Not set | 暂不设置",
-        "validate": proxyValidator,
     },
     "terminal_font_size": {
         "type": "input",
