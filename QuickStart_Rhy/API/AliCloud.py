@@ -7,8 +7,6 @@ Alibaba cloud API
 from . import pre_check, user_lang
 from .. import requirePackage
 
-oss2 = requirePackage("oss2")
-
 
 class AliyunOSS:
     def __init__(
@@ -33,7 +31,7 @@ class AliyunOSS:
         self.bucket_url = bucket_url
         self.df_bucket = df_bucket
         self.progress, self.trans_id, self._progress_file_name = None, None, None
-        self.auth = oss2.Auth(self.ac_id, self.ac_key)
+        self.auth = requirePackage("oss2", "Auth")(self.ac_id, self.ac_key)
 
     def get_func_table(self):
         """
@@ -88,10 +86,10 @@ class AliyunOSS:
         from ..SystemTools import get_core_num
 
         bucket = bucket if bucket else self.df_bucket
-        bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
+        bucket = requirePackage("oss2", "Bucket")(self.auth, self.bucket_url, bucket)
         filePath = filePath.strip()
         self._progress_file_name = os.path.basename(filePath)
-        oss2.resumable_upload(
+        requirePackage("oss2", "resumable_upload")(
             bucket,
             key if key else filePath.replace(dir_char, "/"),
             filePath,
@@ -118,9 +116,9 @@ class AliyunOSS:
         from ..SystemTools import get_core_num
 
         bucket = bucket if bucket else self.df_bucket
-        bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
+        bucket = requirePackage("oss2", "Bucket")(self.auth, self.bucket_url, bucket)
         self._progress_file_name = os.path.basename(filename)
-        oss2.resumable_download(
+        requirePackage("oss2", "resumable_download")(
             bucket,
             filename,
             filename,
@@ -143,7 +141,7 @@ class AliyunOSS:
         :return: None
         """
         bucket = bucket if bucket else self.df_bucket
-        bucket = oss2.Bucket(self.auth, self.bucket_url, bucket)
+        bucket = requirePackage("oss2", "Bucket")(self.auth, self.bucket_url, bucket)
         bucket.delete_object(filePath)
 
     def list_bucket(self, bucket: str = None):
@@ -161,12 +159,12 @@ class AliyunOSS:
         from rich.text import Text
 
         bucket = bucket if bucket else self.df_bucket
-        ls = oss2.Bucket(self.auth, self.bucket_url, bucket)
+        ls = requirePackage("oss2", "Bucket")(self.auth, self.bucket_url, bucket)
         tb = qs_default_table(
             ["File", "Size"] if user_lang != "zh" else ["文件", "体积"], title="Aliyun OSS"
         )
         prefix = dict()
-        for obj in oss2.ObjectIterator(ls):
+        for obj in requirePackage("oss2", "ObjectIterator")(ls):
             if "/" in obj.key:
                 prefix[obj.key[obj.key[: obj.key.index("/")]]] = 0
             tb.add_row(

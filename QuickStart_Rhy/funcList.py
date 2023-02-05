@@ -42,7 +42,7 @@ def color_rep(ss, is_top_menu: bool = False):
         show_edge=False,
         box=SIMPLE,
     )
-    for i, line in enumerate(ss if is_top_menu else ss[1:]):
+    for line in ss if is_top_menu else ss[1:]:
         if ":->" in line:
             line = [i.strip() for i in line.split(":->")]
             if "|" in line[1]:
@@ -176,7 +176,8 @@ def api_menu():
     qs m2t <-f path | -u link | *> :-> transform magnet link to torrent file
     qs d2m <designation> :-> search magnet url by designation
     qs doutu <keywords> :-> get expression package of keywords
-    qs joke :-> get a Chinese joke"""
+    qs joke :-> get a Chinese joke
+    qs gpt  :-> Official ChatGPT API (Support Record history)"""
     ) if user_lang != "zh" else color_rep(
         """API工具:
     qs trans  \[内容]       :-> 翻译命令参数或剪切板中的内容
@@ -207,7 +208,8 @@ def api_menu():
     qs m2t <-f 路径 | -u 链接 | *> :-> 转换磁力链接为种子文件
     qs d2m <番号> :-> 搜索番号的磁力链
     qs doutu <关键词> :-> 获取关键词的表情包
-    qs joke :-> 获取一个中文笑话"""
+    qs joke :-> 获取一个中文笑话
+    qs gpt  :-> ChatGPT 官方API (支持上下文)"""
     )
 
 

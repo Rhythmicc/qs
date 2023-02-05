@@ -10,8 +10,6 @@ from . import pre_check
 
 
 class TxCOS:
-    qcloud_cos = requirePackage("qcloud_cos", real_name="cos-python-sdk-v5")
-
     def __init__(self, scid=None, sckey=None, region=None, bucket=None, cdn_url=None):
         """
         初始化并登陆腾讯云对象存储
@@ -35,10 +33,13 @@ class TxCOS:
         )
         if self.cdn_url and not self.cdn_url.endswith("/"):
             self.cdn_url += "/"
-        config = TxCOS.qcloud_cos.CosConfig(
+
+        qcloud_cos = requirePackage("qcloud_cos", real_name="cos-python-sdk-v5")
+
+        config = qcloud_cos.CosConfig(
             Region=self.region, SecretId=scid, SecretKey=sckey
         )
-        self.client = TxCOS.qcloud_cos.CosS3Client(config)
+        self.client = qcloud_cos.CosS3Client(config)
 
     def get_func_table(self):
         """
@@ -150,14 +151,8 @@ class TxCOS:
 
 
 class Translate:
-    requirePackage("tencentcloud", real_name="tencentcloud-sdk-python")
-    detect = requirePackage("langdetect", "detect")
-    DetectorFactory = requirePackage("langdetect", "DetectorFactory")
 
-    from tencentcloud.common import credential
-    from tencentcloud.common.profile.client_profile import ClientProfile
-    from tencentcloud.common.profile.http_profile import HttpProfile
-    from tencentcloud.tmt.v20180321 import tmt_client, models
+    from tencentcloud.tmt.v20180321 import models
 
     def __init__(self, scid, sckey, region):
         """
@@ -173,13 +168,27 @@ class Translate:
             scid, sckey, region = pre_check(
                 "txyun_scid", "txyun_sckey", "txyun_df_region"
             )
-        Translate.DetectorFactory.seed = 0
-        cred = Translate.credential.Credential(scid, sckey)
-        http_profile = Translate.HttpProfile()
+        requirePackage("langdetect", "DetectorFactory").seed = 0
+        cred = requirePackage(
+            "tencentcloud.common", "credential", real_name="tencentcloud-sdk-python"
+        )
+        http_profile = requirePackage(
+            "tencentcloud.common.profile.http_profile",
+            "HttpProfile",
+            real_name="tencentcloud-sdk-python",
+        )()
         http_profile.endpoint = "tmt.tencentcloudapi.com"
-        clientProfile = Translate.ClientProfile()
+        clientProfile = requirePackage(
+            "tencentcloud.common.profile.client_profile",
+            "ClientProfile",
+            real_name="tencentcloud-sdk-python",
+        )()
         clientProfile.httpProfile = http_profile
-        self.client = Translate.tmt_client.TmtClient(cred, region, clientProfile)
+        self.client = requirePackage(
+            "tencentcloud.tmt.v20180321.tmt_client",
+            "TmtClient",
+            real_name="tencentcloud-sdk-python",
+        )(cred, region, clientProfile)
 
     @staticmethod
     def langdetect(text: str) -> str:
@@ -191,7 +200,7 @@ class Translate:
         :param text: 待识别文本
         :return: 语言类型
         """
-        return Translate.detect(text)
+        return requirePackage("langdetect", "detect")(text)
 
     def translate(
         self, text: str, from_lang: str = None, to_lang: str = user_lang
@@ -206,7 +215,9 @@ class Translate:
         :param text: 文本
         :return: 翻译结果
         """
-        req = Translate.models.TextTranslateRequest()
+        req = requirePackage(
+            "tencentcloud.tmt.v20180321.models", "TextTranslateRequest"
+        )()
         req.from_json_string(
             json.dumps(
                 {
