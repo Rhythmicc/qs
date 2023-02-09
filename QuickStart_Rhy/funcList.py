@@ -65,7 +65,8 @@ def base_menu():
     qs copy  <file>          :-> copy file to clipboard
     qs play  <file...>       :-> Play Musics
     qs lp    <file...>       :-> Print Files
-    qs sas                   :-> Switch Audio Source ()"""
+    qs sas                   :-> Switch Audio Source ()
+    qs swap <file1> <file2>  :-> Swap two files"""
     ) if user_lang != "zh" else color_rep(
         """基础工具:
     qs u   <链接...>          :-> 使用默认浏览器打开多个链接
@@ -78,7 +79,8 @@ def base_menu():
     qs copy  <文件>           :-> 拷贝文件到粘贴板
     qs play  <文件...>        :-> 播放音乐
     qs lp    <文件...>        :-> 打印文件
-    qs sas                   :-> 切换音频源 ()"""
+    qs sas                   :-> 切换音频源 ()
+    qs swap <文件1> <文件2>   :-> 交换两个文件"""
     )
 
 
@@ -265,6 +267,7 @@ basic_funcs = {
     "copy": "copy",
     "lp": "qs_print",
     "sas": "sas",
+    "swap": "swap",
 }
 
 system_funcs = {

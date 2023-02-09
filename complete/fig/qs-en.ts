@@ -100,6 +100,13 @@ const completionSpec: Fig.Spec = {
         name: 'sas',
         description: ' Switch Audio Source',
     }, {
+        name: 'swap',
+        description: 'swap two files',
+        args: [
+            {name: 'file1', description: 'file 1', template: ['filepaths', 'folders']},
+            {name: 'file2', description: 'file 2', template: ['filepaths', 'folders']}
+        ]
+    }, {
         name: 'top',
         description: 'cpu and memory monitor',
     }, {

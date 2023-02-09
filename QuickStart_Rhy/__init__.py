@@ -498,3 +498,22 @@ def sas():
     external_exec("SwitchAudioSource -i %s" % select, True)
     qs_cache.set("audio_source", default)
     qs_default_console.print(qs_info_string, "Done" if user_lang != "zh" else "完成")
+
+
+def swap():
+    """
+    交换两个文件的内容
+    """
+
+    file1 = sys.argv[2]
+    file2 = sys.argv[3]
+
+    with open(file1, "r") as f1:
+        data1 = f1.read()
+    with open(file2, "r") as f2:
+        data2 = f2.read()
+
+    with open(file1, "w") as f1:
+        f1.write(data2)
+    with open(file2, "w") as f2:
+        f2.write(data1)

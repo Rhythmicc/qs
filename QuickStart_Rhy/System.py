@@ -28,20 +28,13 @@ def top():
 
     :return: None
     """
-    from . import platform
+    import sys
 
-    if platform.startswith("win"):
-        from .SystemTools.Monitor import top
+    sys.argv = ["bpytop"] + sys.argv[2:]
 
-        top()
-    else:
-        import sys
+    from . import requirePackage
 
-        sys.argv = ["bpytop"] + sys.argv[2:]
-
-        from . import requirePackage
-
-        requirePackage("bpytop", "main")()
+    requirePackage("bpytop", "main")()
 
 
 def clear_mem():

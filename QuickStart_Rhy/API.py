@@ -1200,6 +1200,10 @@ def gpt():
     Chat GPT-3
     :return:
     """
+    auto_translate = "--auto-translate" in sys.argv
+    if auto_translate:
+        from .API.DeepL import translate
+
     from .API.ChatGPT import chatGPT
     from . import _ask
 
@@ -1215,14 +1219,20 @@ def gpt():
             }
         )
     ) != "exit":
+        if auto_translate:
+            prompt = translate(prompt, "EN-US")
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
-            response_stream = chatGPT(prompt)
+            response = chatGPT(prompt, auto_translate=auto_translate)
 
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",
         )
 
-        for res in response_stream:
-            qs_default_console.print(res, end="")
+        if auto_translate:
+            qs_default_console.print(response)
+            qs_default_console.print(translate(response))
+        else:
+            for res in response:
+                qs_default_console.print(res, end="")
         qs_default_console.print()

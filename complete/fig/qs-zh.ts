@@ -100,6 +100,13 @@ const completionSpec: Fig.Spec = {
         name: 'sas',
         description: ' 设置系统音源'
     }, {
+        name: 'swap',
+        description: '交换两个文件内容',
+        args: [
+            {name: 'file1', description: '文件1', template: ['filepaths', 'folders']},
+            {name: 'file2', description: '文件2', template: ['filepaths', 'folders']}
+        ]
+    }, {
         name: 'top',
         description: 'CPU和内存监控器',
     }, {

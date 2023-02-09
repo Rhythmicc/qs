@@ -45,7 +45,6 @@ QuickStart_Rhy/SystemTools/Compress.py
 QuickStart_Rhy/SystemTools/Diff.py
 QuickStart_Rhy/SystemTools/DiskMac.py
 QuickStart_Rhy/SystemTools/FileHash.py
-QuickStart_Rhy/SystemTools/Monitor.py
 QuickStart_Rhy/SystemTools/__init__.py
 QuickStart_Rhy/ThreadTools/__init__.py
 QuickStart_Rhy/TuiTools/Bar.py

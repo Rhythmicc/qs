@@ -173,7 +173,7 @@ class Chatbot:
         )
         if conversation_id is not None:
             self.save_conversation(conversation_id)
-        return completion
+        return completion["choices"][0]["text"]
 
     def _process_completion_stream(
         self,
@@ -304,6 +304,7 @@ _chatbot = None
 
 def chatGPT(
     prompt: str,
+    auto_translate: bool = False,
 ):
     """
     使用OpenAI的GPT-3 API进行聊天
@@ -313,4 +314,7 @@ def chatGPT(
     global _chatbot
     if _chatbot is None:
         _chatbot = Chatbot()
-    return _chatbot.ask_stream(prompt)
+    if auto_translate:
+        return _chatbot.ask(prompt)
+    else:
+        return _chatbot.ask_stream(prompt)
