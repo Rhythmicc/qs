@@ -353,7 +353,7 @@ def scan_url():
 
     url = sys.argv[2] if len(sys.argv) > 2 else requirePackage("pyperclip").paste()
 
-    from .NetTools import get_fileinfo
+    from .NetTools import get_fileinfo, size_format
 
     url, name, head = get_fileinfo(url)
 
@@ -362,15 +362,17 @@ def scan_url():
     qs_default_console.print(
         qs_info_string, "Name:" if user_lang != "zh" else "文件名称:", name
     )
+    sz = int(head.headers.get("content-length", None))
     qs_default_console.print(
         qs_info_string,
         "Size:" if user_lang != "zh" else "文件大小:",
-        head.headers.get("Content-Length", "Unknown" if user_lang != "zh" else "未知"),
+        size_format(sz) if sz else "Unknown" if user_lang != "zh" else "未知",
     )
+
     qs_default_console.print(
         qs_info_string,
         "Type:" if user_lang != "zh" else "文件类型:",
-        head.headers.get("Content-Type", "Unknown" if user_lang != "zh" else "未知"),
+        head.headers.get("content-type", "Unknown" if user_lang != "zh" else "未知"),
     )
     qs_default_console.print(
         qs_info_string,

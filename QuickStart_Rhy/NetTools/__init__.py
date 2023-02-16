@@ -167,11 +167,15 @@ def size_format(sz: int, align: bool = False) -> str:
     :return: 文件大小字符串
     """
     if sz >= 1e9:
-        return "%.3f GB" % (sz / 1e9) if not align else "%7.3f GB" % (sz / 1e9)
+        return (
+            "%.3f GB" % (sz / 1024**3) if not align else "%7.3f GB" % (sz / 1024**3)
+        )
     elif sz >= 1e6:
-        return "%.3f MB" % (sz / 1e6) if not align else "%7.3f MB" % (sz / 1e6)
+        return (
+            "%.3f MB" % (sz / 1024**2) if not align else "%7.3f MB" % (sz / 1024**2)
+        )
     elif sz >= 1e3:
-        return "%.3f KB" % (sz / 1e3) if not align else "%7.3f KB" % (sz / 1e3)
+        return "%.3f KB" % (sz / 1024) if not align else "%7.3f KB" % (sz / 1024)
     else:
         return "%.2f B" % sz if not align else "%7.2f B" % sz
 
