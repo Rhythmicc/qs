@@ -135,14 +135,16 @@ def net_menu():
     qs netinfo <domains...*> :-> get url's info which in clipboard or params 
     qs dl [urls] [-help]     :-> download file from url(in clipboard)
     qs wifi                  :-> connect wifi
-    qs upgrade               :-> update qs"""
+    qs upgrade               :-> update qs
+    qs surl \[url]            :-> Get Information of URL File"""
     ) if user_lang != "zh" else color_rep(
         """网络工具:
     qs http \[IP] [-bind 链接] :-> 在当前路径下开启多线程http服务
     qs netinfo <域名...*> :-> 获取命令参数或剪切板中链接或ip的信息 
     qs dl <链接*>             :-> 从命令参数或剪切板中链接下载文件
     qs wifi                  :-> 连接wifi
-    qs upgrade               :-> 更新qs"""
+    qs upgrade               :-> 更新qs
+    qs surl \[链接]            :-> 获取链接文件的信息"""
     )
 
 
@@ -298,6 +300,7 @@ net_funcs = {
     "wifi": "wifi",
     "upgrade": "upgrade",
     "netinfo": "netinfo",
+    "surl": "scan_url",
 }
 
 api_funcs = {

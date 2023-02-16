@@ -178,6 +178,11 @@ class Downloader:
             self.futures, self.fileLock = [], Lock()
             self.job_queue = queue.Queue()
             if os.path.exists(self.name + ".qs_dl"):
+                qs_default_console.print(
+                    qs_info_string,
+                    "Resuming task from:" if user_lang != "zh" else "从文件恢复任务:",
+                    self.name + ".qs_dl",
+                )
                 self.ctn_file = open(self.name + ".qs_dl", "r+")
                 self.ctn = {int(i) for i in self.ctn_file.read().strip().split()}
             elif not self.write_to_memory:

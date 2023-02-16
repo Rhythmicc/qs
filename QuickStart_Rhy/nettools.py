@@ -343,3 +343,37 @@ def wifi():
     ) if _wifi.conn(ssid, password) else qs_default_console.print(
         qs_error_string, "Connect failed" if user_lang != "zh" else "连接失败"
     )
+
+
+def scan_url():
+    """
+    探测URL对应的文件大小
+    """
+    from . import requirePackage
+
+    url = sys.argv[2] if len(sys.argv) > 2 else requirePackage("pyperclip").paste()
+
+    from .NetTools import get_fileinfo
+
+    url, name, head = get_fileinfo(url)
+
+    from . import qs_default_console, qs_info_string, user_lang
+
+    qs_default_console.print(
+        qs_info_string, "Name:" if user_lang != "zh" else "文件名称:", name
+    )
+    qs_default_console.print(
+        qs_info_string,
+        "Size:" if user_lang != "zh" else "文件大小:",
+        head.headers.get("Content-Length", "Unknown" if user_lang != "zh" else "未知"),
+    )
+    qs_default_console.print(
+        qs_info_string,
+        "Type:" if user_lang != "zh" else "文件类型:",
+        head.headers.get("Content-Type", "Unknown" if user_lang != "zh" else "未知"),
+    )
+    qs_default_console.print(
+        qs_info_string,
+        "URL:" if user_lang != "zh" else "文件链接:",
+        url,
+    )

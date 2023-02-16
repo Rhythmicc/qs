@@ -500,13 +500,13 @@ def sas():
     qs_default_console.print(qs_info_string, "Done" if user_lang != "zh" else "完成")
 
 
-def swap():
+def swap(file1: str = None, file2: str = None):
     """
     交换两个文件的内容
     """
-
-    file1 = sys.argv[2]
-    file2 = sys.argv[3]
+    if not file1 or not file2:
+        file1 = sys.argv[2]
+        file2 = sys.argv[3]
 
     with open(file1, "r") as f1:
         data1 = f1.read()
