@@ -32,11 +32,11 @@ def imgsConcat(imgs: list):
 
     from io import BytesIO
     from .. import (
-        terminal_font_size,
         requirePackage,
         qs_default_console,
         qs_default_status,
         qs_error_string,
+        qs_config,
     )
 
     Image = requirePackage("PIL", "Image", "Pillow")
@@ -52,6 +52,8 @@ def imgsConcat(imgs: list):
 
     with qs_default_status("拼接图片中") as st:
         heights_len = min(len(imgs), 3)
+
+        terminal_font_size = int(qs_config.basicSelect("terminal_font_size"))
 
         one_width = int(
             qs_default_console.width * terminal_font_size / heights_len / 2.125
