@@ -200,10 +200,10 @@ class Translate:
         :param text: 待识别文本
         :return: 语言类型
         """
-        return requirePackage("langdetect", "detect")(text)
+        return requirePackage("langid", "classify")(text)[0]
 
     def translate(
-        self, text: str, from_lang: str = None, to_lang: str = user_lang
+        self, text: str, from_lang: str = None, target_lang: str = user_lang
     ) -> str:
         """
         翻译文本至默认语言
@@ -211,7 +211,7 @@ class Translate:
         Translate text to the default language
 
         :param from_lang: 文本语言
-        :param to_lang: 目标语言
+        :param target_lang: 目标语言
         :param text: 文本
         :return: 翻译结果
         """
@@ -223,7 +223,7 @@ class Translate:
                 {
                     "SourceText": text,
                     "Source": self.langdetect(text) if not from_lang else from_lang,
-                    "Target": to_lang,
+                    "Target": target_lang,
                     "ProjectId": 0,
                 }
             )
@@ -231,5 +231,5 @@ class Translate:
         return json.loads(self.client.TextTranslate(req).to_json_string())["TargetText"]
 
 
-def translate(text: str, from_lang: str = None, to_lang: str = user_lang) -> str:
-    return Translate().translate(text, from_lang, to_lang)
+def translate(text: str, from_lang: str = None, target_lang: str = user_lang) -> str:
+    return Translate().translate(text, from_lang, target_lang)

@@ -221,7 +221,7 @@ def txcos():
             func_table[op](bucket)
 
 
-def translate(content: str = None):
+def translate(content: str = None, target_lang: str = user_lang):
     """
     qs默认的翻译引擎
 
@@ -255,7 +255,7 @@ def translate(content: str = None):
         retry = 3
         while retry:
             try:
-                ret = _translate(content)
+                ret = _translate(content, target_lang=target_lang)
                 break
             except SSLError:
                 retry -= 1

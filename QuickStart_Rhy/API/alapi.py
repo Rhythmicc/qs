@@ -75,7 +75,7 @@ if not pre_check("__ban_warning", ext=False) and alapi_token == __common_token__
 v2_url = "https://v2.alapi.cn/api/"
 
 
-def translate(text: str, from_lang: str = "auto", to_lang: str = user_lang):
+def translate(text: str, from_lang: str = "auto", target_lang: str = user_lang):
     """
     获取翻译结果
 
@@ -83,15 +83,15 @@ def translate(text: str, from_lang: str = "auto", to_lang: str = user_lang):
 
     :param text: 待翻译内容 | Content to be translated.
     :param from_lang: 语种来源 | Source language
-    :param to_lang: 翻译成的语种 | Translated into the language
+    :param target_lang: 翻译成的语种 | Translated into the language
     :return: 翻译的文本 | Translated text
     """
     global alapi_token
     try:
         request_info = (
-            "q={}&from={}&to={}".format(quote(text, "utf-8"), from_lang, to_lang)
+            "q={}&from={}&to={}".format(quote(text, "utf-8"), from_lang, target_lang)
             if from_lang
-            else "q={}&to={}".format(quote(text, "utf-8"), to_lang)
+            else "q={}&to={}".format(quote(text, "utf-8"), target_lang)
         )
         res = requests.post(
             v2_url + "fanyi",
