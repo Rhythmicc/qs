@@ -9,7 +9,7 @@ import os
 import sys
 
 from QuickProject import QproDefaultStatus as qs_default_status
-from QuickProject import external_exec, user_pip
+from QuickProject import external_exec, user_pip, user_root
 
 from .__cache__ import QsCache
 from .__config__ import (
@@ -18,8 +18,7 @@ from .__config__ import (
     platform,
     qs_default_console,
     _ask,
-    user_lang,
-    user_root
+    user_lang
 )
 
 name = "QuickStart_Rhy"
