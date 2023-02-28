@@ -22,7 +22,7 @@ def pre_check(*keys, ext: bool = True) -> str:
     for key in keys:
         try:
             _val = qs_config.apiSelect(key)
-            if _val.startswith("GET:"):
+            if not _val or _val.startswith("GET:"):
                 raise KeyError
         except KeyError:
             if ext:

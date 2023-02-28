@@ -304,7 +304,7 @@ net_funcs = {
 }
 
 api_funcs = {
-    "self": "api",
+    "self": "apiTools",
     "trans": "translate",
     "pinyin": "pinyin",
     "rmbg": "remove_bg",

@@ -253,9 +253,10 @@ def translate(content: str = None, target_lang: str = user_lang):
             )
     if content:
         retry = 3
+        lang = requirePackage('langid', 'classify')(content)[0]
         while retry:
             try:
-                ret = _translate(content, target_lang=target_lang)
+                ret = _translate(content, target_lang="en" if target_lang == user_lang and lang == user_lang else target_lang)
                 break
             except SSLError:
                 retry -= 1

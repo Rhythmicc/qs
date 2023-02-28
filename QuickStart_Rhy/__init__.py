@@ -19,11 +19,11 @@ from .__config__ import (
     qs_default_console,
     _ask,
     user_lang,
+    user_root
 )
 
 name = "QuickStart_Rhy"
 
-user_root = os.path.expanduser("~")
 qs_config = QsConfig(os.path.join(user_root, ".qsrc"))
 qs_cache = QsCache(os.path.join(user_root, ".qs_cache"))
 

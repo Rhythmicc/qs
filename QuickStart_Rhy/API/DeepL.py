@@ -11,6 +11,8 @@ _translator = requirePackage("deepl", "Translator")(pre_check("DeepL"))  # 持�
 
 def translate(text, target_lang=user_lang.lower()):
     """翻译文本"""
+    if target_lang == 'en':
+        target_lang = 'en-us'
     return _translator.translate_text(text, target_lang=target_lang).text
 
 

@@ -5,7 +5,7 @@ setup.py
 QuickStart_Rhy/__cache__.py
 QuickStart_Rhy/__config__.py
 QuickStart_Rhy/__init__.py
-QuickStart_Rhy/api.py
+QuickStart_Rhy/apiTools.py
 QuickStart_Rhy/funcList.py
 QuickStart_Rhy/imageDeal.py
 QuickStart_Rhy/main.py
@@ -23,6 +23,7 @@ QuickStart_Rhy/API/AliCloud.py
 QuickStart_Rhy/API/BaiduCloud.py
 QuickStart_Rhy/API/ChatGPT.py
 QuickStart_Rhy/API/DeepL.py
+QuickStart_Rhy/API/DeepLX.py
 QuickStart_Rhy/API/Lolicon.py
 QuickStart_Rhy/API/QiniuOSS.py
 QuickStart_Rhy/API/SimpleAPI.py

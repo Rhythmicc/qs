@@ -1,5 +1,6 @@
 from QuickProject import QproDefaultConsole as qs_default_console
 from QuickProject import _ask, user_lang
+import json
 import sys
 import os
 
@@ -11,7 +12,7 @@ else:
     dir_char = "/"
 
 
-translate_engines = ["default", "TencentCloud", "DeepL"]
+translate_engines = ["default", "TencentCloud", "DeepL", "DeepLX"]
 
 questions = {
     "default_currency": {
@@ -136,29 +137,25 @@ questions = {
 
 
 class QsConfig:
-    import json
-
     def __init__(self, configPath):
         self.path = configPath
         if os.path.exists(configPath):
             try:
                 with open(configPath, "r") as f:
-                    self.config = QsConfig.json.loads(f.read())
+                    self.config = json.loads(f.read())
             except:
                 with open(configPath, "r", encoding="utf8") as f:
-                    self.config = QsConfig.json.loads(f.read(), encoding="utf8")
+                    self.config = json.loads(f.read(), encoding="utf8")
         else:
-            self.config = QsConfig.json.loads(
+            self.config = json.loads(
                 """{
   "basic_settings": {
-    "default_language": "zh",
     "default_currency": "CNY",
     "default_translate_engine": {
       "index": 0,
-      "support": ["default", "TencentCloud", "DeepL"]
+      "support": ["default", "TencentCloud", "DeepL", "DeepLX"]
     },
     "default_proxy": "user:password@ip:port or ip:port",
-    "default_pip": "pip3",
     "force_show_img": false,
     "terminal_font_size": 16
   },
@@ -177,24 +174,20 @@ class QsConfig:
     "qiniu_ac_key": "GET: http://qiniu.com/",
     "qiniu_sc_key": "GET: http://qiniu.com/",
     "qiniu_bk_name": "GET: [Qiniu Bucket Name]",
-    "gitee": "GET: http://gitee.com/",
     "AipImageAPP_ID": "GET: https://cloud.baidu.com/product/imageprocess",
     "AipImageAPP_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
     "AipImageSECRET_KEY": "GET: https://cloud.baidu.com/product/imageprocess",
     "AipNlpAPP_ID" : "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpAPP_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
-    "commonClipboardFilePath": "GET: /Path/to/file",
     "alapi_token": "GET: https://user.alapi.cn/",
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey",
     "openai": "GET: https://openai.com/api/",
-    "DeepL": "GET: https://www.deepl.com/zh/pro-api?cta=header-pro-api/"
+    "DeepL": "GET: https://www.deepl.com/zh/pro-api?cta=header-pro-api/",
+    "DeepLX": "GET: https://github.com/OwO-Network/DeepLX"
   }
 }"""
             )
-            from QuickProject import user_lang, user_pip
-
-            self.config["basic_settings"]["default_language"] = user_lang
             self.config["basic_settings"]["default_currency"] = _ask(
                 questions["default_currency"]
             )
@@ -204,7 +197,6 @@ class QsConfig:
             self.config["basic_settings"]["default_proxy"] = _ask(
                 questions["default_proxy"]
             )
-            self.config["basic_settings"]["default_pip"] = user_pip
             self.update()
             qs_default_console.print(
                 "\nYour configuration table has been stored:"
@@ -243,7 +235,7 @@ class QsConfig:
 
     def update(self):
         with open(self.path, "w") as f:
-            QsConfig.json.dump(self.config, f, indent=4, separators=(",", ": "))
+            json.dump(self.config, f, indent=4, separators=(",", ": "))
 
     def basicSelect(self, key: str):
         if key not in self.config["basic_settings"]:
