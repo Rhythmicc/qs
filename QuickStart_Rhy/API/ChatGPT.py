@@ -304,17 +304,18 @@ _chatbot = None
 
 def chatGPT(
     prompt: str,
-    auto_translate: bool = False,
+    wait_all: bool = False,
 ):
     """
     使用OpenAI的GPT-3 API进行聊天
 
     :param prompt: 聊天内容
+    :param wait_all: 是否等待所有内容
     """
     global _chatbot
     if _chatbot is None:
         _chatbot = Chatbot()
-    if auto_translate:
+    if wait_all:
         return _chatbot.ask(prompt)
     else:
         return _chatbot.ask_stream(prompt)

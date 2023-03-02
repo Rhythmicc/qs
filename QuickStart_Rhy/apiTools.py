@@ -1201,16 +1201,18 @@ def gpt():
     Chat GPT-3
     :return:
     """
-    auto_translate = "--auto-translate" in sys.argv
-    if auto_translate:
-        from .API.DeepL import translate
+    wait_all = '--wait-all' in sys.argv
 
+    from rich.markdown import Markdown
+    from rich.live import Live
     from .API.ChatGPT import chatGPT
     from . import _ask
 
     qs_default_console.print(
         qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出"
     )
+
+    chatGPT('请以Markdown格式回复我的消息', wait_all=True) # 规定回复格式
 
     while (
         prompt := _ask(
@@ -1220,20 +1222,19 @@ def gpt():
             }
         )
     ) != "exit":
-        if auto_translate:
-            prompt = translate(prompt, "EN-US")
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
-            response = chatGPT(prompt, auto_translate=auto_translate)
+            response = chatGPT(prompt)
 
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",
         )
 
-        if auto_translate:
-            qs_default_console.print(response)
-            qs_default_console.print(translate(response))
+        if wait_all:
+            qs_default_console.print(Markdown(response))
         else:
-            for res in response:
-                qs_default_console.print(res, end="")
-        qs_default_console.print()
+            with Live(Markdown(''), refresh_per_second=4) as live:
+                total_res = ''
+                for res in response:
+                    total_res += res
+                    live.update(Markdown(total_res))
