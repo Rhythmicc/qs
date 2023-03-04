@@ -267,7 +267,8 @@ def translate(content: str = None, target_lang: str = user_lang):
                     else f"SSL错误，重试中... \[{3 - retry} / 3]",
                 )
             except Exception as e:
-                qs_default_console.log(qs_error_string, e)
+                # qs_default_console.log(qs_error_string, e)
+                qs_default_console.print_exception()
                 return None
 
         if output_flag and ret:

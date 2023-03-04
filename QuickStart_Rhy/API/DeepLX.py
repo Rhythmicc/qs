@@ -9,5 +9,13 @@ def translate(text, target_lang=user_lang.lower()):
         'text': text,
         'source_lang': 'auto',
         'target_lang': target_lang,
-    }).json()
-    return res.get('data')
+    })
+    if res.text.strip():
+        return res.json().get('data')
+    else:
+        return None
+
+
+if __name__ == "__main__":
+    print(translate("Hello world!"))
+ 
