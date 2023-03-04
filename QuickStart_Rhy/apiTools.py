@@ -1206,7 +1206,7 @@ def gpt():
 
     from rich.markdown import Markdown
     from rich.live import Live
-    from .API.ChatGPT import chatGPT
+    from .API.ChatGPT import chatGPT, API_KEY
     from . import _ask
 
     qs_default_console.print(
@@ -1237,5 +1237,8 @@ def gpt():
             with Live(Markdown(''), refresh_per_second=4) as live:
                 total_res = ''
                 for res in response:
-                    total_res += res
+                    if API_KEY:
+                        total_res += res
+                    else:
+                        total_res = res['message']
                     live.update(Markdown(total_res))
