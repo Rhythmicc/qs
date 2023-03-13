@@ -1,9 +1,7 @@
 from .. import requirePackage
 from . import pre_check
 
-from revChatGPT.V3 import Chatbot
 ENGINE = "gpt-3.5-turbo"
-ENCODER = requirePackage("tiktoken", "get_encoding")("gpt2")
 API_KEY = pre_check("openai", ext=False)
 
 

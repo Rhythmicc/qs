@@ -1,8 +1,7 @@
 """
-在终端预览图片 | 目前仅有MacOS下的iTerm可用, 你需要自行安装imgcat库
+在终端预览图片 | 仅有MacOS下的iTerm2可用
 
-preview image on terminal | At present, only iTerm under MacOS is available,
-you need to install imgcat library by yourself
+preview image on terminal | Only iTerm2 is available,
 """
 from .. import qs_default_console, qs_console_width, requirePackage, qs_default_status
 from .. import _ask, user_lang, force_show_img, qs_config
@@ -268,7 +267,7 @@ def image_preview(
     set_proxy: str = "",
     set_referer: str = "",
     set_width_in_rc_file: int = 0,
-    force_show: bool = force_show_img,
+    force_show: bool = force_show_img
 ):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用, 但你可以开启强制显示选项预览
@@ -281,6 +280,7 @@ def image_preview(
     :param img: opened file, numpy array, PIL.Image, matplotlib fig
     :param set_proxy: set proxy
     :param set_referer: set refer
+    :param _fake_show: 返回图片比特流，用于自定义显示
     :return:
     """
     global force_show_option, has_set_force_show_option
@@ -394,7 +394,6 @@ def image_preview(
             " " * math.ceil((console_width - _real_width) / 2),
             end="",
         )
-
         imgcat(
             buf,
             width=min(_real_width, console_width),

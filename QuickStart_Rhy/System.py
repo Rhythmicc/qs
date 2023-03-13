@@ -299,12 +299,12 @@ def unmount_dmg():
     for disk in _ls:
         table.add_row(disk["path"], disk["type"], disk["size"])
     qs_default_console.print(table, justify="center")
-    disk_path = _ask(
+    disk_paths = _ask(
         {
-            "type": "list",
+            "type": "checkbox",
             "message": "Select a disk to umount" if user_lang != "zh" else "选择要卸载的磁盘",
-            "choices": [disk["path"] for disk in _ls],
-            "default": _ls[0]["path"],
+            "choices": [{'name': disk["path"], 'checked': True} for disk in _ls],
         }
     )
-    disks.unmount(disk_path)
+    for disk_path in disk_paths:
+        disks.unmount(disk_path)

@@ -1234,11 +1234,11 @@ def gpt():
         if wait_all:
             qs_default_console.print(Markdown(response))
         else:
-            with Live(Markdown(''), refresh_per_second=4) as live:
+            with Live('', console=qs_default_console, auto_refresh=False) as live:
                 total_res = ''
                 for res in response:
                     if API_KEY:
                         total_res += res
                     else:
                         total_res = res['message']
-                    live.update(Markdown(total_res))
+                    live.update(Markdown(total_res, justify='full'), refresh=True)
