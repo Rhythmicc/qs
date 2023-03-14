@@ -1199,7 +1199,7 @@ def joke():
 
 def gpt():
     """
-    Chat GPT-3
+    ChatGPT-3.5
     :return:
     """
     wait_all = '--wait-all' in sys.argv
@@ -1208,12 +1208,15 @@ def gpt():
     from rich.live import Live
     from .API.ChatGPT import chatGPT, API_KEY
     from . import _ask
+    from .NumbaTools import cut_string
 
     qs_default_console.print(
         qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出"
     )
 
     chatGPT('请以Markdown格式回复我的消息', wait_all=True) # 规定回复格式
+
+    record = ""
 
     while (
         prompt := _ask(
@@ -1235,10 +1238,14 @@ def gpt():
             qs_default_console.print(Markdown(response))
         else:
             with Live('', console=qs_default_console, auto_refresh=False) as live:
-                total_res = ''
+                prefix = '' if prompt not in ['继续', 'continue'] else record
+                total_res = prefix
                 for res in response:
                     if API_KEY:
                         total_res += res
                     else:
-                        total_res = res['message']
-                    live.update(Markdown(total_res, justify='full'), refresh=True)
+                        total_res = prefix + res['message']
+                    _lines = total_res.split('\n')
+                    display = '\n'.join([' '.join(cut_string(line, qs_default_console.width, ignore_charset='`')) for line in _lines])
+                    live.update(Markdown(display, justify='full'), refresh=True)
+                record = total_res

@@ -20,9 +20,9 @@ def chatGPT(
     """
     global _chatbot
     if _chatbot is None:
-        _chatbot = requirePackage("revChatGPT.V3", "Chatbot", "revChatGPT")(
+        _chatbot = requirePackage("revChatGPT.V3", "Chatbot", "revChatGPT", keep_latest=True)(
             API_KEY, ENGINE
-        ) if API_KEY else requirePackage("revChatGPT.V1", "Chatbot", "revChatGPT")(
+        ) if API_KEY else requirePackage("revChatGPT.V1", "Chatbot", "revChatGPT", keep_latest=True)(
             {
                 "email": pre_check("openai-email"),
                 "password": pre_check("openai-password"),

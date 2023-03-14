@@ -7,6 +7,7 @@ Docs for different language:
 """
 import os
 import sys
+import time
 
 from QuickProject import QproDefaultStatus as qs_default_status
 from QuickProject import external_exec, user_pip, user_root
@@ -37,6 +38,9 @@ qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告
 qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_console_width = qs_default_console.width
 
+_package_info_ = qs_cache.get("package_info")
+if _package_info_ is None:
+    _package_info_ = {}
 
 def requirePackage(
     pname: str,
@@ -45,6 +49,7 @@ def requirePackage(
     not_exit: bool = True,
     not_ask: bool = False,
     set_pip: str = user_pip,
+    keep_latest: bool = False,
 ):
     """
     获取本机上的python第三方库
@@ -52,12 +57,25 @@ def requirePackage(
     :param pname: 库名
     :param module: 待引入的模块名，可缺省
     :param real_name: 用于 pip3 install 的名字
-    :param not_exit: 安装后不退出
+    :param not_exit: 安装或引用失败后不退出，成功则返回库或模块的地址，失败则返回None
     :param not_ask: 不询问
     :param set_pip: pip3的路径
+    :param keep_latest: 是否保持最新版本
     :return: 库或模块的地址
     """
     try:
+        package_name = pname.split('.')[0] if not real_name else real_name
+        if not package_name: # 引用为自身
+            package_name = name
+        if keep_latest or time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7:
+            with qs_default_status(
+                f"Updating {package_name}"
+                if user_lang != "zh"
+                else f"正在尝试更新 {package_name}"
+            ):
+                external_exec(f"{set_pip} install {package_name} -U")
+            _package_info_[package_name] = time.time()
+            qs_cache.set("package_info", _package_info_)
         exec(f"from {pname} import {module}" if module else f"import {pname}")
     except (ModuleNotFoundError, ImportError):
         if not_ask:
@@ -101,22 +119,22 @@ def requirePackage(
                 )
                 exit(0)
         else:
-            exit(-1)
+            exit(-1) if not not_exit else None
     return eval(f"{module if module else pname}")
 
 
-def cut_string(string: str, length: int) -> list:
+def cut_string(string: str, length: int, ignore_charset: list = []) -> list:
     """
     每隔l个字符切分字符串
 
     :param string: 字符串
     :param length: 切分长度
+    :param ignore_charset: 忽略的字符集
     :return: 切分后产生的list
     """
-    string = string.strip()
     res, cur, cnt = [], "", 0
     for i in string:
-        _char_len = 2 if ord(i) > 255 else 1 if ord(i) > 127 else 1.5
+        _char_len = 0 if i in ignore_charset else 2 if ord(i) > 255 else 1
         cnt += _char_len
         if cnt <= length:
             cur += i
@@ -197,8 +215,6 @@ def cur_time():
         "Saturday": "周六",
         "Sunday": "周日",
     }
-    import time
-
     tm = time.strftime("%Y年%m月%d日 %A %H:%M:%S", time.localtime(time.time())).split()
     tm[1] = week[tm[1]]
     qs_default_console.print(qs_info_string, " ".join(tm))
