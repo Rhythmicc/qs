@@ -90,12 +90,12 @@ def requirePackage(
             }
         ):
             with qs_default_status(
-                f"Installing {pname if not real_name else real_name}"
+                f"Installing {package_name}"
                 if user_lang != "zh"
-                else f"正在安装 {pname if not real_name else real_name}"
+                else f"正在安装 {package_name}"
             ):
                 st, _ = external_exec(
-                    f"{set_pip} install {pname if not real_name else real_name} -U",
+                    f"{set_pip} install {package_name} -U",
                     True,
                 )
             if st:
@@ -104,7 +104,7 @@ def requirePackage(
                     f"Install {pname + (' -> ' + module if module else '')} failed, please install it manually: "
                     if user_lang != "zh"
                     else f"安装 {pname + (' -> ' + module if module else '')} 失败，请手动安装: ",
-                    f"'{set_pip} install {pname if not real_name else real_name} -U'",
+                    f"'{set_pip} install {package_name} -U'",
                 )
                 exit(-1)
             if not_exit:
