@@ -1206,15 +1206,13 @@ def gpt():
 
     from rich.markdown import Markdown
     from rich.live import Live
-    from .API.ChatGPT import chatGPT, API_KEY
+    from .API.ChatGPT import chatGPT, API_KEY, ALAPI
     from . import _ask
     from .NumbaTools import cut_string
 
     qs_default_console.print(
         qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出"
     )
-
-    chatGPT('请以Markdown格式回复我的消息', wait_all=True) # 规定回复格式
 
     record = ""
 
@@ -1233,19 +1231,20 @@ def gpt():
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",
         )
+        prefix = '' if prompt not in ['继续', 'continue'] else record
 
         if wait_all:
-            qs_default_console.print(Markdown(response))
+            total_res = prefix + response
+            qs_default_console.print(Markdown(display = '\n'.join([' '.join(cut_string(line, qs_default_console.width, ignore_charset='`')) for line in total_res.split('\n')])))
+            record = total_res
         else:
             with Live('', console=qs_default_console, auto_refresh=False) as live:
-                prefix = '' if prompt not in ['继续', 'continue'] else record
                 total_res = prefix
                 for res in response:
-                    if API_KEY:
+                    if API_KEY or ALAPI:
                         total_res += res
                     else:
                         total_res = prefix + res['message']
-                    _lines = total_res.split('\n')
-                    display = '\n'.join([' '.join(cut_string(line, qs_default_console.width, ignore_charset='`')) for line in _lines])
+                    display = '\n'.join([' '.join(cut_string(line, qs_default_console.width, ignore_charset='`')) for line in total_res.split('\n')])
                     live.update(Markdown(display, justify='full'), refresh=True)
                 record = total_res

@@ -164,7 +164,7 @@ def to_content_buf(data, fmt="png"):
         raise TypeError("Unsupported type : {}".format(type(data)))
 
 
-def real_height(buf, pixels_per_line=int(qs_config.basicSelect("terminal_font_size"))):
+def real_height(buf, pixels_per_line=qs_config.basicSelect("terminal_font_size")):
     _, im_height = get_image_shape(buf)
     if im_height:
         assert pixels_per_line > 0
@@ -267,7 +267,7 @@ def image_preview(
     set_proxy: str = "",
     set_referer: str = "",
     set_width_in_rc_file: int = 0,
-    force_show: bool = force_show_img
+    force_show: bool = force_show_img,
 ):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用, 但你可以开启强制显示选项预览
@@ -341,10 +341,10 @@ def image_preview(
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
         rate = width / height
-        font_rate = 2.125
-        _real_height = height / int(qs_config.basicSelect("terminal_font_size"))
+        font_rate = qs_config.basicSelect("terminal_font_rate")
+        _real_height = height / qs_config.basicSelect("terminal_font_size")
         _real_width = (
-            width * font_rate / int(qs_config.basicSelect("terminal_font_size"))
+            width * font_rate / qs_config.basicSelect("terminal_font_size")
         )
 
         console_width = (

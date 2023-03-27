@@ -59,12 +59,11 @@ class ImageDeal:
             img_name[: img_name.index(".")] + "_LG." + ".".join(img_name.split(".")[1:])
         )
 
-        from .. import qs_console_status
+        from .. import qs_default_status
 
-        qs_console_status.update(
+        with qs_default_status(
             f'{"Reading Image" if user_lang != "zh" else "读取图片"}: {path}'
-        )
-        with qs_console_status as status:
+        ) as status:
             with open(path, "rb") as f:
                 img = f.read()
             status.update(

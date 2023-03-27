@@ -157,7 +157,8 @@ class QsConfig:
     },
     "default_proxy": "user:password@ip:port or ip:port",
     "force_show_img": false,
-    "terminal_font_size": 16
+    "terminal_font_size": 16,
+    "terminal_font_rate": 2.0,
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
@@ -183,6 +184,10 @@ class QsConfig:
     "alapi_token": "GET: https://user.alapi.cn/",
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey",
     "openai": "GET: https://openai.com/api/",
+    "openai-email": "GET: https://openai.com/api/",
+    "openai-password": "GET: https://openai.com/api/",
+    "openai-paid": false,
+    "openai-alapi": false,
     "DeepL": "GET: https://www.deepl.com/zh/pro-api?cta=header-pro-api/",
     "DeepLX": "GET: https://github.com/OwO-Network/DeepLX"
   }

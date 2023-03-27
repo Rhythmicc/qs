@@ -271,7 +271,7 @@ def diff_dir():
 
 def mount_dmg():
     """
-    挂载镜像
+    挂载镜像 
 
     :return:
     """
