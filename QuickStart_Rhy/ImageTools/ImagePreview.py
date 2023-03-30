@@ -340,54 +340,28 @@ def image_preview(
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
-        rate = width / height
-        font_rate = qs_config.basicSelect("terminal_font_rate")
-        _real_height = height / qs_config.basicSelect("terminal_font_size")
-        _real_width = (
-            width * font_rate / qs_config.basicSelect("terminal_font_size")
+        _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
+        _real_width = math.ceil(
+            width
+            * qs_config.basicSelect("terminal_font_rate", 1.5)
+            / qs_config.basicSelect("terminal_font_size")
         )
 
         console_width = (
             qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
         )
 
-        console_height = qs_default_console.height - 3
-        max_iter = 10
+        console_height = qs_default_console.height - 3 # 3 is the height of the status bar
 
         if _real_width > console_width:
+            scale = console_width / _real_width
             _real_width = console_width
-            _real_height = math.floor(_real_width / rate / font_rate)
-
-            _iter = 0
-            while (
-                math.fabs(_real_width / _real_height / font_rate - rate) > 0.01
-                and _iter < max_iter
-            ):
-                _real_height += (
-                    1 if _real_width / _real_height / font_rate > rate else -1
-                )
-                _iter += 1
-                if _real_height <= 1:
-                    break
-            if height > width:
-                _real_height += 1
+            _real_height = math.floor(_real_height * scale)
         if _real_height > console_height:
+            scale = console_height / _real_height
             _real_height = console_height
-            _real_width = math.floor(_real_height * rate * font_rate)
+            _real_width = math.floor(_real_width * scale)
 
-            _iter = 0
-            while (
-                math.fabs(_real_width / _real_height / font_rate - rate) > 0.01
-                and _iter < max_iter
-            ):
-                _real_width += (
-                    -1 if _real_width / _real_height / font_rate > rate else 1
-                )
-                _iter += 1
-                if _real_width <= 1:
-                    break
-            if height < width:
-                _real_width += 1
         qs_default_status.stop()
 
         qs_default_console.print(
@@ -396,7 +370,6 @@ def image_preview(
         )
         imgcat(
             buf,
-            width=min(_real_width, console_width),
             height=min(_real_height, console_height),
             force_show=force_show_option,
         )

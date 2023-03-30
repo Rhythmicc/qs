@@ -242,10 +242,14 @@ class QsConfig:
         with open(self.path, "w") as f:
             json.dump(self.config, f, indent=4, separators=(",", ": "))
 
-    def basicSelect(self, key: str):
+    def basicSelect(self, key: str, default=None):
         if key not in self.config["basic_settings"]:
-            self.config["basic_settings"][key] = _ask(questions[key])
-            self.update()
+            if default is not None:
+                self.config["basic_settings"][key] = default
+                self.update()
+            else:
+                self.config["basic_settings"][key] = _ask(questions[key])
+                self.update()
         return self.config["basic_settings"][key]
 
     def apiSelect(self, key):
