@@ -184,8 +184,8 @@ def real_height(buf, pixels_per_line=qs_config.basicSelect("terminal_font_size")
 
 def imgcat(
     buf,
-    width=None,
-    height=None,
+    width_scale=None,
+    height_scale=None,
     preserve_aspect_ratio=True,
     fp=None,
     force_show: bool = False,
@@ -209,21 +209,6 @@ def imgcat(
     if len(buf) == 0:
         raise ValueError("Empty buffer")
 
-    if height is None:
-        height = real_height(buf)
-
-    # need to detect tmux
-    is_tmux = "TMUX" in os.environ and "tmux" in os.environ["TMUX"]
-
-    # tmux: print some margin and the DCS escape sequence for passthrough
-    # In tmux mode, we need to first determine the number of actual lines
-    if is_tmux:
-        fp.write(b"\n" * height)
-        # move the cursers back
-        fp.write(CSI + b"?25l")
-        fp.write(CSI + str(height).encode() + b"F")  # PEP-461
-        fp.write(TMUX_WRAP_ST + b"\033")
-
     is_iterm2 = "ITERM_SESSION_ID" in os.environ
 
     if not is_iterm2 and not force_show:
@@ -235,28 +220,18 @@ def imgcat(
     fp.write(OSC)
     fp.write(b"1337;File=inline=1")
     fp.write(b";size=" + str(len(buf)).encode())
-    fp.write(b";height=" + str(height).encode())
-    if width:
-        fp.write(b";width=" + str(width).encode())
+    if width_scale:
+        fp.write(b";width=" + f'{width_scale}%%%%'.encode())
+    if height_scale:
+        fp.write(b";height=" + f'{height_scale}%%%%'.encode())
     if not preserve_aspect_ratio:
         fp.write(b";preserveAspectRatio=0")
+    fp.write(b";inline=1")
     fp.write(b":")
     fp.flush()
-
-    buf_base64 = base64.b64encode(buf)
-    fp.write(buf_base64)
-
+    fp.write(base64.b64encode(buf))
     fp.write(ST)
-
-    if is_tmux:
-        # terminate DCS passthrough mode
-        fp.write(TMUX_WRAP_ED)
-        # move back the cursor lines down
-        fp.write(CSI + str(height).encode() + b"E")
-        fp.write(CSI + b"?25h")
-    else:
-        fp.write(b"\n")
-
+    fp.write(b"\n")
     # flush is needed so that the cursor control sequence can take effect
     fp.flush()
 
@@ -310,25 +285,21 @@ def image_preview(
             is_url = img.startswith("http")
 
         if is_url:
-            img_bytes = requirePackage(".NetTools.NormalDL", "normal_dl")(
+            if img_bytes := requirePackage(".NetTools.NormalDL", "normal_dl")(
                 img,
                 set_referer=set_referer,
                 set_proxy=set_proxy,
                 disableStatus=True,
                 write_to_memory=True,
-            )
-
-            if not img_bytes:
-                from .. import qs_error_string
-
+            ):
+                img = requirePackage("PIL", "Image", "Pillow").open(
+                    requirePackage("io", "BytesIO")(img_bytes)
+                )
+            else:
                 return qs_default_console.print(
-                    qs_error_string,
+                    requirePackage('.', 'qs_error_string'),
                     "Failed to download image" if user_lang != "zh" else "图片下载失败",
                 )
-
-            img = requirePackage("PIL", "Image", "Pillow").open(
-                requirePackage("io", "BytesIO")(img_bytes)
-            )
         elif not is_url and isinstance(img, str) and os.path.exists(img):
             img = requirePackage("PIL", "Image", "Pillow").open(img)
 
@@ -340,43 +311,48 @@ def image_preview(
 
         buf = to_content_buf(img)
         width, height = get_image_shape(buf)
-        _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
-        _real_width = math.ceil(
-            width
-            * qs_config.basicSelect("terminal_font_rate", 1.5)
-            / qs_config.basicSelect("terminal_font_size")
-        )
-
         console_width = (
             qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
         )
-
-        console_height = qs_default_console.height - 3 # 3 is the height of the status bar
+        console_height = qs_default_console.height
+        max_height_scale = 1 - 3 / console_height # 3 is the height of the status bar
+        rate = width / height
+        _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
+        _real_width = math.ceil(
+            width
+            * qs_config.basicSelect("terminal_font_rate", 2.049)
+            / qs_config.basicSelect("terminal_font_size")
+        )
 
         if _real_width > console_width:
-            scale = console_width / _real_width
+            height_scale = console_width / _real_width
+            _real_height = math.floor(_real_height * height_scale)
             _real_width = console_width
-            _real_height = math.floor(_real_height * scale)
         if _real_height > console_height:
-            scale = console_height / _real_height
-            _real_height = console_height
-            _real_width = math.floor(_real_width * scale)
+            width_scale = console_height / _real_height
+            _real_width = math.floor(_real_width * width_scale)
 
         qs_default_status.stop()
-
         qs_default_console.print(
-            " " * math.ceil((console_width - _real_width) / 2),
+            " " * math.floor((console_width - _real_width) / 2),
             end="",
         )
-        imgcat(
-            buf,
-            height=min(_real_height, console_height),
-            force_show=force_show_option,
-        )
+        if rate > 1:
+            imgcat(
+                buf,
+                width_scale=100,
+                force_show=force_show_option,
+            )
+        else:
+            imgcat(
+                buf,
+                height_scale=max_height_scale * 100,
+                force_show=force_show_option,
+            )
 
         if _st:
             qs_default_status.start()
-    except Exception as e:
+    except Exception:
         qs_default_status.stop()
         qs_default_console.print_exception()
         return

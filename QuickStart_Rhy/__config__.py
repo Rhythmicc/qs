@@ -158,7 +158,7 @@ class QsConfig:
     "default_proxy": "user:password@ip:port or ip:port",
     "force_show_img": false,
     "terminal_font_size": 16,
-    "terminal_font_rate": 2.0,
+    "terminal_font_rate": 2.049,
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
@@ -224,15 +224,18 @@ class QsConfig:
                     "default": True,
                 }
             )
-            if platform.startswith("darwin") and _ask(
-                {
-                    "type": "confirm",
-                    "message": """Qs recommends that you use iTerm as the terminal program in
-  the Mac system, whether to open the iTerm2 official website?"""
-                    if user_lang != "zh"
-                    else "qs推荐您在Mac系统中使用iTerm2作为终端程序, 是否打开iTerm2官网?",
-                    "default": True,
-                }
+            if (
+                platform.startswith("darwin")
+                and "ITERM_SESSION_ID" not in os.environ
+                and _ask(
+                    {
+                        "type": "confirm",
+                        "message": """We recommend that you use iTerm2 as a terminal program on your Mac system for the best experience (e.g. to display pictures), is the iTerm2 website open?"""
+                        if user_lang != "zh"
+                        else "推荐您在Mac系统中使用iTerm2作为终端程序以获得最佳体验 (比如展示图片), 是否打开iTerm2官网?",
+                        "default": True,
+                    }
+                )
             ):
                 from .NetTools import open_url
 
