@@ -242,6 +242,7 @@ def image_preview(
     set_proxy: str = "",
     set_referer: str = "",
     set_width_in_rc_file: int = 0,
+    set_height_in_rc_file: int = 0,
     force_show: bool = force_show_img,
 ):
     """
@@ -306,16 +307,23 @@ def image_preview(
         _st = qs_default_status.status
 
         qs_default_status(
-            "Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置"
+            "Loading image" if user_lang != "zh" else "正在加载图片",
         ).start()
 
         buf = to_content_buf(img)
+
+        qs_default_status("Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置")
+
         width, height = get_image_shape(buf)
         console_width = (
             qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
         )
-        console_height = qs_default_console.height
-        max_height_scale = 1 - 3 / console_height # 3 is the height of the status bar
+        console_height = qs_default_console.height if not set_height_in_rc_file else set_height_in_rc_file
+
+        max_width_scale = set_width_in_rc_file / qs_console_width if set_width_in_rc_file else 1
+        max_height_scale = set_height_in_rc_file / qs_default_console.height if set_height_in_rc_file else 1
+        max_width_scale *= max_height_scale
+        
         rate = width / height
         _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
         _real_width = math.ceil(
@@ -334,13 +342,13 @@ def image_preview(
 
         qs_default_status.stop()
         qs_default_console.print(
-            " " * math.floor((console_width - _real_width) / 2),
+            " " * math.floor((qs_console_width - _real_width) / 2),
             end="",
         )
         if rate > 1:
             imgcat(
                 buf,
-                width_scale=100,
+                width_scale=max_width_scale * 100,
                 force_show=force_show_option,
             )
         else:

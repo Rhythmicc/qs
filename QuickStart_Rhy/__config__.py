@@ -158,7 +158,7 @@ class QsConfig:
     "default_proxy": "user:password@ip:port or ip:port",
     "force_show_img": false,
     "terminal_font_size": 16,
-    "terminal_font_rate": 2.049,
+    "terminal_font_rate": 2.049
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
