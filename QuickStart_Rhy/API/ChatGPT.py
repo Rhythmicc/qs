@@ -1,7 +1,15 @@
-from .. import requirePackage
+from .. import requirePackage, user_lang
 from . import pre_check
 
-ENGINE = "gpt-3.5-turbo"
+lang_table = {
+    'zh': 'Chinese',
+    'en': 'English',
+    'fra': 'French',
+    'ru': 'Russian',
+    'spa': 'Spanish',
+    'ara': 'Arabic',
+}
+
 API_KEY = pre_check("openai", ext=False)
 ALAPI = pre_check("openai-alapi", ext=False)
 if ALAPI:
@@ -52,7 +60,7 @@ class AlapiChatbot:
         )
         return res
 
-    def ask_stream(self, prompt): # not support now
+    def ask_stream(self, prompt):  # not support now
         self.messages.append(
             {
                 "role": "user",
@@ -97,7 +105,10 @@ def create_bot():
         return AlapiChatbot()
     else:
         return (
-            requirePackage("revChatGPT.V3", "Chatbot", "revChatGPT")(API_KEY, ENGINE)
+            requirePackage("revChatGPT.V3", "Chatbot", "revChatGPT")(
+                API_KEY,
+                system_prompt=f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
+            )
             if API_KEY
             else requirePackage("revChatGPT.V1", "Chatbot", "revChatGPT")(
                 {

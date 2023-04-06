@@ -341,10 +341,6 @@ def image_preview(
             _real_width = math.floor(_real_width * width_scale)
 
         qs_default_status.stop()
-        qs_default_console.print(
-            " " * math.floor((qs_console_width - _real_width) / 2),
-            end="",
-        )
         if rate > 1:
             imgcat(
                 buf,
@@ -352,6 +348,10 @@ def image_preview(
                 force_show=force_show_option,
             )
         else:
+            qs_default_console.print(
+                " " * math.floor((qs_console_width - _real_width) / 2),
+                end="",
+            )
             imgcat(
                 buf,
                 height_scale=max_height_scale * 100,
