@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.6.74"
+VERSION = "0.6.75"
 
 setup(
     name="QuickStart_Rhy",

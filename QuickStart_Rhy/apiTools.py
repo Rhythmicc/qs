@@ -1309,7 +1309,10 @@ def gpt():
             total_res = prefix
             for res in response:
                 if API_KEY or ALAPI:
-                    total_res += res
+                    if ALAPI: # ALAPI 优先启用
+                        total_res = prefix + res
+                    elif API_KEY:
+                        total_res += res
                 else:
                     total_res = prefix + res["message"]
                 display = "\n".join(

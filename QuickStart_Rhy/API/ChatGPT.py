@@ -68,7 +68,7 @@ class AlapiChatbot:
             }
         )
         post_stream = requests.post(
-            self.url + "chatgpt/pro",
+            self.url + "chatgpt/stream",
             json={
                 "token": self.api_key,
                 "message": self.messages,
@@ -76,21 +76,14 @@ class AlapiChatbot:
             stream=True,
         )
         total_res = ""
-        for line in post_stream.iter_lines():
+        for line in post_stream.iter_lines(decode_unicode=True):
+            line = line.strip()
             if not line:
                 continue
-            line = line.decode("utf-8")
-            if line == "[DONE]":
-                break
-            resp: dict = json.loads(line)
-            choices = resp.get("data")
-            if not choices:
-                continue
-            delta = choices.get("content")
-            if not delta:
-                continue
-            total_res += delta
-            yield delta
+            res = json.loads(line)
+            if res['success']:
+                total_res = res['text']
+                yield total_res
 
         self.messages.append(
             {
@@ -133,7 +126,7 @@ def chatGPT(
     global _chatbot
     if _chatbot is None:
         _chatbot = create_bot()
-    if wait_all or ALAPI:
+    if wait_all:
         return _chatbot.ask(prompt)
     else:
         return _chatbot.ask_stream(prompt)
