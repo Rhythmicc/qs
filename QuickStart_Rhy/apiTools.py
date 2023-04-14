@@ -277,9 +277,21 @@ def translate(content: str = None, target_lang: str = user_lang):
                 return None
 
         if output_flag and ret:
-            qs_default_console.print(ret) if ret else qs_default_console.log(
-                qs_error_string, "Translate Failed!"
-            )
+            if ret:
+                from .NumbaTools import cut_string
+                display = "\n".join(
+                    [
+                        " ".join(
+                            cut_string(
+                                line, qs_default_console.width, ignore_charset="`"
+                            )
+                        )
+                        for line in ret.split("\n")
+                    ]
+                )
+                qs_default_console.print(display)
+            else:
+                qs_default_console.log(qs_error_string, "Translate Failed!")
         return ret
     else:
         qs_default_console.log(
@@ -1279,7 +1291,10 @@ def gpt():
 
     if not translate_text:
         qs_default_console.print(
-            qs_info_string, "Add '--translate' to enable auto translate" if user_lang != "zh" else "添加 '--translate' 以启用自动翻译"
+            qs_info_string,
+            "Add '--translate' to enable auto translate"
+            if user_lang != "zh"
+            else "添加 '--translate' 以启用自动翻译",
         )
 
     record = ""
@@ -1295,7 +1310,7 @@ def gpt():
         if translate_text:
             prompt = translate(prompt, target_lang="en")
             qs_default_console.print("EN:", prompt)
-        
+
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
             response = chatGPT(prompt)
 
@@ -1309,7 +1324,7 @@ def gpt():
             total_res = prefix
             for res in response:
                 if API_KEY or ALAPI:
-                    if ALAPI: # ALAPI 优先启用
+                    if ALAPI:  # ALAPI 优先启用
                         total_res = prefix + res
                     elif API_KEY:
                         total_res += res

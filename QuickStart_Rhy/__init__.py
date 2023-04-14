@@ -39,6 +39,7 @@ qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_console_width = qs_default_console.width
 
 _package_info_ = qs_cache.get("package_info")
+_not_update_ = ['io', 'tarfile']
 if _package_info_ is None:
     _package_info_ = {}
 
@@ -67,13 +68,22 @@ def requirePackage(
         package_name = pname.split('.')[0] if not real_name else real_name
         if not package_name: # 引用为自身
             package_name = name
-        if keep_latest or time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7:
+        if package_name not in _not_update_ and (keep_latest or time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7):
             with qs_default_status(
                 f"Updating {package_name}"
                 if user_lang != "zh"
                 else f"正在尝试更新 {package_name}"
             ):
-                external_exec(f"{set_pip} install {package_name} -U")
+                _st, _ct = external_exec(f"{set_pip} install {package_name} -U", without_output=True)
+                if _st:
+                    qs_default_console.print(
+                        qs_warning_string,
+                        f"Update {package_name} failed, please update it manually: "
+                        if user_lang != "zh"
+                        else f"更新 {package_name} 失败，请手动更新: ",
+                        f"'{set_pip} install {package_name} -U'",
+                    )
+                    qs_default_console.print(qs_warning_string, _ct)
             _package_info_[package_name] = time.time()
             qs_cache.set("package_info", _package_info_)
         exec(f"from {pname} import {module}" if module else f"import {pname}")
