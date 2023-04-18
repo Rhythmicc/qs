@@ -293,6 +293,8 @@ def image_preview(
                 disableStatus=True,
                 write_to_memory=True,
             ):
+                if img.endswith('.svg'):
+                    img_bytes = requirePackage("cairosvg", "svg2png")(bytestring=img_bytes)
                 img = requirePackage("PIL", "Image", "Pillow").open(
                     requirePackage("io", "BytesIO")(img_bytes)
                 )
@@ -301,8 +303,19 @@ def image_preview(
                     requirePackage('.', 'qs_error_string'),
                     "Failed to download image" if user_lang != "zh" else "图片下载失败",
                 )
-        elif not is_url and isinstance(img, str) and os.path.exists(img):
+        elif isinstance(img, str) and os.path.exists(img):
+            if img.endswith('.svg') or img.endswith('.svgz'):
+                qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert svg to png (dpi=300) ...' if user_lang != 'zh' else 'svg将转换为png (dpi=300) ...')
+                img = requirePackage("io", "BytesIO")(requirePackage("cairosvg", "svg2png")(url=img, dpi=300))
+            elif img.endswith('.eps') or img.endswith('.epsf') or img.endswith('.epsi'):
+                qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert eps to png (dpi=300) ...' if user_lang != 'zh' else 'eps将转换为png (dpi=300) ...')
+                img = requirePackage("io", "BytesIO")(requirePackage("wand.image", "Image")(filename=img).make_blob())
             img = requirePackage("PIL", "Image", "Pillow").open(img)
+        else:
+            qs_default_console.print(
+                requirePackage('.', 'qs_warning_string'),
+                '将自适应解析图片格式' if user_lang != 'zh' else 'Will adaptively parse the image format',
+            )
 
         _st = qs_default_status.status
 

@@ -11,7 +11,7 @@ def is_svg(imgPath: str):
     :param imgPath: 图片路径 | image path
     :return:
     """
-    return imgPath.endswith(".svg")
+    return imgPath.endswith(".svg") or imgPath.endswith('.svgz')
 
 
 def is_eps(imgPath: str):
@@ -23,7 +23,7 @@ def is_eps(imgPath: str):
     :param imgPath: 图片路径 | image path
     :return:
     """
-    return imgPath.endswith(".eps")
+    return imgPath.endswith(".eps") or imgPath.endswith('.epsi') or imgPath.endswith('.epsf')
 
 
 def topng(imgPath: str):
