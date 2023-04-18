@@ -21,7 +21,7 @@ _chatbot = None
 
 
 class AlapiChatbot:
-    def __init__(self):
+    def __init__(self, system_prompt=f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language."):
         from .alapi import alapi_token, v2_url
 
         self.api_key = alapi_token
@@ -29,7 +29,7 @@ class AlapiChatbot:
         self.messages = [
             {
                 "role": "system",
-                "content": "You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown Language.",
+                "content": system_prompt,
             }
         ]
 

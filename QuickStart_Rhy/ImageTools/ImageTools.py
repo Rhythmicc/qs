@@ -1,4 +1,29 @@
 from PIL import Image
+from .. import requirePackage
+
+
+def is_svg(imgPath: str):
+    """
+    判断图片是否为svg格式
+
+    check if the image is svg
+
+    :param imgPath: 图片路径 | image path
+    :return:
+    """
+    return imgPath.endswith(".svg")
+
+
+def is_eps(imgPath: str):
+    """
+    判断图片是否为eps格式
+
+    check if the image is eps
+
+    :param imgPath: 图片路径 | image path
+    :return:
+    """
+    return imgPath.endswith(".eps")
 
 
 def topng(imgPath: str):
@@ -10,7 +35,14 @@ def topng(imgPath: str):
     :param imgPath: 图片路径 | image path
     :return:
     """
-    Image.open(imgPath).save(imgPath + ".png", quality=100)
+    if is_svg(imgPath):
+        requirePackage("cairosvg", "svg2png")(
+            url=imgPath, write_to=imgPath + ".png", dpi=300
+        )
+    elif is_eps(imgPath):
+        requirePackage("wand.image", "Image")(filename=imgPath).save(filename=imgPath + ".png")
+    else:
+        Image.open(imgPath).save(imgPath + ".png", quality=100)
 
 
 def tojpg(imgPath: str):
@@ -22,6 +54,14 @@ def tojpg(imgPath: str):
     :param imgPath: 图片路径 | image path
     :return:
     """
+    if is_svg(imgPath):
+        imgPath = requirePackage("io", "BytesIO", "io")(
+            requirePackage("cairosvg", "svg2png", "cairosvg")(url=imgPath, dpi=300)
+        )
+    elif is_eps(imgPath):
+        imgPath = requirePackage("io", "BytesIO", "io")(
+            requirePackage("wand.image", "Image", "wand.image")(filename=imgPath).make_blob()
+        )
     Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100)
 
 

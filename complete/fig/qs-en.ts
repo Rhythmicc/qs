@@ -374,6 +374,9 @@ const completionSpec: Fig.Spec = {
     }, {
         name: 'gpt',
         description: 'ChatGPT',
+        options: [
+            {name: '--translate', description: 'translate to English'},
+        ]
     }, {
         name: 'stbg',
         description: 'color replace for picture',

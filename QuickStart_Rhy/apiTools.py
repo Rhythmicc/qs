@@ -259,7 +259,7 @@ def translate(content: str = None, target_lang: str = user_lang):
                 ret = _translate(
                     content,
                     target_lang="en"
-                    if target_lang == user_lang and lang == user_lang
+                    if target_lang == user_lang == lang
                     else target_lang,
                 )
                 break
@@ -1320,7 +1320,7 @@ def gpt():
         )
         prefix = "" if prompt not in ["继续", "continue"] else record
 
-        with Live("", console=qs_default_console, auto_refresh=False) as live:
+        with Live("", console=qs_default_console, auto_refresh=False, vertical_overflow="visible") as live:
             total_res = prefix
             for res in response:
                 if API_KEY or ALAPI:
@@ -1342,10 +1342,10 @@ def gpt():
                 )
                 live.update(Markdown(display, justify="full"), refresh=True)
             record = total_res
-            # if translate_text:
-            #     live.update(
-            #         Markdown(
-            #             render.render(parser.parse(total_res)), justify="full"
-            #         ),
-            #         refresh=True,
-            #     )
+            if translate_text and requirePackage("langid", "classify")(total_res)[0] != user_lang:
+                live.update(
+                    Markdown(
+                        render.render(parser.parse(total_res)), justify="full"
+                    ),
+                    refresh=True,
+                )
