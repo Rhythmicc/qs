@@ -931,23 +931,9 @@ def wallhaven():
         return
 
     if "--save" in sys.argv:
-        from .NetTools.NormalDL import normal_dl
-        import os
+        from .NetTools.MultiSingleDL import multi_single_dl
 
-        for i in res:
-            name = i["url"].split("/")[-1]
-            if os.path.exists(name):
-                qs_default_console.print(
-                    qs_warning_string,
-                    f"{name} is exists!" if user_lang != "zh" else f"{name} 已存在!",
-                )
-                continue
-            qs_default_console.print(qs_info_string, f"Deal:\t{name}")
-            qs_default_console.print(
-                qs_info_string, f'Size:\t{" × ".join([str(j) for j in i["size"]])}'
-            )
-            normal_dl(i["url"], output_error=True, failed2exit=True)
-            qs_default_console.print("-" * qs_default_console.width)
+        multi_single_dl([i["url"] for i in res], qps_info=5)
     else:
         if oneFlag:
             res = res[0]

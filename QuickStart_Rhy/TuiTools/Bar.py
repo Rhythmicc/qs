@@ -31,7 +31,7 @@ def DataTransformBar(has_size_info: bool = True):
             BarColumn(bar_width=None),
             "[progress.percentage]{task.percentage:>3.1f}%",
             "•",
-            DownloadColumn(),
+            DownloadColumn(binary_units=True),
             "•",
             TransferSpeedColumn(),
             "•",

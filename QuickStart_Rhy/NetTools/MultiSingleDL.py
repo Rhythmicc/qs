@@ -47,12 +47,10 @@ class MultiSingleDL:
         if self.save_to_mem:
             self.content_ls = [b""] * self.task_num
         self.cur_task_num = 0
-        self.qps = None
-        self.qps_counter = 0
+        self.task_num_lock = Lock()
         self.max_retry = 3
         self.job_queue = queue.Queue()
-        self.task_num_lock = Lock()
-        self.pool = ThreadPoolExecutor(max_workers=core_num)
+        self.pool = None
         self.status = qs_default_status("获取文件信息中...")
         self.progress, self.task_id = NormalProgressBar("多文件下载", self.task_num)
 
@@ -65,15 +63,14 @@ class MultiSingleDL:
             retry -= 1
 
         info_flag = True
-        if not (url and name and r):
+        if not (real_url and name and r):
             info_flag = False
             qs_default_console.print(
                 qs_error_string if self.failed2exit else qs_warning_string,
-                url,
-                ":",
-                "Get File information failed, please check network!"
+                f"{url}: Get File information failed, please check network!"
                 if user_lang != "zh"
                 else "获取文件信息失败，请检查网络!",
+                (real_url, name, r)
             )
             if self.failed2exit:
                 self.enabled = False
@@ -91,7 +88,8 @@ class MultiSingleDL:
 
         self.task_num_lock.acquire()
         self.cur_task_num += 1
-        self.status.update(f"获取文件信息中... {self.cur_task_num} / {self.task_num}")
+        total = sum([self.infos[i]["size"] for i in self.infos if self.infos[i]["size"] != -1])
+        self.status.update(f"获取文件信息中 [bold cyan]{self.cur_task_num}[/]/[bold]{self.task_num}[/]: [bold green]{size_format(total)}[/]")
         self.task_num_lock.release()
 
     def _dl(self, url, filename, job_id, retry=0):
@@ -109,14 +107,6 @@ class MultiSingleDL:
             else:
                 for chunk in r.iter_content(32768):
                     self.content_ls[job_id] += chunk
-            if self.qps:
-                self.task_num_lock.acquire()
-                self.qps_counter += 1
-                if self.qps_counter >= self.qps:
-                    self.qps_counter = 0
-                self.task_num_lock.release()
-                if self.qps_counter == 0:
-                    time.sleep(1 / core_num)
             self.progress.advance(self.task_id, 1)
         except Exception as e:
             if retry < self.max_retry:
@@ -142,10 +132,19 @@ class MultiSingleDL:
                 self.status_dict[url] = "failed"
                 self.progress.advance(self.task_id, 1)
 
-    def run(self, name_map: dict = None, qps: int = None, without_output: bool = False):
+    def run(self, name_map: dict = None, qps: int = None, qps_info:int = None, qps_download: int = None, without_output: bool = False):
         self.qps = qps
+        qps_info = qps_info if qps_info else qps
+        qps_download = qps_download if qps_download else qps
+
         self.status.start()
-        wait([self.pool.submit(self._info, item) for item in self.urls])
+        if qps_info:
+            self.pool = ThreadPoolExecutor(max_workers=qps_info)
+            wait([self.pool.submit(self._info, item) for item in self.urls])
+        else:
+            self.pool = ThreadPoolExecutor(max_workers=core_num)
+            wait([self.pool.submit(self._info, item) for item in self.urls])
+        self.pool.shutdown(wait=True)
 
         if name_map:
             from .. import requirePackage
@@ -170,6 +169,7 @@ class MultiSingleDL:
 
         self.progress.start()
         wait_list = []
+        self.pool = ThreadPoolExecutor(max_workers=qps_download) if qps_download else ThreadPoolExecutor(max_workers=core_num)
         while not self.job_queue.empty():
             while not self.job_queue.empty():
                 job = self.job_queue.get()
@@ -195,6 +195,8 @@ def multi_single_dl(
     failed2exit: bool = False,
     name_map: dict = None,
     qps: int = 0,
+    qps_info: int = 0,
+    qps_download: int = 0,
     without_output: bool = False,
 ):
     """
@@ -206,13 +208,15 @@ def multi_single_dl(
     :param referer: referer
     :param failed2exit: 信息获取失败立即退出
     :param name_map: 文件命名映射{URL: filename}, 后缀名会自动获取并添加
-    :param qps: 限制每秒请求次数
+    :param qps: 限制每秒请求次数, qps_info和qps_download默认为qps
+    :param qps_info: 限制每秒获取信息次数
+    :param qps_download: 限制每秒下载次数
     :param without_output: 不输出信息
     :return: 下载好的文件路径列表
     """
     return MultiSingleDL(
         urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer, failed2exit=failed2exit
-    ).run(name_map=name_map, qps=qps, without_output=without_output)
+    ).run(name_map=name_map, qps=qps, qps_info=qps_info, qps_download=qps_download, without_output=without_output)
 
 
 def multi_single_dl_content_ls(
