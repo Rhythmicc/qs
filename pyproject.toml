@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "QuickStart-Rhy"
+version = "0.6.80"
+description = "A Command Line Toolbox"
+authors = ["Rhythmicc <rhythmlian.cn@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "QuickStart_Rhy"}]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.28.2"
+urllib3 = "^1.26.15"
+rich = "^13.3.4"
+Qpro = "^0.12.1"
+inquirer-rhy = "^0.1.2"
+
+[tool.poetry.scripts]
+qs = "QuickStart_Rhy.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

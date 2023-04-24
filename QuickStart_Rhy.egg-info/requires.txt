@@ -1,5 +1,0 @@
-requests
-urllib3
-rich
-Qpro
-inquirer-rhy

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "QuickStart_Rhy"
+description = "A Command Line Toolbox"
+version = "0.6.79"
+keywords = ["Command Line", "Toolbox", "CLI"]
+authors = [
+    {name = "RhythmLian", email = "rhythmlian.cn@gmail.com"}
+]
+readme = "README.md"
+
+[dependencies]
+requests = {version = "*", features = ["socks"]}
+urllib3 = {version = "*", features = ["socks"]}
+rich = {version = "*", features = ["color"]}
+Qpro = {version = "*", features = ["color"]}
+inquirer-rhy = {version = "*", features = ["color"]}
+
+[options]
+python_requires = ">=3.7"
+
+[tool.poetry.scripts]
+qs = "QuickStart_Rhy.main:main"
+
+[tool.setuptools.find_packages]
+where = "QuickStart_Rhy"

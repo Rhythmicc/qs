@@ -132,7 +132,15 @@ class MultiSingleDL:
                 self.status_dict[url] = "failed"
                 self.progress.advance(self.task_id, 1)
 
-    def run(self, name_map: dict = None, qps: int = None, qps_info:int = None, qps_download: int = None, without_output: bool = False):
+    def run(self, name_map: dict = None, qps: int = None, qps_info:int = None, qps_download: int = None, without_output: bool = False, without_info: bool = False):
+        """
+        :param name_map: {url: filename}
+        :param qps: qps for download
+        :param qps_info: qps for get file info
+        :param qps_download: qps for download
+        :param without_output: without output
+        :param without_info: without get file info
+        """
         self.qps = qps
         qps_info = qps_info if qps_info else qps
         qps_download = qps_download if qps_download else qps
