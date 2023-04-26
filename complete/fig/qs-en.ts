@@ -198,6 +198,10 @@ const completionSpec: Fig.Spec = {
         name: 'wifi',
         description: 'connect wifi'
     }, {
+        name: 'surl',
+        description: 'Get Information of URL File',
+        args: {name: 'url', description: '链接', isVariadic: true, isOptional: true}
+    }, {
         name: 'upload',
         description: 'upload your pypi library'
     }, {

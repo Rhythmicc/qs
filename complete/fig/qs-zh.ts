@@ -201,6 +201,10 @@ const completionSpec: Fig.Spec = {
         name: 'upgrade',
         description: '更新qs'
     }, {
+        name: 'surl',
+        description: '获取链接文件的信息',
+        args: {name: 'url', description: '链接', isVariadic: true, isOptional: true}
+    }, {
         name: 'trans',
         description: '翻译命令参数或剪切板中的内容',
         args: {name: 'content', description: '待翻译的内容', isVariadic: true, isOptional: true}
