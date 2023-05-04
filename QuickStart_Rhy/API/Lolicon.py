@@ -4,16 +4,12 @@ from . import pre_check
 import requests
 import json
 
-lolicon_token = pre_check("lolicon_token", ext=False)
-
-
 def loli_img(keyword: str = ""):
     try:
         res = requests.get(
             "https://api.lolicon.app/setu/",
             headers=headers,
             params={
-                "apikey": lolicon_token if lolicon_token else "",
                 "r18": "2",
                 "keyword": keyword,
                 "num": 1,

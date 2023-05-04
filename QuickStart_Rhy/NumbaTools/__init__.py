@@ -5,8 +5,7 @@ This module provides some tools using the numba package, which will guide the us
 """
 
 from .. import requirePackage
-
-jit = requirePackage("numba", "jit", not_exit=True)
+jit = requirePackage("numba", "jit")
 function_cache = {}
 
 def cut_string(string: str, length: int, ignore_charset: list = []) -> list:
@@ -20,5 +19,5 @@ def cut_string(string: str, length: int, ignore_charset: list = []) -> list:
     :return: 切分后产生的list
     """
     if 'cut_string' not in function_cache:
-        function_cache['cut_string'] = jit(requirePackage(".", "cut_string")) if jit else requirePackage(".", "cut_string")
+        function_cache['cut_string'] = jit(requirePackage(".", "cut_string"), nopython=True) if jit else requirePackage(".", "cut_string")
     return function_cache['cut_string'](string, length, ignore_charset)

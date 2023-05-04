@@ -24,27 +24,11 @@ def remove_bg():
 
     Delete image background
     """
-    try:
-        path = sys.argv[2]
-    except IndexError:
-        qs_default_console.log(
-            qs_error_string,
-            "%s: qs rmbg <%s>"
-            % (("Usage", "picture") if user_lang != "zh" else ("用法", "图像")),
-        )
-        return
-    else:
-        if path == "-helpF":
-            qs_default_console.print(
-                qs_info_string,
-                "%s: qs rmbg <%s>"
-                % (("Usage", "picture") if user_lang != "zh" else ("用法", "图像")),
-            )
-            return
-        from .API.SimpleAPI import rmbg
+    path = sys.argv[2]
+    from .API.SimpleAPI import rmbg
 
-        with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
-            rmbg(path)
+    with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
+        rmbg(path)
 
 
 def smms():
@@ -53,35 +37,10 @@ def smms():
 
     Upload images or Markdown images to SMMS
     """
-    try:
-        path = sys.argv[2]
-    except IndexError:
-        qs_default_console.log(
-            qs_error_string,
-            "%s: qs smms <%s>"
-            % (
-                ("Usage", "picture | *.md")
-                if user_lang != "zh"
-                else ("用法", "图像 | *.md")
-            ),
-        )
-        return
-    else:
-        if path == "-help":
-            qs_default_console.print(
-                qs_info_string,
-                "%s: qs smms <%s>"
-                % (
-                    ("Usage", "picture | *.md")
-                    if user_lang != "zh"
-                    else ("用法", "图像 | *.md")
-                ),
-            )
-            return
-        from .API.SimpleAPI import smms
+    from .API.SimpleAPI import smms
 
-        with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
-            smms(path)
+    with qs_default_status("Dealing.." if user_lang != "zh" else "处理中.."):
+        smms(sys.argv[2])
 
 
 def ali_oss():
@@ -90,43 +49,25 @@ def ali_oss():
 
     Ali Cloud object storage
     """
-    try:
-        op = sys.argv[2]
-        if op not in ["-dl", "-up", "-ls", "-rm"]:
-            raise IndexError
-        if op != "-ls" and "--bucket" in sys.argv:
-            bucket = sys.argv[sys.argv.index("--bucket") + 1]
-        elif op == "-ls":
-            bucket = None if len(sys.argv) < 4 else sys.argv[3]
-        else:
-            bucket = None
-        files = sys.argv[3:] if op != "-ls" else []
-    except IndexError:
-        qs_default_console.print(
-            qs_info_string,
-            "qs alioss:\n"
-            "    -up <file> [bucket]: upload file to bucket\n"
-            "    -dl <file> [bucket]: download file from bucket\n"
-            "    -rm <file> [bucket]: remove file in bucket\n"
-            "    -ls [bucket]       : get file info of bucket",
-        ) if user_lang != "zh" else qs_default_console.print(
-            qs_info_string,
-            "qs alioss:\n"
-            "    -up <文件> [桶]: 上传文件至桶\n"
-            "    -dl <文件> [桶]: 从桶下载文件\n"
-            "    -rm <文件> [桶]: 从桶删除文件\n"
-            "    -ls [桶]       : 获取桶文件信息",
-        )
-        return
+    op = sys.argv[2]
+    if op not in ["-dl", "-up", "-ls", "-rm"]:
+        raise NotImplementedError
+    if op != "-ls" and "--bucket" in sys.argv:
+        bucket = sys.argv[sys.argv.index("--bucket") + 1]
+    elif op == "-ls":
+        bucket = None if len(sys.argv) < 4 else sys.argv[3]
     else:
-        from .API.AliCloud import AliyunOSS
+        bucket = None
+    files = sys.argv[3:] if op != "-ls" else []
 
-        ali_api = AliyunOSS()
-        func_table = ali_api.get_func_table()
-        for file in files:
-            func_table[op](file, bucket)
-        if not files:
-            func_table[op](bucket)
+    from .API.AliCloud import AliyunOSS
+
+    ali_api = AliyunOSS()
+    func_table = ali_api.get_func_table()
+    for file in files:
+        func_table[op](file, bucket)
+    if not files:
+        func_table[op](bucket)
 
 
 def qiniu():
@@ -135,45 +76,25 @@ def qiniu():
 
     Qiniu cloud object storage
     """
-    try:
-        op = sys.argv[2]
-        if op not in ["-dl", "-up", "-ls", "-rm"]:
-            raise IndexError
-        if op != "-ls" and "--bucket" in sys.argv:
-            bucket = sys.argv[sys.argv.index("--bucket") + 1]
-        elif op == "-ls":
-            bucket = None if len(sys.argv) < 4 else sys.argv[3]
-        else:
-            bucket = None
-        files = sys.argv[3:] if op != "-ls" else []
-    except IndexError:
-        qs_default_console.print(
-            qs_info_string,
-            "qs qiniu:\n"
-            "    -up <file> [bucket]: upload file to bucket\n"
-            "    -dl <file> [bucket]: download file from bucket\n"
-            "    -cp <url > [bucket]: copy file from url\n"
-            "    -rm <file> [bucket]: remove file in bucket\n"
-            "    -ls [bucket]       : get file info of bucket",
-        ) if user_lang != "zh" else qs_default_console.print(
-            qs_info_string,
-            "qs qiniu:\n"
-            "    -up <文件> [桶]: 上传文件至桶\n"
-            "    -dl <文件> [桶]: 从桶下载文件\n"
-            "    -cp <链接> [桶]: 从链接下载文件到桶\n"
-            "    -rm <文件> [桶]: 从桶删除文件\n"
-            "    -ls [桶]       : 获取桶文件信息",
-        )
-        return
+    op = sys.argv[2]
+    if op not in ["-dl", "-up", "-ls", "-rm"]:
+        raise NotImplementedError
+    if op != "-ls" and "--bucket" in sys.argv:
+        bucket = sys.argv[sys.argv.index("--bucket") + 1]
+    elif op == "-ls":
+        bucket = None if len(sys.argv) < 4 else sys.argv[3]
     else:
-        from .API.QiniuOSS import QiniuOSS
+        bucket = None
+    files = sys.argv[3:] if op != "-ls" else []
 
-        qiniu_api = QiniuOSS()
-        func_table = qiniu_api.get_func_table()
-        for file in files:
-            func_table[op](file, bucket)
-        if not files:
-            func_table[op](bucket)
+    from .API.QiniuOSS import QiniuOSS
+
+    qiniu_api = QiniuOSS()
+    func_table = qiniu_api.get_func_table()
+    for file in files:
+        func_table[op](file, bucket)
+    if not files:
+        func_table[op](bucket)
 
 
 def txcos():
@@ -182,43 +103,25 @@ def txcos():
 
     Tencent Cloud object storage
     """
-    try:
-        op = sys.argv[2]
-        if op not in ["-dl", "-up", "-ls", "-rm"]:
-            raise IndexError
-        if op != "-ls" and "--bucket" in sys.argv:
-            bucket = sys.argv[sys.argv.index("--bucket") + 1]
-        elif op == "-ls":
-            bucket = None if len(sys.argv) < 4 else sys.argv[3]
-        else:
-            bucket = None
-        files = sys.argv[3:] if op != "-ls" else []
-    except IndexError:
-        qs_default_console.print(
-            qs_info_string,
-            "qs alioss:\n"
-            "    -up <file> [bucket]: upload file to bucket\n"
-            "    -dl <file> [bucket]: download file from bucket\n"
-            "    -rm <file> [bucket]: remove file in bucket\n"
-            "    -ls [bucket]       : get file info of bucket",
-        ) if user_lang != "zh" else qs_default_console.print(
-            qs_info_string,
-            "qs alioss:\n"
-            "    -up <文件> [桶]: 上传文件至桶\n"
-            "    -dl <文件> [桶]: 从桶下载文件\n"
-            "    -rm <文件> [桶]: 从桶删除文件\n"
-            "    -ls [桶]       : 获取桶文件信息",
-        )
-        return
+    op = sys.argv[2]
+    if op not in ["-dl", "-up", "-ls", "-rm"]:
+        raise IndexError
+    if op != "-ls" and "--bucket" in sys.argv:
+        bucket = sys.argv[sys.argv.index("--bucket") + 1]
+    elif op == "-ls":
+        bucket = None if len(sys.argv) < 4 else sys.argv[3]
     else:
-        from .API.TencentCloud import TxCOS
+        bucket = None
+    files = sys.argv[3:] if op != "-ls" else []
 
-        tx_api = TxCOS()
-        func_table = tx_api.get_func_table()
-        for file in files:
-            func_table[op](file, bucket)
-        if not files:
-            func_table[op](bucket)
+    from .API.TencentCloud import TxCOS
+
+    tx_api = TxCOS()
+    func_table = tx_api.get_func_table()
+    for file in files:
+        func_table[op](file, bucket)
+    if not files:
+        func_table[op](bucket)
 
 
 def translate(content: str = None, target_lang: str = user_lang):
@@ -278,7 +181,8 @@ def translate(content: str = None, target_lang: str = user_lang):
 
         if output_flag and ret:
             if ret:
-                from .NumbaTools import cut_string
+                from . import cut_string
+
                 display = "\n".join(
                     [
                         " ".join(
@@ -717,10 +621,24 @@ def kdCheck():
 
     :return:
     """
+    from . import _ask
     from .API.alapi import kdCheck as kdCheckAPI
 
     with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
-        status, code, msg = kdCheckAPI(sys.argv[2])
+        status, code, msg = kdCheckAPI(
+            sys.argv[2]
+            + (
+                ":"
+                + _ask(
+                    {
+                        "type": "input",
+                        "message": "顺丰快递需要输入手机后四位",
+                    }
+                )
+                if sys.argv[2][:2].lower() == "sf" and ':' not in sys.argv[2]
+                else ""
+            )
+        )
         if not status:
             qs_default_console.print(qs_error_string, msg)
             return
@@ -914,11 +832,7 @@ def wallhaven():
     from .API.SimpleAPI import wallhaven
 
     url, oneFlag = "", False
-    if "-h" in sys.argv:
-        return qs_default_console.print(
-            qs_info_string, "Usage: qs wallhaven [--url <url>] [-one] [--save]"
-        )
-
+    
     if "--url" in sys.argv:
         url = sys.argv[sys.argv.index("--url") + 1]
         sys.argv.remove("--url")
@@ -1157,7 +1071,7 @@ def doutu():
     try:
         keyword = sys.argv[2]
     except IndexError:
-        return qs_default_console.print(qs_error_string, "qs doutu <designation>")
+        return qs_default_console.print(qs_error_string, "qs doutu <keyword>")
 
     from .API.alapi import doutu
     from .ImageTools.ImagePreview import image_preview
@@ -1306,7 +1220,12 @@ def gpt():
         )
         prefix = "" if prompt not in ["继续", "continue"] else record
 
-        with Live("", console=qs_default_console, auto_refresh=False, vertical_overflow="visible") as live:
+        with Live(
+            "",
+            console=qs_default_console,
+            auto_refresh=False,
+            vertical_overflow="visible",
+        ) as live:
             total_res = prefix
             for res in response:
                 if API_KEY or ALAPI:
@@ -1328,10 +1247,11 @@ def gpt():
                 )
                 live.update(Markdown(display, justify="full"), refresh=True)
             record = total_res
-            if translate_text and requirePackage("langid", "classify")(total_res)[0] != user_lang:
+            if (
+                translate_text
+                and requirePackage("langid", "classify")(total_res)[0] != user_lang
+            ):
                 live.update(
-                    Markdown(
-                        render.render(parser.parse(total_res)), justify="full"
-                    ),
+                    Markdown(render.render(parser.parse(total_res)), justify="full"),
                     refresh=True,
                 )

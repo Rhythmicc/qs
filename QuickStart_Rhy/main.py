@@ -9,34 +9,20 @@ from .funcList import *
 from . import requirePackage
 
 
-def qs_help(rep=""):
+def qs_help(rep:str=""):
     """输出菜单 | Output menu"""
-    if not rep or rep not in menu_table:
-        if user_lang != "zh":
-            color_rep(
-                """
-    qs basic   :-> basic   tools help | u, a, f, cal, time, pcat..
-    qs system  :-> system  tools help | top, \[mk/un]\[zip/tar/7z]..
-    qs net     :-> network tools help | http, dl, netinfo, wifi...
-    qs api     :-> api     tools help | trans, smms, rmbg, loli...
-    qs image   :-> image   tools help | stbg, v2gif, v2mp3, v2mp4.""",
-                True,
-            )
-            qs_default_console.print("\n[bold]Tutorial[/]\n", justify="center")
-        else:
-            color_rep(
-                """
-    qs basic   :-> 基础工具帮助 | u, a, f, cal, time, pcat..
-    qs system  :-> 系统工具帮助 | top, \[mk/un]\[zip/tar/7z]..
-    qs net     :-> 网络工具帮助 | http, dl, netinfo, wifi...
-    qs api     :-> 扩展工具帮助 | trans, smms, rmbg, loli...
-    qs image   :-> 图像工具帮助 | stbg, v2gif, v2mp3, v2mp4.""",
-                True,
-            )
-            qs_default_console.print("\n[bold]引导[/]\n", justify="center")
+    if not rep or rep not in ['basic', 'system', 'net', 'api', 'image']:
+        menu_show([
+            ['basic', 'u, a, f, cal, time, pcat..'],
+            ['system', 'top, \[mk/un][zip/tar/7z]..'],
+            ['net', 'http, dl, netinfo, wifi...'],
+            ['api', 'trans, smms, rmbg, loli...'],
+            ['image', 'stbg, v2gif, v2mp3, v2mp4.']
+        ])
+        qs_default_console.print(f"\n[bold]{lang_detector['tutorial']}[/]\n", justify="center")
         qs_default_console.print("[bold magenta]qs lesson[/]", justify="center")
     else:
-        menu_table[rep]()
+        menu_table(rep)
 
 
 def main():
@@ -44,21 +30,19 @@ def main():
     debug_flag = "--qs-debug" in sys.argv
     if debug_flag:
         sys.argv.remove("--qs-debug")
+    help_flag = '--help' in sys.argv
+    if help_flag:
+        sys.argv.remove('--help')
     if len(sys.argv) >= 2:
         try:
             func_name = sys.argv[1]
-
-            from .funcList import cmd_table
-
             if func_name not in cmd_table:
                 qs_help(func_name)
             else:
+                if help_flag:
+                    return command_help(func_name)
                 func_table = cmd_table[func_name]
-                file_name = func_table["self"]
-                func_name = func_table[func_name]
-                requirePackage(
-                    "." if file_name == "basic" else f".{file_name}", func_name
-                )()
+                requirePackage(func_table["self"], func_table[func_name][0])()
         except Exception as e:
             from . import qs_default_console
 

@@ -1,5 +1,6 @@
 from QuickProject import QproDefaultConsole as qs_default_console
 from QuickProject import _ask, user_lang
+from langsrc import LanguageDetector
 import json
 import sys
 import os
@@ -13,18 +14,15 @@ else:
 
 
 translate_engines = ["default", "TencentCloud", "DeepL", "DeepLX"]
+lang_detector = LanguageDetector(user_lang, os.path.join(os.path.dirname(__file__), "lang.json"))
 
 questions = {
     "default_currency": {
         "type": "input",
         "name": "default_currency",
-        "message": (
-            "Choose your common currency, the flowing content is available choice (the order is meaningless)"
-            if user_lang != "zh"
-            else "选择你常用的币种，下述内容为合法选项 (此处顺序无任何意义)"
-        )
+        "message": lang_detector['ask_default_currency']
         + """
-    
+
     CNY (Chinese)  USD (American) JPY (Japanese)  KRW (Korean)    DKK (Denmark)  EUR (Europe) 
     THB (Thailand) SAR (al-ummah) RUB (Russian)   BYR (Belarus)   RON (Romania)  PLN (Poland)
     BGN (Bulgaria) CZK (Czech)    ISK (Iceland)   VND (Vietnam)   DZD (Algeria)  ARS (Argentina)
@@ -38,7 +36,7 @@ questions = {
     GBP (England)  ILS (Israel)   JOD (Jordan)    CLP (Chile)     IDR (Indonesia)
     
   """
-        + ("Input the default currency" if user_lang != "zh" else "输入默认币种"),
+        + lang_detector['input_default_currency'],
         "validate": lambda val: val
         in {
             "CLP",
@@ -111,26 +109,26 @@ questions = {
     },
     "default_translate_engine": {
         "type": "list",
-        "message": "Select translate engine" if user_lang != "zh" else "选择翻译引擎",
+        "message": lang_detector['ask_translate_engine'],
         "choices": translate_engines,
         "default": "default",
     },
     "force_show_img": {
         "type": "confirm",
         "name": "force_show_img",
-        "message": "Force show image in terminal" if user_lang != "zh" else "强制在终端显示图片",
-        "default": False,
+        "message": lang_detector['ask_force_show_img'],
+        "default": "ITERM_SESSION_ID" in os.environ,
     },
     "default_proxy": {
         "type": "input",
         "name": "default_proxy",
-        "message": "Input download proxy" if user_lang != "zh" else "输入下载代理",
+        "message": lang_detector['ask_proxy'],
         "default": "Not set | 暂不设置",
     },
     "terminal_font_size": {
         "type": "input",
         "name": "terminal_font_size",
-        "message": "Input terminal font size" if user_lang != "zh" else "输入终端字体大小",
+        "message": lang_detector['ask_font_size'],
         "default": "16",
     },
 }
@@ -204,23 +202,13 @@ class QsConfig:
             )
             self.update()
             qs_default_console.print(
-                "\nYour configuration table has been stored:"
-                if user_lang != "zh"
-                else "\n你的配置表被存储在:",
+                "\n" + lang_detector['config_store_in'],
                 f"[bold green]{configPath}[/bold green]",
-            )
-            # qs_default_console.print(
-            #     "[bold red]\nqs will not use your configuration do anything!\nQpro不会用您的配置表做任何事情![/bold red]"
-            # )
-            qs_default_console.print(
-                "[bold red]\nqs will not use your configuration do anything![/bold red]"
-                if user_lang != "zh"
-                else "[bold red]\nQpro不会用您的配置表做任何事情![/bold red]"
             )
             _ask(
                 {
                     "type": "confirm",
-                    "message": "Confirm | 确认",
+                    "message": lang_detector['confirm'],
                     "default": True,
                 }
             )
@@ -230,9 +218,7 @@ class QsConfig:
                 and _ask(
                     {
                         "type": "confirm",
-                        "message": """We recommend that you use iTerm2 as a terminal program on your Mac system for the best experience (e.g. to display pictures), is the iTerm2 website open?"""
-                        if user_lang != "zh"
-                        else "推荐您在Mac系统中使用iTerm2作为终端程序以获得最佳体验 (比如展示图片), 是否打开iTerm2官网?",
+                        "message": lang_detector['recommand_using_iterm2'],
                         "default": True,
                     }
                 )

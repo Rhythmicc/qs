@@ -1,0 +1,810 @@
+{
+    "confirm": {
+        "zh": "确认",
+        "en": "Confirm",
+        "fra": "Confirmer",
+        "spa": "Confirmar",
+        "ara": "تؤكد",
+        "ru": "Подтвердить"
+    },
+    "ask_default_currency": {
+        "zh": "选择你常用的币种，下述内容为合法选项 (此处顺序无任何意义)",
+        "en": "Choose your common currency, the flowing content is available choice (the order is meaningless)",
+        "fra": "Choisissez votre devise courante, le contenu en cours est un choix disponible (l'ordre est sans signification)",
+        "spa": "Elija su moneda común, el contenido que fluye es una opción disponible (el orden no tiene sentido)",
+        "ara": "اختر عملتك الشائعة ، والمحتوى الجاري هو خيار متاح (الترتيب لا معنى له)",
+        "ru": "Выберите свою общую валюту, текущее содержимое - доступный выбор (порядок не имеет значения)"
+    },
+    "input_default_currency": {
+        "zh": "输入默认币种",
+        "en": "Input the default currency",
+        "fra": "Entrez la devise par défaut",
+        "spa": "Ingrese la moneda predeterminada",
+        "ara": "أدخل العملة الافتراضية",
+        "ru": "Введите валюту по умолчанию"
+    },
+    "ask_translate_engine": {
+        "zh": "选择翻译引擎",
+        "en": "Select translate engine",
+        "fra": "Sélectionnez le moteur de traduction",
+        "spa": "Seleccione el motor de traducción",
+        "ara": "حدد محرك الترجمة",
+        "ru": "Выберите движок перевода"
+    },
+    "ask_force_show_img": {
+        "zh": "强制在终端显示图片",
+        "en": "Force show image in terminal",
+        "fra": "Forcer l'affichage de l'image dans le terminal",
+        "spa": "Forzar la imagen de la fuerza en el terminal",
+        "ara": "إجبار عرض الصورة في المحطة",
+        "ru": "Принудительное отображение изображения в терминале"
+    },
+    "ask_proxy": {
+        "zh": "输入网络代理",
+        "en": "Input network proxy",
+        "fra": "Proxy réseau d'entrée",
+        "spa": "Proxy de red de entrada",
+        "ara": "إدخال بروكسي الشبكة",
+        "ru": "Вход в сетевой прокси"
+    },
+    "ask_font_size": {
+        "zh": "输入终端字体大小",
+        "en": "Input terminal font size",
+        "fra": "Taille de police du terminal d'entrée",
+        "spa": "Tamaño de fuente de terminal de entrada",
+        "ara": "حجم خط المحطة النهائية",
+        "ru": "Размер шрифта терминала ввода"
+    },
+    "config_store_in": {
+        "zh": "你的配置表被存储在:",
+        "en": "Your config is stored in:",
+        "fra": "Votre configuration est stockée dans:",
+        "spa": "Su configuración se almacena en:",
+        "ara": "تم تخزين تكوينك في:",
+        "ru": "Ваша конфигурация хранится в:"
+    },
+    "recommand_using_iterm2": {
+        "zh": "推荐您在Mac系统中使用iTerm2作为终端程序以获得最佳体验 (比如展示图片), 是否打开iTerm2官网?",
+        "en": "We recommend that you use iTerm2 as a terminal program on your Mac system for the best experience (e.g. to display pictures). Open iTerm2 official website?",
+        "fra": "Nous vous recommandons d'utiliser iTerm2 comme programme terminal sur votre système Mac pour une meilleure expérience (par exemple pour afficher des images). Ouvrez le site officiel d'iTerm2?",
+        "spa": "Le recomendamos que utilice iTerm2 como programa de terminal en su sistema Mac para obtener la mejor experiencia (por ejemplo, para mostrar imágenes). ¿Abrir el sitio oficial de iTerm2?",
+        "ara": "نوصيك باستخدام iTerm2 كبرنامج محطة على نظام Mac الخاص بك للحصول على أفضل تجربة (على سبيل المثال لعرض الصور). فتح موقع iTerm2 الرسمي؟",
+        "ru": "Мы рекомендуем вам использовать iTerm2 в качестве терминальной программы в вашей системе Mac для лучшего опыта (например, для отображения изображений). Открыть официальный сайт iTerm2?"
+    },
+    "basic": {
+        "zh": "基础",
+        "en": "Basic",
+        "fra": "Base",
+        "spa": "Básico",
+        "ara": "أساسي",
+        "ru": "Основной"
+    },
+    "system": {
+        "zh": "系统",
+        "en": "System",
+        "fra": "Système",
+        "spa": "Sistema",
+        "ara": "نظام",
+        "ru": "Система"
+    },
+    "net": {
+        "zh": "网络",
+        "en": "Network",
+        "fra": "Réseau",
+        "spa": "Red",
+        "ara": "شبكة",
+        "ru": "Сеть"
+    },
+    "api": {
+        "zh": "API",
+        "en": "API",
+        "fra": "API",
+        "spa": "API",
+        "ara": "API",
+        "ru": "API"
+    },
+    "image": {
+        "zh": "图片",
+        "en": "Image",
+        "fra": "Image",
+        "spa": "Imagen",
+        "ara": "صورة",
+        "ru": "Изображение"
+    },
+    "tools_help": {
+        "zh": "工具帮助",
+        "en": "tools Help",
+        "fra": "aide aux outils",
+        "spa": "herramientas de ayuda",
+        "ara": "أدوات المساعدة",
+        "ru": "Инструменты помощи"
+    },
+    "updating": {
+        "zh": "更新",
+        "en": "Update",
+        "fra": "Mise à jour",
+        "spa": "Actualizar",
+        "ara": "تحديث",
+        "ru": "Обновить"
+    },
+    "updated": {
+        "zh": "更新完成",
+        "en": "Updated",
+        "fra": "Mis à jour",
+        "spa": "Actualizado",
+        "ara": "تم التحديث",
+        "ru": "Обновлено"
+    },
+    "fail_and_execute_manually": {
+        "zh": "失败，请手动执行: ",
+        "en": "failed, please execute manually: ",
+        "fra": "échec, veuillez exécuter manuellement: ",
+        "spa": "falló, por favor ejecute manualmente: ",
+        "ara": "فشل ، يرجى تنفيذ يدويا: ",
+        "ru": "не удалось, пожалуйста, выполните вручную: "
+    },
+    "requirePackageWarning": {
+        "zh": "当您看到此警告信息时: 可能您需要更新 QuickStart_Rhy, 但这更可能是您的python环境出现了问题",
+        "en": "When you see this warning message: you may need to update QuickStart_Rhy, but it is more likely that there is a problem with your python environment",
+        "fra": "Lorsque vous voyez ce message d'avertissement: vous devrez peut-être mettre à jour QuickStart_Rhy, mais il est plus probable qu'il y ait un problème avec votre environnement python",
+        "spa": "Cuando vea este mensaje de advertencia: es posible que deba actualizar QuickStart_Rhy, pero es más probable que haya un problema con su entorno de python",
+        "ara": "عندما ترى هذه الرسالة التحذيرية: قد تحتاج إلى تحديث QuickStart_Rhy ، ولكن من المرجح أن يكون هناك مشكلة في بيئة python الخاصة بك",
+        "ru": "Когда вы видите это предупреждающее сообщение: вам может потребоваться обновить QuickStart_Rhy, но скорее всего, у вас проблема с вашей средой python"
+    },
+    "require": {
+        "zh": "依赖",
+        "en": "require",
+        "fra": "exiger",
+        "spa": "requerir",
+        "ara": "يتطلب",
+        "ru": "требовать"
+    },
+    "confirm_install": {
+        "zh": "确认安装",
+        "en": "confirm installation",
+        "fra": "confirmer l'installation",
+        "spa": "confirmar instalación",
+        "ara": "تأكيد التثبيت",
+        "ru": "подтвердить установку"
+    },
+    "Install": {
+        "zh": "安装",
+        "en": "Install",
+        "fra": "Installer",
+        "spa": "Instalar",
+        "ara": "تثبيت",
+        "ru": "Установить"
+    },
+    "pyperclip_not_support": {
+        "zh": "抱歉，但是“pyperclip”不支持你的系统\n  所以你需要手动输入内容:",
+        "en": "Sorry, but 'pyperclip' does not support your system\n  So you need to enter the content manually:",
+        "fra": "Désolé, mais 'pyperclip' ne prend pas en charge votre système\n  Vous devez donc saisir le contenu manuellement:",
+        "spa": "Lo sentimos, pero 'pyperclip' no es compatible con su sistema\n  Por lo tanto, debe ingresar el contenido manualmente:",
+        "ara": "عذرًا ، ولكن 'pyperclip' لا يدعم نظامك\n  لذلك تحتاج إلى إدخال المحتوى يدويًا:",
+        "ru": "Извините, но 'pyperclip' не поддерживает вашу систему\n  Поэтому вам нужно ввести содержимое вручную:"
+    },
+    "macos_only": {
+        "zh": "抱歉，此功能仅在Mac OS中被支持",
+        "en": "Sorry, this feature is only supported in Mac OS",
+        "fra": "Désolé, cette fonctionnalité est uniquement prise en charge dans Mac OS",
+        "spa": "Lo sentimos, esta función solo es compatible en Mac OS",
+        "ara": "عذرًا ، هذه الميزة مدعومة فقط في Mac OS",
+        "ru": "Извините, эта функция поддерживается только в Mac OS"
+    },
+    "not_support_current_system": {
+        "zh": "抱歉，此功能不支持当前系统",
+        "en": "Sorry, this feature is not supported in the current system",
+        "fra": "Désolé, cette fonctionnalité n'est pas prise en charge dans le système actuel",
+        "spa": "Lo sentimos, esta función no es compatible en el sistema actual",
+        "ara": "عذرًا ، هذه الميزة غير مدعومة في النظام الحالي",
+        "ru": "Извините, эта функция не поддерживается в текущей системе"
+    },
+    "usage": {
+        "zh": "用法",
+        "en": "Usage",
+        "fra": "Utilisation",
+        "spa": "Uso",
+        "ara": "الاستعمال",
+        "ru": "Использование"
+    }, 
+    "menu_u": {
+        "zh": "在浏览器中打开链接",
+        "en": "open url in browser",
+        "fra": "ouvrir l'url dans le navigateur",
+        "spa": "abrir url en el navegador",
+        "ara": "افتح عنوان url في المتصفح",
+        "ru": "открыть url в браузере"
+    },
+    "menu_a": {
+        "zh": "通过应用打开文件或打开应用()",
+        "en": "open file by app or open app()",
+        "fra": "ouvrir le fichier par application ou ouvrir l'application ()",
+        "spa": "abrir archivo por aplicación o abrir aplicación ()",
+        "ara": "فتح الملف بواسطة التطبيق أو فتح التطبيق ()",
+        "ru": "открыть файл по приложению или открыть приложение ()"
+    },
+    "menu_f": {
+        "zh": "打开文件",
+        "en": "open file",
+        "fra": "ouvrir le fichier",
+        "spa": "abrir archivo",
+        "ara": "فتح الملف",
+        "ru": "открыть файл"
+    },
+    "menu_time": {
+        "zh": "显示当前时间",
+        "en": "show current time",
+        "fra": "afficher l'heure actuelle",
+        "spa": "mostrar hora actual",
+        "ara": "إظهار الوقت الحالي",
+        "ru": "показать текущее время"
+    },
+    "menu_cal": {
+        "zh": "计算表达式",
+        "en": "calculate expression",
+        "fra": "calculer l'expression",
+        "spa": "calcular expresión",
+        "ara": "حساب التعبير",
+        "ru": "вычислить выражение"
+    },
+    "menu_pcat": {
+        "zh": "显示剪贴板中的内容",
+        "en": "show content in clipboard",
+        "fra": "afficher le contenu du presse-papiers",
+        "spa": "mostrar contenido en el portapapeles",
+        "ara": "إظهار المحتوى في الحافظة",
+        "ru": "показать содержимое в буфере обмена"
+    },
+    "menu_fcopy": {
+        "zh": "复制文件内容到剪贴板",
+        "en": "copy file content to clipboard",
+        "fra": "copier le contenu du fichier dans le presse-papiers",
+        "spa": "copiar contenido de archivo al portapapeles",
+        "ara": "نسخ محتوى الملف إلى الحافظة",
+        "ru": "скопировать содержимое файла в буфер обмена"
+    },
+    "menu_tcopy": {
+        "zh": "复制文本到剪贴板",
+        "en": "copy text to clipboard",
+        "fra": "copier le texte dans le presse-papiers",
+        "spa": "copiar texto al portapapeles",
+        "ara": "نسخ النص إلى الحافظة",
+        "ru": "скопировать текст в буфер обмена"
+    },
+    "menu_copy": {
+        "zh": "复制文件到剪贴板",
+        "en": "copy file to clipboard",
+        "fra": "copier le fichier dans le presse-papiers",
+        "spa": "copiar archivo al portapapeles",
+        "ara": "نسخ الملف إلى الحافظة",
+        "ru": "скопировать файл в буфер обмена"
+    },
+    "menu_play": {
+        "zh": "播放音频",
+        "en": "play audio",
+        "fra": "jouer de l'audio",
+        "spa": "reproducir audio",
+        "ara": "تشغيل الصوت",
+        "ru": "воспроизвести аудио"
+    },
+    "menu_lp": {
+        "zh": "打印文件",
+        "en": "print files",
+        "fra": "imprimer des fichiers",
+        "spa": "imprimir archivos",
+        "ara": "طباعة الملفات",
+        "ru": "печать файлов"
+    },
+    "menu_sas": {
+        "zh": "设置音频源()",
+        "en": "set audio source()",
+        "fra": "définir la source audio ()",
+        "spa": "establecer fuente de audio ()",
+        "ara": "تعيين مصدر الصوت ()",
+        "ru": "установить источник аудио ()"
+    },
+    "menu_swap": {
+        "zh": "交换文件1和文件2",
+        "en": "swap file1 and file2",
+        "fra": "échanger le fichier1 et le fichier2",
+        "spa": "intercambiar archivo1 y archivo2",
+        "ara": "تبديل الملف1 والملف2",
+        "ru": "обменять файл1 и файл2"
+    },
+    "menu_top": {
+        "zh": "系统监视器",
+        "en": "system monitor",
+        "fra": "moniteur système",
+        "spa": "monitor del sistema",
+        "ara": "مراقب النظام",
+        "ru": "системный монитор"
+    },
+    "menu_go2git": {
+        "zh": "前往git仓库的网页",
+        "en": "go to the webpage of the git config",
+        "fra": "aller à la page Web de la configuration git",
+        "spa": "ir a la página web de la configuración de git",
+        "ara": "انتقل إلى صفحة ويب تكوين git",
+        "ru": "перейти на веб-страницу конфигурации git"
+    },
+    "compress": {
+        "zh": "打包为{}文件",
+        "en": "make {} file",
+        "fra": "créer un fichier {}",
+        "spa": "crear archivo {]",
+        "ara": "إنشاء ملف {}",
+        "ru": "создать {} файл"
+    },
+    "uncompress": {
+        "zh": "解压缩{}文件",
+        "en": "unzip {} file",
+        "fra": "décompresser le fichier {}",
+        "spa": "descomprimir archivo {}",
+        "ara": "فك ضغط ملف {}",
+        "ru": "распаковать {} файл"
+    },
+    "hashCal": {
+        "zh": "计算文件的{}哈希值",
+        "en": "calculate {} hash value of file",
+        "fra": "calculer la valeur de hachage {} du fichier",
+        "spa": "calcular el valor hash {} del archivo",
+        "ara": "حساب قيمة التجزئة {} للملف",
+        "ru": "вычислить {} хеш-значение файла"
+    },
+    "menu_diff": {
+        "zh": "比较文件夹1和文件夹2",
+        "en": "diff dir1 and dir2",
+        "fra": "diff dir1 et dir2",
+        "spa": "diff dir1 y dir2",
+        "ara": "diff dir1 و dir2",
+        "ru": "diff dir1 и dir2"
+    },
+    "menu_mount": {
+        "zh": "挂载dmg文件()",
+        "en": "mount dmg file()",
+        "fra": "monter le fichier dmg ()",
+        "spa": "montar archivo dmg ()",
+        "ara": "تثبيت ملف dmg ()",
+        "ru": "монтировать dmg файл ()"
+    },
+    "menu_unmount": {
+        "zh": "卸载dmg文件()",
+        "en": "unmount dmg file()",
+        "fra": "démonter le fichier dmg ()",
+        "spa": "desmontar archivo dmg ()",
+        "ara": "إلغاء تثبيت ملف dmg ()",
+        "ru": "размонти，ровать dmg файл ()"
+    },
+    "menu_http": {
+        "zh": "开启http服务器",
+        "en": "start http server",
+        "fra": "démarrer le serveur http",
+        "spa": "iniciar servidor http",
+        "ara": "بدء خادم http",
+        "ru": "запустить http сервер"
+    },
+    "menu_dl": {
+        "zh": "下载",
+        "en": "download",
+        "fra": "télécharger",
+        "spa": "descargar",
+        "ara": "تحميل",
+        "ru": "скачать"
+    },
+    "menu_wifi": {
+        "zh": "wifi工具",
+        "en": "wifi tools",
+        "fra": "outils wifi",
+        "spa": "herramientas wifi",
+        "ara": "أدوات واي فاي",
+        "ru": "wifi инструменты"
+    },
+    "menu_upgrade": {
+        "zh": "更新QuickStart_Rhy",
+        "en": "update QuickStart_Rhy",
+        "fra": "mettre à jour QuickStart_Rhy",
+        "spa": "actualizar QuickStart_Rhy",
+        "ara": "تحديث QuickStart_Rhy",
+        "ru": "обновить QuickStart_Rhy"
+    },
+    "menu_netinfo": {
+        "zh": "获取链接的网络信息",
+        "en": "get network info of the url",
+        "fra": "obtenir des informations réseau de l'URL",
+        "spa": "obtener información de red de la url",
+        "ara": "الحصول على معلومات الشبكة من عنوان url",
+        "ru": "получить сетевую информацию url"
+    },
+    "menu_surl": {
+        "zh": "查看网络资源的文件信息",
+        "en": "scan the file info of the url",
+        "fra": "analyser les informations de fichier de l'URL",
+        "spa": "escanear la información del archivo de la url",
+        "ara": "مسح معلومات الملف من عنوان url",
+        "ru": "сканировать информацию файла url"
+    },
+    "menu_trans": {
+        "zh": "翻译",
+        "en": "translate",
+        "fra": "traduire",
+        "spa": "traducir",
+        "ara": "ترجمة",
+        "ru": "перевести"
+    },
+    "menu_pinyin": {
+        "zh": "查看中文的拼音",
+        "en": "get the pinyin of chinese",
+        "fra": "obtenir le pinyin du chinois",
+        "spa": "obtener el pinyin del chino",
+        "ara": "الحصول على البينين الصيني",
+        "ru": "получить пиньинь китайского"
+    },
+    "menu_rmbg": {
+        "zh": "移除图片背景",
+        "en": "remove the background of the picture",
+        "fra": "supprimer l'arrière-plan de l'image",
+        "spa": "eliminar el fondo de la imagen",
+        "ara": "إزالة خلفية الصورة",
+        "ru": "удалить фон изображения"
+    },
+    "menu_smms": {
+        "zh": "将图片或Markdown中图片上传至sm.ms",
+        "en": "upload the picture or the picture in the markdown to sm.ms",
+        "fra": "télécharger l'image ou l'image dans le markdown vers sm.ms",
+        "spa": "cargar la imagen o la imagen en el markdown a sm.ms",
+        "ara": "تحميل الصورة أو الصورة في التخفيض إلى sm.ms",
+        "ru": "загрузить изображение или изображение в markdown в sm.ms"
+    },
+    "menu_alioss": {
+        "zh": "阿里云对象存储",
+        "en": "aliyun object storage",
+        "fra": "stockage d'objets aliyun",
+        "spa": "almacenamiento de objetos aliyun",
+        "ara": "تخزين كائن aliyun",
+        "ru": "aliyun хранилище объектов"
+    },
+    "menu_txcos": {
+        "zh": "腾讯云对象存储",
+        "en": "tencent cloud object storage",
+        "fra": "stockage d'objets cloud tencent",
+        "spa": "almacenamiento de objetos en la nube de tencent",
+        "ara": "تخزين كائنات سحابة tencent",
+        "ru": "tencent облачное хранилище объектов"
+    },
+    "menu_qiniu": {
+        "zh": "七牛云对象存储",
+        "en": "qiniu cloud object storage",
+        "fra": "stockage d'objets cloud qiniu",
+        "spa": "almacenamiento de objetos en la nube qiniu",
+        "ara": "تخزين كائنات سحابة qiniu",
+        "ru": "qiniu облачное хранилище объектов"
+    },
+    "menu_weather": {
+        "zh": "获取天气信息",
+        "en": "get the weather info",
+        "fra": "obtenir les informations météorologiques",
+        "spa": "obtener información meteorológica",
+        "ara": "الحصول على معلومات الطقس",
+        "ru": "получить информацию о погоде"
+    },
+    "menu_LG": {
+        "zh": "通过百度AI无损放大图片",
+        "en": "enlarge the picture losslessly through baidu AI",
+        "fra": "agrandir l'image sans perte via baidu AI",
+        "spa": "ampliar la imagen sin pérdidas a través de baidu AI",
+        "ara": "تكبير الصورة بدون فقدان عبر baidu AI",
+        "ru": "увеличить изображение без потерь через baidu AI"
+    },
+    "menu_nlp": {
+        "zh": "通过百度NLP进行文本纠错",
+        "en": "correct the text through baidu NLP",
+        "fra": "corriger le texte via baidu NLP",
+        "spa": "corregir el texto a través de baidu NLP",
+        "ara": "تصحيح النص من خلال baidu NLP",
+        "ru": "исправить текст через baidu NLP"
+    },
+    "menu_bcv": {
+        "zh": "获取B站视频、直播封面图片",
+        "en": "get the cover picture of B station video and live broadcast",
+        "fra": "obtenir l'image de couverture de la vidéo de la station B et de la diffusion en direct",
+        "spa": "obtener la imagen de portada del video de la estación B y la transmisión en vivo",
+        "ara": "الحصول على صورة الغلاف لفيديو محطة B والبث المباشر",
+        "ru": "получить обложку видео B станции и прямой трансляции"
+    },
+    "menu_gbc": {
+        "zh": "查询垃圾分类",
+        "en": "query garbage classification (Chinese)",
+        "fra": "classification des déchets de requête (chinois)",
+        "spa": "clasificación de basura de consulta (chino)",
+        "ara": "استعلام تصنيف القمامة (الصينية)",
+        "ru": "запрос классификации мусора (китайский)"
+    },
+    "menu_svi": {
+        "zh": "获取中国短视频平台的短视频信息",
+        "en": "get the short video information of Chinese short video platform",
+        "fra": "obtenir les informations vidéo courtes de la plate-forme vidéo courte chinoise",
+        "spa": "obtener la información de video corto de la plataforma de video corto chino",
+        "ara": "الحصول على معلومات الفيديو القصيرة من منصة الفيديو القصيرة الصينية",
+        "ru": "получить информацию о коротком видео китайской короткой видеоплатформы"
+    },
+    "menu_svd": {
+        "zh": "下载中国短视频平台的短视频",
+        "en": "download the short video of Chinese short video platform",
+        "fra": "télécharger la courte vidéo de la plate-forme vidéo courte chinoise",
+        "spa": "descargar el video corto de la plataforma de video corto chino",
+        "ara": "تنزيل الفيديو القصير من منصة الفيديو القصير الصينية",
+        "ru": "загрузить короткое видео китайской короткой видеоплатформы"
+    },
+    "menu_acg": {
+        "zh": "获取一张acg图片",
+        "en": "get an acg picture",
+        "fra": "obtenir une image acg",
+        "spa": "obtener una imagen acg",
+        "ara": "الحصول على صورة acg",
+        "ru": "получить изображение acg"
+    },
+    "menu_bing": {
+        "zh": "获取一张bing图片",
+        "en": "get a bing picture",
+        "fra": "obtenir une image bing",
+        "spa": "obtener una imagen bing",
+        "ara": "الحصول على صورة bing",
+        "ru": "получить изображение bing"
+    },
+    "menu_phi": {
+        "zh": "获取<链接>里的图片链接",
+        "en": "get the picture link in <link>",
+        "fra": "obtenir le lien de l'image dans <link>",
+        "spa": "obtener el enlace de la imagen en <link>",
+        "ara": "الحصول على رابط الصورة في <link>",
+        "ru": "получить ссылку на изображение в <link>"
+    },
+    "menu_kd": {
+        "zh": "查询中国快递信息",
+        "en": "query Chinese express information",
+        "fra": "interroger les informations express chinoises",
+        "spa": "consultar información de envío chino",
+        "ara": "استعلام معلومات التعبير الصينية",
+        "ru": "запросить китайскую информацию о доставке"
+    },
+    "menu_loli": {
+        "zh": "获取一张pixiv图片",
+        "en": "Get a pixiv image",
+        "fra": "Obtenir une image pixiv",
+        "spa": "Obtener una imagen pixiv",
+        "ara": "احصل على صورة pixiv",
+        "ru": "Получить пиксивное изображение"
+    },
+    "menu_setu": {
+        "zh": "随机调用acg,loli",
+        "en": "Call acg, loli randomly",
+        "fra": "Appelez acg, loli au hasard",
+        "spa": "Llama a acg, loli al azar",
+        "ara": "استدعاء ACG ، loli عشوائيا",
+        "ru": "Вызов акг, лоли случайным образом"
+    },
+    "menu_exc": {
+        "zh": "汇率查询",
+        "en": "Exchange Rate Inquiry",
+        "fra": "Taux de change",
+        "spa": "Tipo de cambio",
+        "ara": "سعر الصرف",
+        "ru": "Курс обмена"
+    },
+    "menu_zhihu": {
+        "zh": "获取知乎日报",
+        "en": "Get Zhihu Daily",
+        "fra": "Obtenir Zhihu Daily",
+        "spa": "Obtener Zhihu Daily",
+        "ara": "الحصول على Zhihu اليومية",
+        "ru": "Получить Zhihu Daily"
+    },
+    "menu_wallhaven": {
+        "zh": "获取Wallhaven壁纸",
+        "en": "Get Wallhaven Wallpaper",
+        "fra": "Obtenir Wallhaven Wallpaper",
+        "spa": "Obtener Wallhaven Wallpaper",
+        "ara": "الحصول على Wallhaven خلفية",
+        "ru": "Получить Wallhaven обои"
+    },
+    "menu_lmgtfy": {
+        "zh": "让我帮你Google一下",
+        "en": "Let Me Google That For You",
+        "fra": "Laissez-moi Google que pour vous",
+        "spa": "Déjame Google que para ti",
+        "ara": "اسمحوا لي جوجل أن بالنسبة لك",
+        "ru": "Позвольте мне Google, что для вас"
+    },
+    "menu_d60": {
+        "zh": "获取每日60秒早报",
+        "en": "Get Daily 60 Seconds",
+        "fra": "Obtenir 60 secondes quotidiennes",
+        "spa": "Obtener 60 segundos diarios",
+        "ara": "الحصول على 60 ثانية يوميا",
+        "ru": "Получить ежедневно 60 секунд"
+    },
+    "menu_m2t": {
+        "zh": "转换磁力链接为种子文件",
+        "en": "Convert Magnet to Torrent",
+        "fra": "Convertir Magnet en Torrent",
+        "spa": "Convertir Magnet a Torrent",
+        "ara": "تحويل المغناطيس إلى تورنت",
+        "ru": "Преобразовать магнит в торрент"
+    },
+    "menu_doutu": {
+        "zh": "获取关键词的表情包",
+        "en": "Get Emoticons of Keywords",
+        "fra": "Obtenir des émoticônes de mots clés",
+        "spa": "Obtener emoticonos de palabras clave",
+        "ara": "الحصول على الرموز التعبيرية للكلمات الرئيسية",
+        "ru": "Получить смайлы ключевых слов"
+    },
+    "menu_joke": {
+        "zh": "获取一个中文笑话",
+        "en": "Get a Chinese Joke",
+        "fra": "Obtenir une blague chinoise",
+        "spa": "Obtener una broma china",
+        "ara": "الحصول على نكتة صينية",
+        "ru": "Получить китайскую шутку"
+    },
+    "menu_gpt": {
+        "zh": "ChatGPT 客户端",
+        "en": "ChatGPT Client",
+        "fra": "Client ChatGPT",
+        "spa": "Cliente ChatGPT",
+        "ara": "عميل ChatGPT",
+        "ru": "Клиент ChatGPT"
+    },
+    "menu_stbg": {
+        "zh": "替换图片颜色",
+        "en": "Replace Image Color",
+        "fra": "Remplacer la couleur de l'image",
+        "spa": "Reemplazar el color de la imagen",
+        "ara": "استبدال لون الصورة",
+        "ru": "Заменить цвет изображения"
+    },
+    "menu_icat": {
+        "zh": "在终端预览图片",
+        "en": "Preview Image in Terminal",
+        "fra": "Aperçu de l'image dans le terminal",
+        "spa": "Vista previa de la imagen en el terminal",
+        "ara": "معاينة الصورة في المحطة",
+        "ru": "Предварительный просмотр изображения в терминале"
+    },
+    "menu_v2gif": {
+        "zh": "视频转GIF",
+        "en": "Video to GIF",
+        "fra": "Vidéo en GIF",
+        "spa": "Video a GIF",
+        "ara": "فيديو إلى GIF",
+        "ru": "Видео в GIF"
+    },
+    "menu_v2mp3": {
+        "zh": "视频转MP3",
+        "en": "Video to MP3",
+        "fra": "Vidéo en MP3",
+        "spa": "Video a MP3",
+        "ara": "فيديو إلى MP3",
+        "ru": "Видео в MP3"
+    },
+    "menu_v2mp4": {
+        "zh": "视频转MP4",
+        "en": "Video to MP4",
+        "fra": "Vidéo en MP4",
+        "spa": "Video a MP4",
+        "ara": "فيديو إلى MP4",
+        "ru": "Видео в MP4"
+    },
+    "menu_rmaudio": {
+        "zh": "删除视频的音频",
+        "en": "Remove Audio from Video",
+        "fra": "Supprimer l'audio de la vidéo",
+        "spa": "Eliminar audio del video",
+        "ara": "إزالة الصوت من الفيديو",
+        "ru": "Удалить аудио из видео"
+    },
+    "menu_i2png": {
+        "zh": "图片转换为PNG",
+        "en": "Image to PNG",
+        "fra": "Image au format PNG",
+        "spa": "Imagen a PNG",
+        "ara": "صورة إلى PNG",
+        "ru": "Изображение в PNG"
+    },
+    "menu_i2jpg": {
+        "zh": "图片转换为JPG",
+        "en": "Image to JPG",
+        "fra": "Image au format JPG",
+        "spa": "Imagen a JPG",
+        "ara": "صورة إلى JPG",
+        "ru": "Изображение в JPG"
+    },
+    "menu_fmti": {
+        "zh": "格式化图片颜色",
+        "en": "Format Image Color",
+        "fra": "Format Couleur Image",
+        "spa": "Formato de color de imagen",
+        "ara": "تنسيق لون الصورة",
+        "ru": "Формат цвета изображения"
+    },
+    "menu_vsta": {
+        "zh": "设置视频的音频",
+        "en": "Set Audio for Video",
+        "fra": "Définir l'audio pour la vidéo",
+        "spa": "Establecer audio para video",
+        "ara": "تعيين الصوت للفيديو",
+        "ru": "Установить аудио для видео"
+    },
+    "tutorial": {
+        "zh": "引导",
+        "en": "Tutorial",
+        "fra": "Tutoriel",
+        "spa": "Tutorial",
+        "ara": "درس تعليمي",
+        "ru": "Обучение"
+    },
+    "using_youtube_dl": {
+        "zh": "使用youtube-dl下载视频",
+        "en": "Download video (use youtube-dl)",
+        "fra": "Télécharger la vidéo (utiliser youtube-dl)",
+        "spa": "Descargar video (usar youtube-dl)",
+        "ara": "تحميل الفيديو (استخدام youtube-dl)",
+        "ru": "Скачать видео (используйте youtube-dl)"
+    },
+    "using_proxy": {
+        "zh": "使用代理",
+        "en": "Use Proxy",
+        "fra": "Utiliser un proxy",
+        "spa": "Usar proxy",
+        "ara": "استخدام الوكيل",
+        "ru": "Использовать прокси"
+    },
+    "set_filename": {
+        "zh": "设置文件名",
+        "en": "Set Filename",
+        "fra": "Définir le nom du fichier",
+        "spa": "Establecer nombre de archivo",
+        "ara": "تعيين اسم الملف",
+        "ru": "Установить имя файла"
+    },
+    "set_referer": {
+        "zh": "设置Referer",
+        "en": "Set Referer",
+        "fra": "Définir Referer",
+        "spa": "Establecer Referer",
+        "ara": "تعيين المرجع",
+        "ru": "Установить Referer"
+    },
+    "upload_to_bucket": {
+        "zh": "上传文件至桶",
+        "en": "Upload File to Bucket",
+        "fra": "Télécharger le fichier dans le seau",
+        "spa": "Subir archivo al cubo",
+        "ara": "تحميل الملف إلى دلو",
+        "ru": "Загрузить файл в ведро"
+    },
+    "download_from_bucket": {
+        "zh": "从桶下载文件",
+        "en": "Download File from Bucket",
+        "fra": "Télécharger le fichier du seau",
+        "spa": "Descargar archivo del cubo",
+        "ara": "تحميل الملف من دلو",
+        "ru": "Загрузить файл из ведра"
+    },
+    "remove_from_bucket": {
+        "zh": "从桶删除文件",
+        "en": "Remove File from Bucket",
+        "fra": "Supprimer le fichier du seau",
+        "spa": "Eliminar archivo del cubo",
+        "ara": "إزالة الملف من دلو",
+        "ru": "Удалить файл из ведра"
+    },
+    "list_bucket": {
+        "zh": "列出桶中的文件",
+        "en": "List Files in Bucket",
+        "fra": "Liste des fichiers dans le seau",
+        "spa": "Lista de archivos en el cubo",
+        "ara": "قائمة الملفات في دلو",
+        "ru": "Список файлов в ведре"
+    }
+}

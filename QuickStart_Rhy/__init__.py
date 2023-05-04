@@ -11,6 +11,10 @@ import time
 
 from QuickProject import QproDefaultStatus as qs_default_status
 from QuickProject import external_exec, user_pip, user_root
+from QuickProject import QproInfoString as qs_info_string
+from QuickProject import QproWarnString as qs_warning_string
+from QuickProject import QproErrorString as qs_error_string
+
 
 from .__cache__ import QsCache
 from .__config__ import (
@@ -19,11 +23,11 @@ from .__config__ import (
     platform,
     qs_default_console,
     _ask,
-    user_lang
+    user_lang,
+    lang_detector
 )
 
 name = "QuickStart_Rhy"
-
 qs_config = QsConfig(os.path.join(user_root, ".qsrc"))
 qs_cache = QsCache(os.path.join(user_root, ".qs_cache"))
 
@@ -32,14 +36,10 @@ trans_engine = qs_config.basicSelect("default_translate_engine")["support"][
     qs_config.basicSelect("default_translate_engine")["index"]
 ]
 force_show_img = qs_config.basicSelect("force_show_img")
-
-qs_error_string = f'[bold red][{"ERROR" if user_lang != "zh" else "错误"}]'
-qs_warning_string = f'[bold yellow][{"WARNING" if user_lang != "zh" else "警告"}]'
-qs_info_string = f'[bold cyan][{"INFO" if user_lang != "zh" else "提示"}]'
 qs_console_width = qs_default_console.width
 
 _package_info_ = qs_cache.get("package_info")
-_not_update_ = ['io', 'tarfile']
+_not_update_ = ["io", "tarfile", "zipfile", "shutil"]
 if _package_info_ is None:
     _package_info_ = {}
 
@@ -47,7 +47,6 @@ def requirePackage(
     pname: str,
     module: str = "",
     real_name: str = "",
-    not_exit: bool = True,
     not_ask: bool = False,
     set_pip: str = user_pip,
     keep_latest: bool = False,
@@ -58,29 +57,27 @@ def requirePackage(
     :param pname: 库名
     :param module: 待引入的模块名，可缺省
     :param real_name: 用于 pip3 install 的名字
-    :param not_exit: 安装或引用失败后不退出，成功则返回库或模块的地址，失败则返回None
     :param not_ask: 不询问
     :param set_pip: pip3的路径
     :param keep_latest: 是否保持最新版本
     :return: 库或模块的地址
     """
     try:
-        package_name = pname.split('.')[0] if not real_name else real_name
-        if not package_name: # 引用为自身
+        package_name = pname.split(".")[0] if not real_name else real_name
+        if not package_name:  # 引用为自身
             package_name = name
-        if package_name not in _not_update_ and (keep_latest or time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7):
-            with qs_default_status(
-                f"Updating {package_name}"
-                if user_lang != "zh"
-                else f"正在尝试更新 {package_name}"
-            ):
-                _st, _ct = external_exec(f"{set_pip} install {package_name} -U", without_output=True)
+        if package_name not in _not_update_ and (
+            keep_latest
+            or time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7
+        ):
+            with qs_default_status(f"{lang_detector['updating']} {package_name}"):
+                _st, _ct = external_exec(
+                    f"{set_pip} install {package_name} -U", without_output=True
+                )
                 if _st:
                     qs_default_console.print(
                         qs_warning_string,
-                        f"Update {package_name} failed, please update it manually: "
-                        if user_lang != "zh"
-                        else f"更新 {package_name} 失败，请手动更新: ",
+                        f"{lang_detector['updating']} {package_name} {lang_detector['fail_and_execute_manually']}"
                         f"'{set_pip} install {package_name} -U'",
                     )
                     qs_default_console.print(qs_warning_string, _ct)
@@ -90,19 +87,17 @@ def requirePackage(
     except (ModuleNotFoundError, ImportError):
         if not_ask:
             return None
+        if package_name == name:
+            qs_default_console.print(qs_warning_string, lang_detector['requirePackageWarning'])
         if _ask(
             {
                 "type": "confirm",
-                "message": f"""Qs require {pname + (' -> ' + module if module else '')}, confirm to install?"""
-                if user_lang != "zh"
-                else f"""Qs 依赖 {pname + (' -> ' + module if module else '')}，确认安装吗？""",
+                "message": f"""Qs {lang_detector['require']} {pname + (' -> ' + module if module else '')}, {lang_detector['confirm_install']}?""",
                 "default": True,
             }
         ):
             with qs_default_status(
-                f"Installing {package_name}"
-                if user_lang != "zh"
-                else f"正在安装 {package_name}"
+                f"{lang_detector['Install']} {package_name}"
             ):
                 st, _ = external_exec(
                     f"{set_pip} install {package_name} -U",
@@ -111,25 +106,13 @@ def requirePackage(
             if st:
                 qs_default_console.print(
                     qs_error_string,
-                    f"Install {pname + (' -> ' + module if module else '')} failed, please install it manually: "
-                    if user_lang != "zh"
-                    else f"安装 {pname + (' -> ' + module if module else '')} 失败，请手动安装: ",
+                    f"{lang_detector['Install']} {pname + (' -> ' + module if module else '')} {lang_detector['fail_and_execute_manually']}",
                     f"'{set_pip} install {package_name} -U'",
                 )
                 exit(-1)
-            if not_exit:
-                exec(f"from {pname} import {module}" if module else f"import {pname}")
-            else:
-                qs_default_console.print(
-                    qs_info_string,
-                    "Install complete! Run again:"
-                    if user_lang != "zh"
-                    else f"安装完成！再次运行:",
-                    " ".join(sys.argv),
-                )
-                exit(0)
+            exec(f"from {pname} import {module}" if module else f"import {pname}")
         else:
-            exit(-1) if not not_exit else None
+            return None
     return eval(f"{module if module else pname}")
 
 
@@ -216,17 +199,7 @@ def cur_time():
 
     :return: None
     """
-    week = {
-        "Monday": "周一",
-        "Tuesday": "周二",
-        "Wednesday": "周三",
-        "Thursday": "周四",
-        "Friday": "周五",
-        "Saturday": "周六",
-        "Sunday": "周日",
-    }
-    tm = time.strftime("%Y年%m月%d日 %A %H:%M:%S", time.localtime(time.time())).split()
-    tm[1] = week[tm[1]]
+    tm = time.strftime("%Y-%m-%d %A %H:%M:%S", time.localtime(time.time())).split()
     qs_default_console.print(qs_info_string, " ".join(tm))
 
 
@@ -255,9 +228,7 @@ def open_url(argv: list = None):
             url = _ask(
                 {
                     "type": "input",
-                    "message": "Sorry, but your system is not supported by `pyperclip`\n  So you need input content manually: "
-                    if user_lang != "zh"
-                    else "抱歉，但是“pyperclip”不支持你的系统\n  所以你需要手动输入内容:",
+                    "message": lang_detector['pyperclip_not_support']
                 }
             )
         wb.open_new_tab(formatUrl(url))
@@ -276,9 +247,7 @@ def open_app():
     else:
         return qs_default_console.print(
             qs_error_string,
-            '"copy" is only support Mac OS X'
-            if user_lang != "zh"
-            else '"copy" 只支持Mac OS X',
+            lang_detector['macos_only']
         )
 
 
@@ -313,7 +282,6 @@ def calculate():
         exp = " ".join(sys.argv[2:])
         qs_default_console.print("%s = %s" % (exp, eval(exp)))
     except Exception as e:
-        qs_default_console.print(qs_info_string, 'Usage: qs cal <exp like "1+1">')
         qs_default_console.print(qs_error_string, repr(e))
 
 
@@ -353,31 +321,52 @@ def copy():
     def which(command):
         return False if external_exec("which %s" % command, True)[0] else True
 
-    if platform != "darwin":
-        return qs_default_console.print(
-            qs_error_string,
-            '"copy" is only support Mac OS X'
-            if user_lang != "zh"
-            else '"copy" 只支持Mac OS X',
-        )
-
     if not os.path.exists(sys.argv[2]):
         return qs_default_console.print(
             qs_error_string,
             "No such file:" if user_lang != "zh" else "未找到文件:",
             sys.argv[2],
         )
-    # 检查 pbadd 是否在 PATH 中
-    if not which("pbadd"):
-        from QuickStart_Rhy.NetTools.NormalDL import normal_dl
+    if platform == "darwin":
+        # 检查 pbadd 是否在 PATH 中
+        if not which("pbadd"):
+            from QuickStart_Rhy.NetTools.NormalDL import normal_dl
 
-        normal_dl(
-            "https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005",
-            set_name="pbadd",
+            normal_dl(
+                "https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005",
+                set_name="pbadd",
+            )
+            external_exec("chmod +x pbadd")
+            external_exec("mv pbadd /usr/local/bin/")
+        external_exec("pbadd " + sys.argv[2], True)
+    elif platform.startswith("win"):
+        # 检查是否为 powershell
+        st, _ = external_exec(
+            'powershell -Command "echo $PSVersionTable.PSVersion"', True
         )
-        external_exec("chmod +x pbadd")
-        external_exec("mv pbadd /usr/local/bin/")
-    external_exec("pbadd " + sys.argv[2], True)
+        if st:
+            return qs_default_console.print(
+                qs_error_string,
+                "Please use powershell to run this command"
+                if user_lang != "zh"
+                else "请使用 powershell 运行此命令",
+            )
+        external_exec(
+            'powershell -Command "Set-Clipboard -Path ' + sys.argv[2] + '"', True
+        )
+    else:
+        return qs_default_console.print(
+            qs_error_string,
+            lang_detector['not_support_current_system']
+        )
+
+
+def tcopy():
+    """
+    复制文本到粘贴板
+    :return:
+    """
+    requirePackage("pyperclip", "copy")(" ".join(sys.argv[2:]))
 
 
 def get_user_lang():

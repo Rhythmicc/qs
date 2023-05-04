@@ -5,7 +5,7 @@
 Call various network tools
 """
 import sys
-
+from . import qs_default_console, requirePackage, lang_detector
 
 def upgrade():
     """
@@ -14,16 +14,13 @@ def upgrade():
     Upgrade qs
     """
     from . import (
-        external_exec,
-        user_pip,
         qs_default_console,
         qs_info_string,
         qs_default_status,
     )
-
-    with qs_default_status("正在更新"):
-        external_exec(f"{user_pip} install QuickStart-Rhy --upgrade", True)
-    qs_default_console.print(qs_info_string, "更新完成")
+    with qs_default_status(lang_detector['updating']):
+        requirePackage("QuickStart-Rhy", keep_latest=True)
+    qs_default_console.print(qs_info_string, lang_detector['updated'])
 
 
 def m3u8_dl(url):
@@ -168,7 +165,7 @@ def http():
 
                 url = formatUrl(url)
             except IndexError:
-                print("Usage: qs http ip:port -bind url")
+                print(f"Usage: qs http ip:port -bind url")
                 exit(0)
     else:
         from .NetTools import get_ip
