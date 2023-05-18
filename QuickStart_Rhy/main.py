@@ -14,7 +14,7 @@ def qs_help(rep:str=""):
     if not rep or rep not in ['basic', 'system', 'net', 'api', 'image']:
         menu_show([
             ['basic', 'u, a, f, cal, time, pcat..'],
-            ['system', 'top, \[mk/un][zip/tar/7z]..'],
+            ['system', 'top, \[mk/un]\[zip/tar/7z]..'],
             ['net', 'http, dl, netinfo, wifi...'],
             ['api', 'trans, smms, rmbg, loli...'],
             ['image', 'stbg, v2gif, v2mp3, v2mp4.']

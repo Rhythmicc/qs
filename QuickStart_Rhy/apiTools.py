@@ -159,12 +159,15 @@ def translate(content: str = None, target_lang: str = user_lang):
         lang = requirePackage("langid", "classify")(content)[0]
         while retry:
             try:
-                ret = _translate(
+                if not (ret := _translate(
                     content,
                     target_lang="en"
                     if target_lang == user_lang == lang
                     else target_lang,
-                )
+                )):
+                    retry -= 1
+                    qs_default_console.print(qs_warning_string, "结果为空" if user_lang != "zh" else "Result is empty")
+                    continue
                 break
             except SSLError:
                 retry -= 1

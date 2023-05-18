@@ -1,10 +1,11 @@
 from . import pre_check, user_lang
 import requests
+import random
 
 url = pre_check("DeepLX")
 
 if isinstance(url, list):
-    _load_balancer_ = -1
+    _load_balancer_ = random.randint(0, len(url) - 1)
 
 def get_url():
     """获取当前使用的API地址"""
@@ -25,8 +26,17 @@ def translate(text, target_lang=user_lang.lower()):
         'target_lang': target_lang,
     })
     if res.text.strip():
-        return res.json().get('data')
+        # return res.json().get('data')
+        # get json data
+        try:
+            return res.json().get('data')
+        except Exception as e:
+            from .. import qs_default_console, qs_error_string
+            qs_default_console.print(qs_error_string, f"DeepLX: {_url}")
+            return None
     else:
+        from .. import qs_default_console, qs_error_string
+        qs_default_console.print(qs_error_string, f"DeepLX: {_url}")
         return None
 
 

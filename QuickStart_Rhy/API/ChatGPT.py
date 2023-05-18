@@ -1,5 +1,6 @@
-from .. import requirePackage, user_lang
+from .. import requirePackage, user_lang, qs_default_console, qs_error_string
 from . import pre_check
+import time
 
 lang_table = {
     'zh': 'Chinese',
@@ -21,9 +22,14 @@ _chatbot = None
 
 
 class AlapiChatbot:
-    def __init__(self, system_prompt=f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language."):
+    def __init__(
+            self, 
+            system_prompt=f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
+            no_record: bool = False
+        ):
         from .alapi import alapi_token, v2_url
 
+        self.no_record = no_record
         self.api_key = alapi_token
         self.url = v2_url
         self.messages = [
@@ -40,7 +46,7 @@ class AlapiChatbot:
                 "content": prompt,
             }
         )
-        res = (
+        while res := (
             requests.post(
                 self.url + "chatgpt/pro",
                 json={
@@ -49,15 +55,21 @@ class AlapiChatbot:
                 },
             )
             .json()
-            .get("data")
-            .get("content")
-        )
-        self.messages.append(
-            {
-                "role": "assistant",
-                "content": res,
-            }
-        )
+        ):
+            if res['code'] == 422 or not res.get('data'):
+                qs_default_console.print(qs_error_string, res)
+                time.sleep(3)
+                continue
+            else:
+                break
+        res = res.get("data").get("content")
+        if not self.no_record:
+            self.messages.append(
+                {
+                    "role": "assistant",
+                    "content": res,
+                }
+            )
         return res
 
     def ask_stream(self, prompt):  # not support now
@@ -85,17 +97,18 @@ class AlapiChatbot:
                 total_res = res['text']
                 yield total_res
 
-        self.messages.append(
-            {
-                "role": "assistant",
-                "content": total_res,
-            }
-        )
+        if not self.no_record:
+            self.messages.append(
+                {
+                    "role": "assistant",
+                    "content": total_res,
+                }
+            )
 
 
-def create_bot():
+def create_bot(no_record: bool = False):
     if ALAPI:
-        return AlapiChatbot()
+        return AlapiChatbot(no_record=no_record)
     else:
         return (
             requirePackage("revChatGPT.V3", "Chatbot", "revChatGPT")(
@@ -116,16 +129,18 @@ def create_bot():
 def chatGPT(
     prompt: str,
     wait_all: bool = False,
+    no_record: bool = False,
 ):
     """
     使用OpenAI的GPT-3 API进行聊天
 
     :param prompt: 聊天内容
     :param wait_all: 是否等待所有内容
+    :param no_record: 是否不记录聊天内容
     """
     global _chatbot
     if _chatbot is None:
-        _chatbot = create_bot()
+        _chatbot = create_bot(no_record=no_record)
     if wait_all:
         return _chatbot.ask(prompt)
     else:

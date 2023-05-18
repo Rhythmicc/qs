@@ -335,7 +335,7 @@
         "ara": "إنشاء ملف {}",
         "ru": "создать {} файл"
     },
-    "uncompress": {
+    "decompress": {
         "zh": "解压缩{}文件",
         "en": "unzip {} file",
         "fra": "décompresser le fichier {}",
