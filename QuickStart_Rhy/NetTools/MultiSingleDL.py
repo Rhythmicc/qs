@@ -26,7 +26,6 @@ class MultiSingleDL:
         rt_dir: str,
         proxy: str = "",
         referer: str = "",
-        failed2exit: bool = False,
         save_to_mem: bool = False,
     ):
         self.proxy = proxy
@@ -38,11 +37,10 @@ class MultiSingleDL:
         if referer:
             self.headers["Referer"] = referer
         self.rt_dir = rt_dir
-        self.failed2exit = failed2exit
         self.save_to_mem = save_to_mem
         self.status_dict = {}
         self.infos = {}
-        self.urls = set(urls)
+        self.urls = urls
         self.task_num = len(self.urls)
         if self.save_to_mem:
             self.content_ls = [b""] * self.task_num
@@ -52,7 +50,7 @@ class MultiSingleDL:
         self.job_queue = queue.Queue()
         self.pool = None
         self.status = qs_default_status("获取文件信息中...")
-        self.progress, self.task_id = NormalProgressBar("多文件下载", self.task_num)
+        self.progress, self.task_id = None, None
 
     def _info(self, url):
         retry = 3
@@ -72,9 +70,6 @@ class MultiSingleDL:
                 else "获取文件信息失败，请检查网络!",
                 (real_url, name, r)
             )
-            if self.failed2exit:
-                self.enabled = False
-                return
 
         self.infos[url] = {
             "url": real_url,
@@ -104,10 +99,11 @@ class MultiSingleDL:
                 with open(os.path.join(self.rt_dir, filename), "wb") as f:
                     for chunk in r.iter_content(32768):
                         f.write(chunk)
+                        self.progress.advance(self.task_id, 32768)
             else:
                 for chunk in r.iter_content(32768):
                     self.content_ls[job_id] += chunk
-            self.progress.advance(self.task_id, 1)
+                    self.progress.advance(self.task_id, 32768)
         except Exception as e:
             if retry < self.max_retry:
                 self.progress.print(
@@ -166,6 +162,8 @@ class MultiSingleDL:
                 f"获取文件信息完毕! 文件总大小: {size_format(total)} | 未获取到详细信息条数为: {failed_num}",
             )
         self.status.stop()
+        
+        self.progress, self.task_id = NormalProgressBar("多文件下载", total)
 
         for _id, item in enumerate(self.urls):
             self.job_queue.put(
@@ -200,7 +198,6 @@ def multi_single_dl(
     rt_dir: str = "./",
     proxy: str = "",
     referer: str = "",
-    failed2exit: bool = False,
     name_map: dict = None,
     qps: int = 0,
     qps_info: int = 0,
@@ -214,7 +211,6 @@ def multi_single_dl(
     :param rt_dir: 文件下载目录
     :param proxy: 代理
     :param referer: referer
-    :param failed2exit: 信息获取失败立即退出
     :param name_map: 文件命名映射{URL: filename}, 后缀名会自动获取并添加
     :param qps: 限制每秒请求次数, qps_info和qps_download默认为qps
     :param qps_info: 限制每秒获取信息次数
@@ -223,7 +219,7 @@ def multi_single_dl(
     :return: 下载好的文件路径列表
     """
     return MultiSingleDL(
-        urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer, failed2exit=failed2exit
+        urls=urls, rt_dir=rt_dir, proxy=proxy, referer=referer
     ).run(name_map=name_map, qps=qps, qps_info=qps_info, qps_download=qps_download, without_output=without_output)
 
 
@@ -232,7 +228,6 @@ def multi_single_dl_content_ls(
     rt_dir: str = "./",
     proxy: str = "",
     referer: str = "",
-    failed2exit: bool = False,
     qps: int = 0,
     without_output: bool = False,
 ):
@@ -243,7 +238,6 @@ def multi_single_dl_content_ls(
     :param rt_dir: 文件下载目录
     :param proxy: 代理
     :param referer: referer
-    :param failed2exit: 信息获取失败立即退出
     :param qps: 限制每秒请求次数
     :param without_output: 不输出信息
     :return: 存储在内存中的文件内容列表
@@ -253,7 +247,6 @@ def multi_single_dl_content_ls(
         rt_dir=rt_dir,
         proxy=proxy,
         referer=referer,
-        failed2exit=failed2exit,
         save_to_mem=True,
     )
     dl.run(qps=qps, without_output=without_output)
