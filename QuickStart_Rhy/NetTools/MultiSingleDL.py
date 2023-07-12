@@ -40,7 +40,7 @@ class MultiSingleDL:
         self.save_to_mem = save_to_mem
         self.status_dict = {}
         self.infos = {}
-        self.urls = urls
+        self.urls = urls.copy()
         self.task_num = len(self.urls)
         if self.save_to_mem:
             self.content_ls = [b""] * self.task_num

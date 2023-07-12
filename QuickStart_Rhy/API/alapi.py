@@ -5,7 +5,7 @@ import json
 from urllib.parse import quote
 import requests
 
-__common_token__ = "hUxPTdnybk1XLUEFtzkj"
+
 alapi_token = pre_check("alapi_token", ext=False)
 if not alapi_token:
     from .. import qs_default_console, qs_error_string, qs_warning_string, _ask
@@ -38,39 +38,9 @@ if not alapi_token:
                 }
             )
             qs_config.apiUpdate("alapi_token", alapi_token)
-    elif _ask(
-        {
-            "type": "confirm",
-            "message": "Use common but limited token?\n是否愿意使用公共但是受限的token?",
-            "default": True,
-        }
-    ):
-        alapi_token = __common_token__
-        qs_config.apiUpdate("alapi_token", alapi_token)
-        qs_default_console.print(
-            qs_warning_string,
-            "Tokens with restricted applications may not be able to use the functions provided by alapi normally, "
-            "and you can try again multiple times."
-            if user_lang != "zh"
-            else "应用受限的token可能无法正常使用alapi提供的功能，可多次重新尝试。",
-        )
     else:
         exit()
 
-if not pre_check("__ban_warning", ext=False) and alapi_token == __common_token__:
-    from .. import qs_default_console, qs_warning_string
-
-    qs_default_console.print(
-        qs_warning_string,
-        "Using common but limited token." if user_lang != "zh" else "正在使用公共但受限的token",
-    )
-    qs_default_console.print(
-        qs_warning_string,
-        "If you do not want this, try to apply one:"
-        if user_lang != "zh"
-        else "如果您不想这样, 可以来申请一个自己的:",
-        "https://www.alapi.cn/",
-    )
 
 v2_url = "https://v2.alapi.cn/api/"
 
