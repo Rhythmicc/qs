@@ -124,7 +124,7 @@ def txcos():
         func_table[op](bucket)
 
 
-def translate(content: str = None, target_lang: str = user_lang):
+def translate(content: str = '', target_lang: str = user_lang):
     """
     qs默认的翻译引擎
 
