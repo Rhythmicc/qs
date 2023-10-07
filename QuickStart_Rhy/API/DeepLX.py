@@ -2,7 +2,7 @@ from . import pre_check, user_lang
 import requests
 import random
 
-url = pre_check("DeepLX", False)
+url = pre_check("DeepLX", ext=False)
 
 if isinstance(url, list):
     _load_balancer_ = random.randint(0, len(url) - 1)

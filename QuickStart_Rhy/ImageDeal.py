@@ -11,7 +11,7 @@ from . import qs_default_console, qs_error_string
 
 def set_img_background():
     """替换图片颜色 | Replace color in image"""
-    from .ImageTools.ColorTools import transport_back, get_color_from_str
+    from .ImageTools.ColorTools import transport_background, get_color_from_str
 
     try:
         img = sys.argv[2]
@@ -34,7 +34,7 @@ def set_img_background():
     else:
         to = get_color_from_str(to)
         frm = get_color_from_str(frm)
-        img = transport_back(img, to, frm)
+        img = transport_background(img, to, frm)
         iname = sys.argv[2].split(".")
         iname = iname[0] + "_stbg." + "".join(iname[1:])
         img.save(iname)

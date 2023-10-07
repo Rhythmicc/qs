@@ -518,16 +518,19 @@ def swap(file1: str = None, file2: str = None):
     """
     交换两个文件的内容
     """
+    index = 2
     if not file1 or not file2:
-        file1 = sys.argv[2]
-        file2 = sys.argv[3]
+        file1 = sys.argv[index]
+        index += 1
+    if not file2:
+        file2 = sys.argv[index]
 
-    with open(file1, "r") as f1:
+    with open(file1, "rb") as f1:
         data1 = f1.read()
-    with open(file2, "r") as f2:
+    with open(file2, "rb") as f2:
         data2 = f2.read()
 
-    with open(file1, "w") as f1:
+    with open(file1, "wb") as f1:
         f1.write(data2)
-    with open(file2, "w") as f2:
+    with open(file2, "wb") as f2:
         f2.write(data1)

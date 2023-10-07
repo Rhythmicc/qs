@@ -9,7 +9,7 @@ from .. import requirePackage
 Image = requirePackage("PIL", "Image")
 
 
-def transport_back(
+def transport_background(
     src: str, to_color: tuple, from_color: tuple = (0, 0, 0, 0)
 ) -> Image.Image:
     """
