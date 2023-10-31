@@ -51,7 +51,7 @@ def translate(text, target_lang=user_lang.lower()):
 
         translator = requirePackage("PyDeepLX", "PyDeepLX")
         if translator:
-            return translator.translate(text, target_lang=target_lang)
+            return translator.translate(text, targetLang=target_lang)
         else:
             from .. import qs_default_console, qs_error_string
             qs_default_console.print(qs_error_string, "Get PyDeepLX failed!")
