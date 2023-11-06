@@ -152,8 +152,6 @@ class TxCOS:
 
 class Translate:
 
-    from tencentcloud.tmt.v20180321 import models
-
     def __init__(self, scid, sckey, region):
         """
         初始化并登陆腾讯翻译接口
