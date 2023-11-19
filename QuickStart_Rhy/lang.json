@@ -55,6 +55,30 @@
         "ara": "حجم خط المحطة النهائية",
         "ru": "Размер шрифта терминала ввода"
     },
+    "ask_gpt": {
+        "zh": "选择采用的GPT平台",
+        "en": "Select the GPT platform to use",
+        "fra": "Sélectionnez la plate-forme GPT à utiliser",
+        "spa": "Seleccione la plataforma GPT para usar",
+        "ara": "حدد منصة GPT للاستخدام",
+        "ru": "Выберите платформу GPT для использования"
+    },
+    "ask_gpt_model": {
+        "zh": "输入采用的GPT模型",
+        "en": "Input the GPT model to use",
+        "fra": "Entrez le modèle GPT à utiliser",
+        "spa": "Ingrese el modelo GPT para usar",
+        "ara": "أدخل نموذج GPT للاستخدام",
+        "ru": "Введите модель GPT для использования"
+    },
+    "ask_gpt_api": {
+        "zh": "填入GPT API KEY",
+        "en": "Fill in the GPT API KEY",
+        "fra": "Remplissez la clé API GPT",
+        "spa": "Complete la clave API GPT",
+        "ara": "املأ مفتاح API GPT",
+        "ru": "Заполните ключ API GPT"
+    },
     "config_store_in": {
         "zh": "你的配置表被存储在:",
         "en": "Your config is stored in:",

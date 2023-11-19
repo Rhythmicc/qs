@@ -131,6 +131,19 @@ questions = {
         "message": lang_detector['ask_font_size'],
         "default": "16",
     },
+    "gpt": {
+        "type": "list",
+        "message": lang_detector['ask_gpt'],
+        "choices": ["openai", "poe", "alapi"],
+    },
+    "gpt-model": {
+        "type": "input",
+        "message": lang_detector['ask_gpt_model']
+    },
+    "gpt-api": {
+        "type": "input",
+        "message": lang_detector['ask_gpt_api']
+    }
 }
 
 
@@ -156,7 +169,16 @@ class QsConfig:
     "default_proxy": "user:password@ip:port or ip:port",
     "force_show_img": false,
     "terminal_font_size": 16,
-    "terminal_font_rate": 2.049
+    "terminal_font_rate": 2.049,
+    "gpt": {
+        "index": "openai",
+        "support": {
+            "openai": "",
+            "poe": "",
+            "alapi": "",
+        },
+        "model": ""
+    }
   },
   "API_settings": {
     "rmbg": "GET: https://www.remove.bg",
@@ -181,11 +203,6 @@ class QsConfig:
     "AipNlpSECRET_KEY": "GET: https://cloud.baidu.com/product/nlp_apply",
     "alapi_token": "GET: https://user.alapi.cn/",
     "lolicon_token": "GET: https://api.lolicon.app/#/setu?id=apikey",
-    "openai": "GET: https://openai.com/api/",
-    "openai-email": "GET: https://openai.com/api/",
-    "openai-password": "GET: https://openai.com/api/",
-    "openai-paid": false,
-    "openai-alapi": false,
     "DeepL": "GET: https://www.deepl.com/zh/pro-api?cta=header-pro-api/",
     "DeepLX": "GET: https://github.com/OwO-Network/DeepLX"
   }
@@ -235,6 +252,19 @@ class QsConfig:
         if key not in self.config["basic_settings"]:
             if default is not None:
                 self.config["basic_settings"][key] = default
+                self.update()
+            elif key == 'gpt':
+                _info = {
+                    "index": _ask(questions['gpt']),
+                    "support": {
+                        "openai": "",
+                        "poe": "",
+                        "alapi": "",
+                    },
+                    "model": _ask(questions['gpt-model'])
+                }
+                _info[_info['index']] = _ask(questions['gpt-api'])
+                self.config["basic_settings"][key] = _info
                 self.update()
             else:
                 self.config["basic_settings"][key] = _ask(questions[key])

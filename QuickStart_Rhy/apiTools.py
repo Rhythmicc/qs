@@ -1184,7 +1184,7 @@ def gpt():
 
     from rich.markdown import Markdown
     from rich.live import Live
-    from .API.ChatGPT import chatGPT, API_KEY, ALAPI
+    from .API.GPT import ChatGPT
     from . import _ask
     from .NumbaTools import cut_string
 
@@ -1206,8 +1206,8 @@ def gpt():
         prompt := _ask(
             {
                 "type": "input",
-                "message": "Input Question" if user_lang != "zh" else "输入问题",
-            }
+                "message": ""
+            }, qmark='>>>'
         )
     ) != "exit":
         if translate_text:
@@ -1215,7 +1215,7 @@ def gpt():
             qs_default_console.print("EN:", prompt)
 
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
-            response = chatGPT(prompt)
+            response = ChatGPT(prompt)
 
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
@@ -1229,15 +1229,8 @@ def gpt():
             auto_refresh=False,
             vertical_overflow="visible",
         ) as live:
-            total_res = prefix
             for res in response:
-                if API_KEY or ALAPI:
-                    if ALAPI:  # ALAPI 优先启用
-                        total_res = prefix + res
-                    elif API_KEY:
-                        total_res += res
-                else:
-                    total_res = prefix + res["message"]
+                total_res = prefix + res
                 display = "\n".join(
                     [
                         " ".join(
