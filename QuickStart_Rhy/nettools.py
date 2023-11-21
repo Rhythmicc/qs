@@ -19,7 +19,7 @@ def upgrade():
         qs_default_status,
     )
     with qs_default_status(lang_detector['updating']):
-        requirePackage("QuickStart-Rhy", keep_latest=True)
+        requirePackage("QuickStart_Rhy", keep_latest=True)
     qs_default_console.print(qs_info_string, lang_detector['updated'])
 
 

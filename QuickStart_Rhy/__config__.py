@@ -175,7 +175,7 @@ class QsConfig:
         "support": {
             "openai": "",
             "poe": "",
-            "alapi": "",
+            "alapi": ""
         },
         "model": ""
     }
@@ -259,7 +259,7 @@ class QsConfig:
                     "support": {
                         "openai": "",
                         "poe": "",
-                        "alapi": "",
+                        "alapi": ""
                     },
                     "model": _ask(questions['gpt-model'])
                 }
