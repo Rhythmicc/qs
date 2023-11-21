@@ -173,7 +173,10 @@ class QsConfig:
     "gpt": {
         "index": "openai",
         "support": {
-            "openai": "",
+            "openai": {
+                "API_KEY": "",
+                "API_URL": ""
+            },
             "poe": "",
             "alapi": ""
         },
@@ -257,7 +260,10 @@ class QsConfig:
                 _info = {
                     "index": _ask(questions['gpt']),
                     "support": {
-                        "openai": "",
+                        "openai": {
+                            "API_KEY": "",
+                            "API_URL": ""
+                        },
                         "poe": "",
                         "alapi": ""
                     },
@@ -276,7 +282,7 @@ class QsConfig:
             raise KeyError
         return self.config["API_settings"].get(key, None)
 
-    def basicUpdate(self, key: str, value: str):
+    def basicUpdate(self, key: str, value):
         self.config["basic_settings"][key] = value
         return self.update()
 
