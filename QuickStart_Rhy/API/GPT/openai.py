@@ -24,8 +24,6 @@ lang_table = {
     'ara': 'Arabic',
 }
 
-client = requirePackage("openai", "OpenAI", real_name="openai")(api_key=API_KEY, base_url=API_URL)
-
 class OpenAIChatBot:
     def __init__(self, model, system_prompt):
         self.model = model
@@ -33,13 +31,14 @@ class OpenAIChatBot:
             "role": "system",
             "content": system_prompt,
         }]
+        self.client = requirePackage("openai", "OpenAI", real_name="openai")(api_key=API_KEY, base_url=API_URL)
     
     def ask_stream(self, prompt):
         self.messages.append({
             "role": "user",
             "content": prompt,
         })
-        res = client.chat.completions.create(
+        res = self.client.chat.completions.create(
             model=self.model,
             messages=self.messages,
             stream=True

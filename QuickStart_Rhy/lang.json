@@ -79,6 +79,14 @@
         "ara": "املأ مفتاح API GPT",
         "ru": "Заполните ключ API GPT"
     },
+    "ask_gpt_url": {
+        "zh": "填入GPT API URL",
+        "en": "Fill in the GPT API URL",
+        "fra": "Remplissez l'URL de l'API GPT",
+        "spa": "Complete la URL de la API GPT",
+        "ara": "املأ عنوان URL لواجهة برمجة التطبيقات GPT",
+        "ru": "Заполните URL API GPT"
+    },
     "config_store_in": {
         "zh": "你的配置表被存储在:",
         "en": "Your config is stored in:",

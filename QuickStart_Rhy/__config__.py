@@ -143,7 +143,11 @@ questions = {
     "gpt-api": {
         "type": "input",
         "message": lang_detector['ask_gpt_api']
-    }
+    },
+    "gpt-url": {
+        "type": "input",
+        "message": lang_detector['ask_gpt_url']
+    },
 }
 
 
@@ -269,7 +273,11 @@ class QsConfig:
                     },
                     "model": _ask(questions['gpt-model'])
                 }
-                _info[_info['index']] = _ask(questions['gpt-api'])
+                if _info['index'] == 'openai':
+                    _info['support']['openai']['API_KEY'] = _ask(questions['gpt-api'])
+                    _info['support']['openai']['API_URL'] = _ask(questions['gpt-url'])
+                else:
+                    _info[_info['index']] = _ask(questions['gpt-api'])
                 self.config["basic_settings"][key] = _info
                 self.update()
             else:

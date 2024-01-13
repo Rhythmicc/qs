@@ -97,3 +97,9 @@ class AlapiChatbot:
                 "content": total_res,
             }
         )
+
+def create_bot(
+    model: str,
+    system_prompt: str = f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
+):
+    return AlapiChatbot(model, system_prompt)
