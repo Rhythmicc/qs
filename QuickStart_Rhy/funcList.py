@@ -183,6 +183,7 @@ image_funcs = {
     "v2mp3": ["v2mp3", "<video file>"],
     "i2png": ["i2png", "<image file>"],
     "i2jpg": ["i2jpg", "<image file>"],
+    "i2pdf": ["i2pdf", "<image file>"],
     "fmti": ["fmt_img_color", "<image file> <to color> [exclude colors...]"],
     "vsta": ["vsta", "<video file>"],
 }

@@ -195,6 +195,17 @@ def i2jpg():
             tojpg(imgPath)
 
 
+def i2pdf():
+    try:
+        imgs = sys.argv[2:]
+    except IndexError:
+        qs_default_console.log(qs_error_string, "Usage: qs i2pdf <imgs...>")
+    else:
+        from .ImageTools.ImageTools import topdf
+
+        for imgPath in imgs:
+            topdf(imgPath)
+
 def vsta():
     from .ImageTools.VideoTools import set_video_audio
 

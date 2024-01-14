@@ -64,6 +64,23 @@ def tojpg(imgPath: str):
         )
     Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100)
 
+def topdf(imgPath: str):
+    """
+    将图片路径所指的图片转为pdf格式
+
+    transform image to pdf
+
+    :param imgPath: 图片路径 | image path
+    :return:
+    """
+    if is_svg(imgPath):
+        requirePackage("cairosvg", "svg2pdf")(
+            url=imgPath, write_to=imgPath + ".pdf", dpi=300
+        )
+    elif is_eps(imgPath):
+        requirePackage("wand.image", "Image")(filename=imgPath).save(filename=imgPath + ".pdf")
+    else:
+        Image.open(imgPath).save(imgPath + ".pdf", quality=100)
 
 def imgsConcat(imgs: list):
     """
@@ -94,9 +111,10 @@ def imgsConcat(imgs: list):
         heights_len = min(len(imgs), 3)
 
         terminal_font_size = int(qs_config.basicSelect("terminal_font_size"))
+        terminal_font_rate = float(qs_config.basicSelect("terminal_font_rate"))
 
         one_width = int(
-            qs_default_console.width * terminal_font_size / heights_len / 2.125
+            qs_default_console.width * terminal_font_size / terminal_font_rate
         )
 
         heights = [0] * heights_len
@@ -111,22 +129,22 @@ def imgsConcat(imgs: list):
             heights_len += 1
             heights = [0] * heights_len
             one_width = int(
-                qs_default_console.width / heights_len * terminal_font_size / 2.125
+                qs_default_console.width / heights_len * terminal_font_size / terminal_font_rate
             )
             for i in imgs:
                 one_height = int(one_width * i.size[1] / i.size[0])
                 heights[heights.index(min(heights))] += one_height
 
-        result = Image.new("RGBA", (one_width * heights_len, max(heights)))
+        result = Image.new("RGBA", (one_width * heights_len * heights_len, max(heights) * heights_len))
         heights = [0] * heights_len
 
         imgs = [
-            i.resize((one_width, int(one_width * i.size[1] / i.size[0]))) for i in imgs
+            i.resize((one_width * heights_len, int(one_width * i.size[1] / i.size[0]) * heights_len)) for i in imgs
         ]
         imgs = sorted(imgs, key=lambda i: -i.size[0] * i.size[1])
 
         for i in imgs:
             min_height_index = heights.index(min(heights))
-            result.paste(i, (one_width * min_height_index, heights[min_height_index]))
+            result.paste(i, (one_width * heights_len * min_height_index, heights[min_height_index]))
             heights[min_height_index] += i.size[1]
     return result
