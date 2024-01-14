@@ -302,7 +302,7 @@ const completionSpec: Fig.Spec = {
         ]
     }, {
         name: 'phi',
-        description: 'get <image url> in url (preview on Mac)',
+        description: 'get image urls in <url>',
         args: {name: 'url', description: 'url'},
         options: [
             {name: '--save', description: 'save image'}
@@ -420,6 +420,10 @@ const completionSpec: Fig.Spec = {
     }, {
         name: 'i2jpg',
         description: 'transform imgs to jpg',
+        args: {name: 'image', description: 'image', isVariadic: true, template: 'filepaths'}
+    }, {
+        name: 'i2pdf',
+        description: 'transform imgs to pdf',
         args: {name: 'image', description: 'image', isVariadic: true, template: 'filepaths'}
     }, {
         name: 'fmti',

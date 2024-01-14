@@ -291,19 +291,19 @@ const completionSpec: Fig.Spec = {
         args: {name: 'url', description: '链接或粘贴板内链接', isOptional: true}
     }, {
         name: 'acg',
-        description: '获取一张acg图片链接 (或保存图片)',
+        description: '获取一张acg图片链接',
         options: [
             {name: '--save', description: '保存图片'}
         ]
     }, {
         name: 'bing',
-        description: '获取一张bing图片链接 (或保存图片)',
+        description: '获取一张bing图片链接',
         options: [
             {name: '--save', description: '保存图片'}
         ]
     }, {
         name: 'phi',
-        description: '获取一张bing图片链接 (或保存图片)',
+        description: '获取网页链接内的所有图片',
         args: {name: 'url', description: '链接'},
         options: [
             {name: '--save', description: '保存图片'}
@@ -424,6 +424,10 @@ const completionSpec: Fig.Spec = {
     }, {
         name: 'i2jpg',
         description: '将图像转换为jpg',
+        args: {name: 'image', description: '图片', isVariadic: true, template: 'filepaths'}
+    }, {
+        name: 'i2pdf',
+        description: '将图像转换为pdf',
         args: {name: 'image', description: '图片', isVariadic: true, template: 'filepaths'}
     }, {
         name: 'fmti',
