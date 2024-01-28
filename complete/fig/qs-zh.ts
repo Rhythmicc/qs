@@ -85,6 +85,10 @@ const completionSpec: Fig.Spec = {
         description: '拷贝文件内容到粘贴板',
         args: {name: 'file', description: '文件', template: ['filepaths', 'folders']}
     }, {
+        name: 'tcopy',
+        description: '拷贝文本内容到粘贴板',
+        args: {name: 'text', description: '文本'}
+    }, {
         name: 'play',
         description: '播放音乐',
         args: {name: 'music', description: '音乐', template: ['filepaths', 'folders'], isVariadic: true}
@@ -344,7 +348,8 @@ const completionSpec: Fig.Spec = {
             {name: '--save', description: '保存图片'},
             {name: '-h', description: '帮助'},
             {name: '-one', description: '随机一张'},
-            {name: '--url', description: '设置爬取默认页面', args: {name: 'url', description: '链接'}},
+            {name: '--url', description: '设置爬取默认页面', args: {name: 'url', description: '链接'},},
+            {name: '--concat', description: '拼接图片'},
         ]
     }, {
         name: 'lmgtfy',

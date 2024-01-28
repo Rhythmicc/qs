@@ -85,6 +85,10 @@ const completionSpec: Fig.Spec = {
         description: 'copy file content to clipboard',
         args: {name: 'file', description: 'file', template: ['filepaths', 'folders']}
     }, {
+        name: 'tcopy',
+        description: 'copy text to clipboard',
+        args: {name: 'text', description: 'text'}
+    }, {
         name: 'play',
         description: 'play audio file',
         args: {name: 'audio', description: 'Audio', template: ['filepaths', 'folders'], isVariadic: true}
@@ -340,7 +344,11 @@ const completionSpec: Fig.Spec = {
         name: 'wallhaven',
         description: 'Get Wallhaven Toplist',
         options: [
-            {name: '--save', description: 'save image'}
+            {name: '--save', description: 'save image'},
+            {name: '--concat', description: 'concat images'},
+            {name: '-h', description: 'help'},
+            {name: '-one', description: 'random one'},
+            {name: '--url', description: 'set scrape url', args: {name: 'url', description: 'url'},},
         ]
     }, {
         name: 'lmgtfy',
