@@ -26,6 +26,18 @@ def is_eps(imgPath: str):
     return imgPath.endswith(".eps") or imgPath.endswith('.epsi') or imgPath.endswith('.epsf')
 
 
+def is_pdf(imgPath: str):
+    """
+    判断图片是否为pdf格式
+
+    check if the image is pdf
+
+    :param imgPath: 图片路径 | image path
+    :return:
+    """
+    return imgPath.endswith(".pdf")
+
+
 def topng(imgPath: str):
     """
     将图片路径所指的图片转为jpg格式
