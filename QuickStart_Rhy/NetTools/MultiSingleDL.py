@@ -229,6 +229,8 @@ def multi_single_dl_content_ls(
     proxy: str = "",
     referer: str = "",
     qps: int = 0,
+    qps_info: int = 0,
+    qps_download: int = 0,
     without_output: bool = False,
 ):
     """
@@ -239,6 +241,8 @@ def multi_single_dl_content_ls(
     :param proxy: 代理
     :param referer: referer
     :param qps: 限制每秒请求次数
+    :param qps_info: 限制每秒获取信息次数
+    :param qps_download: 限制每秒下载次数
     :param without_output: 不输出信息
     :return: 存储在内存中的文件内容列表
     """
@@ -249,5 +253,5 @@ def multi_single_dl_content_ls(
         referer=referer,
         save_to_mem=True,
     )
-    dl.run(qps=qps, without_output=without_output)
+    dl.run(qps=qps, qps_info=qps_info, qps_download=qps_download, without_output=without_output)
     return dl.get_content_ls()

@@ -186,16 +186,21 @@ def translate(content: str = '', target_lang: str = user_lang):
             if ret:
                 from . import cut_string
 
-                display = "\n".join(
-                    [
-                        " ".join(
-                            cut_string(
-                                line, qs_default_console.width, ignore_charset="`"
+                if '--markdown' in sys.argv:
+                    from rich.markdown import Markdown
+
+                    display = Markdown(ret)
+                else:
+                    display = "\n".join(
+                        [
+                            " ".join(
+                                cut_string(
+                                    line, qs_default_console.width, ignore_charset="`"
+                                )
                             )
-                        )
-                        for line in ret.split("\n")
-                    ]
-                )
+                            for line in ret.split("\n")
+                        ]
+                    )
                 qs_default_console.print(display)
             else:
                 qs_default_console.log(qs_error_string, "Translate Failed!")
@@ -847,10 +852,18 @@ def wallhaven():
     if not res:
         return
 
+    if "--concat" in sys.argv:
+        concat = True
+
     if "--save" in sys.argv:
         from .NetTools.MultiSingleDL import multi_single_dl
 
-        multi_single_dl([i["url"] for i in res], qps_info=5)
+        paths = multi_single_dl([i["url"] for i in res], qps_info=5)
+        if concat:
+            from .ImageTools.ImageTools import imgsConcat
+            from .ImageTools.ImagePreview import image_preview
+            img = imgsConcat(paths)
+            image_preview(img)
     else:
         if oneFlag:
             res = res[0]
@@ -862,6 +875,14 @@ def wallhaven():
 
             with qs_default_status("Getting.." if user_lang != "zh" else "获取图片中.."):
                 image_preview(res["url"], True)
+        elif concat:
+            from .ImageTools.ImageTools import imgsConcat
+            from .ImageTools.ImagePreview import image_preview
+            from .NetTools.MultiSingleDL import multi_single_dl_content_ls
+
+            imgs = multi_single_dl_content_ls([i["url"] for i in res], qps_info=5)
+            img = imgsConcat(imgs)
+            image_preview(img)
         else:
             from .TuiTools.Table import qs_default_table
 
@@ -1229,6 +1250,7 @@ def gpt():
             auto_refresh=False,
             vertical_overflow="visible",
         ) as live:
+            total_res = ""
             for res in response:
                 total_res = prefix + res
                 display = "\n".join(
