@@ -534,3 +534,5 @@ def swap(file1: str = None, file2: str = None):
         f1.write(data2)
     with open(file2, "wb") as f2:
         f2.write(data1)
+
+requirePackage("QuickProject", real_name="Qpro") # 自动更新
