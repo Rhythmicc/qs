@@ -5,8 +5,8 @@
 Modify image color tool
 """
 from .. import requirePackage
-
-Image = requirePackage("PIL", "Image")
+requirePackage("PIL", real_name="Pillow")
+from PIL import Image
 
 
 def transport_background(

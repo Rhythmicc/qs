@@ -54,7 +54,7 @@ def topng(imgPath: str):
     elif is_eps(imgPath):
         requirePackage("wand.image", "Image")(filename=imgPath).save(filename=imgPath + ".png")
     else:
-        Image.open(imgPath).save(imgPath + ".png", quality=100)
+        Image.open(imgPath).save(imgPath + ".png", quality=100, optimize=True)
 
 
 def tojpg(imgPath: str):
@@ -74,7 +74,7 @@ def tojpg(imgPath: str):
         imgPath = requirePackage("io", "BytesIO", "io")(
             requirePackage("wand.image", "Image", "wand.image")(filename=imgPath).make_blob()
         )
-    Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100)
+    Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100, optimize=True)
 
 def topdf(imgPath: str):
     """
@@ -92,7 +92,7 @@ def topdf(imgPath: str):
     elif is_eps(imgPath):
         requirePackage("wand.image", "Image")(filename=imgPath).save(filename=imgPath + ".pdf")
     else:
-        Image.open(imgPath).save(imgPath + ".pdf", quality=100)
+        Image.open(imgPath).save(imgPath + ".pdf", quality=100, optimize=True)
 
 def imgsConcat(imgs: list):
     """
