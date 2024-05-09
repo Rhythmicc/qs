@@ -68,7 +68,7 @@ def requirePackage(
             package_name = name
         if package_name not in _not_update_ and (
             keep_latest
-            or time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7
+            and time.time() - _package_info_.get(package_name, 0) > 3600 * 24 * 7
         ):
             with qs_default_status(f"{lang_detector['updating']} {package_name}"):
                 _st, _ct = external_exec(

@@ -124,7 +124,7 @@ def txcos():
         func_table[op](bucket)
 
 
-def translate(content: str = '', target_lang: str = user_lang):
+def translate(content: str = "", target_lang: str = user_lang):
     """
     qs默认的翻译引擎
 
@@ -159,23 +159,30 @@ def translate(content: str = '', target_lang: str = user_lang):
         lang = requirePackage("langid", "classify")(content)[0]
         while retry:
             try:
-                if not (ret := _translate(
-                    content,
-                    target_lang="en"
-                    if target_lang == user_lang == lang
-                    else target_lang,
-                )):
+                if not (
+                    ret := _translate(
+                        content,
+                        target_lang=(
+                            "en" if target_lang == user_lang == lang else target_lang
+                        ),
+                    )
+                ):
                     retry -= 1
-                    qs_default_console.print(qs_warning_string, "结果为空" if user_lang != "zh" else "Result is empty")
+                    qs_default_console.print(
+                        qs_warning_string,
+                        "结果为空" if user_lang != "zh" else "Result is empty",
+                    )
                     continue
                 break
             except SSLError:
                 retry -= 1
                 qs_default_console.log(
                     qs_warning_string,
-                    f"SSL Error, Retrying... \[{3 - retry} / 3]"
-                    if user_lang != "zh"
-                    else f"SSL错误，重试中... \[{3 - retry} / 3]",
+                    (
+                        f"SSL Error, Retrying... \[{3 - retry} / 3]"
+                        if user_lang != "zh"
+                        else f"SSL错误，重试中... \[{3 - retry} / 3]"
+                    ),
                 )
             except Exception as e:
                 # qs_default_console.log(qs_error_string, e)
@@ -184,12 +191,35 @@ def translate(content: str = '', target_lang: str = user_lang):
 
         if output_flag and ret:
             if ret:
-                from . import cut_string
+                from .NumbaTools import cut_string
 
-                if '--markdown' in sys.argv:
+                if trans_engine == "AITranslate":
+                    from rich.live import Live
                     from rich.markdown import Markdown
 
-                    display = Markdown(ret)
+                    with Live(
+                        "",
+                        console=qs_default_console,
+                        auto_refresh=False,
+                        vertical_overflow="visible",
+                    ) as live:
+                        total_res = ""
+                        for res in ret:
+                            display = "\n".join(
+                                [
+                                    " ".join(
+                                        cut_string(
+                                            line,
+                                            qs_default_console.width,
+                                            ignore_charset="`",
+                                        )
+                                    )
+                                    for line in res.split("\n")
+                                ]
+                            )
+                            live.update(Markdown(display, justify="full"), refresh=True)
+                            total_res = res
+                    ret = total_res
                 else:
                     display = "\n".join(
                         [
@@ -201,16 +231,23 @@ def translate(content: str = '', target_lang: str = user_lang):
                             for line in ret.split("\n")
                         ]
                     )
-                qs_default_console.print(display)
+                    qs_default_console.print(display)
             else:
                 qs_default_console.log(qs_error_string, "Translate Failed!")
+        elif trans_engine == "AITranslate":
+            total_res = ""
+            for res in ret:
+                total_res = res
+            ret = total_res
         return ret
     else:
         qs_default_console.log(
             qs_warning_string,
-            "No content in your clipboard or command parameters!"
-            if user_lang != "zh"
-            else "剪贴板或命令参数没有内容!",
+            (
+                "No content in your clipboard or command parameters!"
+                if user_lang != "zh"
+                else "剪贴板或命令参数没有内容!"
+            ),
         )
         return None
 
@@ -272,7 +309,8 @@ def weather():
         print("\n".join(simple))
     else:
         qs_default_console.log(
-            qs_error_string, "Get data failed." if user_lang != "zh" else "错误: 获取数据失败"
+            qs_error_string,
+            "Get data failed." if user_lang != "zh" else "错误: 获取数据失败",
         )
     if table:
         qs_default_console.print(table[3][:-1])
@@ -306,7 +344,8 @@ def largeImage():
         path = sys.argv[2]
     except IndexError:
         qs_default_console.log(
-            qs_error_string, "%s: qs LG <img>" % "Usage" if user_lang != "zh" else "用法"
+            qs_error_string,
+            "%s: qs LG <img>" % "Usage" if user_lang != "zh" else "用法",
         )
         return
     else:
@@ -365,17 +404,21 @@ def bili_cover():
         except:
             qs_default_console.log(
                 qs_error_string,
-                "Sorry, but your system may not be suppported by `pyperclip`"
-                if user_lang != "zh"
-                else "抱歉，但是“pyperclip”不支持你的系统",
+                (
+                    "Sorry, but your system may not be suppported by `pyperclip`"
+                    if user_lang != "zh"
+                    else "抱歉，但是“pyperclip”不支持你的系统"
+                ),
             )
             return
     if not url:
         qs_default_console.log(
             qs_error_string,
-            "Usage: qs bcv <url | video code>"
-            if user_lang != "zh"
-            else "用法: qs bcv <链接 | 视频码>",
+            (
+                "Usage: qs bcv <url | video code>"
+                if user_lang != "zh"
+                else "用法: qs bcv <链接 | 视频码>"
+            ),
         )
         return
     bc(url)
@@ -386,14 +429,20 @@ def gbc():
     from .API.alapi import garbage_classification
 
     try:
-        with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
+        with qs_default_status(
+            "Requesting data.." if user_lang != "zh" else "请求数据中.."
+        ):
             res = garbage_classification(sys.argv[2:])
         qs_default_console.print(res, justify="center")
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
         qs_default_console.print(
             qs_error_string,
-            "Usage: qs gbc <garbage...>" if user_lang != "zh" else "用法: qs gbc <垃圾...>",
+            (
+                "Usage: qs gbc <garbage...>"
+                if user_lang != "zh"
+                else "用法: qs gbc <垃圾...>"
+            ),
         )
 
 
@@ -418,17 +467,21 @@ def short_video_info(son_call=False):
         except:
             qs_default_console.print(
                 qs_error_string,
-                "Sorry, but your system may not be suppported by `pyperclip`"
-                if user_lang != "zh"
-                else "抱歉，但是“pyperclip”不支持你的系统",
+                (
+                    "Sorry, but your system may not be suppported by `pyperclip`"
+                    if user_lang != "zh"
+                    else "抱歉，但是“pyperclip”不支持你的系统"
+                ),
             )
             return
     if not url:
         qs_default_console.print(
             qs_error_string,
-            "Usage: qs svi <url/video code>"
-            if not son_call
-            else "Usage: qs svd <url/video code>",
+            (
+                "Usage: qs svi <url/video code>"
+                if not son_call
+                else "Usage: qs svd <url/video code>"
+            ),
         )
         return
     output_prefix = {
@@ -528,12 +581,18 @@ def acg():
     from .API.alapi import acg
     from .API.SimpleAPI import acg2
 
-    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
+    qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ).start()
     try:
         status, acg_link, width, height = random.choice([acg, acg2])()
-        qs_default_console.print(
-            qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}"
-        ) if status else qs_default_console.log(qs_error_string, acg_link)
+        (
+            qs_default_console.print(
+                qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}"
+            )
+            if status
+            else qs_default_console.log(qs_error_string, acg_link)
+        )
         if status:
             qs_default_console.print(
                 qs_info_string,
@@ -573,13 +632,19 @@ def bingImg():
     """
     from .API.alapi import bingImg
 
-    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
+    qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ).start()
 
     try:
         status, acg_link, cprt = bingImg()
-        qs_default_console.print(
-            qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}"
-        ) if status else qs_default_console.log(qs_error_string, acg_link)
+        (
+            qs_default_console.print(
+                qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}"
+            )
+            if status
+            else qs_default_console.log(qs_error_string, acg_link)
+        )
         if status:
             qs_default_console.print(
                 qs_info_string, "版权:" if user_lang == "zh" else "CPRT:", cprt
@@ -632,7 +697,9 @@ def kdCheck():
     from . import _ask
     from .API.alapi import kdCheck as kdCheckAPI
 
-    with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
+    with qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ):
         status, code, msg = kdCheckAPI(
             sys.argv[2]
             + (
@@ -643,7 +710,7 @@ def kdCheck():
                         "message": "顺丰快递需要输入手机后四位",
                     }
                 )
-                if sys.argv[2][:2].lower() == "sf" and ':' not in sys.argv[2]
+                if sys.argv[2][:2].lower() == "sf" and ":" not in sys.argv[2]
                 else ""
             )
         )
@@ -708,7 +775,9 @@ def loli():
     from .ImageTools import ImagePreview
     from .NetTools import NormalDL
 
-    with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
+    with qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ):
         status, msg, data = loli_img()
         if not status:
             qs_default_console.print(qs_error_string, msg)
@@ -767,7 +836,9 @@ def pinyin():
                 if user_lang != "zh"
                 else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:"
             )
-    with qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中.."):
+    with qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ):
         status, res = pinyin(content)
     qs_default_console.print(qs_info_string, content)
     qs_default_console.print(qs_info_string if status else qs_error_string, res)
@@ -782,15 +853,21 @@ def setu():
 def exchange():
     from .API.alapi import exchange
 
-    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
+    qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ).start()
     try:
         status, data = exchange(sys.argv[3], 1)
-        qs_default_console.print(
-            f"{sys.argv[2]} {sys.argv[3]} ==> {data['exchange']} × {sys.argv[2]} = "
-            f"{data['exchange'] * float(sys.argv[2])} {data['currency_to']}\n"
-            f"{'Update' if user_lang != 'zh' else '更新时间'}: {data['update_time']}",
-            justify="center",
-        ) if status else qs_default_console.log(qs_error_string, data)
+        (
+            qs_default_console.print(
+                f"{sys.argv[2]} {sys.argv[3]} ==> {data['exchange']} × {sys.argv[2]} = "
+                f"{data['exchange'] * float(sys.argv[2])} {data['currency_to']}\n"
+                f"{'Update' if user_lang != 'zh' else '更新时间'}: {data['update_time']}",
+                justify="center",
+            )
+            if status
+            else qs_default_console.log(qs_error_string, data)
+        )
     except Exception as e:
         qs_default_console.print(qs_error_string, repr(e))
     finally:
@@ -802,7 +879,9 @@ def zhihuDaily():
     from rich.panel import Panel
     from .ImageTools.ImagePreview import image_preview
 
-    qs_default_status("Requesting data.." if user_lang != "zh" else "请求数据中..").start()
+    qs_default_status(
+        "Requesting data.." if user_lang != "zh" else "请求数据中.."
+    ).start()
     try:
         status, data = zhihuDaily()
         qs_default_status.stop()
@@ -840,7 +919,7 @@ def wallhaven():
     from .API.SimpleAPI import wallhaven
 
     url, oneFlag = "", False
-    
+
     if "--url" in sys.argv:
         url = sys.argv[sys.argv.index("--url") + 1]
         sys.argv.remove("--url")
@@ -862,6 +941,7 @@ def wallhaven():
         if concat:
             from .ImageTools.ImageTools import imgsConcat
             from .ImageTools.ImagePreview import image_preview
+
             img = imgsConcat(paths)
             image_preview(img)
     else:
@@ -873,7 +953,9 @@ def wallhaven():
             )
             from .ImageTools.ImagePreview import image_preview
 
-            with qs_default_status("Getting.." if user_lang != "zh" else "获取图片中.."):
+            with qs_default_status(
+                "Getting.." if user_lang != "zh" else "获取图片中.."
+            ):
                 image_preview(res["url"], True)
         elif concat:
             from .ImageTools.ImageTools import imgsConcat
@@ -919,17 +1001,21 @@ def lmgtfy():
         pyperclip.copy(res)
         qs_default_console.print(
             qs_info_string,
-            "The generated link has been copied for you, and teach your friends how to use Google! (Can also Copy "
-            "Following link"
-            if user_lang != "zh"
-            else "已经为您复制生成的链接，快教朋友如何使用Google吧! (也可以复制下面的链接)",
+            (
+                "The generated link has been copied for you, and teach your friends how to use Google! (Can also Copy "
+                "Following link"
+                if user_lang != "zh"
+                else "已经为您复制生成的链接，快教朋友如何使用Google吧! (也可以复制下面的链接)"
+            ),
         )
     except:
         qs_default_console.print(
             qs_warning_string,
-            "Failed to use clipboard, you can copy the flowing link:"
-            if user_lang != "zh"
-            else "调用剪切板失败，你可以复制下面的链接:",
+            (
+                "Failed to use clipboard, you can copy the flowing link:"
+                if user_lang != "zh"
+                else "调用剪切板失败，你可以复制下面的链接:"
+            ),
         )
     qs_default_console.print(qs_info_string, res)
 
@@ -1083,7 +1169,11 @@ def d2m():
     if copied:
         qs_default_console.print(
             qs_info_string,
-            "magnet url copied to clipboard" if user_lang != "zh" else "磁力链接已拷贝至粘贴板",
+            (
+                "magnet url copied to clipboard"
+                if user_lang != "zh"
+                else "磁力链接已拷贝至粘贴板"
+            ),
         )
 
 
@@ -1210,27 +1300,23 @@ def gpt():
     from .NumbaTools import cut_string
 
     qs_default_console.print(
-        qs_info_string, "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出"
+        qs_info_string,
+        "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出",
     )
 
     if not translate_text:
         qs_default_console.print(
             qs_info_string,
-            "Add '--translate' to enable auto translate"
-            if user_lang != "zh"
-            else "添加 '--translate' 以启用自动翻译",
+            (
+                "Add '--translate' to enable auto translate"
+                if user_lang != "zh"
+                else "添加 '--translate' 以启用自动翻译"
+            ),
         )
 
     record = ""
 
-    while (
-        prompt := _ask(
-            {
-                "type": "input",
-                "message": ""
-            }, qmark='>>>'
-        )
-    ) != "exit":
+    while (prompt := _ask({"type": "input", "message": ""}, qmark=">>>")) != "exit":
         if translate_text:
             prompt = translate(prompt, target_lang="en")
             qs_default_console.print("EN:", prompt)

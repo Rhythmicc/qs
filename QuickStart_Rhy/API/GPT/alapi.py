@@ -21,6 +21,7 @@ class AlapiChatbot:
     def __init__(
             self, 
             system_prompt=f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
+            record_history=True
         ):
         from ..alapi import v2_url
 
@@ -32,6 +33,7 @@ class AlapiChatbot:
                 "content": system_prompt,
             }
         ]
+        self.record_history = record_history
 
     def ask(self, prompt):
         self.messages.append(
@@ -57,7 +59,7 @@ class AlapiChatbot:
             else:
                 break
         res = res.get("data").get("content")
-        if not self.no_record:
+        if self.record_history:
             self.messages.append(
                 {
                     "role": "assistant",
@@ -90,16 +92,17 @@ class AlapiChatbot:
             if res['success']:
                 total_res = res['text']
                 yield total_res
-
-        self.messages.append(
-            {
-                "role": "bot",
-                "content": total_res,
-            }
-        )
+        if self.record_history:
+            self.messages.append(
+                {
+                    "role": "bot",
+                    "content": total_res,
+                }
+            )
 
 def create_bot(
     model: str,
     system_prompt: str = f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
+    record_history=True
 ):
-    return AlapiChatbot(model, system_prompt)
+    return AlapiChatbot(model, system_prompt, record_history)

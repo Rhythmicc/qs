@@ -57,8 +57,9 @@ class AsyncToSyncIterator:
 
 
 class POEChatbot:
-    def __init__(self, model, system_prompt):
+    def __init__(self, model, system_prompt, record_history=True):
         self.messages = [ProtocolMessage(role="system", content=system_prompt)]
+        self.record_history = record_history
 
     async def _ask_stream(self, prompt):
         self.messages.append(ProtocolMessage(role="user", content=prompt))
@@ -70,7 +71,8 @@ class POEChatbot:
         ):
             total_res += res.text
             yield total_res
-        self.messages.append(ProtocolMessage(role="bot", content=total_res))
+        if self.record_history:
+            self.messages.append(ProtocolMessage(role="bot", content=total_res))
 
     def ask_stream(self, prompt):
         return AsyncToSyncIterator(self._ask_stream(prompt))
@@ -79,5 +81,6 @@ class POEChatbot:
 def create_bot(
     model: str,
     system_prompt: str = f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
+    record_history=True
 ):
-    return POEChatbot(model, system_prompt)
+    return POEChatbot(model, system_prompt, record_history)
