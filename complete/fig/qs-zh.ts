@@ -391,6 +391,12 @@ const completionSpec: Fig.Spec = {
             {name: '--translate', description: '启用翻译, 你输入的用户语言将被翻译为英文, 然后再将输出结果翻译回来'},
         ]
     }, {
+        name: 'pushdeer',
+        description: 'PushDeer推送',
+        options: [
+            {name: 'text', description: '推送内容'},
+        ]
+    }, {
         name: 'stbg',
         description: '替换图片颜色',
         args: [

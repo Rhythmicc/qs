@@ -168,7 +168,7 @@ class QsConfig:
     "default_currency": "CNY",
     "default_translate_engine": {
       "index": 0,
-      "support": ["default", "TencentCloud", "DeepL", "DeepLX"]
+      "support": ["default", "TencentCloud", "DeepL", "DeepLX", "AITranslate"]
     },
     "default_proxy": "user:password@ip:port or ip:port",
     "force_show_img": false,

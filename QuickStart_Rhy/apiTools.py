@@ -931,8 +931,7 @@ def wallhaven():
     if not res:
         return
 
-    if "--concat" in sys.argv:
-        concat = True
+    concat = "--concat" in sys.argv
 
     if "--save" in sys.argv:
         from .NetTools.MultiSingleDL import multi_single_dl
@@ -1359,3 +1358,17 @@ def gpt():
                     Markdown(render.render(parser.parse(total_res)), justify="full"),
                     refresh=True,
                 )
+
+def pushdeer():
+    """
+    推送通知
+    :return:
+    """
+    from .API.PushDeer import send_text
+
+    ct = " ".join(sys.argv[2:])
+    if not ct:
+        from . import _ask
+        ct = _ask({"type": "input", "message": "Content | 内容"})
+
+    send_text(ct)

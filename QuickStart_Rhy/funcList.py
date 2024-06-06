@@ -171,6 +171,7 @@ api_funcs = {
     "doutu": ["doutu", "<keywords>"],
     "joke": ["joke", ""],
     "gpt": ["gpt", "[--translate]"],
+    "pushdeer": ["pushdeer", "[text]"],
 }
 
 image_funcs = {

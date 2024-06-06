@@ -390,6 +390,12 @@ const completionSpec: Fig.Spec = {
             {name: '--translate', description: 'translate to English'},
         ]
     }, {
+        name: 'pushdeer',
+        description: 'PushDeer push message',
+        options: [
+            {name: 'text', description: 'message content'},
+        ]
+    }, {
         name: 'stbg',
         description: 'color replace for picture',
         args: [

@@ -1,4 +1,4 @@
-from ... import requirePackage, user_lang, qs_config, qs_default_console
+from ... import requirePackage, user_lang, qs_config
 
 OPENAI_SETTING = qs_config.basicSelect("gpt")["support"].get("openai", None)
 if not OPENAI_SETTING:
