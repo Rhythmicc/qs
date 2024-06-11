@@ -1,4 +1,5 @@
 from ... import requirePackage, user_lang, qs_config
+from .common import GPTBotBase
 
 API_KEY = qs_config.basicSelect("gpt")["support"].get("poe", None)
 if not API_KEY:
@@ -58,6 +59,7 @@ class AsyncToSyncIterator:
 
 class POEChatbot:
     def __init__(self, model, system_prompt, record_history=True):
+        self.model = model
         self.messages = [ProtocolMessage(role="system", content=system_prompt)]
         self.record_history = record_history
 
@@ -67,7 +69,7 @@ class POEChatbot:
             self.messages.pop(0)
         total_res = ""
         async for res in get_bot_response(
-            self.messages, bot_name="GPT-4", api_key=API_KEY
+            self.messages, bot_name=self.model, api_key=API_KEY
         ):
             total_res += res.text
             yield total_res

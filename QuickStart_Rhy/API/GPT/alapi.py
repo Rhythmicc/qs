@@ -1,4 +1,5 @@
 from ... import user_lang, qs_default_console, qs_error_string, qs_config
+from .common import GPTBotBase
 import time
 
 API_KEY = qs_config.basicSelect("gpt")["support"].get("alapi", None)
@@ -17,23 +18,23 @@ lang_table = {
 import requests
 import json
 
-class AlapiChatbot:
+class AlapiChatbot(GPTBotBase):
     def __init__(
             self, 
             system_prompt=f"You are ChatGPT, a large language model trained by OpenAI. Respond conversationally with Markdown format and using {lang_table[user_lang]} Language.",
             record_history=True
         ):
+        super().__init__(system_prompt=system_prompt, record_history=record_history)
+
         from ..alapi import v2_url
 
         self.api_key = API_KEY
         self.url = v2_url
-        self.messages = [
-            {
-                "role": "system",
-                "content": system_prompt,
-            }
-        ]
-        self.record_history = record_history
+    
+    def save_conversation(self, file_path: str):
+        with open(file_path, "w", encoding="utf-8") as f:
+            for message in self.messages:
+                f.write(f"{message['role']}\n\n{message['content']}\n---\n")
 
     def ask(self, prompt):
         self.messages.append(

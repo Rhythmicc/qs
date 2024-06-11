@@ -1,4 +1,5 @@
 from ... import requirePackage, user_lang, qs_config
+from .common import GPTBotBase
 
 OPENAI_SETTING = qs_config.basicSelect("gpt")["support"].get("openai", None)
 if not OPENAI_SETTING:
@@ -12,6 +13,9 @@ API_URL = OPENAI_SETTING.get("API_URL", None)
 if not API_KEY:
     raise RuntimeError("No API key for OpenAI Chatbot.")
 
+requirePackage("openai")
+from openai import OpenAI
+
 lang_table = {
     "zh": "Chinese",
     "en": "English",
@@ -22,19 +26,13 @@ lang_table = {
 }
 
 
-class OpenAIChatBot:
+class OpenAIChatBot(GPTBotBase):
     def __init__(self, model, system_prompt, record_history=True):
+        super().__init__(system_prompt, record_history)
         self.model = model
-        self.messages = [
-            {
-                "role": "system",
-                "content": system_prompt,
-            }
-        ]
-        self.client = requirePackage("openai", "OpenAI", real_name="openai")(
+        self.client = OpenAI(
             api_key=API_KEY, base_url=API_URL
         )
-        self.record_history = record_history
 
     def ask_stream(self, prompt):
         self.messages.append(

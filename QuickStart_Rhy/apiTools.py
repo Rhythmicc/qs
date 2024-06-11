@@ -1294,7 +1294,7 @@ def gpt():
 
     from rich.markdown import Markdown
     from rich.live import Live
-    from .API.GPT import ChatGPT
+    from .API.GPT import ChatGPT, save_conversation
     from . import _ask
     from .NumbaTools import cut_string
 
@@ -1316,6 +1316,10 @@ def gpt():
     record = ""
 
     while (prompt := _ask({"type": "input", "message": ""}, qmark=">>>")) != "exit":
+        if prompt == "save":
+            save_conversation(_ask({"type": "input", "message": "file path | 文件路径"}))
+            continue
+
         if translate_text:
             prompt = translate(prompt, target_lang="en")
             qs_default_console.print("EN:", prompt)
