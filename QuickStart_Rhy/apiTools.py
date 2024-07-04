@@ -1314,6 +1314,18 @@ def gpt():
         )
 
     record = ""
+    from . import qs_config
+
+    system_prompts = list(qs_config.basicSelect("gpt")["prompt"].keys())
+
+    if len(system_prompts) == 1:
+        system_prompt = qs_config.basicSelect("gpt")["prompt"][system_prompts[0]]
+    else:
+        system_prompt = qs_config.basicSelect("gpt")["prompt"][_ask({
+            'type': 'list',
+            'message': '选择系统提示语',
+            'choices': list(qs_config.basicSelect("gpt")["prompt"].keys())
+        })]
 
     while (prompt := _ask({"type": "input", "message": ""}, qmark=">>>")) != "exit":
         if prompt == "save":
@@ -1325,7 +1337,7 @@ def gpt():
             qs_default_console.print("EN:", prompt)
 
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
-            response = ChatGPT(prompt)
+            response = ChatGPT(prompt, system_prompt=system_prompt)
 
         qs_default_console.print(
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
@@ -1362,6 +1374,39 @@ def gpt():
                     Markdown(render.render(parser.parse(total_res)), justify="full"),
                     refresh=True,
                 )
+
+def gpt_one():
+    prompt = " ".join(sys.argv[2:])
+    if not prompt:
+        from . import _ask
+        prompt = _ask({"type": "input", "message": "问题"})
+    
+    from .API.GPT import ChatGPT
+    from rich.live import Live
+    from rich.markdown import Markdown
+    from .NumbaTools import cut_string
+
+    system_prompt = "You are a powerful assistant with knowledge spanning various fields."
+
+    response = ChatGPT(prompt, system_prompt=system_prompt)
+    with Live(
+        "",
+        console=qs_default_console,
+        auto_refresh=False,
+        vertical_overflow="visible",
+    ) as live:
+        for res in response:
+            display = "\n".join(
+                [
+                    " ".join(
+                        cut_string(
+                            line, qs_default_console.width, ignore_charset="`"
+                        )
+                    )
+                    for line in res.split("\n")
+                ]
+            )
+            live.update(Markdown(display, justify="full"), refresh=True)
 
 def pushdeer():
     """

@@ -13,7 +13,7 @@ else:
     dir_char = "/"
 
 
-translate_engines = ["default", "TencentCloud", "DeepL", "DeepLX"]
+translate_engines = ["default", "TencentCloud", "DeepL", "DeepLX", "AITranslate"]
 lang_detector = LanguageDetector(user_lang, os.path.join(os.path.dirname(__file__), "lang.json"))
 
 questions = {
@@ -184,7 +184,10 @@ class QsConfig:
             "poe": "",
             "alapi": ""
         },
-        "model": ""
+        "model": "",
+        "prompt": {
+            "General": "You are a powerful assistant with knowledge spanning various fields."
+        }
     }
   },
   "API_settings": {
