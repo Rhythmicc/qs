@@ -1377,9 +1377,14 @@ def gpt():
 
 def gpt_one():
     prompt = " ".join(sys.argv[2:])
+    
     if not prompt:
         from . import _ask
         prompt = _ask({"type": "input", "message": "问题"})
+    
+    if '@clip' in prompt:
+        import pyperclip
+        prompt = prompt.replace('@clip', pyperclip.paste())
     
     from .API.GPT import ChatGPT
     from rich.live import Live

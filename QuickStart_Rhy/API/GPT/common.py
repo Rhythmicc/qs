@@ -11,4 +11,4 @@ class GPTBotBase:
     def save_conversation(self, file_path: str):
         with open(file_path, "w", encoding="utf-8") as f:
             for message in self.messages:
-                f.write(f"{message['role']}\n\n{message['content']}\n---\n")
+                f.write(f"## {message['role']}\n\n{message['content']}\n\n---\n")

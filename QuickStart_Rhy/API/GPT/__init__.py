@@ -7,22 +7,16 @@ def save_conversation(filename: str):
 
     if _chatbot:
         _chatbot.save_conversation(filename)
-
-"""
-def search(prompt: str):
-    from .. import Serper as sp
-    json_results = sp.search(prompt)['organic'][:6]
+    yield "Conversation saved to file: " + filename
 
 
 cmd = {
-    '/save': save_conversation,
-    '/search': None
+    '/save': save_conversation
 }
 
 
 def empty_iterator():
     yield None
-"""
 
 def ChatGPT(prompt: str, system_prompt: str = None, record_history=True, model=None):
     global _chatbot
@@ -39,5 +33,13 @@ def ChatGPT(prompt: str, system_prompt: str = None, record_history=True, model=N
             system_prompt=system_prompt,
             record_history=record_history,
         )
+
+    if prompt.startswith("/"):
+        # parse command
+        cmd_name, *args = prompt.split()
+        if cmd_name in cmd:
+            return cmd[cmd_name](' '.join(args))
+        else:
+            yield "Unknown command"
 
     return _chatbot.ask_stream(prompt)

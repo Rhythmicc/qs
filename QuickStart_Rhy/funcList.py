@@ -170,7 +170,8 @@ api_funcs = {
     "d2m": ["d2m", "<keywords>"],
     "doutu": ["doutu", "<keywords>"],
     "joke": ["joke", ""],
-    "gpt": ["gpt", "[--translate]"],
+    "gpt": ["gpt"],
+    "ask": ['gpt_one'],
     "pushdeer": ["pushdeer", "[text]"],
 }
 

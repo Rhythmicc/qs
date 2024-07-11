@@ -838,5 +838,21 @@
         "spa": "Lista de archivos en el cubo",
         "ara": "قائمة الملفات في دلو",
         "ru": "Список файлов в ведре"
+    },
+    "menu_pushdeer": {
+        "zh": "通过PushDeer推送消息",
+        "en": "Push Message via PushDeer",
+        "fra": "Pousser le message via PushDeer",
+        "spa": "Push el mensaje via PushDeer",
+        "ara": "إرسال الرسالة عبر PushDeer",
+        "ru": "Отправить сообщение через PushDeer"
+    },
+    "menu_ask": {
+        "zh": "使用通用GPT助手回答一次问题",
+        "en": "Use GPT Assistant to answer a question", 
+        "fra": "Utiliser l'assistant GPT pour répondre à une question",
+        "spa": "Usar el asistente GPT para responder a una pregunta",
+        "ara": "استخدم مساعد GPT للإجابة على سؤال",
+        "ru": "Использовать GPT-помощник для ответа на вопрос"
     }
 }
