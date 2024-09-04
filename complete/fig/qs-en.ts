@@ -389,6 +389,13 @@ const completionSpec: Fig.Spec = {
         options: [
             {name: '--translate', description: 'translate to English'},
         ]
+    },  {
+        name: 'ask',
+        description: 'Instant questions',
+        options: [
+            {name: '@model=', description: 'Set Model Name'},
+            {name: '@clip', description: 'Use clipboard content'},
+        ]
     }, {
         name: 'pushdeer',
         description: 'PushDeer push message',

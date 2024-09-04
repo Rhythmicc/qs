@@ -124,6 +124,34 @@ def txcos():
         func_table[op](bucket)
 
 
+def wrap_text_preserve_links(text, width, with_numba=False):
+        import re
+        if with_numba:
+            from .NumbaTools import cut_string
+        else:
+            from . import cut_string
+        
+        def split_line(line):
+            parts = []
+            current_part = ""
+            link_pattern = r'(!?\[([^\]]+)\]\(([^\)]+)\))'
+            
+            for match in re.finditer(link_pattern, line):
+                before_link = line[len(current_part):match.start()]
+                parts.extend(cut_string(before_link, width, ignore_charset="`"))
+                parts.append(match.group(0))
+                current_part = line[:match.end()]
+            
+            remaining = line[len(current_part):]
+            parts.extend(cut_string(remaining, width, ignore_charset="`"))
+            return parts
+
+        wrapped_lines = []
+        for line in text.split('\n'):
+            wrapped_lines.extend(split_line(line))
+        
+        return '\n'.join(wrapped_lines)
+
 def translate(content: str = "", target_lang: str = user_lang):
     """
     qs默认的翻译引擎
@@ -191,8 +219,6 @@ def translate(content: str = "", target_lang: str = user_lang):
 
         if output_flag and ret:
             if ret:
-                from .NumbaTools import cut_string
-
                 if trans_engine == "AITranslate":
                     from rich.live import Live
                     from rich.markdown import Markdown
@@ -205,32 +231,12 @@ def translate(content: str = "", target_lang: str = user_lang):
                     ) as live:
                         total_res = ""
                         for res in ret:
-                            display = "\n".join(
-                                [
-                                    " ".join(
-                                        cut_string(
-                                            line,
-                                            qs_default_console.width,
-                                            ignore_charset="`",
-                                        )
-                                    )
-                                    for line in res.split("\n")
-                                ]
-                            )
+                            display = wrap_text_preserve_links(res, qs_default_console.width, False)
                             live.update(Markdown(display, justify="full"), refresh=True)
                             total_res = res
                     ret = total_res
                 else:
-                    display = "\n".join(
-                        [
-                            " ".join(
-                                cut_string(
-                                    line, qs_default_console.width, ignore_charset="`"
-                                )
-                            )
-                            for line in ret.split("\n")
-                        ]
-                    )
+                    display = wrap_text_preserve_links(res, qs_default_console.width, False)
                     qs_default_console.print(display)
             else:
                 qs_default_console.log(qs_error_string, "Translate Failed!")
@@ -1229,89 +1235,20 @@ def joke():
 
 def gpt():
     """
-    ChatGPT-3.5
+    ChatGPT Client for multi round conversation
     :return:
     """
-    translate_text = "--translate" in sys.argv
-    if translate_text:
-        from commonmark.blocks import Parser
-        from commonmark.render.rst import ReStructuredTextRenderer
-
-        parser = Parser()
-        sys.argv.remove("--translate")
-
-        class TranslateRenderer(ReStructuredTextRenderer):
-            def __init__(self):
-                super().__init__()
-
-            def text(self, node, entering):
-                self.out(translate(node.literal))
-
-            def link(self, node, entering):
-                if entering:
-                    self.out("[")
-                else:
-                    self.out("](%s)" % node.destination)
-
-            def image(self, node, entering):
-                if entering:
-                    self.out("![")
-                else:
-                    self.out(f"]({node.destination})")
-
-            def code(self, node, entering):
-                self.out("`")
-                self.out(node.literal)
-                self.out("`")
-
-            def code_block(self, node, entering):
-                directive = "```"
-                language_name = None
-
-                info_words = node.info.split() if node.info else []
-                if len(info_words) > 0 and len(info_words[0]) > 0:
-                    language_name = info_words[0]
-
-                if language_name:
-                    directive += language_name
-
-                self.cr()
-                self.out(directive)
-                self.cr()
-                self.out(node.literal)
-                self.out("```")
-                self.cr()
-
-            def heading(self, node, entering):
-                if entering:
-                    self.cr()
-                    self.out("#" * node.level)
-                    self.out(" ")
-                else:
-                    self.cr()
-
-        render = TranslateRenderer()
-
     from rich.markdown import Markdown
     from rich.live import Live
     from .API.GPT import ChatGPT, save_conversation
     from . import _ask
     from .NumbaTools import cut_string
+    import re
 
     qs_default_console.print(
         qs_info_string,
         "Type 'exit' to exit" if user_lang != "zh" else "输入 'exit' 退出",
     )
-
-    if not translate_text:
-        qs_default_console.print(
-            qs_info_string,
-            (
-                "Add '--translate' to enable auto translate"
-                if user_lang != "zh"
-                else "添加 '--translate' 以启用自动翻译"
-            ),
-        )
 
     record = ""
     from . import qs_config
@@ -1328,14 +1265,6 @@ def gpt():
         })]
 
     while (prompt := _ask({"type": "input", "message": ""}, qmark=">>>")) != "exit":
-        if prompt == "save":
-            save_conversation(_ask({"type": "input", "message": "file path | 文件路径"}))
-            continue
-
-        if translate_text:
-            prompt = translate(prompt, target_lang="en")
-            qs_default_console.print("EN:", prompt)
-
         with qs_default_status("Thinking..." if user_lang != "zh" else "思考中..."):
             response = ChatGPT(prompt, system_prompt=system_prompt)
 
@@ -1354,29 +1283,23 @@ def gpt():
             total_res = ""
             for res in response:
                 total_res = prefix + res
-                display = "\n".join(
-                    [
-                        " ".join(
-                            cut_string(
-                                line, qs_default_console.width, ignore_charset="`"
-                            )
-                        )
-                        for line in total_res.split("\n")
-                    ]
-                )
+                display = wrap_text_preserve_links(total_res, qs_default_console.width, True)
                 live.update(Markdown(display, justify="full"), refresh=True)
             record = total_res
-            if (
-                translate_text
-                and requirePackage("langid", "classify")(total_res)[0] != user_lang
-            ):
-                live.update(
-                    Markdown(render.render(parser.parse(total_res)), justify="full"),
-                    refresh=True,
-                )
+        img = re.findall(r"!\[.*?\]\((.*?)\)", total_res)
+        if img:
+            from .ImageTools.ImagePreview import image_preview
+            image_preview(img[0], True)
 
 def gpt_one():
+    import re
     prompt = " ".join(sys.argv[2:])
+
+    if '@model' in prompt:
+        # parse @model=xxx @...
+        model_name = re.findall(r'@model=(.*?)\s', prompt)[0]
+    else:
+        model_name = None
     
     if not prompt:
         from . import _ask
@@ -1389,11 +1312,10 @@ def gpt_one():
     from .API.GPT import ChatGPT
     from rich.live import Live
     from rich.markdown import Markdown
-    from .NumbaTools import cut_string
 
-    system_prompt = "You are a powerful assistant with knowledge spanning various fields."
+    system_prompt = f"You are a powerful assistant with knowledge spanning various fields. Please respond with {user_lang} language."
 
-    response = ChatGPT(prompt, system_prompt=system_prompt)
+    response = ChatGPT(prompt, system_prompt=system_prompt, model=model_name)
     with Live(
         "",
         console=qs_default_console,
@@ -1401,17 +1323,12 @@ def gpt_one():
         vertical_overflow="visible",
     ) as live:
         for res in response:
-            display = "\n".join(
-                [
-                    " ".join(
-                        cut_string(
-                            line, qs_default_console.width, ignore_charset="`"
-                        )
-                    )
-                    for line in res.split("\n")
-                ]
-            )
+            display = wrap_text_preserve_links(res, qs_default_console.width)
             live.update(Markdown(display, justify="full"), refresh=True)
+    img = re.findall(r"!\[.*?\]\((.*?)\)", res)
+    if img:
+        from .ImageTools.ImagePreview import image_preview
+        image_preview(img[0], True)
 
 def pushdeer():
     """

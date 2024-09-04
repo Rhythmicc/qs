@@ -386,9 +386,13 @@ const completionSpec: Fig.Spec = {
         description: '获取中文笑话'
     }, {
         name: 'gpt',
-        description: 'ChatGPT',
+        description: 'ChatGPT'
+    }, {
+        name: 'ask',
+        description: '即时提问',
         options: [
-            {name: '--translate', description: '启用翻译, 你输入的用户语言将被翻译为英文, 然后再将输出结果翻译回来'},
+            {name: '@model=', description: '设置模型'},
+            {name: '@clip', description: '替换为剪切板内容'},
         ]
     }, {
         name: 'pushdeer',

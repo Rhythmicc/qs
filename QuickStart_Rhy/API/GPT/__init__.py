@@ -2,21 +2,31 @@ from ... import qs_config, requirePackage
 
 _chatbot = None
 
+def _msg_to_iterator(msg):
+    yield msg
+
+def _help(_):
+    return _msg_to_iterator(
+"""Usage: Type your message to chat with the bot
+
+|Command|Description|
+|---|---|
+|/help|Show this message|
+|/save <filename>|Save the conversation to a file|
+""")
+
 def save_conversation(filename: str):
     global _chatbot
 
     if _chatbot:
         _chatbot.save_conversation(filename)
-    yield "Conversation saved to file: " + filename
+    return _msg_to_iterator("Conversation saved to file: " + filename)
 
 
 cmd = {
+    '/help': _help,
     '/save': save_conversation
 }
-
-
-def empty_iterator():
-    yield None
 
 def ChatGPT(prompt: str, system_prompt: str = None, record_history=True, model=None):
     global _chatbot
@@ -40,6 +50,6 @@ def ChatGPT(prompt: str, system_prompt: str = None, record_history=True, model=N
         if cmd_name in cmd:
             return cmd[cmd_name](' '.join(args))
         else:
-            yield "Unknown command"
-
+            return _msg_to_iterator("Unknown command: " + cmd_name)
+        
     return _chatbot.ask_stream(prompt)
