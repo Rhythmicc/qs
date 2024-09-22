@@ -380,7 +380,7 @@ def play_music(*argv, using_afplay: bool = False):
     if not using_afplay:
         AS = requirePackage("pydub", "AudioSegment")
         play = requirePackage("pydub.playback", "play")
-
+    
     for music in argv:
         try:
             play(AS.from_file(music)) if not using_afplay else external_exec(

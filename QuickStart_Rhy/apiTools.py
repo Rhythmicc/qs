@@ -15,6 +15,7 @@ from . import (
     qs_info_string,
     qs_warning_string,
     requirePackage,
+    qs_cache
 )
 
 
@@ -124,7 +125,7 @@ def txcos():
         func_table[op](bucket)
 
 
-def wrap_text_preserve_links(text, width, with_numba=False):
+def wrap_text_preserve_links(text, width, with_numba=False, with_raw=False):
         import re
         if with_numba:
             from .NumbaTools import cut_string
@@ -139,17 +140,19 @@ def wrap_text_preserve_links(text, width, with_numba=False):
             for match in re.finditer(link_pattern, line):
                 before_link = line[len(current_part):match.start()]
                 parts.extend(cut_string(before_link, width, ignore_charset="`"))
-                parts.append(match.group(0))
+                parts.append('\n\n' + match.group(0) + '\n\n')
                 current_part = line[:match.end()]
             
             remaining = line[len(current_part):]
             parts.extend(cut_string(remaining, width, ignore_charset="`"))
-            return parts
+            return ' '.join(parts)
 
         wrapped_lines = []
         for line in text.split('\n'):
-            wrapped_lines.extend(split_line(line))
+            wrapped_lines.append(split_line(line))
         
+        if with_raw:
+            return wrapped_lines
         return '\n'.join(wrapped_lines)
 
 def translate(content: str = "", target_lang: str = user_lang):
@@ -182,7 +185,21 @@ def translate(content: str = "", target_lang: str = user_lang):
                 if user_lang != "zh"
                 else "抱歉，但是“pyperclip”不支持你的系统\n，所以你需要手动输入内容:"
             )
-    if content:
+            return None
+    if not content:
+        qs_default_console.log(
+            qs_warning_string,
+            (
+                "No content in your clipboard or command parameters!"
+                if user_lang != "zh"
+                else "剪贴板或命令参数没有内容!"
+            ),
+        )
+        return None
+    
+    ct_md5 = requirePackage("hashlib").md5(content.encode()).hexdigest()
+    ret = qs_cache.get(ct_md5)
+    if not ret:
         retry = 3
         lang = requirePackage("langid", "classify")(content)[0]
         while retry:
@@ -217,45 +234,36 @@ def translate(content: str = "", target_lang: str = user_lang):
                 qs_default_console.print_exception()
                 return None
 
-        if output_flag and ret:
-            if ret:
-                if trans_engine == "AITranslate":
-                    from rich.live import Live
-                    from rich.markdown import Markdown
+    if output_flag and ret:
+        if ret:
+            if trans_engine == "AITranslate" and not isinstance(ret, str):
+                from rich.live import Live
+                from rich.markdown import Markdown
 
-                    with Live(
-                        "",
-                        console=qs_default_console,
-                        auto_refresh=False,
-                        vertical_overflow="visible",
-                    ) as live:
-                        total_res = ""
-                        for res in ret:
-                            display = wrap_text_preserve_links(res, qs_default_console.width, False)
-                            live.update(Markdown(display, justify="full"), refresh=True)
-                            total_res = res
-                    ret = total_res
-                else:
-                    display = wrap_text_preserve_links(res, qs_default_console.width, False)
-                    qs_default_console.print(display)
+                with Live(
+                    "",
+                    console=qs_default_console,
+                    auto_refresh=False,
+                    vertical_overflow="visible",
+                ) as live:
+                    total_res = ""
+                    for res in ret:
+                        display = wrap_text_preserve_links(res, qs_default_console.width, False)
+                        live.update(Markdown(display, justify="full"), refresh=True)
+                        total_res = res
+                ret = total_res
             else:
-                qs_default_console.log(qs_error_string, "Translate Failed!")
-        elif trans_engine == "AITranslate":
-            total_res = ""
-            for res in ret:
-                total_res = res
-            ret = total_res
-        return ret
-    else:
-        qs_default_console.log(
-            qs_warning_string,
-            (
-                "No content in your clipboard or command parameters!"
-                if user_lang != "zh"
-                else "剪贴板或命令参数没有内容!"
-            ),
-        )
-        return None
+                display = wrap_text_preserve_links(ret, qs_default_console.width, False)
+                qs_default_console.print(display)
+        else:
+            qs_default_console.log(qs_error_string, "Translate Failed!")
+    elif trans_engine == "AITranslate":
+        total_res = ""
+        for res in ret:
+            total_res = res
+        ret = total_res
+    qs_cache.set(ct_md5, ret, 3)
+    return ret
 
 
 def weather():
@@ -1296,8 +1304,8 @@ def gpt_one():
     prompt = " ".join(sys.argv[2:])
 
     if '@model' in prompt:
-        # parse @model=xxx @...
-        model_name = re.findall(r'@model=(.*?)\s', prompt)[0]
+        # parse @model=x_xx @... XXXX
+        model_name = re.findall(r"@model=([\w_-]+)", prompt)[0]
     else:
         model_name = None
     
@@ -1315,7 +1323,9 @@ def gpt_one():
 
     system_prompt = f"You are a powerful assistant with knowledge spanning various fields. Please respond with {user_lang} language."
 
-    response = ChatGPT(prompt, system_prompt=system_prompt, model=model_name)
+    with qs_default_status('Making Request...'):
+        response = ChatGPT(prompt, system_prompt=system_prompt, model=model_name)
+    record = None
     with Live(
         "",
         console=qs_default_console,
@@ -1323,9 +1333,11 @@ def gpt_one():
         vertical_overflow="visible",
     ) as live:
         for res in response:
-            display = wrap_text_preserve_links(res, qs_default_console.width)
+            display = wrap_text_preserve_links(res, qs_default_console.width, with_numba=True)
             live.update(Markdown(display, justify="full"), refresh=True)
-    img = re.findall(r"!\[.*?\]\((.*?)\)", res)
+            record = display
+
+    img = re.findall(r"!\[.*?\]\((.*?)\)", record)
     if img:
         from .ImageTools.ImagePreview import image_preview
         image_preview(img[0], True)

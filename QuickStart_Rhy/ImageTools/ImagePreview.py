@@ -236,6 +236,60 @@ def imgcat(
     fp.flush()
 
 
+def imgcat_stream(
+    buf,
+    width_scale=None,
+    height_scale=None,
+    preserve_aspect_ratio=True,
+    fp=None,
+    force_show: bool = False,
+):
+    """
+    Print image on terminal (iTerm2).
+
+    Follows the file-transfer protocol of iTerm2 described at
+    https://www.iterm2.com/documentation-images.html.
+
+    Args:
+        :param buf: the content of image in buffer interface, numpy array, etc.
+        :param width: the width for displaying image, in number of characters (columns)
+        :param height: the height for displaying image, in number of lines (rows)
+        :param fp: The buffer to write to, defaults sys.stdout
+        :param filename:
+    """
+    if fp is None:
+        fp = sys.stdout.buffer  # for stdout, use buffer interface (py3)
+
+    is_iterm2 = "ITERM_SESSION_ID" in os.environ
+
+    if not is_iterm2 and not force_show:
+        raise RuntimeError(
+            "This function is only supported in iTerm2. "
+            "Please set `force_show=True` to force show the image."
+        )
+    # now starts the iTerm2 file transfer protocol.
+    fp.write(OSC)
+    fp.write(b"1337;File=inline=1")
+    fp.write(b";size=" + str(len(buf[1])).encode())
+    if width_scale:
+        fp.write(b";width=" + f'{width_scale}%%%%'.encode())
+    if height_scale:
+        fp.write(b";height=" + f'{height_scale}%%%%'.encode())
+    if not preserve_aspect_ratio:
+        fp.write(b";preserveAspectRatio=0")
+    fp.write(b";inline=1")
+    fp.write(b":")
+    fp.flush()
+    # fp.write(base64.b64encode(buf))
+    buf = buf[0]
+    for chunk in buf.iter_content(24576):
+        fp.write(base64.b64encode(chunk))
+    fp.write(ST)
+    fp.write(b"\n")
+    # flush is needed so that the cursor control sequence can take effect
+    fp.flush()
+
+
 def image_preview(
     img,
     is_url=False,
@@ -291,13 +345,11 @@ def image_preview(
                 set_referer=set_referer,
                 set_proxy=set_proxy,
                 disableStatus=True,
-                write_to_memory=True,
+                write_to_memory=True
             ):
                 if img.endswith('.svg'):
                     img_bytes = requirePackage("cairosvg", "svg2png")(bytestring=img_bytes)
-                img = requirePackage("PIL", "Image", "Pillow").open(
-                    requirePackage("io", "BytesIO")(img_bytes)
-                )
+                img = img_bytes
             else:
                 return qs_default_console.print(
                     requirePackage('.', 'qs_error_string'),

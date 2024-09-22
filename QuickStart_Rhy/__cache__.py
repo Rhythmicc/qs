@@ -1,29 +1,56 @@
-from .__config__ import dir_char
-
+import os
+import time
+import pickle
+import atexit
 
 class QsCache:
     """
     qs存储在~/.qs_cache的缓存
     """
-
-    import os
-    import pickle
-
     def __init__(self, cachePath: str):
-        self.path = cachePath + dir_char
-        if not QsCache.os.path.exists(cachePath):
-            QsCache.os.mkdir(cachePath)
+        self.path = cachePath
+        self.cache_table_path = os.path.join(self.path, 'qs_cache_table')
+        if not os.path.exists(cachePath):
+            os.mkdir(cachePath)
+        if not os.path.exists(self.cache_table_path):
+            self.cache_table = {}
+        else:
+            with open(self.cache_table_path, 'rb') as f:
+                self.cache_table = pickle.load(f)
+        atexit.register(self.exit)
 
     def get(self, key: str):
-        if not QsCache.os.path.exists(self.path + key):
+        if key not in self.cache_table:
             return None
-        with open(self.path + key, "rb") as f:
-            return QsCache.pickle.loads(f.read())
+        self.cache_table[key]['used'] = time.time()
+        with open(self.cache_table[key]['path'], "rb") as f:
+            return pickle.load(f)
 
-    def set(self, key: str, value):
-        with open(self.path + key, "wb") as f:
-            QsCache.pickle.dump(value, f)
+    def set(self, key: str, value, expire_days: int = 0):
+        item_path = os.path.join(self.path, key)
+        with open(item_path, "wb") as f:
+            pickle.dump(value, f)
+        self.cache_table[key] = {
+            'used': time.time(),
+            'expire': expire_days * 24 * 60 * 60,
+            'path': item_path
+        }
 
     def delete(self, key: str):
-        if QsCache.os.path.exists(self.path + key):
-            QsCache.os.remove(self.path + key)
+        if key in self.cache_table:
+            item_path = self.cache_table[key]['path']
+            if os.path.exists(item_path):
+                os.remove(item_path)
+            del self.cache_table[key]
+    
+    def save_table(self):
+        with open(self.cache_table_path, 'wb') as f:
+            pickle.dump(self.cache_table, f)
+
+    def exit(self):
+        # auto delete item expired
+        for key in self.cache_table:
+            if self.cache_table[key]['expire'] != 0:
+                if time.time() - self.cache_table[key]['used'] > self.cache_table[key]['expire']:
+                    self.delete(key)
+        self.save_table()

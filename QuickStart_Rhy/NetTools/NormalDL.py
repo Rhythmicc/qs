@@ -79,6 +79,7 @@ class Downloader:
         disableStatus: bool = False,
         disableParallel: bool = False,
         write_to_memory: bool = False,
+        memory_stream_only: bool = False,
         ignore_404: bool = False,
     ):
         """
@@ -106,6 +107,7 @@ class Downloader:
         self.enabled = True
         self.disableStatus = disableStatus
         self.write_to_memory = write_to_memory
+        self.memory_stream_only = memory_stream_only
         if not self.disableStatus:
             with qs_default_status(
                 "Getting file info.." if user_lang != "zh" else "获取文件信息中.."
@@ -289,6 +291,8 @@ class Downloader:
                     f.write(chunk)
                     self.main_progress.advance(self.dl_id, sys.getsizeof(chunk))
         else:
+            if self.memory_stream_only:
+                self.name = r, self.size
             self.name = b""
             for chunk in r.iter_content(32768):
                 self.name += chunk
@@ -326,6 +330,8 @@ class Downloader:
                         continue
                     else:
                         self.job_queue.put(i)
+            elif self.memory_stream_only:
+                self._single_dl()
             else:
                 for i in range(0, self.size, self.fileBlock):
                     self.job_queue.put(i)
@@ -350,7 +356,7 @@ class Downloader:
             if not self.write_to_memory:
                 self.ctn_file.close()
                 os.remove(self.name + ".qs_dl")
-            else:
+            elif not self.memory_stream_only:
                 self.name = self.writers.content
         else:
             self._single_dl()
@@ -376,6 +382,7 @@ def normal_dl(
     disableStatus: bool = False,
     disableParallel: bool = False,
     write_to_memory: bool = False,
+    memory_stream_only: bool = False,
     ignore_404: bool = False,
 ):
     """
@@ -412,5 +419,6 @@ def normal_dl(
         disableStatus=disableStatus,
         disableParallel=disableParallel,
         write_to_memory=write_to_memory,
+        memory_stream_only=memory_stream_only,
         ignore_404=ignore_404,
     ).run()
