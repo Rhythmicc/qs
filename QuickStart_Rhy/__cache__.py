@@ -49,8 +49,11 @@ class QsCache:
 
     def exit(self):
         # auto delete item expired
+        remove_key = []
         for key in self.cache_table:
             if self.cache_table[key]['expire'] != 0:
                 if time.time() - self.cache_table[key]['used'] > self.cache_table[key]['expire']:
-                    self.delete(key)
+                    remove_key.append(key)
+        for key in remove_key:
+            self.delete(key)
         self.save_table()

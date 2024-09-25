@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "QuickStart-Rhy"
-version = "0.7.27"
+version = "0.7.28"
 description = "A Command Line Toolbox"
 authors = ["Rhythmicc <rhythmlian.cn@gmail.com>"]
 license = "MIT"
