@@ -15,7 +15,8 @@ from . import (
     qs_info_string,
     qs_warning_string,
     requirePackage,
-    qs_cache
+    qs_cache,
+    live_show
 )
 
 
@@ -125,36 +126,6 @@ def txcos():
         func_table[op](bucket)
 
 
-def wrap_text_preserve_links(text, width, with_numba=False, with_raw=False):
-        import re
-        if with_numba:
-            from .NumbaTools import cut_string
-        else:
-            from . import cut_string
-        
-        def split_line(line):
-            parts = []
-            current_part = ""
-            link_pattern = r'(!?\[([^\]]+)\]\(([^\)]+)\))'
-            
-            for match in re.finditer(link_pattern, line):
-                before_link = line[len(current_part):match.start()]
-                parts.extend(cut_string(before_link, width, ignore_charset="`"))
-                parts.append('\n\n' + match.group(0) + '\n\n')
-                current_part = line[:match.end()]
-            
-            remaining = line[len(current_part):]
-            parts.extend(cut_string(remaining, width, ignore_charset="`"))
-            return ' '.join(parts)
-
-        wrapped_lines = []
-        for line in text.split('\n'):
-            wrapped_lines.append(split_line(line))
-        
-        if with_raw:
-            return wrapped_lines
-        return '\n'.join(wrapped_lines)
-
 def translate(content: str = "", target_lang: str = user_lang):
     """
     qs默认的翻译引擎
@@ -229,39 +200,21 @@ def translate(content: str = "", target_lang: str = user_lang):
                         else f"SSL错误，重试中... \[{3 - retry} / 3]"
                     ),
                 )
-            except Exception as e:
-                # qs_default_console.log(qs_error_string, e)
+            except Exception:
                 qs_default_console.print_exception()
                 return None
 
     if output_flag and ret:
         if ret:
-            if trans_engine == "AITranslate" and not isinstance(ret, str):
-                from rich.live import Live
-                from rich.markdown import Markdown
-
-                with Live(
-                    "",
-                    console=qs_default_console,
-                    auto_refresh=False,
-                    vertical_overflow="visible",
-                ) as live:
-                    total_res = ""
-                    for res in ret:
-                        display = wrap_text_preserve_links(res, qs_default_console.width, False)
-                        live.update(Markdown(display, justify="full"), refresh=True)
-                        total_res = res
-                ret = total_res
-            else:
-                display = wrap_text_preserve_links(ret, qs_default_console.width, False)
-                qs_default_console.print(display)
+            ret = live_show(ret, trans_engine == "AITranslate" and not isinstance(ret, str))
         else:
             qs_default_console.log(qs_error_string, "Translate Failed!")
-    elif trans_engine == "AITranslate":
-        total_res = ""
-        for res in ret:
-            total_res = res
-        ret = total_res
+    elif not output_flag and ret:
+        if trans_engine == "AITranslate" and not isinstance(ret, str):
+            res = ''
+            for i in ret:
+                res = i
+            ret = res
     qs_cache.set(ct_md5, ret, 3)
     return ret
 
@@ -1280,21 +1233,8 @@ def gpt():
             "[bold green]" + ("Answer" if user_lang != "zh" else "回答") + "[/]\n",
             justify="center",
         )
-        prefix = "" if prompt not in ["继续", "continue"] else record
-
-        with Live(
-            "",
-            console=qs_default_console,
-            auto_refresh=False,
-            vertical_overflow="visible",
-        ) as live:
-            total_res = ""
-            for res in response:
-                total_res = prefix + res
-                display = wrap_text_preserve_links(total_res, qs_default_console.width, True)
-                live.update(Markdown(display, justify="full"), refresh=True)
-            record = total_res
-        img = re.findall(r"!\[.*?\]\((.*?)\)", total_res)
+        record = live_show(response, prefix="" if prompt not in ["继续", "continue"] else record)
+        img = re.findall(r"!\[.*?\]\((.*?)\)", record)
         if img:
             from .ImageTools.ImagePreview import image_preview
             image_preview(img[0], True)
@@ -1325,17 +1265,7 @@ def gpt_one():
 
     with qs_default_status('Making Request...'):
         response = ChatGPT(prompt, system_prompt=system_prompt, model=model_name)
-    record = None
-    with Live(
-        "",
-        console=qs_default_console,
-        auto_refresh=False,
-        vertical_overflow="visible",
-    ) as live:
-        for res in response:
-            display = wrap_text_preserve_links(res, qs_default_console.width, with_numba=True)
-            live.update(Markdown(display, justify="full"), refresh=True)
-            record = display
+    record = live_show(response)
 
     img = re.findall(r"!\[.*?\]\((.*?)\)", record)
     if img:

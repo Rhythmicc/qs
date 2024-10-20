@@ -17,6 +17,12 @@ class QsCache:
         else:
             with open(self.cache_table_path, 'rb') as f:
                 self.cache_table = pickle.load(f)
+        need_remove = []
+        for item in self.cache_table:
+            if not os.path.exists(self.cache_table[item]['path']):
+                need_remove.append(item)
+        for item in need_remove:
+            del self.cache_table[item]
         atexit.register(self.exit)
 
     def get(self, key: str):
@@ -30,6 +36,7 @@ class QsCache:
         item_path = os.path.join(self.path, key)
         with open(item_path, "wb") as f:
             pickle.dump(value, f)
+        
         self.cache_table[key] = {
             'used': time.time(),
             'expire': expire_days * 24 * 60 * 60,

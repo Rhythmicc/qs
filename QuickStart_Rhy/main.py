@@ -9,17 +9,21 @@ from .funcList import *
 from . import requirePackage
 
 
-def qs_help(rep:str=""):
+def qs_help(rep: str = ""):
     """输出菜单 | Output menu"""
-    if not rep or rep not in ['basic', 'system', 'net', 'api', 'image']:
-        menu_show([
-            ['basic', 'u, a, f, cal, time, pcat..'],
-            ['system', 'top, \[mk/un]\[zip/tar/7z]..'],
-            ['net', 'http, dl, netinfo, wifi...'],
-            ['api', 'trans, smms, rmbg, loli...'],
-            ['image', 'stbg, v2gif, v2mp3, v2mp4.']
-        ])
-        qs_default_console.print(f"\n[bold]{lang_detector['tutorial']}[/]\n", justify="center")
+    if not rep or rep not in ["basic", "system", "net", "api", "image"]:
+        menu_show(
+            [
+                ["basic", "u, a, f, cal, time, pcat.."],
+                ["system", "top, \[mk/un]\[zip/tar/7z].."],
+                ["net", "http, dl, netinfo, wifi..."],
+                ["api", "trans, smms, rmbg, loli..."],
+                ["image", "stbg, v2gif, v2mp3, v2mp4."],
+            ]
+        )
+        qs_default_console.print(
+            f"\n[bold]{lang_detector['tutorial']}[/]\n", justify="center"
+        )
         qs_default_console.print("[bold magenta]qs lesson[/]", justify="center")
     else:
         menu_table(rep)
@@ -30,9 +34,9 @@ def main():
     debug_flag = "--qs-debug" in sys.argv
     if debug_flag:
         sys.argv.remove("--qs-debug")
-    help_flag = '--help' in sys.argv
+    help_flag = "--help" in sys.argv
     if help_flag:
-        sys.argv.remove('--help')
+        sys.argv.remove("--help")
     if len(sys.argv) >= 2:
         try:
             func_name = sys.argv[1]
@@ -48,6 +52,16 @@ def main():
 
             if debug_flag:
                 qs_default_console.print_exception()
+                import traceback
+                from . import live_show
+                from .API.GPT import ChatGPT
+
+                live_show(
+                    ChatGPT(
+                        traceback.format_exc(),
+                        system_prompt="You are a professional computer engineer, please help me analyze the error, and tell me how to solve it.",
+                    )
+                )
             else:
                 from . import qs_error_string
 

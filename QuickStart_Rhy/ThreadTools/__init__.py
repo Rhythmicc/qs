@@ -46,6 +46,54 @@ class ThreadFunctionWrapper(threading.Thread):
         return self.res
 
 
+class Pool:
+    def __init__(self, workers: int):
+        """
+        线程池
+
+        Thread pool
+
+        :param workers: 线程数
+        """
+        self.workers = workers
+        self.pool = ThreadPoolExecutor(max_workers=workers)
+        self.job_q = []
+
+    def wait(self):
+        """
+        等待完全完成任务
+
+        Wait for the task to complete
+
+        :return:
+        """
+        wait(self.job_q)
+
+    def new_job(self, function, *args, **kwargs):
+        """
+        添加新任务
+
+        Add new tasks
+
+        :param function: 函数
+        :param args: 参数
+        :param kwargs: 参数
+        :return:
+        """
+        self.job_q.append(self.pool.submit(function, *args, **kwargs))
+
+    def __del__(self):
+        """
+        删除对象，必须等待线程池工作结束
+
+        To delete an object, you must wait for the thread pool to finish working
+
+        :return:
+        """
+        self.wait()
+        self.pool.shutdown()
+
+
 class FileWriters:
     def __init__(self, filename: str, workers: int, mode: str):
         """

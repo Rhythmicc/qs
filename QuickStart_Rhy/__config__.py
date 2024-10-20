@@ -185,6 +185,7 @@ class QsConfig:
             "alapi": ""
         },
         "model": "",
+        "translate": "",
         "prompt": {
             "General": "You are a powerful assistant with knowledge spanning various fields."
         }

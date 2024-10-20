@@ -536,3 +536,55 @@ def swap(file1: str = None, file2: str = None):
         f2.write(data1)
 
 requirePackage("QuickProject", real_name="Qpro") # 自动更新
+
+def wrap_text_preserve_links(text, width, with_numba=False, with_raw=False):
+        import re
+        if with_numba:
+            from .NumbaTools import cut_string
+        else:
+            from . import cut_string
+        
+        def split_line(line):
+            parts = []
+            current_part = ""
+            link_pattern = r'(!?\[([^\]]+)\]\(([^\)]+)\))'
+            
+            for match in re.finditer(link_pattern, line):
+                before_link = line[len(current_part):match.start()]
+                parts.extend(cut_string(before_link, width, ignore_charset="`"))
+                parts.append('\n\n' + match.group(0) + '\n\n')
+                current_part = line[:match.end()]
+            
+            remaining = line[len(current_part):]
+            parts.extend(cut_string(remaining, width, ignore_charset="`"))
+            return ' '.join(parts)
+
+        wrapped_lines = []
+        for line in text.split('\n'):
+            wrapped_lines.append(split_line(line))
+        
+        if with_raw:
+            return wrapped_lines
+        return '\n'.join(wrapped_lines)
+
+def live_show(content, is_stream: bool = True, prefix: str = ""):
+    if is_stream:
+        from rich.live import Live
+        from rich.markdown import Markdown
+
+        with Live(
+            "",
+            console=qs_default_console,
+            auto_refresh=False,
+            vertical_overflow="visible",
+        ) as live:
+            total_res = ""
+            for res in content:
+                res = prefix + res
+                display = wrap_text_preserve_links(res, qs_default_console.width, False)
+                live.update(Markdown(display, justify="full"), refresh=True)
+                total_res = res
+    else:
+        qs_default_console.print(wrap_text_preserve_links(content, qs_default_console.width, False))
+        total_res = content
+    return total_res
