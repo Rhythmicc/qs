@@ -362,11 +362,17 @@ class Downloader:
             self._single_dl()
         if not self.disableStatus:
             self.main_progress.stop()
-            qs_default_console.print(
-                qs_info_string,
-                self.name,
-                "download done!" if user_lang != "zh" else "下载完成!",
-            )
+            if self.write_to_memory or self.memory_stream_only:
+                qs_default_console.print(
+                    qs_info_string,
+                    "download done!" if user_lang != "zh" else "下载完成!",
+                )
+            else:
+                qs_default_console.print(
+                    qs_info_string,
+                    self.name,
+                    "download done!" if user_lang != "zh" else "下载完成!",
+                )
         return self.name
 
 
