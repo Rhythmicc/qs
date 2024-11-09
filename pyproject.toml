@@ -1,11 +1,26 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "QuickStart-Rhy"
 version = "0.7.30"
 description = "A Command Line Toolbox"
-authors = ["Rhythmicc <rhythmlian.cn@gmail.com>"]
+authors = [ "Rhythmicc <rhythmlian.cn@gmail.com>",]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "QuickStart_Rhy"}, {include = "QuickStart_Rhy/lang.json"}]
+[[tool.poetry.packages]]
+include = "QuickStart_Rhy"
+
+[[tool.poetry.packages]]
+include = "QuickStart_Rhy/lang.json"
+
+[tool.qpro]
+[[tool.qpro.server_targets]]
+user = "lianhaocheng"
+host = "localhost"
+port = "22"
+path = "/opt/homebrew/lib/python3.11/site-packages/"
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -18,6 +33,10 @@ inquirer-rhy = "^0.1.2"
 [tool.poetry.scripts]
 qs = "QuickStart_Rhy.main:main"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.qpro.config]
+build = ""
+entry_point = ""
+executable = "python3 -m QuickStart_Rhy.main"
+input_file = ""
+template_root = ""
+enable_complete = true
