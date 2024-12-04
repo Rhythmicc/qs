@@ -544,15 +544,13 @@ def acg():
 
     :return:
     """
-    import random
     from .API.alapi import acg
-    from .API.SimpleAPI import acg2
 
     qs_default_status(
         "Requesting data.." if user_lang != "zh" else "请求数据中.."
     ).start()
     try:
-        status, acg_link, width, height = random.choice([acg, acg2])()
+        status, acg_link, width, height = acg()
         (
             qs_default_console.print(
                 qs_info_string, f"{'链接' if user_lang == 'zh' else 'LINK'}: {acg_link}"

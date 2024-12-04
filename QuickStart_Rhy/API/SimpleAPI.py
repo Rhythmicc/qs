@@ -177,30 +177,6 @@ def imgs_in_url(url: str, save: bool = False):
         image_preview(file_name, True)
 
 
-def acg2():
-    """
-    随机获取一张acg图片链接
-
-    Get a random link to an ACG image
-
-    :return: 请求状态, 链接或报错, 宽度, 高度 | status, url or error, width, height
-    """
-    try:
-        res = requests.get("https://api.luvying.com/acgimg?return=json")
-    except Exception as e:
-        return False, repr(e), None, None
-    else:
-        import json
-
-        res = json.loads(res.text)
-        return (
-            res["code"] == "200",
-            (res["acgurl"] if res["code"] == "200" else "Error"),
-            res["width"],
-            res["height"],
-        )
-
-
 def wallhaven(
     set_search_url: str = pre_check("wallhaven_aim_url", ext=False),
     randomOne: bool = False,
