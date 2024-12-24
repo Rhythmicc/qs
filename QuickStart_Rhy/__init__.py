@@ -62,6 +62,7 @@ def requirePackage(
     :param keep_latest: 是否保持最新版本
     :return: 库或模块的地址
     """
+    res_model = None
     try:
         package_name = pname.split(".")[0] if not real_name else real_name
         if not package_name:  # 引用为自身
@@ -83,7 +84,7 @@ def requirePackage(
                     qs_default_console.print(qs_warning_string, _ct)
             _package_info_[package_name] = time.time()
             qs_cache.set("package_info", _package_info_)
-        exec(f"from {pname} import {module}" if module else f"import {pname}")
+        exec((f"from {pname} import {module}" if module else f"import {pname}") + ';' + (f"res_model = {module if module else pname}"))
     except (ModuleNotFoundError, ImportError):
         if not_ask:
             return None
@@ -110,10 +111,8 @@ def requirePackage(
                     f"'{set_pip} install {package_name} -U'",
                 )
                 exit(-1)
-            exec(f"from {pname} import {module}" if module else f"import {pname}")
-        else:
-            return None
-    return eval(f"{module if module else pname}")
+            exec((f"from {pname} import {module}" if module else f"import {pname}") + ';' + (f"res_model = {module if module else pname}"))
+    return res_model
 
 
 def cut_string(string: str, length: int, ignore_charset: list = []) -> list:
