@@ -854,5 +854,13 @@
         "spa": "Usar el asistente GPT para responder a una pregunta",
         "ara": "استخدم مساعد GPT للإجابة على سؤال",
         "ru": "Использовать GPT-помощник для ответа на вопрос"
+    },
+    "menu_mdl": {
+        "zh": "同时下载多个文件",
+        "en": "Download Multiple Files",
+        "fra": "Télécharger plusieurs fichiers",
+        "spa": "Descargar varios archivos",
+        "ara": "تنزيل عدة ملفات",
+        "ru": "Загрузить несколько файлов"
     }
 }

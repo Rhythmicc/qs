@@ -333,7 +333,7 @@ def copy():
             from QuickStart_Rhy.NetTools.NormalDL import normal_dl
 
             normal_dl(
-                "https://cos.rhythmlian.cn/ImgBed/86438ea0f489a2c75ff7263eda630005",
+                "https://cos.lhc.studio/ImgBed/86438ea0f489a2c75ff7263eda630005",
                 set_name="pbadd",
             )
             external_exec("chmod +x pbadd")

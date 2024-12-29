@@ -121,6 +121,7 @@ net_funcs = {
       [--name <fileName>] :-> {lang_detector['set_filename']}
       [--referer] | [-e] <url> :-> {lang_detector['set_referer']}
 """],
+    "mdl": ["multi_download", "<urls separated by space>"],
     "wifi": ["wifi", ""],
     "upgrade": ["upgrade", ""],
     "netinfo": ["netinfo", "<ip | domain | url>"],

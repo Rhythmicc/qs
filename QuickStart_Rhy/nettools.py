@@ -147,6 +147,11 @@ def download():
             qs_error_string, "No url found!" if user_lang != "zh" else "无链接输入"
         )
 
+def multi_download():
+    urls = sys.argv[2:]
+
+    from .NetTools.MultiSingleDL import multi_single_dl
+    multi_single_dl(urls)
 
 def http():
     """
