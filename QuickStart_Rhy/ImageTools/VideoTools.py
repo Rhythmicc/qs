@@ -30,7 +30,7 @@ def VideoWrapper(func):
                 qs_error_string,
                 f'{"No a file" if user_lang != "zh" else "不是文件"}: {path}',
             )
-        mpy = requirePackage("moviepy", "editor")
+        mpy = requirePackage("moviepy")
         func(path, *args, **kwargs, mpy=mpy)
 
     return wrapper

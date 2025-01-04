@@ -3,7 +3,7 @@
 
 preview image on terminal | Only iTerm2 is available,
 """
-from .. import qs_default_console, qs_console_width, requirePackage, qs_default_status
+from .. import qs_default_console, qs_console_width, qs_default_status
 from .. import _ask, user_lang, force_show_img, qs_config
 import math
 import base64
@@ -13,6 +13,8 @@ import struct
 import io
 
 # 记录强制显示状态，避免重复询问
+is_iterm2 = "ITERM_SESSION_ID" in os.environ
+is_kitty = "KITTY_PID" in os.environ or "GHOSTTY_BIN_DIR" in os.environ
 force_show_option = False
 has_set_force_show_option = False
 
@@ -54,6 +56,7 @@ def get_image_shape(buf):
         b.write(buf)
 
         try:
+            from .. import requirePackage
             im = requirePackage("PIL", "Image", "Pillow").open(b)
             return im.width, im.height
         except (IOError, OSError) as ex:
@@ -88,18 +91,61 @@ def _isinstance(obj, module, clsname):
         return False
 
 
-def to_content_buf(data, fmt="png"):
+def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=False):
     # TODO: handle 'stream-like' data efficiently, rather than storing into RAM
-
-    if isinstance(data, bytes):
+    from .. import requirePackage
+    if bypass:
         return data
+    
+    if isinstance(data, bytes):
+        # force transform data to png format
+        img = requirePackage("PIL", "Image", "Pillow").open(io.BytesIO(data))
+        if width and height:
+            rate = img.size[0] / img.size[1]
+            ass_height = width / rate
+            ass_width = rate * height
+            if ass_height > height:
+                width = math.floor(ass_width)
+            if ass_width > width:
+                height = math.floor(ass_height)
+            img = img.resize((width, height))
+        with io.BytesIO() as buf:
+            img.save(buf, format=fmt)
+            return buf.getvalue()
 
     elif isinstance(data, io.BufferedReader):
         buf = data
+        if width and height:
+            img = requirePackage("PIL", "Image", "Pillow").open(buf)
+            rate = img.size[0] / img.size[1]
+            ass_height = width / rate
+            ass_width = rate * height
+            if ass_height > height:
+                width = math.floor(ass_width)
+            if ass_width > width:
+                height = math.floor(ass_height)
+            img = img.resize((width, height))
+            with io.BytesIO() as buf:
+                img.save(buf, format=fmt)
+                return buf.getvalue()
         return buf.read()
 
     elif isinstance(data, io.TextIOWrapper):
-        return data.buffer.read()
+        buf = data.buffer
+        if width and height:
+            img = requirePackage("PIL", "Image", "Pillow").open(buf)
+            rate = img.size[0] / img.size[1]
+            ass_height = width / rate
+            ass_width = rate * height
+            if ass_height > height:
+                width = math.floor(ass_width)
+            if ass_width > width:
+                height = math.floor(ass_height)
+            img = img.resize((width, height))
+            with io.BytesIO() as buf:
+                img.save(buf, format=fmt)
+                return buf.getvalue()
+        return buf.read()
 
     elif _isinstance(data, "numpy", "ndarray"):
         # numpy ndarray: convert to png
@@ -119,9 +165,17 @@ def to_content_buf(data, fmt="png"):
 
         with io.BytesIO() as buf:
             # mode: https://pillow.readthedocs.io/en/4.2.x/handbook/concepts.html#concept-modes
-            requirePackage("PIL", "Image", "Pillow").fromarray(im, mode=mode).save(
-                buf, format=fmt
-            )
+            img = requirePackage("PIL", "Image", "Pillow").fromarray(im, mode=mode)
+            if width and height:
+                rate = img.size[0] / img.size[1]
+                ass_height = width / rate
+                ass_width = rate * height
+                if ass_height > height:
+                    width = math.floor(ass_width)
+                if ass_width > width:
+                    height = math.floor(ass_height)
+                img = img.resize((width, height))
+            img.save(buf, format=fmt)
             return buf.getvalue()
 
     elif _isinstance(data, "torch", "Tensor"):
@@ -131,9 +185,17 @@ def to_content_buf(data, fmt="png"):
         im = data
 
         with io.BytesIO() as buf:
-            requirePackage("torchvision", "transforms").ToPILImage()(im).save(
-                buf, format=fmt
-            )
+            img = requirePackage("torchvision", "transforms").ToPILImage()(im)
+            if width and height:
+                rate = img.size[0] / img.size[1]
+                ass_height = width / rate
+                ass_width = rate * height
+                if ass_height > height:
+                    width = math.floor(ass_width)
+                if ass_width > width:
+                    height = math.floor(ass_height)
+                img = img.resize((width, height))
+            img.save(buf, format=fmt)
             return buf.getvalue()
 
     elif _isinstance(data, "tensorflow.python.framework.ops", "EagerTensor"):
@@ -145,6 +207,15 @@ def to_content_buf(data, fmt="png"):
         img = data
 
         with io.BytesIO() as buf:
+            if width and height:
+                rate = img.size[0] / img.size[1]
+                ass_height = width / rate
+                ass_width = rate * height
+                if ass_height > height:
+                    width = math.floor(ass_width)
+                if ass_width > width:
+                    height = math.floor(ass_height)
+                img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
 
@@ -158,6 +229,18 @@ def to_content_buf(data, fmt="png"):
 
         with io.BytesIO() as buf:
             fig.savefig(buf)
+            if width and height:
+                img = requirePackage("PIL", "Image", "Pillow").open(buf)
+                rate = img.size[0] / img.size[1]
+                ass_height = width / rate
+                ass_width = rate * height
+                if ass_height > height:
+                    width = math.floor(ass_width)
+                if ass_width > width:
+                    height = math.floor(ass_height)
+                img = img.resize((width, height))
+                buf = io.BytesIO()
+                img.save(buf, format=fmt)
             return buf.getvalue()
 
     else:
@@ -209,31 +292,61 @@ def imgcat(
     if len(buf) == 0:
         raise ValueError("Empty buffer")
 
-    is_iterm2 = "ITERM_SESSION_ID" in os.environ
+    if is_iterm2:
+        # if not is_iterm2 and not force_show:
+        #     raise RuntimeError(
+        #         "This function is only supported in iTerm2. "
+        #         "Please set `force_show=True` to force show the image."
+        #     )
+        # now starts the iTerm2 file transfer protocol.
+        fp.write(OSC)
+        fp.write(b"1337;File=inline=1")
+        fp.write(b";size=" + str(len(buf)).encode())
+        if width_scale:
+            fp.write(b";width=" + f'{width_scale}%%%%'.encode())
+        if height_scale:
+            fp.write(b";height=" + f'{height_scale}%%%%'.encode())
+        if not preserve_aspect_ratio:
+            fp.write(b";preserveAspectRatio=0")
+        fp.write(b";inline=1")
+        fp.write(b":")
+        fp.flush()
+        fp.write(base64.b64encode(buf))
+        fp.write(ST)
+        fp.write(b"\n")
+        # flush is needed so that the cursor control sequence can take effect
+        fp.flush()
+    elif is_kitty:
+        # Kitty graphics protocol
+        # https://sw.kovidgoyal.net/kitty/graphics-protocol.html
+        from base64 import standard_b64encode
+        def serialize_gr_command(**cmd):
+            payload = cmd.pop('payload', None)
+            cmd = ','.join(f'{k}={v}' for k, v in cmd.items())
+            ans = []
+            w = ans.append
+            w(b'\033_G'), w(cmd.encode('ascii'))
+            if payload:
+                w(b';')
+                w(payload)
+            w(b'\033\\')
+            return b''.join(ans)
 
-    if not is_iterm2 and not force_show:
+        def write_chunked(**cmd):
+            data = standard_b64encode(cmd.pop('data'))
+            while data:
+                chunk, data = data[:4096], data[4096:]
+                m = 1 if data else 0
+                fp.write(serialize_gr_command(payload=chunk, m=m, **cmd))
+                fp.flush()
+                cmd.clear()
+            fp.write(b"\n")
+            fp.flush()
+        write_chunked(a='T', f=100, data=buf)
+    else:
         raise RuntimeError(
             "This function is only supported in iTerm2. "
-            "Please set `force_show=True` to force show the image."
         )
-    # now starts the iTerm2 file transfer protocol.
-    fp.write(OSC)
-    fp.write(b"1337;File=inline=1")
-    fp.write(b";size=" + str(len(buf)).encode())
-    if width_scale:
-        fp.write(b";width=" + f'{width_scale}%%%%'.encode())
-    if height_scale:
-        fp.write(b";height=" + f'{height_scale}%%%%'.encode())
-    if not preserve_aspect_ratio:
-        fp.write(b";preserveAspectRatio=0")
-    fp.write(b";inline=1")
-    fp.write(b":")
-    fp.flush()
-    fp.write(base64.b64encode(buf))
-    fp.write(ST)
-    fp.write(b"\n")
-    # flush is needed so that the cursor control sequence can take effect
-    fp.flush()
 
 
 def imgcat_stream(
@@ -313,8 +426,11 @@ def image_preview(
     :param _fake_show: 返回图片比特流，用于自定义显示
     :return:
     """
+    from .. import requirePackage
+
     global force_show_option, has_set_force_show_option
     try:
+        bypass_flag = False
         if not (
             force_show_option
             or force_show
@@ -349,6 +465,7 @@ def image_preview(
             ):
                 if img.endswith('.svg'):
                     img_bytes = requirePackage("cairosvg", "svg2png")(bytestring=img_bytes)
+                    bypass_flag = True
                 img = img_bytes
             else:
                 return qs_default_console.print(
@@ -359,9 +476,11 @@ def image_preview(
             if img.endswith('.svg') or img.endswith('.svgz'):
                 qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert svg to png (dpi=300) ...' if user_lang != 'zh' else 'svg将转换为png (dpi=300) ...')
                 img = requirePackage("io", "BytesIO")(requirePackage("cairosvg", "svg2png")(url=img, dpi=300))
+                bypass_flag = True
             elif img.endswith('.eps') or img.endswith('.epsf') or img.endswith('.epsi'):
                 qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert eps to png (dpi=300) ...' if user_lang != 'zh' else 'eps将转换为png (dpi=300) ...')
                 img = requirePackage("io", "BytesIO")(requirePackage("wand.image", "Image")(filename=img).make_blob())
+                bypass_flag = True
             img = requirePackage("PIL", "Image", "Pillow").open(img)
         else:
             qs_default_console.print(
@@ -375,54 +494,64 @@ def image_preview(
             "Loading image" if user_lang != "zh" else "正在加载图片",
         ).start()
 
-        buf = to_content_buf(img)
+        if is_kitty:
+            # Kitty graphics protocol
+            # get screen size
+            import array, fcntl, termios
+            buf = array.array('H', [0, 0, 0, 0])
+            fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, buf)
+            width, height = buf[2], buf[3]
+            buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height)
+            qs_default_status.stop()
+            imgcat(buf)
 
-        qs_default_status("Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置")
+        elif is_iterm2:
+            buf = to_content_buf(img, bypass=bypass_flag)
+            qs_default_status("Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置")
 
-        width, height = get_image_shape(buf)
-        console_width = (
-            qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
-        )
-        console_height = qs_default_console.height if not set_height_in_rc_file else set_height_in_rc_file
-
-        max_width_scale = set_width_in_rc_file / qs_console_width if set_width_in_rc_file else 1
-        max_height_scale = set_height_in_rc_file / qs_default_console.height if set_height_in_rc_file else 1
-        max_width_scale *= max_height_scale
-        
-        rate = width / height
-        _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
-        _real_width = math.ceil(
-            width
-            * qs_config.basicSelect("terminal_font_rate", 2.049)
-            / qs_config.basicSelect("terminal_font_size")
-        )
-
-        if _real_width > console_width:
-            height_scale = console_width / _real_width
-            _real_height = math.floor(_real_height * height_scale)
-            _real_width = console_width
-        if _real_height > console_height:
-            width_scale = console_height / _real_height
-            _real_width = math.floor(_real_width * width_scale)
-
-        qs_default_status.stop()
-        if rate > 1:
-            imgcat(
-                buf,
-                width_scale=max_width_scale * 100,
-                force_show=force_show_option,
+            width, height = get_image_shape(buf)
+            console_width = (
+                qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
             )
-        else:
-            qs_default_console.print(
-                " " * math.floor((qs_console_width - _real_width) / 2),
-                end="",
-            )
-            imgcat(
-                buf,
-                height_scale=max_height_scale * 100,
-                force_show=force_show_option,
+            console_height = qs_default_console.height if not set_height_in_rc_file else set_height_in_rc_file
+
+            max_width_scale = set_width_in_rc_file / qs_console_width if set_width_in_rc_file else 1
+            max_height_scale = set_height_in_rc_file / qs_default_console.height if set_height_in_rc_file else 1
+            max_width_scale *= max_height_scale
+            
+            rate = width / height
+            _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
+            _real_width = math.ceil(
+                width
+                * qs_config.basicSelect("terminal_font_rate", 2.049)
+                / qs_config.basicSelect("terminal_font_size")
             )
 
+            if _real_width > console_width:
+                height_scale = console_width / _real_width
+                _real_height = math.floor(_real_height * height_scale)
+                _real_width = console_width
+            if _real_height > console_height:
+                width_scale = console_height / _real_height
+                _real_width = math.floor(_real_width * width_scale)
+
+            qs_default_status.stop()
+            if rate > 1:
+                imgcat(
+                    buf,
+                    width_scale=max_width_scale * 100,
+                    force_show=force_show_option,
+                )
+            else:
+                qs_default_console.print(
+                    " " * math.floor((qs_console_width - _real_width) / 2),
+                    end="",
+                )
+                imgcat(
+                    buf,
+                    height_scale=max_height_scale * 100,
+                    force_show=force_show_option,
+                )
         if _st:
             qs_default_status.start()
     except Exception:
