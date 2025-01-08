@@ -498,13 +498,13 @@ def image_preview(
         buf = array.array('H', [0, 0, 0, 0])
         fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, buf)
         theight, twidth, width, height = buf[0], buf[1], buf[2], buf[3]
-        th_pixels = math.ceil(height / theight)
-        tw_pixels = math.ceil(width / twidth)
+        th_pixels = math.floor(height / theight)
+        tw_pixels = math.floor(width / twidth)
 
         if is_kitty:
             buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - 4 * th_pixels)
             iwidth, _ = get_image_shape(buf)
-            tiwidth = int(iwidth / tw_pixels)
+            tiwidth = math.ceil(iwidth / tw_pixels)
             pre_space = ' ' * ((twidth - tiwidth) // 2)
             qs_default_status.stop()
             print(pre_space, end='')
