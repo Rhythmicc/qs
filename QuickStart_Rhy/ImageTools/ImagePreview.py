@@ -105,9 +105,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
             ass_height = width / rate
             ass_width = rate * height
             if ass_height > height:
-                width = math.floor(ass_width)
+                width = math.floor(height * rate)
             if ass_width > width:
-                height = math.floor(ass_height)
+                height = math.floor(width / rate)
             img = img.resize((width, height))
         with io.BytesIO() as buf:
             img.save(buf, format=fmt)
@@ -121,9 +121,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
             ass_height = width / rate
             ass_width = rate * height
             if ass_height > height:
-                width = math.floor(ass_width)
+                width = math.floor(height * rate)
             if ass_width > width:
-                height = math.floor(ass_height)
+                height = math.floor(width / rate)
             img = img.resize((width, height))
             with io.BytesIO() as buf:
                 img.save(buf, format=fmt)
@@ -138,9 +138,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
             ass_height = width / rate
             ass_width = rate * height
             if ass_height > height:
-                width = math.floor(ass_width)
+                width = math.floor(height * rate)
             if ass_width > width:
-                height = math.floor(ass_height)
+                height = math.floor(width / rate)
             img = img.resize((width, height))
             with io.BytesIO() as buf:
                 img.save(buf, format=fmt)
@@ -171,9 +171,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                 ass_height = width / rate
                 ass_width = rate * height
                 if ass_height > height:
-                    width = math.floor(ass_width)
+                    width = math.floor(height * rate)
                 if ass_width > width:
-                    height = math.floor(ass_height)
+                    height = math.floor(width / rate)
                 img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
@@ -191,9 +191,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                 ass_height = width / rate
                 ass_width = rate * height
                 if ass_height > height:
-                    width = math.floor(ass_width)
+                    width = math.floor(height * rate)
                 if ass_width > width:
-                    height = math.floor(ass_height)
+                    height = math.floor(width / rate)
                 img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
@@ -212,9 +212,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                 ass_height = width / rate
                 ass_width = rate * height
                 if ass_height > height:
-                    width = math.floor(ass_width)
+                    width = math.floor(height * rate)
                 if ass_width > width:
-                    height = math.floor(ass_height)
+                    height = math.floor(width / rate)
                 img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
@@ -235,9 +235,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                 ass_height = width / rate
                 ass_width = rate * height
                 if ass_height > height:
-                    width = math.floor(ass_width)
+                    width = math.floor(height * rate)
                 if ass_width > width:
-                    height = math.floor(ass_height)
+                    height = math.floor(width / rate)
                 img = img.resize((width, height))
                 buf = io.BytesIO()
                 img.save(buf, format=fmt)
@@ -494,62 +494,45 @@ def image_preview(
             "Loading image" if user_lang != "zh" else "正在加载图片",
         ).start()
 
+        import array, fcntl, termios
+        buf = array.array('H', [0, 0, 0, 0])
+        fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, buf)
+        theight, twidth, width, height = buf[0], buf[1], buf[2], buf[3]
+        th_pixels = math.ceil(height / theight)
+        tw_pixels = math.ceil(width / twidth)
+
         if is_kitty:
-            # Kitty graphics protocol
-            # get screen size
-            import array, fcntl, termios
-            buf = array.array('H', [0, 0, 0, 0])
-            fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, buf)
-            width, height = buf[2], buf[3]
-            buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height)
+            buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - 4 * th_pixels)
+            iwidth, _ = get_image_shape(buf)
+            tiwidth = int(iwidth / tw_pixels)
+            pre_space = ' ' * ((twidth - tiwidth) // 2)
             qs_default_status.stop()
-            imgcat(buf)
+            print(pre_space, end='')
+            sys.stdout.flush()
+            imgcat(buf, force_show=force_show_option)
 
         elif is_iterm2:
             buf = to_content_buf(img, bypass=bypass_flag)
-            qs_default_status("Calculating the position of the image" if user_lang != "zh" else "计算图片摆放位置")
-
-            width, height = get_image_shape(buf)
-            console_width = (
-                qs_console_width if not set_width_in_rc_file else set_width_in_rc_file
-            )
-            console_height = qs_default_console.height if not set_height_in_rc_file else set_height_in_rc_file
-
-            max_width_scale = set_width_in_rc_file / qs_console_width if set_width_in_rc_file else 1
-            max_height_scale = set_height_in_rc_file / qs_default_console.height if set_height_in_rc_file else 1
-            max_width_scale *= max_height_scale
-            
-            rate = width / height
-            _real_height = math.ceil(height / qs_config.basicSelect("terminal_font_size"))
-            _real_width = math.ceil(
-                width
-                * qs_config.basicSelect("terminal_font_rate", 2.049)
-                / qs_config.basicSelect("terminal_font_size")
-            )
-
-            if _real_width > console_width:
-                height_scale = console_width / _real_width
-                _real_height = math.floor(_real_height * height_scale)
-                _real_width = console_width
-            if _real_height > console_height:
-                width_scale = console_height / _real_height
-                _real_width = math.floor(_real_width * width_scale)
+            iwidth, iheight = get_image_shape(buf)
+            tiwidth = int(iwidth / tw_pixels)
+            pre_space = ' ' * ((twidth - tiwidth) // 2)
+            rate = iwidth / iheight
 
             qs_default_status.stop()
             if rate > 1:
                 imgcat(
                     buf,
-                    width_scale=max_width_scale * 100,
+                    width_scale=100,
                     force_show=force_show_option,
                 )
             else:
                 qs_default_console.print(
-                    " " * math.floor((qs_console_width - _real_width) / 2),
+                    pre_space,
                     end="",
                 )
                 imgcat(
                     buf,
-                    height_scale=max_height_scale * 100,
+                    height_scale=100,
                     force_show=force_show_option,
                 )
         if _st:
