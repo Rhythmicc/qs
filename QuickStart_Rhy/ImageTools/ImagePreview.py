@@ -501,40 +501,15 @@ def image_preview(
         th_pixels = math.floor(height / theight)
         tw_pixels = math.floor(width / twidth)
 
-        if is_kitty:
-            buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - 4 * th_pixels)
-            iwidth, _ = get_image_shape(buf)
-            tiwidth = math.ceil(iwidth / tw_pixels)
-            pre_space = ' ' * ((twidth - tiwidth) // 2)
-            qs_default_status.stop()
-            print(pre_space, end='')
-            sys.stdout.flush()
-            imgcat(buf, force_show=force_show_option)
+        buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - 4 * th_pixels)
+        iwidth, _ = get_image_shape(buf)
+        tiwidth = math.ceil(iwidth / tw_pixels)
+        pre_space = ' ' * ((twidth - tiwidth) // 2)
+        qs_default_status.stop()
+        print(pre_space, end='')
+        sys.stdout.flush()
+        imgcat(buf, force_show=force_show_option)
 
-        elif is_iterm2:
-            buf = to_content_buf(img, bypass=bypass_flag)
-            iwidth, iheight = get_image_shape(buf)
-            tiwidth = int(iwidth / tw_pixels)
-            pre_space = ' ' * ((twidth - tiwidth) // 2)
-            rate = iwidth / iheight
-
-            qs_default_status.stop()
-            if rate > 1:
-                imgcat(
-                    buf,
-                    width_scale=100,
-                    force_show=force_show_option,
-                )
-            else:
-                qs_default_console.print(
-                    pre_space,
-                    end="",
-                )
-                imgcat(
-                    buf,
-                    height_scale=100,
-                    force_show=force_show_option,
-                )
         if _st:
             qs_default_status.start()
     except Exception:
