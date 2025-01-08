@@ -501,7 +501,7 @@ def image_preview(
         th_pixels = math.floor(height / theight)
         tw_pixels = math.floor(width / twidth)
 
-        buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - 4 * th_pixels)
+        buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - (4 if is_kitty else 3) * th_pixels)
         iwidth, _ = get_image_shape(buf)
         tiwidth = math.ceil(iwidth / tw_pixels)
         pre_space = ' ' * ((twidth - tiwidth) // 2)

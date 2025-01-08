@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "QuickStart-Rhy"
-version = "0.7.38"
+version = "0.7.39"
 description = "A Command Line Toolbox"
 authors = [ "Rhythmicc <rhythmlian.cn@gmail.com>",]
 license = "MIT"
