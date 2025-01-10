@@ -12,13 +12,14 @@ import os
 import struct
 import io
 
-is_iterm2 = False
-is_kitty = False
-terminal_app = qs_config.basicSelect("terminal_app")
-if terminal_app.lower() == 'iterm2':
-    is_iterm2 = True
-elif terminal_app.lower() == 'kitty series':
-    is_kitty = True
+from ..__config__ import is_iterm2, is_kitty
+
+if not is_iterm2 and not is_kitty and (terminal_app := qs_config.basicSelect("terminal_app")):
+    terminal_app = terminal_app.lower()
+    if terminal_app == 'iterm2':
+        is_iterm2 = True
+    elif terminal_app == 'kitty series':
+        is_kitty = True
 
 TMUX_WRAP_ST = b"\033Ptmux;"
 TMUX_WRAP_ED = b"\033\\"
@@ -247,24 +248,6 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
 
     else:
         raise TypeError("Unsupported type : {}".format(type(data)))
-
-
-def real_height(buf, pixels_per_line=qs_config.basicSelect("terminal_font_size")):
-    _, im_height = get_image_shape(buf)
-    if im_height:
-        assert pixels_per_line > 0
-        height = (im_height + (pixels_per_line - 1)) // pixels_per_line
-
-        # automatically limit height to the current tty,
-        # otherwise the image will be just erased
-        try:
-            return max(1, min(height, qs_default_console.height - 9))
-        except OSError:
-            # may not be a terminal
-            pass
-    else:
-        # image height unavailable, fallback?
-        return 10
 
 
 def imgcat(

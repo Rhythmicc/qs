@@ -128,12 +128,6 @@ questions = {
         "message": lang_detector['ask_proxy'],
         "default": "Not set | 暂不设置",
     },
-    "terminal_font_size": {
-        "type": "input",
-        "name": "terminal_font_size",
-        "message": lang_detector['ask_font_size'],
-        "default": "16",
-    },
     "gpt": {
         "type": "list",
         "message": lang_detector['ask_gpt'],
@@ -174,9 +168,6 @@ class QsConfig:
       "support": ["default", "TencentCloud", "DeepL", "DeepLX", "AITranslate"]
     },
     "default_proxy": "user:password@ip:port or ip:port",
-    "force_show_img": false,
-    "terminal_font_size": 16,
-    "terminal_font_rate": 2.049,
     "gpt": {
         "index": "openai",
         "support": {
