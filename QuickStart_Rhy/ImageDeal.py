@@ -97,9 +97,15 @@ def v2gif():
         )
         return
     else:
-        video_2_gif(video, sz, fps) if sz and fps else video_2_gif(
-            video, sz
-        ) if sz else video_2_gif(video, fps=fps) if fps else video_2_gif(video)
+        (
+            video_2_gif(video, sz, fps)
+            if sz and fps
+            else (
+                video_2_gif(video, sz)
+                if sz
+                else video_2_gif(video, fps=fps) if fps else video_2_gif(video)
+            )
+        )
 
 
 def remove_audio():
@@ -149,11 +155,6 @@ def icat():
             not os.path.exists(path)
             and (path.startswith("http://") or path.startswith("https://"))
         )
-        is_in_rc_file = "--rc" in sys.argv
-        if is_in_rc_file:
-            rc_width = int(sys.argv[sys.argv.index("--rc") + 1])
-        else:
-            rc_width = 0
         if not os.path.exists(path) and not is_url:
             qs_default_console.log(qs_error_string, "No such file:", path)
             raise FileNotFoundError
@@ -164,11 +165,7 @@ def icat():
     else:
         from .ImageTools.ImagePreview import image_preview
 
-        image_preview(
-            path, set_width_in_rc_file=rc_width, force_show=True
-        ) if not is_url else image_preview(
-            path, is_url, set_width_in_rc_file=rc_width, force_show=True
-        )
+        image_preview(path) if not is_url else image_preview(path, is_url)
 
 
 def i2png():
@@ -205,6 +202,7 @@ def i2pdf():
 
         for imgPath in imgs:
             topdf(imgPath)
+
 
 def vsta():
     from .ImageTools.VideoTools import set_video_audio
