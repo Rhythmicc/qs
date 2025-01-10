@@ -32,12 +32,12 @@
         "ru": "Выберите движок перевода"
     },
     "ask_force_show_img": {
-        "zh": "强制在终端显示图片",
-        "en": "Force show image in terminal",
-        "fra": "Forcer l'affichage de l'image dans le terminal",
-        "spa": "Forzar la imagen de la fuerza en el terminal",
-        "ara": "إجبار عرض الصورة في المحطة",
-        "ru": "Принудительное отображение изображения в терминале"
+        "zh": "选择你的终端类型",
+        "en": "Select your terminal type",
+        "fra": "Sélectionnez votre type de terminal",
+        "spa": "Seleccione su tipo de terminal",
+        "ara": "حدد نوع المحطة النهائية الخاصة بك",
+        "ru": "Выберите тип вашего терминала"
     },
     "ask_proxy": {
         "zh": "输入网络代理",

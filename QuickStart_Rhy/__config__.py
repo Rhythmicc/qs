@@ -5,6 +5,8 @@ import json
 import sys
 import os
 
+is_iterm2 = "ITERM_SESSION_ID" in os.environ
+is_kitty = "KITTY_PID" in os.environ or "GHOSTTY_BIN_DIR" in os.environ
 
 platform = sys.platform
 if platform.startswith("win"):
@@ -113,11 +115,12 @@ questions = {
         "choices": translate_engines,
         "default": "default",
     },
-    "force_show_img": {
-        "type": "confirm",
+    "terminal_app": {
+        "type": "list",
         "name": "force_show_img",
         "message": lang_detector['ask_force_show_img'],
-        "default": "ITERM_SESSION_ID" in os.environ,
+        "choices": ["iTerm2", "Kitty Series"],
+        "default": "iTerm2" if is_iterm2 else "Kitty Series",
     },
     "default_proxy": {
         "type": "input",

@@ -139,29 +139,23 @@ def imgsConcat(imgs: list):
         return
 
     with qs_default_status("拼接图片中") as st:
+        import array, fcntl, termios, sys
+        buf = array.array('H', [0, 0, 0, 0])
+        fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, buf)
+        width, max_height = buf[2], buf[3]
+        one_width = width
         heights_len = min(len(imgs), 3)
-
-        terminal_font_size = int(qs_config.basicSelect("terminal_font_size"))
-        terminal_font_rate = float(qs_config.basicSelect("terminal_font_rate"))
-
-        one_width = int(
-            qs_default_console.width * terminal_font_size / terminal_font_rate
-        )
-
         heights = [0] * heights_len
         for i in imgs:
             one_height = int(one_width * i.size[1] / i.size[0])
             heights[heights.index(min(heights))] += one_height
 
         st.update("嗅探最佳拼接方式")
-        max_height = qs_default_console.height * terminal_font_size
 
         while max(heights) > max_height and heights_len < len(imgs):
             heights_len += 1
             heights = [0] * heights_len
-            one_width = int(
-                qs_default_console.width / heights_len * terminal_font_size / terminal_font_rate
-            )
+            one_width = int(width / heights_len)
             for i in imgs:
                 one_height = int(one_width * i.size[1] / i.size[0])
                 heights[heights.index(min(heights))] += one_height

@@ -3,8 +3,8 @@
 
 preview image on terminal | Only iTerm2 is available,
 """
-from .. import qs_default_console, qs_console_width, qs_default_status
-from .. import _ask, user_lang, force_show_img, qs_config
+from .. import qs_default_console, qs_default_status
+from .. import user_lang, qs_config
 import math
 import base64
 import sys
@@ -12,11 +12,13 @@ import os
 import struct
 import io
 
-# 记录强制显示状态，避免重复询问
-is_iterm2 = "ITERM_SESSION_ID" in os.environ
-is_kitty = "KITTY_PID" in os.environ or "GHOSTTY_BIN_DIR" in os.environ
-force_show_option = False
-has_set_force_show_option = False
+is_iterm2 = False
+is_kitty = False
+terminal_app = qs_config.basicSelect("terminal_app")
+if terminal_app.lower() == 'iterm2':
+    is_iterm2 = True
+elif terminal_app.lower() == 'kitty series':
+    is_kitty = True
 
 TMUX_WRAP_ST = b"\033Ptmux;"
 TMUX_WRAP_ED = b"\033\\"
@@ -271,7 +273,6 @@ def imgcat(
     height_scale=None,
     preserve_aspect_ratio=True,
     fp=None,
-    force_show: bool = False,
 ):
     """
     Print image on terminal (iTerm2).
@@ -293,11 +294,6 @@ def imgcat(
         raise ValueError("Empty buffer")
 
     if is_iterm2:
-        # if not is_iterm2 and not force_show:
-        #     raise RuntimeError(
-        #         "This function is only supported in iTerm2. "
-        #         "Please set `force_show=True` to force show the image."
-        #     )
         # now starts the iTerm2 file transfer protocol.
         fp.write(OSC)
         fp.write(b"1337;File=inline=1")
@@ -408,50 +404,22 @@ def image_preview(
     is_url=False,
     set_proxy: str = "",
     set_referer: str = "",
-    set_width_in_rc_file: int = 0,
-    set_height_in_rc_file: int = 0,
-    force_show: bool = force_show_img,
 ):
     """
     在终端预览图片 | 目前仅有MacOS下的iTerm可用, 但你可以开启强制显示选项预览
 
     preview image on terminal | At present, only iTerm under MacOS is available, but you can enable force show option to preview
 
-    :param force_show: 强制显示图片，即使终端非iTerm2
-    :param set_width_in_rc_file: 设置图片宽度，以像素为单位，默认为0，即不设置
     :param is_url: 是否为url
     :param img: opened file, numpy array, PIL.Image, matplotlib fig
     :param set_proxy: set proxy
     :param set_referer: set refer
-    :param _fake_show: 返回图片比特流，用于自定义显示
     :return:
     """
     from .. import requirePackage
 
-    global force_show_option, has_set_force_show_option
     try:
         bypass_flag = False
-        if not (
-            force_show_option
-            or force_show
-            or (
-                not has_set_force_show_option
-                and _ask(
-                    {
-                        "type": "confirm",
-                        "message": "Preview image on this terminal?"
-                        if user_lang != "zh"
-                        else "确认在该终端预览图片?",
-                        "default": False,
-                    }
-                )
-            )
-        ):
-            has_set_force_show_option = True
-            return
-        else:
-            has_set_force_show_option = True
-            force_show_option = True
         if not is_url and (isinstance(img, str) and not os.path.exists(img)):
             is_url = img.startswith("http")
 
@@ -508,7 +476,7 @@ def image_preview(
         qs_default_status.stop()
         print(pre_space, end='')
         sys.stdout.flush()
-        imgcat(buf, force_show=force_show_option)
+        imgcat(buf)
 
         if _st:
             qs_default_status.start()
