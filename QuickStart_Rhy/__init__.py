@@ -35,7 +35,6 @@ user_currency = qs_config.basicSelect("default_currency")
 trans_engine = qs_config.basicSelect("default_translate_engine")["support"][
     qs_config.basicSelect("default_translate_engine")["index"]
 ]
-force_show_img = qs_config.basicSelect("force_show_img")
 qs_console_width = qs_default_console.width
 
 _package_info_ = qs_cache.get("package_info")
