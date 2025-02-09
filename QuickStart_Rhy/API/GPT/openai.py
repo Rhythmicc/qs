@@ -46,7 +46,7 @@ class OpenAIChatBot(GPTBotBase):
         )
         _total = ""
         for i in res:
-            _cur = i.choices[0].delta.content if i.choices and len(i.choices) > 0 else ''
+            _cur = (i.choices[0].delta.content or '') if i.choices and len(i.choices) > 0 else ''
             _total += _cur
             yield _total
         if self.record_history:
