@@ -372,10 +372,18 @@ def image_preview(
             if img.endswith('.svg') or img.endswith('.svgz'):
                 qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert svg to png (dpi=300) ...' if user_lang != 'zh' else 'svg将转换为png (dpi=300) ...')
                 img = requirePackage("io", "BytesIO")(requirePackage("cairosvg", "svg2png")(url=img, dpi=300))
+                img = requirePackage("PIL", "Image", "Pillow").open(img)
             elif img.endswith('.eps') or img.endswith('.epsf') or img.endswith('.epsi'):
                 qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert eps to png (dpi=300) ...' if user_lang != 'zh' else 'eps将转换为png (dpi=300) ...')
                 img = requirePackage("io", "BytesIO")(requirePackage("wand.image", "Image")(filename=img).make_blob())
-            img = requirePackage("PIL", "Image", "Pillow").open(img)
+                img = requirePackage("PIL", "Image", "Pillow").open(img)
+            elif img.endswith('.pdf'):
+                qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert pdf to png ...' if user_lang != 'zh' else 'pdf将转换为png ...')
+                import pdfplumber
+                with pdfplumber.open(img) as pdf:
+                    img = pdf.pages[0].to_image(resolution=300).original
+            else:
+                img = requirePackage("PIL", "Image", "Pillow").open(img)
         else:
             qs_default_console.print(
                 requirePackage('.', 'qs_warning_string'),
