@@ -379,8 +379,7 @@ def image_preview(
                 img = requirePackage("PIL", "Image", "Pillow").open(img)
             elif img.endswith('.pdf'):
                 qs_default_console.print(requirePackage('.', 'qs_warning_string'), 'Convert pdf to png ...' if user_lang != 'zh' else 'pdf将转换为png ...')
-                import pdfplumber
-                with pdfplumber.open(img) as pdf:
+                with requirePackage('pdfplumber', 'open')(img) as pdf:
                     img = pdf.pages[0].to_image(resolution=300).original
             else:
                 img = requirePackage("PIL", "Image", "Pillow").open(img)
