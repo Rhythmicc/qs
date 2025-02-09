@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "QuickStart-Rhy"
-version = "0.7.44"
+version = "0.7.45"
 description = "A Command Line Toolbox"
 authors = [ "Rhythmicc <rhythmlian.cn@gmail.com>",]
 license = "MIT"
@@ -23,7 +23,7 @@ port = "22"
 path = "/opt/homebrew/lib/python3.13/site-packages/"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 requests = "^2.31.0"
 urllib3 = "^1.26.15"
 rich = "^13.3.4"
