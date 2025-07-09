@@ -42,7 +42,7 @@ if not alapi_token:
         exit()
 
 
-v2_url = "https://v2.alapi.cn/api/"
+v2_url = "https://v3.alapi.cn/api/"
 
 
 def translate(text: str, from_lang: str = "auto", target_lang: str = user_lang):

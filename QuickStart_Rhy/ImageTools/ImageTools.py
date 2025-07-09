@@ -50,6 +50,18 @@ def is_heic(imgPath: str):
     return imgPath.endswith(".heic")
 
 
+def is_pdf(imgPath: str):
+    """
+    判断图片是否为pdf格式
+
+    check if the image is pdf
+
+    :param imgPath: 图片路径 | image path
+    :return:
+    """
+    return imgPath.endswith(".pdf")
+
+
 def topng(imgPath: str):
     """
     将图片路径所指的图片转为jpg格式
@@ -67,6 +79,8 @@ def topng(imgPath: str):
         requirePackage("wand.image", "Image")(filename=imgPath).save(filename=imgPath + ".png")
     elif is_heic(imgPath):
         requirePackage("pillow_heif", "read_heif")(imgPath).save(imgPath + ".png")
+    elif is_pdf(imgPath):
+        requirePackage('pdfplumber', 'open')(imgPath).pages[0].to_image(resolution=300).original.save(imgPath + ".png")
     else:
         Image.open(imgPath).save(imgPath + ".png", quality=100, optimize=True)
 
@@ -92,7 +106,10 @@ def tojpg(imgPath: str):
         imgPath = requirePackage("io", "BytesIO", "io")(
             requirePackage("pillow_heif", "read_heif")(imgPath).save_to_memory()
         )
-    Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100, optimize=True)
+    elif is_pdf(imgPath):
+        imgPath = requirePackage('pdfplumber', 'open')(imgPath).pages[0].to_image(resolution=300).original.save(imgPath + ".jpg")
+    else:
+        Image.open(imgPath).convert("RGB").save(imgPath + ".jpg", quality=100, optimize=True)
 
 
 def topdf(imgPath: str):

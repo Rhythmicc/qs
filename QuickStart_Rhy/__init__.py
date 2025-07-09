@@ -31,7 +31,6 @@ name = "QuickStart_Rhy"
 qs_config = QsConfig(os.path.join(user_root, ".qsrc"))
 qs_cache = QsCache(os.path.join(user_root, ".qs_cache"))
 
-user_currency = qs_config.basicSelect("default_currency")
 trans_engine = qs_config.basicSelect("default_translate_engine")["support"][
     qs_config.basicSelect("default_translate_engine")["index"]
 ]

@@ -162,7 +162,6 @@ api_funcs = {
     "kd": ["kdCheck", "<courier id>"],
     "loli": ["loli", "[--save] [-p]"],
     "setu": ["setu", "[--save] [-p]"],
-    "exc": ["exchange", "<num> <from> | eg. \"qs exc 100 USD\""],
     "zhihu": ["zhihuDaily", ""],
     "wallhaven": ["wallhaven", "[--save] [-one] [--url <url>]"],
     "lmgtfy": ["lmgtfy", "<keywords>"],
@@ -175,6 +174,7 @@ api_funcs = {
     "ask": ['gpt_one'],
     "pushdeer": ["pushdeer", "[text]"],
 }
+
 
 image_funcs = {
     "self": ".imageDeal",

@@ -815,30 +815,6 @@ def setu():
     random.choice([acg, loli])()
 
 
-def exchange():
-    from .API.alapi import exchange
-
-    qs_default_status(
-        "Requesting data.." if user_lang != "zh" else "请求数据中.."
-    ).start()
-    try:
-        status, data = exchange(sys.argv[3], 1)
-        (
-            qs_default_console.print(
-                f"{sys.argv[2]} {sys.argv[3]} ==> {data['exchange']} × {sys.argv[2]} = "
-                f"{data['exchange'] * float(sys.argv[2])} {data['currency_to']}\n"
-                f"{'Update' if user_lang != 'zh' else '更新时间'}: {data['update_time']}",
-                justify="center",
-            )
-            if status
-            else qs_default_console.log(qs_error_string, data)
-        )
-    except Exception as e:
-        qs_default_console.print(qs_error_string, repr(e))
-    finally:
-        qs_default_status.stop()
-
-
 def zhihuDaily():
     from .API.alapi import zhihuDaily
     from rich.panel import Panel

@@ -19,96 +19,6 @@ translate_engines = ["default", "TencentCloud", "DeepL", "DeepLX", "AITranslate"
 lang_detector = LanguageDetector(user_lang, os.path.join(os.path.dirname(__file__), "lang.json"))
 
 questions = {
-    "default_currency": {
-        "type": "input",
-        "name": "default_currency",
-        "message": lang_detector['ask_default_currency']
-        + """
-
-    CNY (Chinese)  USD (American) JPY (Japanese)  KRW (Korean)    DKK (Denmark)  EUR (Europe) 
-    THB (Thailand) SAR (al-ummah) RUB (Russian)   BYR (Belarus)   RON (Romania)  PLN (Poland)
-    BGN (Bulgaria) CZK (Czech)    ISK (Iceland)   VND (Vietnam)   DZD (Algeria)  ARS (Argentina)
-    SEK (Sweden)   HUF (Hungary)  OMR (Amani)     AUD (Australia) MOP (Macao)    AED (United Arab Emirates)
-    EGP (Egypt)    BHD (Bahrain)  BRL (Brazil)    HKD (HongKong)  COP (Colombia) PHP (Philippines)
-    CAD (Canada)   KHR (Cambodia) QAR (Qatar)     HRK (Croatia)   KES (Kenya)    CRC (CostaRica)
-    MXN (Mexico)   MAD (Morocco)  KWD (Kuwait)    LAK (Laos)      LBP (Lebanon)  MYR (Malaysia)
-    BUK (Myanmar)  NOK (Norway)   SEK (Sweden)    RSD (Serbia)    TZS (Tanzania) ZAR (South Africa)
-    BND (Brunei)   UGX (Uganda)   ZMK (Zambian)   SGD (Singapore) TWD (TaiWan)   LKR (Sri Lanka)  
-    TRY (Turkey)   HUF (Hungary)  SYP (Syria)     IQD (Iraq)      INR (India)    NZD (New Zealand)
-    GBP (England)  ILS (Israel)   JOD (Jordan)    CLP (Chile)     IDR (Indonesia)
-    
-  """
-        + lang_detector['input_default_currency'],
-        "validate": lambda val: val
-        in {
-            "CLP",
-            "AED",
-            "CZK",
-            "THB",
-            "MYR",
-            "NZD",
-            "LBP",
-            "LAK",
-            "HUF",
-            "VND",
-            "ZMK",
-            "RSD",
-            "CNH",
-            "BYR",
-            "HRK",
-            "CHF",
-            "CNY",
-            "TWD",
-            "CAD",
-            "RON",
-            "MOP",
-            "CRC",
-            "COP",
-            "LKR",
-            "IDR",
-            "AUD",
-            "ARS",
-            "BGN",
-            "KRW",
-            "TZS",
-            "JOD",
-            "HKD",
-            "EGP",
-            "KHR",
-            "ZAR",
-            "BRL",
-            "OMR",
-            "BHD",
-            "NOK",
-            "PLN",
-            "QAR",
-            "RUB",
-            "MAD",
-            "EUR",
-            "GBP",
-            "BND",
-            "SAR",
-            "USD",
-            "KWD",
-            "SYP",
-            "DKK",
-            "ILS",
-            "ISK",
-            "DZD",
-            "JPY",
-            "SEK",
-            "TRY",
-            "INR",
-            "KES",
-            "SGD",
-            "UGX",
-            "PHP",
-            "IQD",
-            "BUK",
-            "MXN",
-        },
-        "default": "USD",
-    },
     "default_translate_engine": {
         "type": "list",
         "message": lang_detector['ask_translate_engine'],
@@ -162,7 +72,7 @@ class QsConfig:
             self.config = json.loads(
                 """{
   "basic_settings": {
-    "default_currency": "CNY",
+    "default_currency": "",
     "default_translate_engine": {
       "index": 0,
       "support": ["default", "TencentCloud", "DeepL", "DeepLX", "AITranslate"]
@@ -234,20 +144,6 @@ class QsConfig:
                     "default": True,
                 }
             )
-            if (
-                platform.startswith("darwin")
-                and "ITERM_SESSION_ID" not in os.environ
-                and _ask(
-                    {
-                        "type": "confirm",
-                        "message": lang_detector['recommand_using_iterm2'],
-                        "default": True,
-                    }
-                )
-            ):
-                from .NetTools import open_url
-
-                open_url("https://www.iterm2.com/")
 
     def update(self):
         with open(self.path, "w") as f:
