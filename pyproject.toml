@@ -1,37 +1,33 @@
 [build-system]
-requires = [ "poetry-core",]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry]
+[project]
 name = "QuickStart-Rhy"
 version = "0.7.49"
 description = "A Command Line Toolbox"
-authors = [ "Rhythmicc <rhythmlian.cn@gmail.com>",]
+authors = [
+    {name = "Rhythmicc", email = "rhythmlian.cn@gmail.com"}
+]
 license = "MIT"
 readme = "README.md"
-[[tool.poetry.packages]]
-include = "QuickStart_Rhy"
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.31.0",
+    "urllib3>=2.0.0",
+    "rich>=13.3.4",
+    "Qpro>=0.13.0",
+    "inquirer-rhy>=0.1.2"
+]
 
-[[tool.poetry.packages]]
-include = "QuickStart_Rhy/lang.json"
-
-[tool.qpro]
-[[tool.qpro.server_targets]]
-user = "lianhaocheng"
-host = "localhost"
-port = "22"
-path = "/opt/homebrew/lib/python3.13/site-packages/"
-
-[tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.31.0"
-urllib3 = "^1.26.15"
-rich = "^13.3.4"
-Qpro = "^0.13.0"
-inquirer-rhy = "^0.1.2"
-
-[tool.poetry.scripts]
+[project.scripts]
 qs = "QuickStart_Rhy.main:main"
+
+[tool.setuptools.packages.find]
+exclude = ["Docs", "complete"]
+
+[tool.setuptools.package-data]
+QuickStart_Rhy = ["lang.json"]
 
 [tool.qpro.config]
 build = ""

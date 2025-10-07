@@ -1,4 +1,12 @@
 .idea
 .DS_Store
 Docs
-__pycache__
+**/__pycache__
+.venv/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.vscode
+uv.lock
+**/*.egg-info

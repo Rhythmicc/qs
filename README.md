@@ -9,7 +9,6 @@ pip3 install git+https://github.com/Rhythmicc/quickstart-rhy.git -U # beta versi
 | :--: | -------------------------------------------------- |
 | ENV  | **^Python 3.7**                                    |
 | FONT | **Cascadia Code / Meslo**                          |
-| DOCS | <https://rhythmlian.cn/2020/02/14/QuickStart-Rhy/> |
 
 ## Tab Complete
 
