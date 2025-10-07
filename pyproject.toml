@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "QuickStart-Rhy"
-version = "0.7.51"
+version = "0.7.52"
 description = "A Command Line Toolbox"
 authors = [
     {name = "Rhythmicc", email = "rhythmlian.cn@gmail.com"}
