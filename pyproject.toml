@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "QuickStart-Rhy"
-version = "0.7.53"
+version = "0.7.54"
 description = "A Command Line Toolbox"
 authors = [
     {name = "Rhythmicc", email = "rhythmlian.cn@gmail.com"}
 ]
-license = "MIT"
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
