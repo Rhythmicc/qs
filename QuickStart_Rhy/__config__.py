@@ -72,7 +72,6 @@ class QsConfig:
             self.config = json.loads(
                 """{
   "basic_settings": {
-    "default_currency": "",
     "default_translate_engine": {
       "index": 0,
       "support": ["default", "TencentCloud", "DeepL", "DeepLX", "AITranslate"]
@@ -122,9 +121,6 @@ class QsConfig:
     "DeepLX": "GET: https://github.com/OwO-Network/DeepLX"
   }
 }"""
-            )
-            self.config["basic_settings"]["default_currency"] = _ask(
-                questions["default_currency"]
             )
             self.config["basic_settings"]["default_translate_engine"][
                 "index"
