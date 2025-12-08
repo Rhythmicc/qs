@@ -99,6 +99,14 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
     from .. import requirePackage
     if bypass:
         return data
+
+    def pixels_exceed_limit(w, h) -> tuple:
+        limit = 2097152
+        if w * h > limit:
+            downsize_rate = math.sqrt((w * h) / limit)
+            w = math.floor(w / downsize_rate)
+            h = math.floor(h / downsize_rate)
+        return (w, h)
     
     if isinstance(data, bytes):
         # force transform data to png format
@@ -112,14 +120,17 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
             if ass_width > width:
                 height = math.floor(width / rate)
             img = img.resize((width, height))
+        else:
+            w, h = pixels_exceed_limit(img.size[0], img.size[1])
+            img = img.resize((w, h))
         with io.BytesIO() as buf:
             img.save(buf, format=fmt)
             return buf.getvalue()
 
     elif isinstance(data, io.BufferedReader):
         buf = data
+        img = requirePackage("PIL", "Image", "Pillow").open(buf)
         if width and height:
-            img = requirePackage("PIL", "Image", "Pillow").open(buf)
             rate = img.size[0] / img.size[1]
             ass_height = width / rate
             ass_width = rate * height
@@ -128,15 +139,18 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
             if ass_width > width:
                 height = math.floor(width / rate)
             img = img.resize((width, height))
-            with io.BytesIO() as buf:
-                img.save(buf, format=fmt)
-                return buf.getvalue()
+        else:
+            width, height = pixels_exceed_limit(img.size[0], img.size[1])
+            img = img.resize((width, height))
+        with io.BytesIO() as buf:
+            img.save(buf, format=fmt)
+            return buf.getvalue()
         return buf.read()
 
     elif isinstance(data, io.TextIOWrapper):
         buf = data.buffer
+        img = requirePackage("PIL", "Image", "Pillow").open(buf)
         if width and height:
-            img = requirePackage("PIL", "Image", "Pillow").open(buf)
             rate = img.size[0] / img.size[1]
             ass_height = width / rate
             ass_width = rate * height
@@ -145,9 +159,12 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
             if ass_width > width:
                 height = math.floor(width / rate)
             img = img.resize((width, height))
-            with io.BytesIO() as buf:
-                img.save(buf, format=fmt)
-                return buf.getvalue()
+        else:
+            width, height = pixels_exceed_limit(img.size[0], img.size[1])
+            img = img.resize((width, height))
+        with io.BytesIO() as buf:
+            img.save(buf, format=fmt)
+            return buf.getvalue()
         return buf.read()
 
     elif _isinstance(data, "numpy", "ndarray"):
@@ -178,6 +195,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                 if ass_width > width:
                     height = math.floor(width / rate)
                 img = img.resize((width, height))
+            else:
+                width, height = pixels_exceed_limit(img.size[0], img.size[1])
+                img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
 
@@ -197,6 +217,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                     width = math.floor(height * rate)
                 if ass_width > width:
                     height = math.floor(width / rate)
+                img = img.resize((width, height))
+            else:
+                width, height = pixels_exceed_limit(img.size[0], img.size[1])
                 img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
@@ -218,6 +241,9 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                     width = math.floor(height * rate)
                 if ass_width > width:
                     height = math.floor(width / rate)
+                img = img.resize((width, height))
+            else:
+                width, height = pixels_exceed_limit(img.size[0], img.size[1])
                 img = img.resize((width, height))
             img.save(buf, format=fmt)
             return buf.getvalue()
@@ -242,8 +268,11 @@ def to_content_buf(data, fmt="png", width: int = 0, height: int = 0, bypass=Fals
                 if ass_width > width:
                     height = math.floor(width / rate)
                 img = img.resize((width, height))
-                buf = io.BytesIO()
-                img.save(buf, format=fmt)
+            else:
+                width, height = pixels_exceed_limit(img.size[0], img.size[1])
+                img = img.resize((width, height))
+            buf = io.BytesIO()
+            img.save(buf, format=fmt)
             return buf.getvalue()
 
     else:
@@ -401,15 +430,21 @@ def image_preview(
         theight, twidth, width, height = buf[0], buf[1], buf[2], buf[3]
         th_pixels = math.floor(height / theight)
         tw_pixels = math.floor(width / twidth)
-
-        buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - (4 if is_kitty else 3) * th_pixels)
-        iwidth, _ = get_image_shape(buf)
-        tiwidth = math.ceil(iwidth / tw_pixels)
-        pre_space = ' ' * ((twidth - tiwidth) // 2)
-        qs_default_status.stop()
-        print(pre_space, end='')
-        sys.stdout.flush()
-        imgcat(buf)
+        
+        if tw_pixels and th_pixels:
+            buf = to_content_buf(img, bypass=bypass_flag, width=width, height=height - (4 if is_kitty else 3) * th_pixels)
+            iwidth, _ = get_image_shape(buf)
+            tiwidth = math.ceil(iwidth / tw_pixels)
+            pre_space = ' ' * ((twidth - tiwidth) // 2)
+            qs_default_status.stop()
+            print(pre_space, end='')
+            sys.stdout.flush()
+            imgcat(buf)
+        else:
+            # 缺乏终端尺寸信息，直接显示
+            qs_default_status.stop()
+            buf = to_content_buf(img, bypass=bypass_flag)
+            imgcat(buf)
 
         if _st:
             qs_default_status.start()
