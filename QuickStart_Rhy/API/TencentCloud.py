@@ -28,6 +28,9 @@ class TxCOS:
             scid, sckey, self.region, self.df_bucket = pre_check(
                 "txyun_scid", "txyun_sckey", "txyun_df_region", "txyun_cos_df_bucket"
             )
+        else:
+            self.region = region
+            self.df_bucket = bucket
         self.cdn_url = (
             pre_check("txyun_df_cdn_url", ext=False) if not cdn_url else cdn_url
         )

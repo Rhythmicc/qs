@@ -93,7 +93,7 @@ basic_funcs = {
 }
 
 system_funcs = {
-    "self": ".System",
+    "self": ".entry_system",
     "top": ["top", ""],
     "go2git": ["go_github", ""],
     "mktar": ["mktar", "<files or dirs...>"],
@@ -113,7 +113,7 @@ system_funcs = {
 }
 
 net_funcs = {
-    "self": ".NetTools",
+    "self": ".entry_nettools",
     "http": ["http", "[<ip>:<port>] [-bind <url>]"],
     "dl": ["download", f"""[url (in clipboard)]
       [--video] | [-v]    :-> {lang_detector['using_youtube_dl']}
@@ -129,7 +129,7 @@ net_funcs = {
 }
 
 api_funcs = {
-    "self": ".ApiTools",
+    "self": ".entry_apitools",
     "trans": ["translate", "<text (or in clipboard)>"],
     "pinyin": ["pinyin", "<text (or in clipboard)>"],
     "rmbg": ["remove_bg", "<image file>"],
@@ -177,7 +177,7 @@ api_funcs = {
 
 
 image_funcs = {
-    "self": ".ImageDeal",
+    "self": ".entry_imagedeal",
     "stbg": ["set_img_background", "<image> <to color> \[from color]"],
     "icat": ["icat", "<image file or url>"],
     "v2gif": ["v2gif", "<video file> [size] [fps]"],
